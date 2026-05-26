@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 import sys
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -15,25 +16,51 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, RAW_DIR, ensure_parent
 
-
-SAINS_DATA_NOMINALS = [
-    2_500_000,
-    2_500_000,
-    2_250_000,
-    2_250_000,
-    2_000_000,
-    2_000_000,
-    2_000_000,
-    2_000_000,
-    1_750_000,
-    1_750_000,
-    1_750_000,
-    1_750_000,
-    1_500_000,
-    1_500_000,
-    3_750_000,
-]
-
+def load_prodi_data() -> dict:
+    json_data = """{
+  "Fisika": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 17500000},
+  "Matematika": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 8849000], "spi": 25000000},
+  "Biologi": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 24000000},
+  "Kimia": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 17500000},
+  "Farmasi": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 30000000},
+  "Sains Data": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 30000000},
+  "Sains Aktuaria": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 8849000], "spi": 30000000},
+  "Sains Lingkungan Kelautan": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 17500000},
+  "Sains Atmosfir dan Keplanetan": {"fakultas": "Fakultas Sains", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 21500000},
+  "Teknik Elektro": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 30000000},
+  "Teknik Fisika": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 17500000},
+  "Teknik Informatika": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9000000], "spi": 30000000},
+  "Teknik Geologi": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 22500000},
+  "Teknik Geofisika": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 26000000},
+  "Teknik Mesin": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 26500000},
+  "Teknik Kimia": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9371000], "spi": 28500000},
+  "Teknik Material": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 21500000},
+  "Teknik Sistem Energi": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 17500000},
+  "Teknik Industri": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9371000], "spi": 30000000},
+  "Teknik Telekomunikasi": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9371000], "spi": 28500000},
+  "Teknik Pertambangan": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 30000000},
+  "Teknik Biosistem": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 17500000},
+  "Teknik Biomedis": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 27500000},
+  "Teknologi Pangan": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9344000], "spi": 30000000},
+  "Teknologi Industri Pertanian": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9371000], "spi": 28500000},
+  "Rekayasa Kehutanan": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9344000], "spi": 17500000},
+  "Rekayasa Kosmetik": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 21500000},
+  "Rekayasa Minyak dan Gas": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 27500000},
+  "Rekayasa Instrumentasi dan Automasi": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 22500000},
+  "Rekayasa Keolahragaan": {"fakultas": "Fakultas Teknologi Industri", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 20000000},
+  "Teknik Geomatika": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 26000000},
+  "Perencanaan Wilayah dan Kota": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 30000000},
+  "Teknik Sipil": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 30000000},
+  "Arsitektur": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 27500000},
+  "Teknik Lingkungan": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 28500000},
+  "Teknik Kelautan": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 24000000},
+  "Desain Komunikasi Visual": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 8098000], "spi": 30000000},
+  "Arsitektur Lanskap": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 24000000},
+  "Teknik Perkeretaapian": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 26500000},
+  "Rekayasa Tata Kelola Air Terpadu": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 21500000},
+  "Pariwisata": {"fakultas": "Fakultas Teknologi Infrastruktur & Kewilayahan", "ukts": [500000, 1000000, 2000000, 3500000, 5000000, 6500000, 8000000, 9500000], "spi": 25000000}
+}"""
+    return json.loads(json_data)
 
 def build_piutang_rows(seed: int = 20260526) -> pd.DataFrame:
     rng = random.Random(seed)
@@ -45,46 +72,68 @@ def build_piutang_rows(seed: int = 20260526) -> pd.DataFrame:
         ("Macet", 100.0),
     ]
 
-    for idx, nominal in enumerate(SAINS_DATA_NOMINALS, start=1):
+    prodi_data = load_prodi_data()
+    all_prodis = list(prodi_data.keys())
+
+    # Sains Data specific initial rows
+    for idx in range(1, 16):
         kualitas, penyisihan = kualitas_options[idx % len(kualitas_options)]
+        prodi = "Sains Data"
+        if prodi in prodi_data:
+            golongan = rng.randint(0, 7)
+            base_ukt = prodi_data[prodi]["ukts"][golongan]
+            # Randomize partial amount up to base_ukt
+            nominal = rng.randint(500_000, base_ukt)
+            # Align to 50k
+            nominal = (nominal // 50000) * 50000
+        else:
+            nominal = 2_500_000
+
         rows.append(
             {
                 "nim": f"SD2024{idx:04d}",
                 "nama_debitur": f"Mahasiswa Dummy Sains {idx:02d}",
-                "fakultas": "Fakultas Sains",
-                "prodi": "Sains Data",
+                "fakultas": prodi_data.get(prodi, {}).get("fakultas", "Fakultas Sains"),
+                "prodi": prodi,
                 "semester": "Ganjil" if idx % 2 else "Genap",
                 "tahun_akademik": "2023/2024",
                 "umur_tunggakan": rng.randint(1, 6),
                 "kualitas": kualitas,
                 "persentase_penyisihan": penyisihan,
                 "nominal_piutang_rp": nominal,
+                "base_ukt": base_ukt, # store for later use by transactions
+                "spi": prodi_data.get(prodi, {}).get("spi", 30_000_000)
             }
         )
 
-    prodi_options = ["Teknik Informatika", "Teknik Elektro", "Farmasi", "Matematika", "Arsitektur"]
-    fakultas_by_prodi = {
-        "Teknik Informatika": "Fakultas Teknologi Industri",
-        "Teknik Elektro": "Fakultas Teknologi Industri",
-        "Farmasi": "Fakultas Sains",
-        "Matematika": "Fakultas Sains",
-        "Arsitektur": "Fakultas Infrastruktur",
-    }
     for idx in range(16, 804):
-        prodi = rng.choice(prodi_options)
+        prodi = rng.choice(all_prodis)
         kualitas, penyisihan = rng.choice(kualitas_options)
+        
+        golongan = rng.randint(0, 7)
+        base_ukt = prodi_data[prodi]["ukts"][golongan]
+        
+        # Nominal piutang is a random amount up to max UKT to make it realistic
+        min_nominal = min(500_000, base_ukt)
+        nominal_piutang = rng.randint(min_nominal, base_ukt)
+        nominal_piutang = (nominal_piutang // 50000) * 50000
+
+        umur_tunggakan = rng.randint(1, 8)
+        
         rows.append(
             {
                 "nim": f"DM2024{idx:04d}",
                 "nama_debitur": f"Mahasiswa Dummy {idx:03d}",
-                "fakultas": fakultas_by_prodi[prodi],
+                "fakultas": prodi_data[prodi]["fakultas"],
                 "prodi": prodi,
                 "semester": rng.choice(["Ganjil", "Genap"]),
                 "tahun_akademik": rng.choice(["2022/2023", "2023/2024"]),
-                "umur_tunggakan": rng.randint(1, 8),
+                "umur_tunggakan": umur_tunggakan,
                 "kualitas": kualitas,
                 "persentase_penyisihan": penyisihan,
-                "nominal_piutang_rp": rng.choice([750_000, 1_000_000, 1_250_000, 1_500_000, 2_000_000]),
+                "nominal_piutang_rp": nominal_piutang,
+                "base_ukt": base_ukt,
+                "spi": prodi_data[prodi]["spi"]
             }
         )
     return pd.DataFrame(rows)

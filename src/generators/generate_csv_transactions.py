@@ -33,16 +33,29 @@ def build_transactions(seed: int = 20260526) -> pd.DataFrame:
 
     for idx in range(800):
         semester = "Ganjil" if idx < 400 else "Genap"
+        
+        # Pick a random nim
         nim_pool = sains_nims if idx % 17 == 0 else all_nims
+        nim = rng.choice(nim_pool)
+        
+        # Look up their base_ukt from master
+        student_data = piutang.loc[piutang["nim"] == nim]
+        if not student_data.empty and "base_ukt" in student_data.columns:
+            base_ukt = int(student_data.iloc[0]["base_ukt"])
+            # Generate a realistic transaction nominal up to base_ukt
+            nominal_bayar = (rng.randint(500_000, base_ukt) // 50000) * 50000
+        else:
+            nominal_bayar = rng.choice([500000, 750000, 1000000, 1250000, 1500000, 2000000])
+
         tanggal = start + timedelta(days=rng.randint(0, 310))
         rows.append(
             {
                 "transaction_id": f"TRX-{idx + 1:06d}",
-                "nim": rng.choice(nim_pool),
+                "nim": nim,
                 "tanggal": tanggal.strftime("%Y-%m-%d"),
                 "semester": semester,
                 "tahun_akademik": "2023/2024",
-                "nominal_bayar": rng.choice([500000, 750000, 1000000, 1250000, 1500000, 2000000]),
+                "nominal_bayar": nominal_bayar,
                 "metode_bayar": rng.choice(METHODS),
                 "status_bayar": rng.choice(STATUSES),
                 "source_system": "AVITA",

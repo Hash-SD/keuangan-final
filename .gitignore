@@ -21,3 +21,8 @@ outputs/uat/*.csv
 outputs/uat/*.json
 config/spark/jars/*.jar
 
+# IDE and Editor folders
+.agents/
+.windsurf/
+
+
