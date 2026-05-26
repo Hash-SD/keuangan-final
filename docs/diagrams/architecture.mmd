@@ -1,0 +1,11 @@
+flowchart LR
+    Raw[PDF CSV Excel Dummy] --> QG[Quality Gate]
+    QG -->|Valid| Bronze[Bronze MinIO]
+    QG -->|Invalid| Quarantine[Quarantine]
+    Bronze --> Silver[Silver Cleaned Tables]
+    Silver --> Gold[Gold Star Schema]
+    Gold --> Trino[Trino SQL]
+    Trino --> Superset[Superset Dashboard]
+    Gold --> Metrics[Evaluation Metrics]
+    Superset --> UAT[UAT]
+

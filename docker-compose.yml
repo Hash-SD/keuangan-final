@@ -1,0 +1,226 @@
+services:
+  postgres-metastore:
+    image: postgres:16-alpine
+    container_name: keuangan-postgres-metastore
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lakehouse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lakehouse}
+      POSTGRES_DB: ${POSTGRES_DB:-metastore}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_metastore_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lakehouse} -d ${POSTGRES_DB:-metastore}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - lakehouse_net
+
+  minio:
+    image: minio/minio:latest
+    container_name: keuangan-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - lakehouse_net
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: keuangan-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin};
+      mc mb -p local/${MINIO_BUCKET:-lakehouse};
+      mc anonymous set none local/${MINIO_BUCKET:-lakehouse};
+      "
+    networks:
+      - lakehouse_net
+
+  spark-master:
+    image: apache/spark:3.5.6
+    container_name: keuangan-spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master", "--host", "spark-master"]
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    volumes:
+      - ./:/opt/lakehouse
+      - spark_warehouse:/opt/spark/warehouse
+    healthcheck:
+      test: ["CMD-SHELL", "python - <<'PY'\nimport socket\ns=socket.create_connection(('localhost',7077),3)\ns.close()\nPY"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - lakehouse_net
+
+  spark-worker:
+    image: apache/spark:3.5.6
+    container_name: keuangan-spark-worker
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077", "--memory", "2G", "--cores", "2"]
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./:/opt/lakehouse
+      - spark_warehouse:/opt/spark/warehouse
+    networks:
+      - lakehouse_net
+
+  airflow-init:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: keuangan-airflow-init
+    depends_on:
+      postgres-metastore:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-lakehouse}:${POSTGRES_PASSWORD:-lakehouse}@postgres-metastore:5432/${POSTGRES_DB:-metastore}
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      _AIRFLOW_DB_MIGRATE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_ADMIN_USER:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:-airflow}
+    user: "${AIRFLOW_UID:-50000}:0"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./outputs:/opt/airflow/outputs
+      - airflow_logs:/opt/airflow/logs
+    entrypoint: /bin/bash
+    command: -c "airflow db migrate && airflow users create --username $${_AIRFLOW_WWW_USER_USERNAME} --password $${_AIRFLOW_WWW_USER_PASSWORD} --firstname Admin --lastname User --role Admin --email admin@example.com || true"
+    networks:
+      - lakehouse_net
+
+  airflow-webserver:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: keuangan-airflow-webserver
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-lakehouse}:${POSTGRES_PASSWORD:-lakehouse}@postgres-metastore:5432/${POSTGRES_DB:-metastore}
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      PYTHONPATH: /opt/airflow
+    user: "${AIRFLOW_UID:-50000}:0"
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./outputs:/opt/airflow/outputs
+      - airflow_logs:/opt/airflow/logs
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob --hostname \"$${HOSTNAME}\" || curl --fail http://localhost:8080/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 12
+    networks:
+      - lakehouse_net
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.5-python3.11
+    container_name: keuangan-airflow-scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-lakehouse}:${POSTGRES_PASSWORD:-lakehouse}@postgres-metastore:5432/${POSTGRES_DB:-metastore}
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      PYTHONPATH: /opt/airflow
+    user: "${AIRFLOW_UID:-50000}:0"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./outputs:/opt/airflow/outputs
+      - airflow_logs:/opt/airflow/logs
+    command: scheduler
+    networks:
+      - lakehouse_net
+
+  trino:
+    image: trinodb/trino:474
+    container_name: keuangan-trino
+    depends_on:
+      minio:
+        condition: service_healthy
+      postgres-metastore:
+        condition: service_healthy
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./config/trino/catalog:/etc/trino/catalog
+      - ./config/trino/etc:/etc/trino/custom
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/v1/info || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - lakehouse_net
+
+  superset:
+    image: apache/superset:4.1.1
+    container_name: keuangan-superset
+    depends_on:
+      trino:
+        condition: service_healthy
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-change_this_secret}
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+    ports:
+      - "8089:8088"
+    volumes:
+      - ./config/superset/superset_config.py:/app/pythonpath/superset_config.py
+      - superset_home:/app/superset_home
+    command: >
+      /bin/sh -c "
+      pip install trino sqlalchemy-trino &&
+      superset db upgrade &&
+      superset fab create-admin --username ${SUPERSET_ADMIN_USER:-admin} --firstname Admin --lastname User --email admin@example.com --password ${SUPERSET_ADMIN_PASSWORD:-admin} || true &&
+      superset init &&
+      superset run -h 0.0.0.0 -p 8088
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8088/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 12
+    networks:
+      - lakehouse_net
+
+networks:
+  lakehouse_net:
+    name: lakehouse_net
+
+volumes:
+  postgres_metastore_data:
+  minio_data:
+  airflow_logs:
+  spark_warehouse:
+  superset_home:

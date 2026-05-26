@@ -1,0 +1,46 @@
+erDiagram
+    dim_organisasi ||--o{ fact_piutang_ukt_prodi : organisasi_key
+    dim_mahasiswa ||--o{ fact_piutang_ukt_prodi : mahasiswa_key
+    dim_kualitas_piutang ||--o{ fact_piutang_ukt_prodi : kualitas_piutang_key
+    dim_waktu_tunggakan ||--o{ fact_piutang_ukt_prodi : waktu_tunggakan_key
+
+    fact_piutang_ukt_prodi {
+        bigint piutang_key PK
+        int organisasi_key FK
+        int mahasiswa_key FK
+        int kualitas_piutang_key FK
+        int waktu_tunggakan_key FK
+        bigint nominal_piutang_rp
+        int jumlah_mhs_penunggak
+        string source_filename
+        string batch_id
+        timestamp created_at
+    }
+
+    dim_organisasi {
+        int organisasi_key PK
+        string kode_unit
+        string nama_fakultas
+        string nama_prodi
+    }
+
+    dim_mahasiswa {
+        int mahasiswa_key PK
+        string nim
+        string nama_debitur
+    }
+
+    dim_kualitas_piutang {
+        int kualitas_piutang_key PK
+        string kualitas
+        string kriteria
+        decimal persentase_penyisihan
+    }
+
+    dim_waktu_tunggakan {
+        int waktu_tunggakan_key PK
+        string semester
+        string tahun_akademik
+        int umur_tunggakan
+    }
+
