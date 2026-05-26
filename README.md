@@ -8,7 +8,7 @@ Implementasi lokal Data Lakehouse berbasis Medallion Architecture untuk data keu
 - Validasi quality gate dan quarantine data rusak.
 - Bangun Bronze, Silver, dan Gold layer.
 - Bentuk star schema untuk analisis piutang UKT Prodi Sains Data.
-- Hubungkan Gold layer ke Trino dan Superset.
+- Hubungkan Gold layer Iceberg di MinIO ke Trino dan Superset.
 - Hitung metrik evaluasi dan siapkan UAT dashboard.
 
 ## Nilai Kontrol
@@ -23,23 +23,73 @@ Implementasi lokal Data Lakehouse berbasis Medallion Architecture untuk data keu
 
 ```powershell
 Copy-Item .env.example .env
-make generate-data
-make run-quality-gate
-make run-bronze
-make run-silver
-make run-gold
-make run-metrics
-make test
+.\scripts\full_run.ps1
 ```
-
-Stack Docker akan disiapkan pada checkpoint berikutnya. Target akhirnya:
 
 ```powershell
 make up
 make full-run
 ```
 
+Jika `make` tidak tersedia di Windows, gunakan:
+
+```powershell
+.\scripts\full_run.ps1
+```
+
+## Service URL
+
+- Portal lokal semua service dan password: http://localhost:8090
+- Dashboard Superset Piutang UKT: http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/
+- MinIO API: http://localhost:9000
+- MinIO Console: http://localhost:9001
+- Spark Master UI: http://localhost:8080
+- Spark Worker UI: http://localhost:8081
+- Airflow: http://localhost:8085
+- Trino: http://localhost:8082
+- Superset: http://localhost:8089
+
+Cek semua port lokal:
+
+```powershell
+.\scripts\check_ports.ps1
+```
+
+Jalankan portal lokal:
+
+```powershell
+.\scripts\start_portal.ps1
+```
+
+Default login:
+
+- Airflow: `airflow` / `airflow`
+- Superset: `admin` / `admin`
+
+## Validasi Trino Iceberg
+
+Gold mart utama dimuat sebagai tabel Iceberg di MinIO dengan metadata JDBC di PostgreSQL metastore, lalu di-query oleh Trino melalui catalog `iceberg`. Loader PostgreSQL lokal tetap tersedia sebagai fallback kompatibilitas.
+
+```powershell
+docker exec keuangan-trino trino --catalog iceberg --schema gold --execute "SELECT SUM(nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key WHERE o.nama_prodi = 'Sains Data'"
+```
+
+Expected output:
+
+```text
+"31250000","15"
+```
+
+## Superset Dataset
+
+Final run membuat database connection dan dataset Superset via API:
+
+- Database: `Trino Iceberg Gold Keuangan`
+- Dataset: `vw_dashboard_piutang_ukt`
+- Dashboard: `Dashboard Piutang UKT Prodi`
+
+Asset ID tersimpan di `outputs/reports/superset_assets.json` dan `outputs/reports/superset_dashboard.json`.
+
 ## Checkpoint
 
 Progress tersimpan di `docs/checkpoints/`. Mulai dari `CHECKPOINT-00-setup.md` dan lanjut berurutan sampai `CHECKPOINT-09-final-run.md`.
-

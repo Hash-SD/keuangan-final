@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal Lokal Lakehouse Keuangan</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7f8;
+      --panel: #ffffff;
+      --ink: #172026;
+      --muted: #5d6970;
+      --line: #d9e0e4;
+      --accent: #0f766e;
+      --accent-2: #1d4ed8;
+      --ok: #15803d;
+      --warn: #b45309;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      padding: 28px 24px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    main {
+      width: min(1160px, calc(100% - 32px));
+      margin: 24px auto 40px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .topbar {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #b7d7cf;
+      color: #14534d;
+      background: #e9f6f3;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 18px;
+    }
+
+    .service {
+      min-height: 248px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .service-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .service-title {
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .service-url {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .pill {
+      border: 1px solid #c9d3d8;
+      color: #34444c;
+      padding: 5px 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      background: #f8fafb;
+    }
+
+    .creds {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cred-row {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    code {
+      display: block;
+      padding: 8px 9px;
+      border: 1px solid var(--line);
+      background: #f9fbfc;
+      color: #111827;
+      overflow-x: auto;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+    }
+
+    button,
+    a.button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 11px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    a.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+
+    button:hover,
+    a.button:hover {
+      border-color: var(--accent-2);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .commands {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .command-block {
+      display: grid;
+      gap: 10px;
+    }
+
+    .status-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .status-item {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #fbfcfd;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .status-item strong {
+      display: block;
+      color: var(--ok);
+      margin-bottom: 4px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #111827;
+      color: white;
+      padding: 11px 14px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      font-size: 14px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 920px) {
+      .grid,
+      .commands,
+      .status-list {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        display: block;
+      }
+
+      .badge {
+        margin-top: 14px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      header {
+        padding: 22px 16px 16px;
+      }
+
+      main {
+        width: calc(100% - 20px);
+        margin-top: 14px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .cred-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>Portal Lokal Lakehouse Keuangan</h1>
+        <p>Semua service lokal, kredensial default, dan command validasi dalam satu halaman.</p>
+      </div>
+      <div class="badge">Local only: http://localhost:8090</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid" aria-label="Service lokal">
+      <article class="panel service">
+        <div>
+          <div class="service-head">
+            <div>
+              <div class="service-title">Airflow</div>
+              <div class="service-url">http://localhost:8085</div>
+            </div>
+            <div class="pill">orchestration</div>
+          </div>
+        </div>
+        <div class="creds">
+          <div class="cred-row"><span>User</span><code>airflow</code><button data-copy="airflow">Copy</button></div>
+          <div class="cred-row"><span>Password</span><code>airflow</code><button data-copy="airflow">Copy</button></div>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="http://localhost:8085" target="_blank" rel="noreferrer">Buka</a>
+          <button data-copy="airflow">Copy password</button>
+        </div>
+      </article>
+
+      <article class="panel service">
+        <div>
+          <div class="service-head">
+            <div>
+              <div class="service-title">Superset</div>
+              <div class="service-url">http://localhost:8089</div>
+            </div>
+            <div class="pill">dashboard</div>
+          </div>
+        </div>
+        <div class="creds">
+          <div class="cred-row"><span>User</span><code>admin</code><button data-copy="admin">Copy</button></div>
+          <div class="cred-row"><span>Password</span><code>admin</code><button data-copy="admin">Copy</button></div>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="http://localhost:8089" target="_blank" rel="noreferrer">Buka</a>
+          <a class="button" href="http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/" target="_blank" rel="noreferrer">Dashboard</a>
+          <button data-copy="admin">Copy password</button>
+        </div>
+      </article>
+
+      <article class="panel service">
+        <div>
+          <div class="service-head">
+            <div>
+              <div class="service-title">MinIO Console</div>
+              <div class="service-url">http://localhost:9001</div>
+            </div>
+            <div class="pill">object storage</div>
+          </div>
+        </div>
+        <div class="creds">
+          <div class="cred-row"><span>User</span><code>minioadmin</code><button data-copy="minioadmin">Copy</button></div>
+          <div class="cred-row"><span>Password</span><code>minioadmin</code><button data-copy="minioadmin">Copy</button></div>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="http://localhost:9001" target="_blank" rel="noreferrer">Buka</a>
+          <button data-copy="minioadmin">Copy password</button>
+        </div>
+      </article>
+
+      <article class="panel service">
+        <div>
+          <div class="service-head">
+            <div>
+              <div class="service-title">Spark Master</div>
+              <div class="service-url">http://localhost:8080</div>
+            </div>
+            <div class="pill">compute</div>
+          </div>
+        </div>
+        <p>Tidak memakai login pada stack lokal ini.</p>
+        <div class="actions">
+          <a class="button primary" href="http://localhost:8080" target="_blank" rel="noreferrer">Buka</a>
+          <a class="button" href="http://localhost:8081" target="_blank" rel="noreferrer">Worker UI</a>
+        </div>
+      </article>
+
+      <article class="panel service">
+        <div>
+          <div class="service-head">
+            <div>
+              <div class="service-title">Trino</div>
+              <div class="service-url">http://localhost:8082/v1/info</div>
+            </div>
+            <div class="pill">sql engine</div>
+          </div>
+        </div>
+        <p>Endpoint info untuk cek service. Query utama dijalankan lewat container Trino CLI.</p>
+        <div class="actions">
+          <a class="button primary" href="http://localhost:8082/v1/info" target="_blank" rel="noreferrer">Buka info</a>
+        </div>
+      </article>
+
+      <article class="panel service">
+        <div>
+          <div class="service-head">
+            <div>
+              <div class="service-title">PostgreSQL Metastore</div>
+              <div class="service-url">localhost:5432</div>
+            </div>
+            <div class="pill">metadata</div>
+          </div>
+        </div>
+        <div class="creds">
+          <div class="cred-row"><span>DB/User</span><code>metastore / lakehouse</code><button data-copy="lakehouse">Copy</button></div>
+          <div class="cred-row"><span>Password</span><code>lakehouse</code><button data-copy="lakehouse">Copy</button></div>
+        </div>
+        <div class="actions">
+          <button data-copy="Host=localhost;Port=5432;Database=metastore;Username=lakehouse;Password=lakehouse">Copy connection</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel section">
+      <h2>Status Validasi Terakhir</h2>
+      <p>Gunakan command di bawah untuk mengulang validasi dari terminal PowerShell.</p>
+      <div class="status-list">
+        <div class="status-item"><strong>Iceberg Gold</strong>Catalog: <code>iceberg.gold</code></div>
+        <div class="status-item"><strong>Control Total</strong>Piutang: <code>31250000</code>, penunggak: <code>15</code></div>
+        <div class="status-item"><strong>Superset</strong>Database: <code>Trino Iceberg Gold Keuangan</code></div>
+      </div>
+    </section>
+
+    <section class="commands section">
+      <article class="panel command-block">
+        <h2>Cek Port Lokal</h2>
+        <code>.\scripts\check_ports.ps1</code>
+        <button data-copy=".\scripts\check_ports.ps1">Copy command</button>
+      </article>
+
+      <article class="panel command-block">
+        <h2>Query Kontrol Trino Iceberg</h2>
+        <code>docker exec keuangan-trino trino --catalog iceberg --schema gold --execute "SELECT SUM(nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key WHERE o.nama_prodi = 'Sains Data'"</code>
+        <button data-copy="docker exec keuangan-trino trino --catalog iceberg --schema gold --execute &quot;SELECT SUM(nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key WHERE o.nama_prodi = 'Sains Data'&quot;">Copy command</button>
+      </article>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Disalin</div>
+
+  <script>
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Disalin: " + text);
+      } catch {
+        const input = document.createElement("textarea");
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        input.remove();
+        showToast("Disalin");
+      }
+    }
+
+    document.querySelectorAll("[data-copy]").forEach((button) => {
+      button.addEventListener("click", () => copyText(button.getAttribute("data-copy")));
+    });
+  </script>
+</body>
+</html>

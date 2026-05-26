@@ -17,7 +17,7 @@ def copy_raw_to_bronze() -> dict:
         rel = source.relative_to(RAW_DIR)
         target = DATA_DIR / "generated" / "bronze" / rel
         ensure_parent(target)
-        shutil.copy2(source, target)
+        shutil.copyfile(source, target)
         outputs.append({"source_filename": source.name, "bronze_path": str(target), "ingested_at": utc_now_iso()})
     metadata = {"batch_id": "batch-dummy-20260526", "files": outputs}
     write_json(DATA_DIR / "generated" / "bronze" / "ingestion_metadata.json", metadata)
@@ -30,4 +30,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
