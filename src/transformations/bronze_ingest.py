@@ -18,7 +18,23 @@ def copy_raw_to_bronze() -> dict:
         target = DATA_DIR / "generated" / "bronze" / rel
         ensure_parent(target)
         shutil.copyfile(source, target)
-        outputs.append({"source_filename": source.name, "bronze_path": str(target), "ingested_at": utc_now_iso()})
+        row_count = None
+        if source.suffix.lower() == ".csv":
+            try:
+                row_count = max(sum(1 for _ in source.open("r", encoding="utf-8")) - 1, 0)
+            except OSError:
+                row_count = None
+        outputs.append(
+            {
+                "source_filename": source.name,
+                "source_type": source.parent.name,
+                "bronze_path": str(target),
+                "row_count": row_count,
+                "ingested_at": utc_now_iso(),
+                "dummy_data": True,
+                "contains_real_personal_data": False,
+            }
+        )
     metadata = {"batch_id": "batch-dummy-20260526", "files": outputs}
     write_json(DATA_DIR / "generated" / "bronze" / "ingestion_metadata.json", metadata)
     return metadata

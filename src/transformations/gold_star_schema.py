@@ -44,6 +44,8 @@ def build_gold() -> dict:
     kualitas.to_csv(GOLD_DIR / "dim_kualitas_piutang.csv", index=False)
     dim_waktu.to_csv(GOLD_DIR / "dim_waktu_tunggakan.csv", index=False)
     fact.to_csv(GOLD_DIR / "fact_piutang_ukt_prodi.csv", index=False)
+    pd.read_csv(GENERATED_DIR / "silver" / "silver_master_ukt.csv").to_csv(GOLD_DIR / "dim_biaya_ukt.csv", index=False)
+    pd.read_csv(GENERATED_DIR / "silver" / "silver_master_spi.csv").to_csv(GOLD_DIR / "dim_biaya_spi.csv", index=False)
     dashboard = fact.merge(dim_organisasi, on="organisasi_key").merge(dim_mahasiswa, on="mahasiswa_key").merge(kualitas, on="kualitas_piutang_key").merge(dim_waktu, on="waktu_tunggakan_key")
     dashboard.to_csv(GOLD_DIR / "vw_dashboard_piutang_ukt.csv", index=False)
     return {"fact_rows": len(fact), "dashboard_rows": len(dashboard)}
@@ -55,4 +57,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

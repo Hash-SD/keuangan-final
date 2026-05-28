@@ -456,6 +456,7 @@
       serviceList: [],
       sourceStatus: null,
       pdfStatus: null,
+      referenceSummary: null,
       rejectedRows: [],
       goldPreview: [],
       silverPreview: [],
@@ -544,12 +545,19 @@
     function renderData() {
       const q = qualitySummary();
       const source = state.sourceStatus || {};
+      const ref = state.referenceSummary || {};
       document.getElementById("page-data").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid grid-3">
             ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "1 dokumen PDF digital, ekstraksi teks programmatic")}
             ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "2 file transaksi, target 800 rows")}
             ${sourceStatusCard("Excel RAB", source.excel, "table_chart", "RAB Prodi Sains Data, target pagu Rp150.000.000")}
+          </section>
+          <section class="section-grid grid-4">
+            ${metric("Master UKT", n(ref.ukt?.rows || 0), `${ref.ukt?.program_count || 0} prodi | target 328 kombinasi`, "school")}
+            ${metric("Master SPI", n(ref.spi?.rows || 0), `${ref.spi?.program_count || 0} prodi | target 41 rows`, "payments")}
+            ${metric("CSV Transaksi", n(source.csv?.total_rows || CONTROL.totalRows), `${q.rejectedRows} rejected rows target`, "receipt_long")}
+            ${metric("Excel Referensi", ref.excel?.master_biaya_available ? "Ready" : "Missing", "master_biaya_itera.xlsx dan RAB", "table_chart")}
           </section>
           <section class="section-grid grid-3">
             ${uploadCard("PDF Audited", "picture_as_pdf", "data/raw/pdf/")}
@@ -627,6 +635,7 @@
       const quality = state.metrics.quality || {};
       const latency = state.metrics.latency || {};
       const freshness = state.metrics.freshness || {};
+      const ref = state.referenceSummary || {};
       const dashType = state.dashboardStatus === "Ready" ? "ok" : state.dashboardStatus === "Superset Offline" ? "error" : "warn";
       document.getElementById("page-dashboard").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
@@ -637,6 +646,9 @@
             ${metric("Data Freshness", safe(freshness.data_freshness_status || freshness.status || "Fresh"), "Last refresh mengikuti output metrics", "update")}
             ${metric("Rejected Rows", n(q.rejectedRows), "Quality Gate quarantine", "rule_folder")}
             ${metric("Gold Validation", (state.layers.goldValid ? "PASS" : "Waiting"), "Control total piutang dan penunggak", "stars")}
+            ${metric("Jumlah Prodi Referensi", n(ref.ukt?.program_count || 41), "Master UKT/SPI ITERA", "domain")}
+            ${metric("Kombinasi UKT", n(ref.ukt?.rows || 328), "41 prodi x 8 golongan", "grid_view")}
+            ${metric("Master SPI", n(ref.spi?.rows || 41), "Referensi SPI per prodi", "payments")}
           </section>
           <section class="section-grid grid-3">
             <div class="glass-panel span-2">
@@ -681,7 +693,7 @@
             <h3 class="section-title">Data Lineage Diagram</h3>
             <div class="lineage-flow">
               <div style="min-width:860px;display:flex;align-items:center;gap:1rem;">
-                <div class="lineage-sources"><div class="source-pill">PDF Audited</div><div class="source-pill">CSV Transaksi</div><div class="source-pill">Excel RAB</div></div>
+                <div class="lineage-sources"><div class="source-pill">PDF Audited</div><div class="source-pill">CSV Transaksi</div><div class="source-pill">Excel UKT/SPI</div><div class="source-pill">Excel RAB</div></div>
                 <span class="material-symbols-outlined muted">arrow_forward</span>
                 ${["Bronze", "Silver", "Gold", "Trino", "Superset"].map((label, i) => `<div class="pipeline-node"><div class="node-icon" style="background:${i < 3 ? ["#b45309", "#64748b", "#ca8a04"][i] : "var(--primary)"}"><span class="material-symbols-outlined icon-fill">${["database", "filter_alt", "stars", "hub", "monitoring"][i]}</span></div><div class="node-label">${label}</div></div>${i < 4 ? '<span class="material-symbols-outlined muted">arrow_forward</span>' : ""}`).join("")}
               </div>
@@ -850,6 +862,7 @@
         { name: "Portal Backend API", role: "Backend Lokal", key: "portalBackend", port: "8091", url: "http://localhost:8091/api/health", cred: "-", action: "Open Health" }
       ];
       const source = state.sourceStatus || {};
+      const ref = state.referenceSummary || {};
       document.getElementById("page-system").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid grid-4">
@@ -859,6 +872,12 @@
             ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "Status sample proposal main.pdf")}
             ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "Status dua file transaksi dummy")}
             ${sourceStatusCard("Excel RAB", source.excel, "table_chart", "Status file RAB Prodi Sains Data")}
+          </section>
+          <section class="section-grid grid-4">
+            ${metric("PDF Sample", ref.pdf_sample?.available ? "Available" : "Missing", "data/samples/ITERA_LKTA2024Audited.pdf", "picture_as_pdf")}
+            ${metric("Master UKT CSV", ref.ukt?.available ? "Available" : "Missing", `${ref.ukt?.rows || 0} rows`, "school")}
+            ${metric("Master SPI CSV", ref.spi?.available ? "Available" : "Missing", `${ref.spi?.rows || 0} rows`, "payments")}
+            ${metric("Master Biaya Excel", ref.excel?.master_biaya_available ? "Available" : "Missing", "data/raw/excel/master_biaya_itera.xlsx", "table_chart")}
           </section>
           <section class="glass-panel">
             <h3 class="section-title">Audit Trail Infrastruktur</h3>
@@ -1073,7 +1092,7 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -1082,7 +1101,8 @@
           apiGet("/api/data/preview?layer=gold&limit=10").catch(() => null),
           apiGet("/api/data/preview?layer=silver&limit=10").catch(() => null),
           apiGet("/api/data/source-status").catch(() => null),
-          apiGet("/api/pdf/sample-status").catch(() => null)
+          apiGet("/api/pdf/sample-status").catch(() => null),
+          apiGet("/api/reference/summary").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
         state.metrics.qualityGate = state.metrics.qualityGate || metrics.quality_gate;
@@ -1107,6 +1127,7 @@
         state.silverPreview = tablePayloadToObjects(silverPreview);
         state.sourceStatus = sourceStatus;
         state.pdfStatus = pdfStatus;
+        state.referenceSummary = referenceSummary;
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });

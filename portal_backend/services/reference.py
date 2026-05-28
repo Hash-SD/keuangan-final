@@ -6,8 +6,8 @@ from typing import Any
 
 from openpyxl import load_workbook
 
-from .files import relative_path
-from .paths import PDF_SAMPLE_PATH, RAW_CSV_DIR, RAW_EXCEL_RAB_PATH, RAW_PDF_PATH
+from .files import csv_preview, relative_path
+from .paths import MASTER_BIAYA_EXCEL_PATH, MASTER_SPI_PATH, MASTER_UKT_PATH, PDF_SAMPLE_PATH, RAW_CSV_DIR, RAW_EXCEL_RAB_PATH, RAW_PDF_PATH
 
 
 CSV_REQUIRED_COLUMNS = {
@@ -117,3 +117,57 @@ def source_status() -> dict[str, Any]:
             "csv_rows": 800,
         },
     }
+
+
+def reference_summary() -> dict[str, Any]:
+    ukt_rows = 0
+    ukt_program_count = 0
+    if MASTER_UKT_PATH.exists():
+        try:
+            with MASTER_UKT_PATH.open("r", encoding="utf-8", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            ukt_rows = len(rows)
+            ukt_program_count = len({row["prodi"] for row in rows})
+        except OSError:
+            pass
+
+    spi_rows = 0
+    spi_program_count = 0
+    if MASTER_SPI_PATH.exists():
+        try:
+            with MASTER_SPI_PATH.open("r", encoding="utf-8", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            spi_rows = len(rows)
+            spi_program_count = len({row["prodi"] for row in rows})
+        except OSError:
+            pass
+
+    return {
+        "ukt": {
+            "available": MASTER_UKT_PATH.exists(),
+            "path": relative_path(MASTER_UKT_PATH),
+            "program_count": ukt_program_count,
+            "rows": ukt_rows,
+        },
+        "spi": {
+            "available": MASTER_SPI_PATH.exists(),
+            "path": relative_path(MASTER_SPI_PATH),
+            "program_count": spi_program_count,
+            "rows": spi_rows,
+        },
+        "pdf_sample": pdf_sample_status(),
+        "excel": {
+            "master_biaya_available": MASTER_BIAYA_EXCEL_PATH.exists(),
+            "master_biaya_path": relative_path(MASTER_BIAYA_EXCEL_PATH),
+            "rab_available": RAW_EXCEL_RAB_PATH.exists(),
+            "rab_path": relative_path(RAW_EXCEL_RAB_PATH),
+        },
+    }
+
+
+def reference_ukt_preview(limit: int = 25) -> dict[str, Any]:
+    return csv_preview(MASTER_UKT_PATH, limit=limit)
+
+
+def reference_spi_preview(limit: int = 25) -> dict[str, Any]:
+    return csv_preview(MASTER_SPI_PATH, limit=limit)

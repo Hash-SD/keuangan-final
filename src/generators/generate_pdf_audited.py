@@ -113,6 +113,7 @@ def build_piutang_rows(seed: int = 20260526) -> pd.DataFrame:
                 "persentase_penyisihan": penyisihan,
                 "nominal_piutang_rp": nominal,
                 "base_ukt": base_ukt, # store for later use by transactions
+                "golongan_ukt": f"Gol. {golongan + 1}",
                 "spi": prodi_data.get(prodi, {}).get("spi", 30_000_000)
             }
         )
@@ -144,6 +145,7 @@ def build_piutang_rows(seed: int = 20260526) -> pd.DataFrame:
                 "persentase_penyisihan": penyisihan,
                 "nominal_piutang_rp": nominal_piutang,
                 "base_ukt": base_ukt,
+                "golongan_ukt": f"Gol. {golongan + 1}",
                 "spi": prodi_data[prodi]["spi"]
             }
         )

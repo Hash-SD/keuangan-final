@@ -27,6 +27,13 @@ def clean_silver() -> dict:
     ensure_parent(trx_path)
     trx.to_csv(trx_path, index=False)
 
+    master_ukt = pd.read_csv(GENERATED_DIR / "master_ukt_itera.csv")
+    master_spi = pd.read_csv(GENERATED_DIR / "master_spi_itera.csv")
+    mahasiswa = pd.read_csv(GENERATED_DIR / "dummy_mahasiswa_itera.csv", dtype={"nim_dummy": "string"})
+    master_ukt.to_csv(GENERATED_DIR / "silver" / "silver_master_ukt.csv", index=False)
+    master_spi.to_csv(GENERATED_DIR / "silver" / "silver_master_spi.csv", index=False)
+    mahasiswa.to_csv(GENERATED_DIR / "silver" / "silver_mahasiswa.csv", index=False)
+
     rab = pd.read_excel(RAW_DIR / "excel" / "rab_prodi_sains_data.xlsx", sheet_name="RAB")
     rab_long = rab.melt(
         id_vars=["kode_akun", "nama_kegiatan", "kategori", "total_pagu"],
@@ -37,7 +44,15 @@ def clean_silver() -> dict:
     rab_path = GENERATED_DIR / "silver" / "rab_prodi_sains_data_long.csv"
     ensure_parent(rab_path)
     rab_long.to_csv(rab_path, index=False)
-    return {"piutang_rows": len(piutang), "kualitas_rows": len(dim_kualitas), "transaction_rows": len(trx), "rab_rows": len(rab_long)}
+    rab_long.to_csv(GENERATED_DIR / "silver" / "silver_rab.csv", index=False)
+    return {
+        "piutang_rows": len(piutang),
+        "kualitas_rows": len(dim_kualitas),
+        "transaction_rows": len(trx),
+        "rab_rows": len(rab_long),
+        "master_ukt_rows": len(master_ukt),
+        "master_spi_rows": len(master_spi),
+    }
 
 
 def main() -> None:
@@ -46,4 +61,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

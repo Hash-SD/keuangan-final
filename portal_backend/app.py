@@ -9,7 +9,7 @@ from .services.lakehouse import lakehouse_summary
 from .services.metrics import metrics_payload
 from .services.paths import PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
-from .services.reference import pdf_sample_status, source_status
+from .services.reference import pdf_sample_status, reference_spi_preview, reference_summary, reference_ukt_preview, source_status
 from .services.system_status import service_statuses
 
 
@@ -41,6 +41,18 @@ def create_app() -> Flask:
     @app.get("/api/data/source-status")
     def data_source_status():
         return jsonify(source_status())
+
+    @app.get("/api/reference/summary")
+    def reference_summary_endpoint():
+        return jsonify(reference_summary())
+
+    @app.get("/api/reference/ukt")
+    def reference_ukt_endpoint():
+        return jsonify(reference_ukt_preview(limit=request.args.get("limit", 25, type=int)))
+
+    @app.get("/api/reference/spi")
+    def reference_spi_endpoint():
+        return jsonify(reference_spi_preview(limit=request.args.get("limit", 25, type=int)))
 
     @app.get("/api/metrics")
     def metrics():

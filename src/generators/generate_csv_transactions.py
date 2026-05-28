@@ -45,15 +45,21 @@ def build_transactions(seed: int = 20260526) -> pd.DataFrame:
             base_ukt = int(student_row["base_ukt"])
             prodi = str(student_row.get("prodi", "Sains Data"))
             fakultas = str(student_row.get("fakultas", "Fakultas Sains"))
-            golongan_ukt = int(student_row.get("golongan_ukt", 1))
-            # Generate a realistic transaction nominal up to base_ukt
-            nominal_bayar = (rng.randint(500_000, base_ukt) // 50000) * 50000
+            golongan_ukt = str(student_row.get("golongan_ukt", "Gol. 1"))
+            nominal_spi = int(student_row.get("spi", 30_000_000))
         else:
             base_ukt = 2_500_000
             prodi = "Sains Data"
             fakultas = "Fakultas Sains"
-            golongan_ukt = 1
-            nominal_bayar = rng.choice([500000, 750000, 1000000, 1250000, 1500000, 2000000])
+            golongan_ukt = "Gol. 1"
+            nominal_spi = 30_000_000
+
+        jenis_biaya = "SPI" if idx % 11 == 0 else "UKT"
+        nominal_tagihan = nominal_spi if jenis_biaya == "SPI" else base_ukt
+        if nominal_tagihan <= 500_000:
+            nominal_bayar = nominal_tagihan
+        else:
+            nominal_bayar = (rng.randint(500_000, nominal_tagihan) // 50000) * 50000
 
         tanggal = start + timedelta(days=rng.randint(0, 310))
         rows.append(
@@ -64,11 +70,11 @@ def build_transactions(seed: int = 20260526) -> pd.DataFrame:
                 "tanggal": tanggal.strftime("%Y-%m-%d"),
                 "semester": semester,
                 "tahun_akademik": "2023/2024",
-                "jenis_biaya": "UKT",
+                "jenis_biaya": jenis_biaya,
                 "prodi": prodi,
                 "fakultas": fakultas,
                 "golongan_ukt": golongan_ukt,
-                "nominal_tagihan": base_ukt,
+                "nominal_tagihan": nominal_tagihan,
                 "nominal_bayar": nominal_bayar,
                 "metode_bayar": rng.choice(METHODS),
                 "status_bayar": rng.choice(STATUSES),
