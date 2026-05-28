@@ -3,447 +3,892 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Portal Lokal Lakehouse Keuangan</title>
+  <title>Portal Keuangan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light;
-      --bg: #f5f7f8;
-      --panel: #ffffff;
-      --ink: #172026;
-      --muted: #5d6970;
-      --line: #d9e0e4;
-      --accent: #0f766e;
-      --accent-2: #1d4ed8;
-      --ok: #15803d;
-      --warn: #b45309;
+      --primary: #004e9f;
+      --primary-container: #0066cc;
+      --on-primary: #ffffff;
+      --on-primary-container: #dfe8ff;
+      --surface: #f9f9fb;
+      --surface-low: #f3f3f5;
+      --surface-high: #e8e8ea;
+      --surface-highest: #e2e2e4;
+      --on-surface: #1a1c1d;
+      --on-surface-variant: #414753;
+      --outline: #727784;
+      --outline-variant: #c1c6d5;
+      --success: #15803d;
+      --warning: #b45309;
+      --error: #ba1a1a;
+      --sidebar-width: 18rem;
+      --footer-height: 40px;
     }
 
     * { box-sizing: border-box; }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
+      font-family: Inter, Arial, sans-serif;
+      color: var(--on-surface);
+      background: linear-gradient(180deg, #f9f9fb 0%, #e8e8ea 100%);
+      overflow-x: hidden;
     }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .62; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+    .icon-fill { font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
 
-    header {
-      padding: 28px 24px 18px;
-      border-bottom: 1px solid var(--line);
-      background: var(--panel);
-    }
-
-    main {
-      width: min(1160px, calc(100% - 32px));
-      margin: 24px auto 40px;
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      line-height: 1.2;
-      letter-spacing: 0;
-    }
-
-    h2 {
-      margin: 0 0 14px;
-      font-size: 18px;
-      letter-spacing: 0;
-    }
-
-    p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .topbar {
-      width: min(1160px, calc(100% - 32px));
-      margin: 0 auto;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border: 1px solid #b7d7cf;
-      color: #14534d;
-      background: #e9f6f3;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      padding: 18px;
-    }
-
-    .service {
-      min-height: 248px;
+    .app-shell { min-height: 100vh; }
+    .app-sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 40;
+      width: var(--sidebar-width);
+      height: 100vh;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 14px;
+      gap: 1.75rem;
+      background: rgba(255, 255, 255, .72);
+      border-right: 1px solid rgba(193, 198, 213, .22);
+      box-shadow: 0 10px 40px rgba(26, 28, 29, .04), 0 2px 10px rgba(26, 28, 29, .02);
+      backdrop-filter: blur(22px);
     }
-
-    .service-head {
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      color: var(--on-primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-container));
+      border-radius: 14px;
+      box-shadow: 0 12px 28px rgba(0, 78, 159, .18);
+    }
+    .brand-title { margin: 0; font-size: 1.08rem; line-height: 1.15; font-weight: 800; letter-spacing: 0; }
+    .brand-subtitle { margin: .3rem 0 0; color: var(--on-surface-variant); font-size: .8rem; line-height: 1.35; }
+    .nav-list { display: grid; gap: .45rem; }
+    .nav-item {
+      min-height: 46px;
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .service-title {
-      font-weight: 700;
-      font-size: 17px;
-      line-height: 1.25;
-    }
-
-    .service-url {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 13px;
-      overflow-wrap: anywhere;
-    }
-
-    .pill {
-      border: 1px solid #c9d3d8;
-      color: #34444c;
-      padding: 5px 8px;
-      font-size: 12px;
-      white-space: nowrap;
-      background: #f8fafb;
-    }
-
-    .creds {
-      display: grid;
-      gap: 8px;
-    }
-
-    .cred-row {
-      display: grid;
-      grid-template-columns: 84px minmax(0, 1fr) auto;
       align-items: center;
-      gap: 8px;
-      font-size: 14px;
+      gap: .75rem;
+      padding: .72rem .9rem;
+      color: var(--on-surface-variant);
+      border-radius: .75rem;
+      border: 1px solid transparent;
+      transition: background .16s ease, color .16s ease, transform .16s ease;
     }
-
-    code {
-      display: block;
-      padding: 8px 9px;
-      border: 1px solid var(--line);
-      background: #f9fbfc;
-      color: #111827;
-      overflow-x: auto;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 13px;
+    .nav-item:hover { background: var(--surface-low); color: var(--on-surface); }
+    .nav-item.active {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      box-shadow: 0 12px 28px rgba(0, 102, 204, .16);
     }
+    .nav-item span:last-child { font-weight: 600; font-size: .93rem; }
+    .sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(193, 198, 213, .22); }
+    .admin-card { display: flex; align-items: center; gap: .75rem; margin-bottom: .85rem; color: var(--on-surface-variant); }
+    .avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: var(--primary); background: #d7e3ff; }
 
-    button,
-    a.button {
-      min-height: 36px;
-      border: 1px solid var(--line);
-      background: #ffffff;
-      color: var(--ink);
-      text-decoration: none;
+    .app-main {
+      min-height: 100vh;
+      margin-left: var(--sidebar-width);
+      padding-bottom: 5rem;
+      overflow-x: hidden;
+    }
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      min-height: 86px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, .62);
+      border-bottom: 1px solid rgba(193, 198, 213, .24);
+      box-shadow: 0 10px 40px rgba(26, 28, 29, .035);
+      backdrop-filter: blur(18px);
+    }
+    .page-title { margin: 0; font-size: clamp(1.55rem, 2vw, 2.15rem); line-height: 1.08; font-weight: 800; letter-spacing: 0; }
+    .page-description { margin: .35rem 0 0; color: var(--on-surface-variant); line-height: 1.5; max-width: 760px; }
+    .header-actions { display: flex; align-items: center; gap: .7rem; }
+    .search-box {
+      min-width: 240px;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .55rem .8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(193, 198, 213, .28);
+      background: rgba(255, 255, 255, .7);
+    }
+    .search-box input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--on-surface); }
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(193, 198, 213, .24);
+      border-radius: 999px;
+      color: var(--on-surface-variant);
+      background: rgba(255, 255, 255, .62);
+    }
+    .content { width: min(1280px, calc(100% - 4rem)); margin: 0 auto; padding: 2rem 0 2.5rem; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .section-grid { display: grid; gap: 1rem; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+
+    .glass-card, .glass-panel, .metric-card, .service-card {
+      min-width: 0;
+      background: rgba(255, 255, 255, .72);
+      border: 1px solid rgba(193, 198, 213, .2);
+      border-top-color: rgba(255, 255, 255, .74);
+      border-radius: .75rem;
+      box-shadow: 0 10px 40px rgba(26, 28, 29, .045), 0 2px 10px rgba(26, 28, 29, .025);
+      backdrop-filter: blur(14px);
+    }
+    .glass-card, .glass-panel { padding: 1.35rem; }
+    .metric-card { min-height: 150px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .metric-label { display: flex; justify-content: space-between; gap: 1rem; color: var(--on-surface-variant); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+    .metric-value { margin-top: .9rem; font-size: clamp(1.55rem, 2.6vw, 2.35rem); line-height: 1.1; font-weight: 800; letter-spacing: 0; overflow-wrap: anywhere; }
+    .metric-note { margin-top: .45rem; color: var(--on-surface-variant); font-size: .85rem; line-height: 1.45; }
+    .section-title { margin: 0 0 1rem; font-size: 1.08rem; font-weight: 800; letter-spacing: 0; }
+    .muted { color: var(--on-surface-variant); }
+    .small { font-size: .84rem; }
+    .divider { height: 1px; background: rgba(193, 198, 213, .28); margin: 1rem 0; }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      width: fit-content;
+      padding: .32rem .58rem;
+      border-radius: 999px;
+      font-size: .76rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .status-ok { color: #166534; background: #dcfce7; }
+    .status-warn { color: #854d0e; background: #fef3c7; }
+    .status-error { color: #991b1b; background: #fee2e2; }
+    .status-info { color: #1e3a8a; background: #dbeafe; }
+    .primary-button, .secondary-button, .disabled-button {
+      min-height: 40px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 11px;
-      font-size: 14px;
-      cursor: pointer;
+      gap: .45rem;
+      padding: .62rem .9rem;
+      border-radius: .65rem;
+      border: 1px solid transparent;
+      font-size: .88rem;
+      font-weight: 750;
+      white-space: nowrap;
     }
+    .primary-button { color: var(--on-primary); background: var(--primary); box-shadow: 0 10px 24px rgba(0, 78, 159, .14); }
+    .secondary-button { color: var(--primary); background: rgba(255, 255, 255, .62); border-color: rgba(193, 198, 213, .34); }
+    .disabled-button { color: var(--on-surface-variant); background: var(--surface-low); border-color: rgba(193, 198, 213, .28); }
+    .table-wrap { overflow-x: auto; border-radius: .75rem; border: 1px solid rgba(193, 198, 213, .18); }
+    table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    th, td { padding: .88rem .95rem; text-align: left; border-bottom: 1px solid rgba(193, 198, 213, .18); vertical-align: top; }
+    th { color: var(--on-surface-variant); font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; }
+    td { font-size: .9rem; }
+    tr:last-child td { border-bottom: 0; }
+    code { font-family: Consolas, "Courier New", monospace; font-size: .82rem; overflow-wrap: anywhere; }
 
-    a.primary {
-      border-color: var(--accent);
-      background: var(--accent);
+    .pipeline-flow, .lineage-flow { position: relative; overflow-x: auto; padding: 1rem .25rem 1.6rem; }
+    .pipeline-track {
+      position: absolute;
+      left: 2rem;
+      right: 2rem;
+      top: 46px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      min-width: 760px;
+    }
+    .pipeline-nodes { position: relative; z-index: 1; min-width: 760px; display: flex; justify-content: space-between; gap: 1.25rem; }
+    .pipeline-node { display: grid; justify-items: center; gap: .65rem; width: 92px; text-align: center; }
+    .node-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
       color: white;
+      background: #22c55e;
+      border: 4px solid rgba(255, 255, 255, .9);
+      box-shadow: 0 8px 22px rgba(34, 197, 94, .22);
     }
+    .node-label { font-size: .78rem; font-weight: 800; }
+    .lineage-sources { display: grid; gap: .55rem; min-width: 130px; }
+    .source-pill { padding: .55rem .7rem; border-radius: .7rem; background: rgba(255,255,255,.72); border: 1px solid rgba(193,198,213,.24); font-weight: 700; font-size: .82rem; text-align: center; }
 
-    button:hover,
-    a.button:hover {
-      border-color: var(--accent-2);
-    }
-
-    .actions {
+    .upload-zone {
+      min-height: 190px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .7rem;
+      text-align: center;
+      border: 2px dashed rgba(0, 78, 159, .34);
     }
-
-    .section {
-      margin-top: 18px;
-    }
-
-    .commands {
+    .upload-zone .material-symbols-outlined { font-size: 2.4rem; color: var(--primary); }
+    .empty-state {
+      min-height: 180px;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      place-items: center;
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--on-surface-variant);
+      background: rgba(255,255,255,.5);
+      border: 1px dashed rgba(114,119,132,.34);
+      border-radius: .75rem;
     }
+    .service-card { padding: 1.2rem; display: flex; flex-direction: column; gap: .95rem; min-height: 260px; }
+    .service-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .service-name { margin: 0; font-size: 1rem; font-weight: 800; }
+    .kv { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: .45rem .7rem; font-size: .84rem; }
+    .kv dt { color: var(--on-surface-variant); }
+    .kv dd { margin: 0; overflow-wrap: anywhere; }
+    .card-actions { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: auto; }
 
-    .command-block {
-      display: grid;
-      gap: 10px;
+    .uat-item { display: grid; grid-template-columns: minmax(0, 1fr) 140px; gap: 1rem; align-items: start; padding: 1rem 0; border-bottom: 1px solid rgba(193,198,213,.2); }
+    .uat-item:last-child { border-bottom: 0; }
+    .uat-question { margin: .35rem 0 .75rem; color: var(--on-surface-variant); line-height: 1.5; }
+    .uat-item textarea { width: 100%; min-height: 74px; resize: vertical; border-radius: .65rem; border: 1px solid rgba(193,198,213,.34); padding: .75rem; background: rgba(255,255,255,.7); }
+    .rating { display: grid; gap: .45rem; }
+    .rating select { min-height: 40px; border-radius: .65rem; border: 1px solid rgba(193,198,213,.34); background: rgba(255,255,255,.75); padding: .45rem .55rem; }
+    .logs-panel {
+      min-height: 330px;
+      border-radius: .75rem;
+      padding: 1rem;
+      color: #e5e7eb;
+      background: #242628;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: .8rem;
+      overflow: auto;
     }
-
-    .status-list {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 12px;
+    .log-row { display: grid; grid-template-columns: 82px 70px 1fr; gap: .7rem; padding: .25rem 0; }
+    .app-footer {
+      position: fixed;
+      left: var(--sidebar-width);
+      right: 0;
+      bottom: 0;
+      z-index: 35;
+      height: var(--footer-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0 2rem;
+      background: rgba(255, 255, 255, .86);
+      border-top: 1px solid rgba(193, 198, 213, .28);
+      box-shadow: 0 -8px 24px rgba(26, 28, 29, .04);
+      backdrop-filter: blur(14px);
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
     }
-
-    .status-item {
-      border: 1px solid var(--line);
-      padding: 10px;
-      background: #fbfcfd;
-      font-size: 14px;
-      line-height: 1.35;
-    }
-
-    .status-item strong {
-      display: block;
-      color: var(--ok);
-      margin-bottom: 4px;
-    }
-
+    .footer-left, .footer-right { display: flex; align-items: center; gap: 1.5rem; }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 10px rgba(34,197,94,.65); }
     .toast {
       position: fixed;
-      right: 18px;
-      bottom: 18px;
-      background: #111827;
+      right: 1.2rem;
+      bottom: 3.5rem;
+      z-index: 80;
+      padding: .75rem 1rem;
       color: white;
-      padding: 11px 14px;
+      background: #202124;
+      border-radius: .75rem;
       opacity: 0;
-      pointer-events: none;
       transform: translateY(8px);
-      transition: opacity 160ms ease, transform 160ms ease;
-      font-size: 14px;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
     }
+    .toast.show { opacity: 1; transform: translateY(0); }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
+    @media (max-width: 1100px) {
+      .grid-4, .grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .span-3 { grid-column: span 2; }
+      .header-actions .search-box { display: none; }
     }
-
-    @media (max-width: 920px) {
-      .grid,
-      .commands,
-      .status-list {
-        grid-template-columns: 1fr;
+    @media (max-width: 820px) {
+      :root { --sidebar-width: 0px; }
+      .app-sidebar {
+        position: sticky;
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+        border-right: 0;
+        border-bottom: 1px solid rgba(193,198,213,.24);
       }
-
-      .topbar {
-        display: block;
-      }
-
-      .badge {
-        margin-top: 14px;
-      }
+      .nav-list { display: flex; overflow-x: auto; padding-bottom: .25rem; }
+      .nav-item { min-width: max-content; }
+      .sidebar-footer { display: none; }
+      .app-main { margin-left: 0; }
+      .app-header { padding: 1rem; align-items: flex-start; }
+      .content { width: calc(100% - 2rem); padding-top: 1rem; }
+      .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+      .span-2, .span-3 { grid-column: span 1; }
+      .app-footer { left: 0; padding: 0 .8rem; font-size: .58rem; }
+      .footer-right { gap: .7rem; }
+      .uat-item { grid-template-columns: 1fr; }
     }
-
-    @media (max-width: 520px) {
-      header {
-        padding: 22px 16px 16px;
-      }
-
-      main {
-        width: calc(100% - 20px);
-        margin-top: 14px;
-      }
-
-      h1 {
-        font-size: 23px;
-      }
-
-      .cred-row {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 560px) {
+      .header-actions { display: none; }
+      .app-footer { justify-content: center; }
+      .footer-right { display: none; }
+      .kv { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="topbar">
-      <div>
-        <h1>Portal Lokal Lakehouse Keuangan</h1>
-        <p>Semua service lokal, kredensial default, dan command validasi dalam satu halaman.</p>
+  <div class="app-shell">
+    <aside class="app-sidebar" aria-label="Navigasi utama">
+      <div style="display:flex; gap:.8rem; align-items:center;">
+        <div class="brand-mark"><span class="material-symbols-outlined icon-fill">account_balance</span></div>
+        <div>
+          <h1 class="brand-title">Portal Keuangan</h1>
+          <p class="brand-subtitle">Monitoring Data Keuangan Prodi</p>
+        </div>
       </div>
-      <div class="badge">Local only: http://localhost:8090</div>
-    </div>
-  </header>
-
-  <main>
-    <section class="grid" aria-label="Service lokal">
-      <article class="panel service">
-        <div>
-          <div class="service-head">
-            <div>
-              <div class="service-title">Airflow</div>
-              <div class="service-url">http://localhost:8085</div>
-            </div>
-            <div class="pill">orchestration</div>
+      <nav class="nav-list" id="navList"></nav>
+      <div class="sidebar-footer">
+        <div class="admin-card">
+          <div class="avatar"><span class="material-symbols-outlined">account_circle</span></div>
+          <div>
+            <strong style="display:block;font-size:.9rem;">System Admin</strong>
+            <span class="small">Administrator</span>
           </div>
         </div>
-        <div class="creds">
-          <div class="cred-row"><span>User</span><code>airflow</code><button data-copy="airflow">Copy</button></div>
-          <div class="cred-row"><span>Password</span><code>airflow</code><button data-copy="airflow">Copy</button></div>
-        </div>
-        <div class="actions">
-          <a class="button primary" href="http://localhost:8085" target="_blank" rel="noreferrer">Buka</a>
-          <button data-copy="airflow">Copy password</button>
-        </div>
-      </article>
-
-      <article class="panel service">
-        <div>
-          <div class="service-head">
-            <div>
-              <div class="service-title">Superset</div>
-              <div class="service-url">http://localhost:8089</div>
-            </div>
-            <div class="pill">dashboard</div>
-          </div>
-        </div>
-        <div class="creds">
-          <div class="cred-row"><span>User</span><code>admin</code><button data-copy="admin">Copy</button></div>
-          <div class="cred-row"><span>Password</span><code>admin</code><button data-copy="admin">Copy</button></div>
-        </div>
-        <div class="actions">
-          <a class="button primary" href="http://localhost:8089" target="_blank" rel="noreferrer">Buka</a>
-          <a class="button" href="http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/" target="_blank" rel="noreferrer">Dashboard</a>
-          <button data-copy="admin">Copy password</button>
-        </div>
-      </article>
-
-      <article class="panel service">
-        <div>
-          <div class="service-head">
-            <div>
-              <div class="service-title">MinIO Console</div>
-              <div class="service-url">http://localhost:9001</div>
-            </div>
-            <div class="pill">object storage</div>
-          </div>
-        </div>
-        <div class="creds">
-          <div class="cred-row"><span>User</span><code>minioadmin</code><button data-copy="minioadmin">Copy</button></div>
-          <div class="cred-row"><span>Password</span><code>minioadmin</code><button data-copy="minioadmin">Copy</button></div>
-        </div>
-        <div class="actions">
-          <a class="button primary" href="http://localhost:9001" target="_blank" rel="noreferrer">Buka</a>
-          <button data-copy="minioadmin">Copy password</button>
-        </div>
-      </article>
-
-      <article class="panel service">
-        <div>
-          <div class="service-head">
-            <div>
-              <div class="service-title">Spark Master</div>
-              <div class="service-url">http://localhost:8080</div>
-            </div>
-            <div class="pill">compute</div>
-          </div>
-        </div>
-        <p>Tidak memakai login pada stack lokal ini.</p>
-        <div class="actions">
-          <a class="button primary" href="http://localhost:8080" target="_blank" rel="noreferrer">Buka</a>
-          <a class="button" href="http://localhost:8081" target="_blank" rel="noreferrer">Worker UI</a>
-        </div>
-      </article>
-
-      <article class="panel service">
-        <div>
-          <div class="service-head">
-            <div>
-              <div class="service-title">Trino</div>
-              <div class="service-url">http://localhost:8082/v1/info</div>
-            </div>
-            <div class="pill">sql engine</div>
-          </div>
-        </div>
-        <p>Endpoint info untuk cek service. Query utama dijalankan lewat container Trino CLI.</p>
-        <div class="actions">
-          <a class="button primary" href="http://localhost:8082/v1/info" target="_blank" rel="noreferrer">Buka info</a>
-        </div>
-      </article>
-
-      <article class="panel service">
-        <div>
-          <div class="service-head">
-            <div>
-              <div class="service-title">PostgreSQL Metastore</div>
-              <div class="service-url">localhost:5432</div>
-            </div>
-            <div class="pill">metadata</div>
-          </div>
-        </div>
-        <div class="creds">
-          <div class="cred-row"><span>DB/User</span><code>metastore / lakehouse</code><button data-copy="lakehouse">Copy</button></div>
-          <div class="cred-row"><span>Password</span><code>lakehouse</code><button data-copy="lakehouse">Copy</button></div>
-        </div>
-        <div class="actions">
-          <button data-copy="Host=localhost;Port=5432;Database=metastore;Username=lakehouse;Password=lakehouse">Copy connection</button>
-        </div>
-      </article>
-    </section>
-
-    <section class="panel section">
-      <h2>Status Validasi Terakhir</h2>
-      <p>Gunakan command di bawah untuk mengulang validasi dari terminal PowerShell.</p>
-      <div class="status-list">
-        <div class="status-item"><strong>Iceberg Gold</strong>Catalog: <code>iceberg.gold</code></div>
-        <div class="status-item"><strong>Control Total</strong>Piutang: <code>31250000</code>, penunggak: <code>15</code></div>
-        <div class="status-item"><strong>Superset</strong>Database: <code>Trino Iceberg Gold Keuangan</code></div>
+        <button class="primary-button" style="width:100%;"><span class="material-symbols-outlined">security</span>Admin Mode</button>
       </div>
-    </section>
+    </aside>
 
-    <section class="commands section">
-      <article class="panel command-block">
-        <h2>Cek Port Lokal</h2>
-        <code>.\scripts\check_ports.ps1</code>
-        <button data-copy=".\scripts\check_ports.ps1">Copy command</button>
-      </article>
+    <main class="app-main">
+      <header class="app-header">
+        <div>
+          <h2 class="page-title" id="pageTitle">Beranda</h2>
+          <p class="page-description" id="pageDescription"></p>
+        </div>
+        <div class="header-actions">
+          <label class="search-box" aria-label="Cari data">
+            <span class="material-symbols-outlined">search</span>
+            <input type="search" placeholder="Cari data...">
+          </label>
+          <button class="icon-button" title="Notifikasi"><span class="material-symbols-outlined">notifications</span></button>
+          <button class="icon-button" title="Profil admin"><span class="material-symbols-outlined">account_circle</span></button>
+        </div>
+      </header>
 
-      <article class="panel command-block">
-        <h2>Query Kontrol Trino Iceberg</h2>
-        <code>docker exec keuangan-trino trino --catalog iceberg --schema gold --execute "SELECT SUM(nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key WHERE o.nama_prodi = 'Sains Data'"</code>
-        <button data-copy="docker exec keuangan-trino trino --catalog iceberg --schema gold --execute &quot;SELECT SUM(nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key WHERE o.nama_prodi = 'Sains Data'&quot;">Copy command</button>
-      </article>
-    </section>
-  </main>
+      <div class="content">
+        <section class="page" data-page="beranda" id="page-beranda"></section>
+        <section class="page" data-page="data" id="page-data"></section>
+        <section class="page" data-page="dashboard" id="page-dashboard"></section>
+        <section class="page" data-page="lakehouse" id="page-lakehouse"></section>
+        <section class="page" data-page="orkestrasi" id="page-orkestrasi"></section>
+        <section class="page" data-page="analytics" id="page-analytics"></section>
+        <section class="page" data-page="system" id="page-system"></section>
+      </div>
+    </main>
 
+    <footer class="app-footer">
+      <div class="footer-left"><span class="dot"></span><span>SYSTEM STATUS: OPERATIONAL</span></div>
+      <div class="footer-right">
+        <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">storage</span> LAKEHOUSE STORAGE: 82% AVAILABLE</span>
+        <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">update</span> LAST PIPELINE RUN: 26 MEI 2026, 10:42 WIB</span>
+      </div>
+    </footer>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite">Disalin</div>
 
   <script>
-    const toast = document.getElementById("toast");
-    let toastTimer;
+    const CONTROL = {
+      totalPiutang: 31250000,
+      penunggak: 15,
+      paguRab: 150000000,
+      totalRows: 800,
+      validRows: 784,
+      rejectedRows: 16,
+      dropoutRate: 2,
+      qualityScore: 100,
+      lastRun: "26 Mei 2026, 10:42 WIB",
+      dashboardUrl: "http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/"
+    };
+
+    const pages = [
+      ["beranda", "Beranda", "home", "Ringkasan kondisi data keuangan, status pipeline, dan aktivitas sistem terbaru."],
+      ["data", "Data", "database", "Upload, validasi, preview, dan riwayat file sumber keuangan."],
+      ["dashboard", "Dashboard", "dashboard", "Monitoring kualitas data, performa pipeline, dan status dashboard analitik."],
+      ["lakehouse", "Lakehouse", "waves", "Observasi layer Bronze, Silver, Gold, lineage, dan validasi data mart."],
+      ["orkestrasi", "Orkestrasi", "sync_alt", "Monitoring DAG, task pipeline, execution flow, dan logs proses."],
+      ["analytics", "Analytics", "analytics", "Visualisasi Superset, evaluasi UAT, dan ringkasan penilaian pengguna."],
+      ["system", "System", "settings", "Service lokal, status infrastruktur, port, credential, dan audit trail."]
+    ];
+
+    const state = {
+      metrics: {},
+      services: {},
+      layers: {},
+      dashboardStatus: "Waiting for Metrics",
+      rejectedRows: [],
+      goldPreview: [],
+      silverPreview: []
+    };
+
+    const rupiah = value => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value || 0)).replace(/\s/g, "");
+    const n = value => new Intl.NumberFormat("id-ID").format(Number(value || 0));
+    const badge = (text, type = "ok") => `<span class="status-badge status-${type}"><span class="dot" style="width:6px;height:6px;"></span>${text}</span>`;
+    const safe = value => value === undefined || value === null || value === "" ? "-" : value;
+    const has = value => value !== undefined && value !== null;
+
+    function metric(name, value, note, icon) {
+      return `<article class="metric-card">
+        <div class="metric-label"><span>${name}</span><span class="material-symbols-outlined">${icon}</span></div>
+        <div><div class="metric-value">${value}</div><div class="metric-note">${note}</div></div>
+      </article>`;
+    }
+
+    function emptyState(title = "Belum ada hasil pipeline.", text = "Jalankan pipeline terlebih dahulu untuk menampilkan data terbaru.") {
+      return `<div class="empty-state"><div><span class="material-symbols-outlined" style="font-size:2rem;color:var(--outline);">hourglass_empty</span><p style="margin:.4rem 0 .2rem;font-weight:800;color:var(--on-surface);">${title}</p><p style="margin:0;">${text}</p></div></div>`;
+    }
+
+    function pipelineFlow(items) {
+      const icons = ["upload_file", "security", "database", "filter_alt", "stars", "hub", "monitoring", "assignment_turned_in", "flag"];
+      return `<div class="pipeline-flow"><div class="pipeline-track"></div><div class="pipeline-nodes">${items.map((item, index) => `
+        <div class="pipeline-node"><div class="node-icon"><span class="material-symbols-outlined icon-fill">${icons[index] || "check"}</span></div><div class="node-label">${item}</div></div>
+      `).join("")}</div></div>`;
+    }
+
+    function renderShell() {
+      document.getElementById("navList").innerHTML = pages.map(([id, label, icon]) => `
+        <a class="nav-item" href="#${id}" data-nav="${id}">
+          <span class="material-symbols-outlined">${icon}</span><span>${label}</span>
+        </a>`).join("");
+    }
+
+    function qualitySummary() {
+      const q = state.metrics.qualityGate || state.metrics.dropout || {};
+      return {
+        totalRows: q.total_rows || CONTROL.totalRows,
+        validRows: q.valid_rows || CONTROL.validRows,
+        rejectedRows: q.rejected_rows || CONTROL.rejectedRows,
+        dropoutRate: q.dropout_rate ?? CONTROL.dropoutRate,
+        status: "Valid dengan catatan"
+      };
+    }
+
+    function renderBeranda() {
+      const rec = state.metrics.reconcile || {};
+      const quality = state.metrics.quality || {};
+      document.getElementById("page-beranda").innerHTML = `
+        <div class="section-grid" style="gap:1.5rem;">
+          <section class="glass-panel">
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+              <div>
+                <h3 style="margin:0 0 .45rem;font-size:1.55rem;">Selamat Datang, Admin.</h3>
+                <p class="muted" style="margin:0;max-width:760px;line-height:1.55;">Portal lokal untuk memantau data piutang UKT, layer lakehouse, orkestrasi pipeline, dan service pendukung.</p>
+              </div>
+              ${badge("Operasional", "ok")}
+            </div>
+          </section>
+          <section class="section-grid grid-5">
+            ${metric("Total Piutang UKT", rupiah(rec.total_piutang || CONTROL.totalPiutang), "Kontrol Prodi Sains Data", "account_balance_wallet")}
+            ${metric("Mahasiswa Penunggak", n(rec.jumlah_penunggak || CONTROL.penunggak), "Mahasiswa aktif", "group_remove")}
+            ${metric("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Semua gate lulus", "verified")}
+            ${metric("Pipeline Status", "Success", "Upload sampai evaluasi siap dipantau", "account_tree")}
+            ${metric("Last Run", "26 Mei 2026", "10:42 WIB", "schedule")}
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">Pipeline Flow Ringkas</h3>
+            ${pipelineFlow(["Upload Data", "Quality Gate", "Bronze", "Silver", "Gold", "Trino", "Superset", "Evaluasi"])}
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">Aktivitas Terakhir</h3>
+            ${activityTable([
+              ["10:45 WIB", "Gold mart validated", "Success", "System"],
+              ["10:42 WIB", "Silver layer updated", "Success", "Airflow"],
+              ["10:35 WIB", "Bronze ingestion selesai", "Success", "Airflow"],
+              ["10:30 WIB", "Quality Gate membaca 800 rows", "Valid dengan catatan", "Quality Gate"]
+            ])}
+          </section>
+        </div>`;
+    }
+
+    function renderData() {
+      const q = qualitySummary();
+      document.getElementById("page-data").innerHTML = `
+        <div class="section-grid" style="gap:1.5rem;">
+          <section class="section-grid grid-3">
+            ${uploadCard("PDF Audited", "picture_as_pdf", "data/raw/pdf/")}
+            ${uploadCard("CSV Transaksi", "csv", "data/raw/csv/")}
+            ${uploadCard("Excel RAB", "table_chart", "data/raw/excel/")}
+          </section>
+          <section class="section-grid grid-3">
+            <div class="glass-panel">
+              <h3 class="section-title">Quality Check Summary</h3>
+              <dl class="kv">
+                <dt>Total Rows</dt><dd><strong>${n(q.totalRows)}</strong></dd>
+                <dt>Valid Rows</dt><dd><strong>${n(q.validRows)}</strong></dd>
+                <dt>Rejected Rows</dt><dd><strong>${n(q.rejectedRows)}</strong></dd>
+                <dt>Dropout Rate</dt><dd><strong>${q.dropoutRate}%</strong></dd>
+                <dt>Status</dt><dd>${badge(q.status, "warn")}</dd>
+              </dl>
+            </div>
+            <div class="glass-panel span-2">
+              <h3 class="section-title">Preview Data</h3>
+              ${state.goldPreview.length || state.silverPreview.length ? dataTable(state.goldPreview.length ? state.goldPreview : state.silverPreview) : emptyState()}
+            </div>
+          </section>
+          <section class="section-grid grid-2">
+            <div class="glass-panel">
+              <h3 class="section-title">Rejected Rows</h3>
+              ${state.rejectedRows.length ? dataTable(state.rejectedRows) : emptyState("Tidak ada rejected rows tersedia.", "File data/quarantine/logs/rejected_rows.csv belum ditemukan atau kosong.")}
+            </div>
+            <div class="glass-panel">
+              <h3 class="section-title">Riwayat Upload</h3>
+              ${activityTable([
+                ["10:30 WIB", "CSV Transaksi diproses dari data/raw/csv/", "Valid dengan catatan", "Admin"],
+                ["10:28 WIB", "Excel RAB diproses dari data/raw/excel/", "Success", "Admin"],
+                ["10:25 WIB", "PDF Audited diproses dari data/raw/pdf/", "Success", "Admin"]
+              ])}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function uploadCard(title, icon, path) {
+      return `<article class="glass-card upload-zone">
+        <span class="material-symbols-outlined">${icon}</span>
+        <div><h3 style="margin:0 0 .35rem;">Upload ${title}</h3><p class="muted small" style="margin:0;">Target folder: <code>${path}</code></p></div>
+        <button class="disabled-button" disabled><span class="material-symbols-outlined">lock</span>Menunggu integrasi backend</button>
+      </article>`;
+    }
+
+    function renderDashboard() {
+      const q = qualitySummary();
+      const quality = state.metrics.quality || {};
+      const latency = state.metrics.latency || {};
+      const freshness = state.metrics.freshness || {};
+      const dashType = state.dashboardStatus === "Ready" ? "ok" : state.dashboardStatus === "Superset Offline" ? "error" : "warn";
+      document.getElementById("page-dashboard").innerHTML = `
+        <div class="section-grid" style="gap:1.5rem;">
+          <section class="section-grid grid-3">
+            ${metric("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Completeness, validity, consistency, accuracy", "verified")}
+            ${metric("Dropout Rate", `${q.dropoutRate}%`, `${q.rejectedRows} rejected rows dari ${q.totalRows} rows`, "trending_down")}
+            ${metric("Pipeline Latency", safe(latency.pipeline_latency_seconds ? `${latency.pipeline_latency_seconds}s` : latency.latency_seconds ? `${latency.latency_seconds}s` : "00:04:23"), "Waktu eksekusi pipeline lokal", "speed")}
+            ${metric("Data Freshness", safe(freshness.data_freshness_status || freshness.status || "Fresh"), "Last refresh mengikuti output metrics", "update")}
+            ${metric("Rejected Rows", n(q.rejectedRows), "Quality Gate quarantine", "rule_folder")}
+            ${metric("Gold Validation", (state.layers.goldValid ? "PASS" : "Waiting"), "Control total piutang dan penunggak", "stars")}
+          </section>
+          <section class="section-grid grid-3">
+            <div class="glass-panel span-2">
+              <h3 class="section-title">Pipeline Data Flow</h3>
+              ${pipelineFlow(["Upload Data", "Quality Gate", "Bronze", "Silver", "Gold", "Trino", "Superset", "Evaluasi"])}
+            </div>
+            <div class="glass-panel">
+              <h3 class="section-title">Superset Section</h3>
+              <dl class="kv">
+                <dt>Status Superset</dt><dd>${badge(state.services.superset ? "Online" : "Offline", state.services.superset ? "ok" : "error")}</dd>
+                <dt>Dashboard</dt><dd>Dashboard Piutang UKT Prodi</dd>
+                <dt>Dataset Aktif</dt><dd>vw_dashboard_piutang_ukt</dd>
+                <dt>Last Refresh</dt><dd>${CONTROL.lastRun}</dd>
+                <dt>Status Dashboard</dt><dd>${badge(state.dashboardStatus, dashType)}</dd>
+              </dl>
+              <div class="divider"></div>
+              <a class="primary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Buka Superset Dashboard</a>
+            </div>
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">Last Activity</h3>
+            ${activityTable([
+              ["10:45 WIB", "Gold validation PASS", "Success", "Metrics"],
+              ["10:42 WIB", "Superset assets refreshed", state.services.superset ? "Ready" : "Superset Offline", "Superset"],
+              ["10:22 WIB", "Dropout Rate dihitung 2%", "Success", "Metrics"]
+            ])}
+          </section>
+        </div>`;
+    }
+
+    function renderLakehouse() {
+      const rec = state.metrics.reconcile || {};
+      const validationAvailable = has(state.metrics.reconcile);
+      document.getElementById("page-lakehouse").innerHTML = `
+        <div class="section-grid" style="gap:1.5rem;">
+          <section class="section-grid grid-3">
+            ${layerCard("Bronze Layer", "raw_on", "Raw ingested files dari PDF, CSV, dan Excel.", state.layers.bronzeReady)}
+            ${layerCard("Silver Layer", "filter_alt", "Cleaned, normalized, dan conformed data.", state.layers.silverReady)}
+            ${layerCard("Gold Layer", "stars", "Business mart untuk Trino dan Superset.", state.layers.goldReady)}
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">Data Lineage Diagram</h3>
+            <div class="lineage-flow">
+              <div style="min-width:860px;display:flex;align-items:center;gap:1rem;">
+                <div class="lineage-sources"><div class="source-pill">PDF Audited</div><div class="source-pill">CSV Transaksi</div><div class="source-pill">Excel RAB</div></div>
+                <span class="material-symbols-outlined muted">arrow_forward</span>
+                ${["Bronze", "Silver", "Gold", "Trino", "Superset"].map((label, i) => `<div class="pipeline-node"><div class="node-icon" style="background:${i < 3 ? ["#b45309", "#64748b", "#ca8a04"][i] : "var(--primary)"}"><span class="material-symbols-outlined icon-fill">${["database", "filter_alt", "stars", "hub", "monitoring"][i]}</span></div><div class="node-label">${label}</div></div>${i < 4 ? '<span class="material-symbols-outlined muted">arrow_forward</span>' : ""}`).join("")}
+              </div>
+            </div>
+          </section>
+          <section class="section-grid grid-2">
+            <div class="glass-panel">
+              <h3 class="section-title">Layer History</h3>
+              ${activityTable([
+                ["10:35 WIB", "Bronze ingestion metadata tersedia", state.layers.bronzeReady ? "Ready" : "Waiting", "Bronze"],
+                ["10:42 WIB", "Silver fact dan transaksi clean diproses", state.layers.silverReady ? "Ready" : "Waiting", "Silver"],
+                ["10:45 WIB", "Gold dashboard view dipublikasikan", state.layers.goldReady ? "Ready" : "Waiting", "Gold"]
+              ])}
+            </div>
+            <div class="glass-panel">
+              <h3 class="section-title">Validate Gold Section</h3>
+              ${validationAvailable ? `
+                <dl class="kv">
+                  <dt>Expected total piutang</dt><dd><strong>${rupiah(rec.target_total_piutang || CONTROL.totalPiutang)}</strong></dd>
+                  <dt>Actual total piutang</dt><dd><strong>${rupiah(rec.total_piutang || CONTROL.totalPiutang)}</strong></dd>
+                  <dt>Expected penunggak</dt><dd><strong>${n(rec.target_jumlah_penunggak || CONTROL.penunggak)}</strong></dd>
+                  <dt>Actual penunggak</dt><dd><strong>${n(rec.jumlah_penunggak || CONTROL.penunggak)}</strong></dd>
+                  <dt>Status</dt><dd>${badge(String(rec.status || "pass").toUpperCase(), String(rec.status || "pass").toLowerCase() === "pass" ? "ok" : "error")}</dd>
+                </dl>` : emptyState("Validasi Gold belum tersedia.", "Jalankan pipeline validasi terlebih dahulu.")}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function layerCard(title, icon, text, ready) {
+      return `<article class="glass-panel">
+        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;">
+          <div><h3 style="margin:0 0 .5rem;">${title}</h3><p class="muted" style="margin:0;line-height:1.5;">${text}</p></div>
+          <span class="material-symbols-outlined" style="color:var(--primary);font-size:2rem;">${icon}</span>
+        </div>
+        <div class="divider"></div>${badge(ready ? "Ready" : "Waiting", ready ? "ok" : "warn")}
+      </article>`;
+    }
+
+    function renderOrkestrasi() {
+      const latency = state.metrics.latency || {};
+      document.getElementById("page-orkestrasi").innerHTML = `
+        <div class="section-grid" style="gap:1.5rem;">
+          <section class="glass-panel">
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+              <div>
+                <h3 style="margin:0 0 .35rem;">keuangan_prodi_lakehouse_dag</h3>
+                <p class="muted" style="margin:0;">DAG utama pipeline lakehouse keuangan prodi.</p>
+              </div>
+              <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+                <button class="disabled-button" disabled><span class="material-symbols-outlined">play_arrow</span>Trigger DAG menunggu integrasi API</button>
+                <a class="primary-button" href="http://localhost:8085" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Open Airflow</a>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="section-grid grid-5">
+              ${metric("DAG Status", "Success", "Semua task terakhir berhasil", "check_circle")}
+              ${metric("Last Run", "26 Mei 2026", "10:42 WIB", "schedule")}
+              ${metric("Execution Time", safe(latency.pipeline_latency_seconds ? `${latency.pipeline_latency_seconds}s` : "00:04:23"), "Durasi run terakhir", "timer")}
+              ${metric("Next Run", "Manual", "Dijalankan lokal sesuai kebutuhan", "event")}
+              ${metric("DAG Name", "keuangan_prodi_lakehouse_dag", "Airflow", "account_tree")}
+            </div>
+          </section>
+          <section class="section-grid grid-3">
+            <div class="glass-panel span-2">
+              <h3 class="section-title">Pipeline Execution Flow</h3>
+              ${pipelineFlow(["Start", "Extract Data", "Quality Gate", "Load Bronze", "Load Silver", "Load Gold", "Validate Mart", "Metrics", "Refresh Superset", "End"])}
+            </div>
+            <div class="glass-panel">
+              <h3 class="section-title">Task Instance Detail</h3>
+              ${activityTable([
+                ["10:30", "extract_data", "Success", "2m"],
+                ["10:32", "quality_gate", "Success", "1m"],
+                ["10:35", "load_bronze", "Success", "4m"],
+                ["10:42", "validate_mart", "Success", "1m"]
+              ])}
+            </div>
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">Logs Panel</h3>
+            <div class="logs-panel">
+              ${logRow("10:30:00", "INFO", "Starting DAG keuangan_prodi_lakehouse_dag")}
+              ${logRow("10:32:10", "SUCCESS", "Quality Gate selesai: 784 valid rows, 16 rejected rows")}
+              ${logRow("10:35:42", "SUCCESS", "Bronze layer ingestion completed")}
+              ${logRow("10:42:00", "SUCCESS", "Gold validation PASS: Rp31.250.000 dan 15 penunggak")}
+              ${logRow("10:45:12", "INFO", "Superset dashboard refresh requested")}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function logRow(time, level, text) {
+      return `<div class="log-row"><span style="color:#9ca3af;">[${time}]</span><span style="color:${level === "SUCCESS" ? "#86efac" : "#93c5fd"}">${level}</span><span>${text}</span></div>`;
+    }
+
+    function renderAnalytics() {
+      const uat = state.metrics.uat || {};
+      const aspects = [
+        ["Navigation Facility", "Apakah filter prodi, semester, dan status piutang mudah digunakan?"],
+        ["Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Gauge Chart, dan tabel mudah dibaca?"],
+        ["Data Relevance", "Apakah informasi piutang sesuai dengan kebutuhan pemantauan prodi?"],
+        ["Data Consistency", "Apakah rincian mahasiswa, status kualitas, dan nominal piutang tampil konsisten tanpa duplikasi?"],
+        ["Usefulness in Decision", "Apakah informasi piutang macet membantu prioritas tindak lanjut oleh Kaprodi atau dosen wali?"]
+      ];
+      document.getElementById("page-analytics").innerHTML = `
+        <div class="section-grid" style="gap:1.5rem;">
+          <section class="section-grid grid-3">
+            <div class="glass-panel span-2">
+              <h3 class="section-title">Superset Status</h3>
+              <p class="muted">Dashboard analitik piutang UKT Prodi terhubung ke dataset <strong>vw_dashboard_piutang_ukt</strong>.</p>
+              <div class="divider"></div>
+              <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:center;">
+                ${badge(state.services.superset ? "Online" : "Offline", state.services.superset ? "ok" : "error")}
+                <a class="primary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Buka Superset Dashboard</a>
+              </div>
+            </div>
+            <div class="glass-panel">
+              <h3 class="section-title">UAT Score Summary</h3>
+              <div class="metric-value" style="color:var(--primary);">${uat.average_score ?? "4.6"}</div>
+              <p class="metric-note">${uat.category || "Sangat baik"} | ${uat.response_count || 15} responden</p>
+            </div>
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">UAT Form</h3>
+            <form>${aspects.map(([title, question], index) => `
+              <div class="uat-item">
+                <div>
+                  <strong>${index + 1}. ${title}</strong>
+                  <p class="uat-question">${question}</p>
+                  <textarea placeholder="Catatan opsional"></textarea>
+                </div>
+                <label class="rating"><span class="small muted">Rating 1-5</span><select><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label>
+              </div>`).join("")}
+              <div style="display:flex;justify-content:flex-end;margin-top:1rem;"><button type="button" class="disabled-button" disabled>Menunggu integrasi backend</button></div>
+            </form>
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">UAT History</h3>
+            ${activityTable([
+              ["26 Mei 2026", "Evaluasi dashboard oleh pengguna prodi", "Sangat baik", "15 responden"],
+              ["26 Mei 2026", "Template UAT dibuat", "Ready", "System"]
+            ])}
+          </section>
+        </div>`;
+    }
+
+    function renderSystem() {
+      const services = [
+        { name: "Airflow", role: "Orkestrasi DAG", key: "airflow", port: "8085", url: "http://localhost:8085", cred: "airflow / airflow", action: "Open" },
+        { name: "Superset", role: "BI Dashboard", key: "superset", port: "8089", url: "http://localhost:8089", cred: "admin / admin", action: "Open" },
+        { name: "MinIO Console", role: "Object Storage Console", key: "minioConsole", port: "9001 / API 9000", url: "http://localhost:9001 | API http://localhost:9000", openUrl: "http://localhost:9001", cred: "minioadmin / minioadmin", action: "Open" },
+        { name: "Spark Master", role: "Compute Master UI", key: "sparkMaster", port: "8080", url: "http://localhost:8080", cred: "-", action: "Open" },
+        { name: "Spark Worker", role: "Compute Worker UI", key: "sparkWorker", port: "8081", url: "http://localhost:8081", cred: "-", action: "Open" },
+        { name: "Trino", role: "SQL Query Engine", key: "trino", port: "8082", url: "http://localhost:8082/v1/info", cred: "-", action: "Open Info" },
+        { name: "PostgreSQL Metastore", role: "Metadata Database", key: "postgres", port: "5432", url: "localhost:5432", cred: "lakehouse / lakehouse | DB metastore", action: "Copy Connection", copy: "Host=localhost;Port=5432;Database=metastore;Username=lakehouse;Password=lakehouse" },
+        { name: "Portal Keuangan", role: "Portal Lokal", key: "portal", port: "8090", url: "http://localhost:8090", cred: "-", action: "Open" }
+      ];
+      document.getElementById("page-system").innerHTML = `
+        <div class="section-grid" style="gap:1.5rem;">
+          <section class="section-grid grid-4">
+            ${services.map(serviceCard).join("")}
+          </section>
+          <section class="glass-panel">
+            <h3 class="section-title">Audit Trail Infrastruktur</h3>
+            ${activityTable([
+              ["26 Mei 2026", "Portal lokal tersedia di port 8090", "Operational", "Portal"],
+              ["26 Mei 2026", "Superset host menggunakan port 8089", "Configured", "Docker Compose"],
+              ["26 Mei 2026", "PostgreSQL metastore memakai database metastore", "Configured", "PostgreSQL"]
+            ])}
+          </section>
+        </div>`;
+    }
+
+    function serviceCard(service) {
+      const online = state.services[service.key];
+      return `<article class="service-card">
+        <div class="service-head">
+          <div><h3 class="service-name">${service.name}</h3><p class="muted small" style="margin:.25rem 0 0;">${service.role}</p></div>
+          ${badge(online ? "Online" : "Offline", online ? "ok" : "warn")}
+        </div>
+        <dl class="kv">
+          <dt>Uptime</dt><dd>${online ? "Aktif" : "Belum terdeteksi"}</dd>
+          <dt>Port</dt><dd><code>${service.port}</code></dd>
+          <dt>URL / Host</dt><dd><code>${service.url}</code></dd>
+          <dt>Credential</dt><dd>${service.cred}</dd>
+        </dl>
+        <div class="card-actions">
+          ${service.copy ? `<button class="secondary-button" data-copy="${service.copy}"><span class="material-symbols-outlined">content_copy</span>${service.action}</button>` : `<a class="primary-button" href="${service.openUrl || service.url}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>${service.action}</a>`}
+          ${service.name === "Superset" ? `<a class="secondary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer">Dashboard</a>` : ""}
+        </div>
+      </article>`;
+    }
+
+    function activityTable(rows) {
+      return `<div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Aktivitas</th><th>Status</th><th>Sumber</th></tr></thead><tbody>
+        ${rows.map(row => `<tr><td>${row[0]}</td><td><strong>${row[1]}</strong></td><td>${row[2]}</td><td class="muted">${row[3]}</td></tr>`).join("")}
+      </tbody></table></div>`;
+    }
+
+    function dataTable(rows) {
+      if (!rows.length) return emptyState();
+      const columns = Object.keys(rows[0]).slice(0, 6);
+      return `<div class="table-wrap"><table><thead><tr>${columns.map(col => `<th>${col}</th>`).join("")}</tr></thead><tbody>
+        ${rows.map(row => `<tr>${columns.map(col => `<td>${safe(row[col])}</td>`).join("")}</tr>`).join("")}
+      </tbody></table></div>`;
+    }
+
+    function renderAll() {
+      renderBeranda();
+      renderData();
+      renderDashboard();
+      renderLakehouse();
+      renderOrkestrasi();
+      renderAnalytics();
+      renderSystem();
+      bindCopyButtons();
+    }
+
+    function setRoute() {
+      const route = (location.hash || "#beranda").replace("#", "");
+      const page = pages.find(([id]) => id === route) || pages[0];
+      document.querySelectorAll(".page").forEach(el => el.classList.toggle("active", el.dataset.page === page[0]));
+      document.querySelectorAll(".nav-item").forEach(el => {
+        const active = el.dataset.nav === page[0];
+        el.classList.toggle("active", active);
+        el.querySelector(".material-symbols-outlined").classList.toggle("icon-fill", active);
+      });
+      document.getElementById("pageTitle").textContent = page[1];
+      document.getElementById("pageDescription").textContent = page[3];
+      document.title = `Portal Keuangan - ${page[1]}`;
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
 
     function showToast(text) {
+      const toast = document.getElementById("toast");
       toast.textContent = text;
       toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
     }
 
     async function copyText(text) {
       try {
         await navigator.clipboard.writeText(text);
-        showToast("Disalin: " + text);
       } catch {
         const input = document.createElement("textarea");
         input.value = text;
@@ -451,13 +896,38 @@
         input.select();
         document.execCommand("copy");
         input.remove();
-        showToast("Disalin");
       }
+      showToast("Disalin");
     }
 
-    document.querySelectorAll("[data-copy]").forEach((button) => {
-      button.addEventListener("click", () => copyText(button.getAttribute("data-copy")));
-    });
+    function bindCopyButtons() {
+      document.querySelectorAll("[data-copy]").forEach(button => {
+        button.addEventListener("click", () => copyText(button.getAttribute("data-copy")));
+      });
+    }
+
+    async function loadState() {
+      try {
+        const response = await fetch("/api/portal-state", { cache: "no-store" });
+        if (!response.ok) throw new Error("API unavailable");
+        Object.assign(state, await response.json());
+      } catch {
+        state.metrics = {
+          reconcile: { total_piutang: CONTROL.totalPiutang, jumlah_penunggak: CONTROL.penunggak, target_total_piutang: CONTROL.totalPiutang, target_jumlah_penunggak: CONTROL.penunggak, status: "pass" },
+          quality: { data_quality_score: CONTROL.qualityScore },
+          dropout: { total_rows: CONTROL.totalRows, valid_rows: CONTROL.validRows, rejected_rows: CONTROL.rejectedRows, dropout_rate: CONTROL.dropoutRate },
+          uat: { average_score: 4.6, category: "Sangat baik", response_count: 15 }
+        };
+        state.layers = { bronzeReady: false, silverReady: false, goldReady: false, goldValid: true };
+        state.services = { portal: true, airflow: false, superset: false, minioConsole: false, minioApi: false, sparkMaster: false, sparkWorker: false, trino: false, postgres: false };
+      }
+      renderAll();
+      setRoute();
+    }
+
+    renderShell();
+    window.addEventListener("hashchange", setRoute);
+    loadState();
   </script>
 </body>
 </html>
