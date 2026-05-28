@@ -454,6 +454,8 @@
       dashboardStatus: "Waiting for Metrics",
       activities: [],
       serviceList: [],
+      sourceStatus: null,
+      pdfStatus: null,
       rejectedRows: [],
       goldPreview: [],
       silverPreview: [],
@@ -541,8 +543,14 @@
 
     function renderData() {
       const q = qualitySummary();
+      const source = state.sourceStatus || {};
       document.getElementById("page-data").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
+          <section class="section-grid grid-3">
+            ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "1 dokumen PDF digital, ekstraksi teks programmatic")}
+            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "2 file transaksi, target 800 rows")}
+            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", "RAB Prodi Sains Data, target pagu Rp150.000.000")}
+          </section>
           <section class="section-grid grid-3">
             ${uploadCard("PDF Audited", "picture_as_pdf", "data/raw/pdf/")}
             ${uploadCard("CSV Transaksi", "csv", "data/raw/csv/")}
@@ -589,6 +597,28 @@
         <div><h3 style="margin:0 0 .35rem;">Upload ${title}</h3><p class="muted small" style="margin:0;">Target folder: <code>${path}</code></p></div>
         <input id="upload-${type}" type="file" accept="${accept}" style="max-width:100%;">
         <button class="secondary-button" data-upload="${type}"><span class="material-symbols-outlined">upload_file</span>Upload dummy</button>
+      </article>`;
+    }
+
+    function sourceStatusCard(title, payload, icon, note) {
+      const status = payload?.available === true ? "ready" : payload?.status || (payload ? "missing" : "missing");
+      const isReady = status === "ready" || payload?.available === true;
+      const detail = title.includes("CSV")
+        ? `${payload?.total_rows ?? 0} / ${payload?.target_rows ?? CONTROL.totalRows} rows`
+        : title.includes("PDF")
+          ? (payload?.path || payload?.message || "data/samples/ITERA_LKTA2024Audited.pdf")
+          : (payload?.path || "data/raw/excel/rab_prodi_sains_data.xlsx");
+      return `<article class="glass-card">
+        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;">
+          <div>
+            <span class="material-symbols-outlined" style="color:var(--primary);">${icon}</span>
+            <h3 style="margin:.4rem 0 .25rem;">${title}</h3>
+            <p class="muted small" style="margin:0;">${note}</p>
+          </div>
+          ${badge(isReady ? "Ready" : "Missing", isReady ? "ok" : "warn")}
+        </div>
+        <div class="divider"></div>
+        <p class="small muted" style="margin:0;overflow-wrap:anywhere;">${detail}</p>
       </article>`;
     }
 
@@ -707,7 +737,7 @@
                 <button class="secondary-button" data-pipeline="silver"><span class="material-symbols-outlined">filter_alt</span>Silver</button>
                 <button class="secondary-button" data-pipeline="gold"><span class="material-symbols-outlined">stars</span>Gold</button>
                 <button class="secondary-button" data-pipeline="metrics"><span class="material-symbols-outlined">monitoring</span>Metrics</button>
-                <button class="primary-button" data-pipeline="full-run"><span class="material-symbols-outlined">play_arrow</span>Full Run Basic</button>
+                <button class="primary-button" data-pipeline="full-run-basic"><span class="material-symbols-outlined">play_arrow</span>Full Run Basic</button>
                 <a class="primary-button" href="http://localhost:8085" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Open Airflow</a>
               </div>
             </div>
@@ -758,11 +788,11 @@
     function renderAnalytics() {
       const uat = state.metrics.uat || {};
       const aspects = [
-        ["Navigation Facility", "Apakah filter prodi, semester, dan status piutang mudah digunakan?"],
-        ["Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Gauge Chart, dan tabel mudah dibaca?"],
-        ["Data Relevance", "Apakah informasi piutang sesuai dengan kebutuhan pemantauan prodi?"],
-        ["Data Consistency", "Apakah rincian mahasiswa, status kualitas, dan nominal piutang tampil konsisten tanpa duplikasi?"],
-        ["Usefulness in Decision", "Apakah informasi piutang macet membantu prioritas tindak lanjut oleh Kaprodi atau dosen wali?"]
+        ["Navigation Facility", "Indikator utama proposal", "Apakah filter prodi, semester, dan status piutang mudah digunakan?"],
+        ["Clarity of Visualization", "Indikator utama proposal", "Apakah visual Big Number, Bar Chart, Gauge Chart, dan tabel mudah dibaca?"],
+        ["Data Relevance", "Indikator utama proposal", "Apakah informasi piutang sesuai dengan kebutuhan pemantauan prodi?"],
+        ["Usefulness in Decision Making", "Indikator utama proposal", "Apakah informasi piutang macet membantu prioritas tindak lanjut oleh Kaprodi atau dosen wali?"],
+        ["Data Consistency", "Tambahan internal", "Apakah rincian mahasiswa, status kualitas, dan nominal piutang tampil konsisten tanpa duplikasi?"]
       ];
       document.getElementById("page-analytics").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
@@ -784,10 +814,11 @@
           </section>
           <section class="glass-panel">
             <h3 class="section-title">UAT Form</h3>
-            <form>${aspects.map(([title, question], index) => `
+            <form>${aspects.map(([title, tag, question], index) => `
               <div class="uat-item">
                 <div>
                   <strong>${index + 1}. ${title}</strong>
+                  <div class="small muted">${tag}</div>
                   <p class="uat-question">${question}</p>
                   <textarea placeholder="Catatan opsional"></textarea>
                 </div>
@@ -815,12 +846,19 @@
         { name: "Spark Worker", role: "Compute Worker UI", key: "sparkWorker", port: "8081", url: "http://localhost:8081", cred: "-", action: "Open" },
         { name: "Trino", role: "SQL Query Engine", key: "trino", port: "8082", url: "http://localhost:8082/v1/info", cred: "-", action: "Open Info" },
         { name: "PostgreSQL Metastore", role: "Metadata Database", key: "postgres", port: "5432", url: "localhost:5432", cred: "lakehouse / lakehouse | DB metastore", action: "Copy Connection", copy: "Host=localhost;Port=5432;Database=metastore;Username=lakehouse;Password=lakehouse" },
-        { name: "Portal Keuangan", role: "Portal Lokal", key: "portal", port: "8090", url: "http://localhost:8090", cred: "-", action: "Open" }
+        { name: "Portal Keuangan", role: "Portal Lokal", key: "portal", port: "8090", url: "http://localhost:8090", cred: "-", action: "Open" },
+        { name: "Portal Backend API", role: "Backend Lokal", key: "portalBackend", port: "8091", url: "http://localhost:8091/api/health", cred: "-", action: "Open Health" }
       ];
+      const source = state.sourceStatus || {};
       document.getElementById("page-system").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid grid-4">
             ${services.map(serviceCard).join("")}
+          </section>
+          <section class="section-grid grid-3">
+            ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "Status sample proposal main.pdf")}
+            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "Status dua file transaksi dummy")}
+            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", "Status file RAB Prodi Sains Data")}
           </section>
           <section class="glass-panel">
             <h3 class="section-title">Audit Trail Infrastruktur</h3>
@@ -1000,7 +1038,7 @@
           const old = button.innerHTML;
           button.textContent = "Running...";
           try {
-            const result = await apiPost(`/api/pipeline/${pipeline}`, pipeline === "full-run" ? { mode: "local-basic" } : null);
+            const result = await apiPost(`/api/pipeline/${pipeline}`, pipeline === "full-run-basic" ? { mode: "local-basic" } : null);
             state.lastAction = `${pipeline}: ${result.status}`;
             showToast(`${pipeline} ${result.status}`);
             await loadState();
@@ -1035,14 +1073,16 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
           apiGet("/api/lakehouse/summary"),
           apiGet("/api/data/rejected-rows?limit=25"),
           apiGet("/api/data/preview?layer=gold&limit=10").catch(() => null),
-          apiGet("/api/data/preview?layer=silver&limit=10").catch(() => null)
+          apiGet("/api/data/preview?layer=silver&limit=10").catch(() => null),
+          apiGet("/api/data/source-status").catch(() => null),
+          apiGet("/api/pdf/sample-status").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
         state.metrics.qualityGate = state.metrics.qualityGate || metrics.quality_gate;
@@ -1065,6 +1105,8 @@
         state.rejectedRows = tablePayloadToObjects(rejected);
         state.goldPreview = tablePayloadToObjects(goldPreview);
         state.silverPreview = tablePayloadToObjects(silverPreview);
+        state.sourceStatus = sourceStatus;
+        state.pdfStatus = pdfStatus;
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });

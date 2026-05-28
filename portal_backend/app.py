@@ -9,6 +9,7 @@ from .services.lakehouse import lakehouse_summary
 from .services.metrics import metrics_payload
 from .services.paths import PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
+from .services.reference import pdf_sample_status, source_status
 from .services.system_status import service_statuses
 
 
@@ -27,11 +28,19 @@ def create_app() -> Flask:
 
     @app.get("/api/health")
     def health():
-        return jsonify({"status": "ok", "service": "portal-backend", "mode": "local"})
+        return jsonify({"status": "ok", "service": "portal-backend", "mode": "local-on-premise", "basis": "main.pdf"})
 
     @app.get("/api/status/services")
     def status_services():
         return jsonify(service_statuses())
+
+    @app.get("/api/pdf/sample-status")
+    def pdf_status():
+        return jsonify(pdf_sample_status())
+
+    @app.get("/api/data/source-status")
+    def data_source_status():
+        return jsonify(source_status())
 
     @app.get("/api/metrics")
     def metrics():
@@ -94,6 +103,8 @@ def create_app() -> Flask:
 
     @app.post("/api/pipeline/<name>")
     def pipeline(name: str):
+        if name == "full-run-basic":
+            return jsonify(run_full("local-basic"))
         if name == "full-run":
             payload = request.get_json(silent=True) or {}
             return jsonify(run_full(payload.get("mode", "local-basic")))

@@ -26,6 +26,7 @@ def http_online(url: str, timeout: float = 0.25) -> bool:
 def service_statuses() -> dict[str, list[dict[str, Any]]]:
     definitions = [
         {"key": "portal", "name": "Portal Keuangan", "role": "Portal Lokal", "port": 8090, "url": "http://localhost:8090", "kind": "http"},
+        {"key": "portalBackend", "name": "Portal Backend API", "role": "Local API", "port": 8091, "url": "http://localhost:8091/api/health", "kind": "http"},
         {"key": "airflow", "name": "Airflow", "role": "Orchestration", "port": 8085, "url": "http://localhost:8085", "kind": "http"},
         {"key": "superset", "name": "Superset", "role": "BI Dashboard", "port": 8089, "url": "http://localhost:8089", "kind": "http"},
         {"key": "supersetHealth", "name": "Superset Health", "role": "BI Healthcheck", "port": 8089, "url": "http://localhost:8089/health", "kind": "http"},

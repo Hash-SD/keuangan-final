@@ -8,6 +8,10 @@ PORTAL_DIR = ROOT_DIR / "portal"
 DATA_DIR = ROOT_DIR / "data"
 OUTPUTS_DIR = ROOT_DIR / "outputs"
 ACTIVITY_LOG_PATH = OUTPUTS_DIR / "reports" / "activity_log.json"
+PDF_SAMPLE_PATH = DATA_DIR / "samples" / "ITERA_LKTA2024Audited.pdf"
+RAW_PDF_PATH = DATA_DIR / "raw" / "pdf" / "ITERA_LKTA2024Audited.pdf"
+RAW_EXCEL_RAB_PATH = DATA_DIR / "raw" / "excel" / "rab_prodi_sains_data.xlsx"
+RAW_CSV_DIR = DATA_DIR / "raw" / "csv"
 
 UPLOAD_DIRS = {
     "pdf": DATA_DIR / "raw" / "pdf",
@@ -26,4 +30,3 @@ DEFAULT_PREVIEW_FILES = {
     "silver": "fact_piutang_ukt_prodi.csv",
     "gold": "vw_dashboard_piutang_ukt.csv",
 }
-

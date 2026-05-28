@@ -41,10 +41,18 @@ def build_transactions(seed: int = 20260526) -> pd.DataFrame:
         # Look up their base_ukt from master
         student_data = piutang.loc[piutang["nim"] == nim]
         if not student_data.empty and "base_ukt" in student_data.columns:
-            base_ukt = int(student_data.iloc[0]["base_ukt"])
+            student_row = student_data.iloc[0]
+            base_ukt = int(student_row["base_ukt"])
+            prodi = str(student_row.get("prodi", "Sains Data"))
+            fakultas = str(student_row.get("fakultas", "Fakultas Sains"))
+            golongan_ukt = int(student_row.get("golongan_ukt", 1))
             # Generate a realistic transaction nominal up to base_ukt
             nominal_bayar = (rng.randint(500_000, base_ukt) // 50000) * 50000
         else:
+            base_ukt = 2_500_000
+            prodi = "Sains Data"
+            fakultas = "Fakultas Sains"
+            golongan_ukt = 1
             nominal_bayar = rng.choice([500000, 750000, 1000000, 1250000, 1500000, 2000000])
 
         tanggal = start + timedelta(days=rng.randint(0, 310))
@@ -52,12 +60,19 @@ def build_transactions(seed: int = 20260526) -> pd.DataFrame:
             {
                 "transaction_id": f"TRX-{idx + 1:06d}",
                 "nim": nim,
+                "nim_dummy": nim,
                 "tanggal": tanggal.strftime("%Y-%m-%d"),
                 "semester": semester,
                 "tahun_akademik": "2023/2024",
+                "jenis_biaya": "UKT",
+                "prodi": prodi,
+                "fakultas": fakultas,
+                "golongan_ukt": golongan_ukt,
+                "nominal_tagihan": base_ukt,
                 "nominal_bayar": nominal_bayar,
                 "metode_bayar": rng.choice(METHODS),
                 "status_bayar": rng.choice(STATUSES),
+                "batch_id": f"BATCH-{semester.upper()}-2026",
                 "source_system": "AVITA",
                 "created_at": datetime(2026, 5, 26, 10, 0, 0).isoformat(),
             }
@@ -67,6 +82,7 @@ def build_transactions(seed: int = 20260526) -> pd.DataFrame:
     for i, row_idx in enumerate(invalid_indices):
         if i % 4 == 0:
             rows[row_idx]["nim"] = ""
+            rows[row_idx]["nim_dummy"] = ""
         elif i % 4 == 1:
             rows[row_idx]["nominal_bayar"] = "bukan_nominal"
         elif i % 4 == 2:

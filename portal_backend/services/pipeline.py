@@ -27,6 +27,15 @@ COMMANDS: dict[str, list[list[str]]] = {
 }
 
 FULL_RUN_BASIC = ["generate-data", "quality-gate", "bronze", "silver", "gold", "metrics"]
+ACTIVITY_ACTIONS = {
+    "generate-data": ("generate_data", "raw"),
+    "quality-gate": ("quality_gate_process", "quality_gate"),
+    "bronze": ("extract_bronze", "bronze"),
+    "silver": ("clean_silver", "silver"),
+    "gold": ("load_gold_schema", "gold"),
+    "metrics": ("metrics", "outputs/metrics"),
+    "validate-gold": ("validate_mart", "gold"),
+}
 
 
 def _tail(text: str, limit: int = 4000) -> str:
@@ -71,9 +80,10 @@ def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
             status = "failed"
             break
 
+    activity_action, activity_source = ACTIVITY_ACTIONS.get(name, (name, "pipeline"))
     append_activity(
-        action=name,
-        source="pipeline",
+        action=activity_action,
+        source=activity_source,
         status=status,
         target="local scripts",
         message=f"Pipeline step {name} {status}.",
@@ -91,7 +101,7 @@ def run_full(mode: str = "local-basic") -> dict[str, Any]:
 
     results = []
     status = "success"
-    for name in FULL_RUN_BASIC:
+    for name in [*FULL_RUN_BASIC, "validate-gold"]:
         result = run_command_group(name, timeout=900)
         results.append(result)
         if result["status"] != "success":
@@ -99,4 +109,3 @@ def run_full(mode: str = "local-basic") -> dict[str, Any]:
             break
     append_activity("full-run", "pipeline", status, f"Full run {mode} {status}.", "local scripts")
     return {"status": status, "mode": mode, "steps": results, "metrics": metrics_payload()}
-

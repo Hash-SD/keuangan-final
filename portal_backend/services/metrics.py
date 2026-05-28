@@ -47,6 +47,13 @@ def metrics_payload() -> dict[str, Any]:
             "jumlah_penunggak": CONTROL["jumlah_penunggak"],
             "status": "pass",
         },
+        "control_total_proposal": {
+            "expected_total_piutang": (control_total or {}).get("target_total_piutang", CONTROL["total_piutang"]),
+            "actual_total_piutang": (control_total or {}).get("total_piutang", CONTROL["total_piutang"]),
+            "expected_penunggak": (control_total or {}).get("target_jumlah_penunggak", CONTROL["jumlah_penunggak"]),
+            "actual_penunggak": (control_total or {}).get("jumlah_penunggak", CONTROL["jumlah_penunggak"]),
+            "status": (control_total or {}).get("status", "pass"),
+        },
         "quality_gate": {
             "total_rows": quality_gate_payload.get("total_rows", CONTROL["total_rows"]),
             "valid_rows": quality_gate_payload.get("valid_rows", CONTROL["valid_rows"]),
@@ -70,4 +77,3 @@ def metrics_payload() -> dict[str, Any]:
             "uat": read_json(OUTPUTS_DIR / "uat" / "uat_score_summary.json"),
         },
     }
-
