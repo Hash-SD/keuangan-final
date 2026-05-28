@@ -10,7 +10,8 @@ $checks = @(
     @{ Name = "Airflow Webserver"; Url = "http://localhost:8085/health"; Type = "http" },
     @{ Name = "Trino"; Url = "http://localhost:8082/v1/info"; Type = "http" },
     @{ Name = "Superset"; Url = "http://localhost:8089/health"; Type = "http" },
-    @{ Name = "Portal Lokal"; Url = "http://localhost:8090"; Type = "http" }
+    @{ Name = "Portal Lokal"; Url = "http://localhost:8090"; Type = "http" },
+    @{ Name = "Portal Backend API"; Url = "http://localhost:8091/api/health"; Type = "http" }
 )
 
 foreach ($check in $checks) {

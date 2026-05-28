@@ -40,14 +40,17 @@ Jika `make` tidak tersedia di Windows, gunakan:
 ## Service URL
 
 - Portal lokal semua service dan password: http://localhost:8090
+- Portal backend API: http://localhost:8091/api/health
 - Dashboard Superset Piutang UKT: http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/
-- MinIO API: http://localhost:9000
+- MinIO API health: http://localhost:9000/minio/health/live
 - MinIO Console: http://localhost:9001
 - Spark Master UI: http://localhost:8080
 - Spark Worker UI: http://localhost:8081
+- Spark Master RPC: localhost:7077
 - Airflow: http://localhost:8085
-- Trino: http://localhost:8082
-- Superset: http://localhost:8089
+- Trino info: http://localhost:8082/v1/info
+- Superset health: http://localhost:8089/health
+- PostgreSQL metastore: localhost:5432
 
 Cek semua port lokal:
 

@@ -30,9 +30,10 @@
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { width: 100%; min-height: 100%; scroll-behavior: smooth; }
     body {
       margin: 0;
+      width: 100%;
       min-height: 100vh;
       font-family: Inter, Arial, sans-serif;
       color: var(--on-surface);
@@ -101,8 +102,10 @@
     .app-main {
       min-height: 100vh;
       margin-left: var(--sidebar-width);
-      padding-bottom: 5rem;
+      padding-bottom: var(--footer-height);
       overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
     }
     .app-header {
       position: sticky;
@@ -143,30 +146,45 @@
       color: var(--on-surface-variant);
       background: rgba(255, 255, 255, .62);
     }
-    .content { width: min(1280px, calc(100% - 4rem)); margin: 0 auto; padding: 2rem 0 2.5rem; }
+    .content {
+      flex: 1;
+      width: 100%;
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem calc(var(--footer-height) + 2.5rem);
+    }
     .page { display: none; }
     .page.active { display: block; }
-    .section-grid { display: grid; gap: 1rem; }
+    .section-grid { display: grid; gap: 1.25rem; min-width: 0; }
     .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     .span-2 { grid-column: span 2; }
     .span-3 { grid-column: span 3; }
+    .home-metrics-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .data-quality-grid { grid-template-columns: minmax(340px, .36fr) minmax(720px, .64fr); align-items: start; }
+    .dashboard-metrics-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .dashboard-flow-grid { grid-template-columns: minmax(800px, .7fr) minmax(360px, .3fr); align-items: start; }
+    .orchestration-summary-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(360px, 2fr); }
+    .orchestration-body-grid { grid-template-columns: minmax(850px, .7fr) minmax(360px, .3fr); align-items: start; }
+    .system-services-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .analytics-top-grid { grid-template-columns: minmax(760px, .65fr) minmax(380px, .35fr); align-items: start; }
+    .lakehouse-validation-grid { grid-template-columns: minmax(620px, 1fr) minmax(620px, 1fr); align-items: start; }
 
     .glass-card, .glass-panel, .metric-card, .service-card {
       min-width: 0;
       background: rgba(255, 255, 255, .72);
       border: 1px solid rgba(193, 198, 213, .2);
       border-top-color: rgba(255, 255, 255, .74);
-      border-radius: .75rem;
+      border-radius: 1.125rem;
       box-shadow: 0 10px 40px rgba(26, 28, 29, .045), 0 2px 10px rgba(26, 28, 29, .025);
       backdrop-filter: blur(14px);
     }
     .glass-card, .glass-panel { padding: 1.35rem; }
-    .metric-card { min-height: 150px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .metric-card { min-height: 142px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; }
     .metric-label { display: flex; justify-content: space-between; gap: 1rem; color: var(--on-surface-variant); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
-    .metric-value { margin-top: .9rem; font-size: clamp(1.55rem, 2.6vw, 2.35rem); line-height: 1.1; font-weight: 800; letter-spacing: 0; overflow-wrap: anywhere; }
+    .metric-value { margin-top: .9rem; font-size: clamp(1.45rem, 1.4vw, 2.2rem); line-height: 1.12; font-weight: 800; letter-spacing: 0; overflow-wrap: anywhere; }
     .metric-note { margin-top: .45rem; color: var(--on-surface-variant); font-size: .85rem; line-height: 1.45; }
     .section-title { margin: 0 0 1rem; font-size: 1.08rem; font-weight: 800; letter-spacing: 0; }
     .muted { color: var(--on-surface-variant); }
@@ -203,15 +221,18 @@
     .primary-button { color: var(--on-primary); background: var(--primary); box-shadow: 0 10px 24px rgba(0, 78, 159, .14); }
     .secondary-button { color: var(--primary); background: rgba(255, 255, 255, .62); border-color: rgba(193, 198, 213, .34); }
     .disabled-button { color: var(--on-surface-variant); background: var(--surface-low); border-color: rgba(193, 198, 213, .28); }
-    .table-wrap { overflow-x: auto; border-radius: .75rem; border: 1px solid rgba(193, 198, 213, .18); }
-    table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    .table-wrap { overflow-x: auto; max-width: 100%; border-radius: .75rem; border: 1px solid rgba(193, 198, 213, .18); }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    .table-preview table { min-width: 960px; }
+    .table-wide table { min-width: 900px; }
+    .table-compact table { min-width: 460px; }
     th, td { padding: .88rem .95rem; text-align: left; border-bottom: 1px solid rgba(193, 198, 213, .18); vertical-align: top; }
     th { color: var(--on-surface-variant); font-size: .76rem; text-transform: uppercase; letter-spacing: .04em; }
     td { font-size: .9rem; }
     tr:last-child td { border-bottom: 0; }
     code { font-family: Consolas, "Courier New", monospace; font-size: .82rem; overflow-wrap: anywhere; }
 
-    .pipeline-flow, .lineage-flow { position: relative; overflow-x: auto; padding: 1rem .25rem 1.6rem; }
+    .pipeline-flow, .lineage-flow { position: relative; overflow-x: auto; max-width: 100%; padding: 1rem .25rem 1.6rem; }
     .pipeline-track {
       position: absolute;
       left: 2rem;
@@ -220,10 +241,10 @@
       height: 6px;
       border-radius: 999px;
       background: #22c55e;
-      min-width: 760px;
+      min-width: 900px;
     }
-    .pipeline-nodes { position: relative; z-index: 1; min-width: 760px; display: flex; justify-content: space-between; gap: 1.25rem; }
-    .pipeline-node { display: grid; justify-items: center; gap: .65rem; width: 92px; text-align: center; }
+    .pipeline-nodes { position: relative; z-index: 1; min-width: 900px; display: flex; justify-content: space-between; gap: 1.25rem; }
+    .pipeline-node { display: grid; justify-items: center; gap: .65rem; width: 104px; text-align: center; }
     .node-icon {
       width: 58px;
       height: 58px;
@@ -276,7 +297,7 @@
     .rating { display: grid; gap: .45rem; }
     .rating select { min-height: 40px; border-radius: .65rem; border: 1px solid rgba(193,198,213,.34); background: rgba(255,255,255,.75); padding: .45rem .55rem; }
     .logs-panel {
-      min-height: 330px;
+      height: 300px;
       border-radius: .75rem;
       padding: 1rem;
       color: #e5e7eb;
@@ -326,8 +347,35 @@
     }
     .toast.show { opacity: 1; transform: translateY(0); }
 
+    .dag-name-value {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: clamp(.95rem, 1vw, 1.2rem);
+      line-height: 1.35;
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+    .control-panel {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .control-actions { display: flex; gap: .6rem; flex-wrap: wrap; justify-content: flex-end; }
+
+    @media (max-width: 1535px) {
+      .home-metrics-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .system-services-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1279px) {
+      .dashboard-flow-grid, .orchestration-body-grid, .analytics-top-grid, .data-quality-grid, .lakehouse-validation-grid { grid-template-columns: 1fr; }
+      .dashboard-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .orchestration-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .system-services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .control-actions { justify-content: flex-start; }
+    }
     @media (max-width: 1100px) {
-      .grid-4, .grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-4, .grid-5, .home-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .span-3 { grid-column: span 2; }
       .header-actions .search-box { display: none; }
@@ -347,8 +395,8 @@
       .sidebar-footer { display: none; }
       .app-main { margin-left: 0; }
       .app-header { padding: 1rem; align-items: flex-start; }
-      .content { width: calc(100% - 2rem); padding-top: 1rem; }
-      .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+      .content { padding: 1rem 1rem calc(var(--footer-height) + 2rem); }
+      .grid-2, .grid-3, .grid-4, .grid-5, .home-metrics-grid, .dashboard-metrics-grid, .orchestration-summary-grid, .system-services-grid { grid-template-columns: 1fr; }
       .span-2, .span-3 { grid-column: span 1; }
       .app-footer { left: 0; padding: 0 .8rem; font-size: .58rem; }
       .footer-right { gap: .7rem; }
@@ -413,10 +461,10 @@
     </main>
 
     <footer class="app-footer">
-      <div class="footer-left"><span class="dot"></span><span>SYSTEM STATUS: OPERATIONAL</span></div>
+      <div class="footer-left"><span class="dot" id="footerStatusDot"></span><span id="footerSystemStatus">SYSTEM STATUS: LOADING</span></div>
       <div class="footer-right">
-        <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">storage</span> LAKEHOUSE STORAGE: 82% AVAILABLE</span>
-        <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">update</span> LAST PIPELINE RUN: 26 MEI 2026, 10:42 WIB</span>
+        <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">storage</span> <span id="footerLakehouseStatus">LAKEHOUSE: CHECKING</span></span>
+        <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">update</span> <span id="footerPipelineStatus">LAST PIPELINE RUN: CHECKING</span></span>
       </div>
     </footer>
   </div>
@@ -468,11 +516,23 @@
     const badge = (text, type = "ok") => `<span class="status-badge status-${type}"><span class="dot" style="width:6px;height:6px;"></span>${text}</span>`;
     const safe = value => value === undefined || value === null || value === "" ? "-" : value;
     const has = value => value !== undefined && value !== null;
+    const formatDuration = value => {
+      const seconds = Number(value || 0);
+      if (!Number.isFinite(seconds) || seconds <= 0) return "00:04:23";
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remaining = Math.floor(seconds % 60);
+      if (hours) return `${hours}j ${minutes}m ${remaining}d`;
+      if (minutes) return `${minutes}m ${remaining}d`;
+      return `${remaining} detik`;
+    };
 
     function metric(name, value, note, icon) {
-      return `<article class="metric-card">
+      const extraClass = name === "DAG Name" ? " dag-name-card" : "";
+      const valueClass = name === "DAG Name" ? "metric-value dag-name-value" : "metric-value";
+      return `<article class="metric-card${extraClass}">
         <div class="metric-label"><span>${name}</span><span class="material-symbols-outlined">${icon}</span></div>
-        <div><div class="metric-value">${value}</div><div class="metric-note">${note}</div></div>
+        <div><div class="${valueClass}">${value}</div><div class="metric-note">${note}</div></div>
       </article>`;
     }
 
@@ -482,9 +542,10 @@
 
     function pipelineFlow(items) {
       const icons = ["upload_file", "security", "database", "filter_alt", "stars", "hub", "monitoring", "assignment_turned_in", "flag"];
-      return `<div class="pipeline-flow"><div class="pipeline-track"></div><div class="pipeline-nodes">${items.map((item, index) => `
+      const flowWidth = Math.max(900, items.length * 124);
+      return `<div class="pipeline-flow"><div style="min-width:${flowWidth}px;position:relative;"><div class="pipeline-track"></div><div class="pipeline-nodes">${items.map((item, index) => `
         <div class="pipeline-node"><div class="node-icon"><span class="material-symbols-outlined icon-fill">${icons[index] || "check"}</span></div><div class="node-label">${item}</div></div>
-      `).join("")}</div></div>`;
+      `).join("")}</div></div></div>`;
     }
 
     function renderShell() {
@@ -492,6 +553,63 @@
         <a class="nav-item" href="#${id}" data-nav="${id}">
           <span class="material-symbols-outlined">${icon}</span><span>${label}</span>
         </a>`).join("");
+    }
+
+    function formatActivityTime(value) {
+      if (!value) return null;
+      const normalized = String(value).replace(" ", "T");
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return value;
+      const parts = Object.fromEntries(new Intl.DateTimeFormat("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+        timeZone: "Asia/Jakarta"
+      }).formatToParts(date).map(part => [part.type, part.value]));
+      return `${parts.day} ${parts.month} ${parts.year}, ${parts.hour}:${parts.minute} WIB`;
+    }
+
+    function latestPipelineActivity() {
+      const pipelineSources = new Set(["pipeline", "quality_gate", "bronze", "silver", "gold", "outputs/metrics", "raw"]);
+      return state.activities.find(item => pipelineSources.has(item.source) || String(item.action || "").includes("run") || String(item.message || "").toLowerCase().includes("pipeline"));
+    }
+
+    function renderFooterStatus() {
+      const serviceValues = Object.entries(state.services || {}).filter(([key]) => key !== "portal").map(([, value]) => Boolean(value));
+      const onlineCount = serviceValues.filter(Boolean).length;
+      const serviceTotal = serviceValues.length;
+      const systemOk = serviceTotal === 0 ? false : onlineCount === serviceTotal;
+      const systemWarn = serviceTotal > 0 && onlineCount > 0 && onlineCount < serviceTotal;
+      const systemText = systemOk
+        ? "SYSTEM STATUS: OPERATIONAL"
+        : systemWarn
+          ? `SYSTEM STATUS: DEGRADED (${onlineCount}/${serviceTotal} SERVICES ONLINE)`
+          : "SYSTEM STATUS: WAITING FOR SERVICES";
+
+      const layers = [
+        ["Bronze", state.layers.bronzeReady],
+        ["Silver", state.layers.silverReady],
+        ["Gold", state.layers.goldReady]
+      ];
+      const readyLayers = layers.filter(([, ready]) => ready).length;
+      const lakehouseText = readyLayers === layers.length
+        ? "LAKEHOUSE: BRONZE/SILVER/GOLD READY"
+        : `LAKEHOUSE: ${readyLayers}/${layers.length} LAYERS READY`;
+
+      const latestPipeline = latestPipelineActivity();
+      const pipelineText = latestPipeline
+        ? `LAST PIPELINE RUN: ${formatActivityTime(latestPipeline.time)} (${String(latestPipeline.status || "-").toUpperCase()})`
+        : "LAST PIPELINE RUN: BELUM ADA AKTIVITAS";
+
+      const statusDot = document.getElementById("footerStatusDot");
+      document.getElementById("footerSystemStatus").textContent = systemText;
+      document.getElementById("footerLakehouseStatus").textContent = lakehouseText;
+      document.getElementById("footerPipelineStatus").textContent = pipelineText;
+      statusDot.style.background = systemOk ? "#22c55e" : systemWarn ? "#f59e0b" : "#ef4444";
+      statusDot.style.boxShadow = systemOk ? "0 0 10px rgba(34,197,94,.65)" : systemWarn ? "0 0 10px rgba(245,158,11,.55)" : "0 0 10px rgba(239,68,68,.55)";
     }
 
     function qualitySummary() {
@@ -519,7 +637,7 @@
               ${badge("Operasional", "ok")}
             </div>
           </section>
-          <section class="section-grid grid-5">
+          <section class="section-grid home-metrics-grid">
             ${metric("Total Piutang UKT", rupiah(rec.total_piutang || CONTROL.totalPiutang), "Kontrol Prodi Sains Data", "account_balance_wallet")}
             ${metric("Mahasiswa Penunggak", n(rec.jumlah_penunggak || CONTROL.penunggak), "Mahasiswa aktif", "group_remove")}
             ${metric("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Semua gate lulus", "verified")}
@@ -564,7 +682,7 @@
             ${uploadCard("CSV Transaksi", "csv", "data/raw/csv/")}
             ${uploadCard("Excel RAB", "table_chart", "data/raw/excel/")}
           </section>
-          <section class="section-grid grid-3">
+          <section class="section-grid data-quality-grid">
             <div class="glass-panel">
               <h3 class="section-title">Quality Check Summary</h3>
               <dl class="kv">
@@ -575,7 +693,7 @@
                 <dt>Status</dt><dd>${badge(q.status, "warn")}</dd>
               </dl>
             </div>
-            <div class="glass-panel span-2">
+            <div class="glass-panel">
               <h3 class="section-title">Preview Data</h3>
               ${state.goldPreview.length || state.silverPreview.length ? dataTable(state.goldPreview.length ? state.goldPreview : state.silverPreview) : emptyState()}
             </div>
@@ -639,10 +757,10 @@
       const dashType = state.dashboardStatus === "Ready" ? "ok" : state.dashboardStatus === "Superset Offline" ? "error" : "warn";
       document.getElementById("page-dashboard").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
-          <section class="section-grid grid-3">
+          <section class="section-grid dashboard-metrics-grid">
             ${metric("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Completeness, validity, consistency, accuracy", "verified")}
             ${metric("Dropout Rate", `${q.dropoutRate}%`, `${q.rejectedRows} rejected rows dari ${q.totalRows} rows`, "trending_down")}
-            ${metric("Pipeline Latency", safe(latency.pipeline_latency_seconds ? `${latency.pipeline_latency_seconds}s` : latency.latency_seconds ? `${latency.latency_seconds}s` : "00:04:23"), "Waktu eksekusi pipeline lokal", "speed")}
+            ${metric("Pipeline Latency", formatDuration(latency.pipeline_latency_seconds || latency.latency_seconds), "Waktu eksekusi pipeline lokal", "speed")}
             ${metric("Data Freshness", safe(freshness.data_freshness_status || freshness.status || "Fresh"), "Last refresh mengikuti output metrics", "update")}
             ${metric("Rejected Rows", n(q.rejectedRows), "Quality Gate quarantine", "rule_folder")}
             ${metric("Gold Validation", (state.layers.goldValid ? "PASS" : "Waiting"), "Control total piutang dan penunggak", "stars")}
@@ -650,8 +768,8 @@
             ${metric("Kombinasi UKT", n(ref.ukt?.rows || 328), "41 prodi x 8 golongan", "grid_view")}
             ${metric("Master SPI", n(ref.spi?.rows || 41), "Referensi SPI per prodi", "payments")}
           </section>
-          <section class="section-grid grid-3">
-            <div class="glass-panel span-2">
+          <section class="section-grid dashboard-flow-grid">
+            <div class="glass-panel">
               <h3 class="section-title">Pipeline Data Flow</h3>
               ${pipelineFlow(["Upload Data", "Quality Gate", "Bronze", "Silver", "Gold", "Trino", "Superset", "Evaluasi"])}
             </div>
@@ -699,7 +817,7 @@
               </div>
             </div>
           </section>
-          <section class="section-grid grid-2">
+          <section class="section-grid lakehouse-validation-grid">
             <div class="glass-panel">
               <h3 class="section-title">Layer History</h3>
               ${activityTable([
@@ -738,33 +856,35 @@
       document.getElementById("page-orkestrasi").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="glass-panel">
-            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+            <div class="control-panel">
               <div>
-                <h3 style="margin:0 0 .35rem;">keuangan_prodi_lakehouse_dag</h3>
+                <div class="small muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.04em;">Monitoring Pipeline Orchestration</div>
+                <h3 style="margin:.25rem 0 .35rem;">keuangan_prodi_lakehouse_dag</h3>
                 <p class="muted" style="margin:0;">DAG utama pipeline lakehouse keuangan prodi.</p>
               </div>
-              <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
-                <button class="secondary-button" data-pipeline="quality-gate"><span class="material-symbols-outlined">fact_check</span>Quality Gate</button>
-                <button class="secondary-button" data-pipeline="bronze"><span class="material-symbols-outlined">database</span>Bronze</button>
-                <button class="secondary-button" data-pipeline="silver"><span class="material-symbols-outlined">filter_alt</span>Silver</button>
-                <button class="secondary-button" data-pipeline="gold"><span class="material-symbols-outlined">stars</span>Gold</button>
-                <button class="secondary-button" data-pipeline="metrics"><span class="material-symbols-outlined">monitoring</span>Metrics</button>
+              <div class="control-actions">
+                <button class="secondary-button" data-pipeline="quality-gate"><span class="material-symbols-outlined">fact_check</span>Run Quality Gate</button>
+                <button class="secondary-button" data-pipeline="bronze"><span class="material-symbols-outlined">database</span>Run Bronze</button>
+                <button class="secondary-button" data-pipeline="silver"><span class="material-symbols-outlined">filter_alt</span>Run Silver</button>
+                <button class="secondary-button" data-pipeline="gold"><span class="material-symbols-outlined">stars</span>Run Gold</button>
+                <button class="secondary-button" data-pipeline="validate-gold"><span class="material-symbols-outlined">rule</span>Validate Gold</button>
+                <button class="secondary-button" data-pipeline="metrics"><span class="material-symbols-outlined">monitoring</span>Run Metrics</button>
                 <button class="primary-button" data-pipeline="full-run-basic"><span class="material-symbols-outlined">play_arrow</span>Full Run Basic</button>
                 <a class="primary-button" href="http://localhost:8085" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Open Airflow</a>
               </div>
             </div>
             ${state.lastAction ? `<div class="divider"></div><p class="small muted" style="margin:0;">Aksi terakhir: <strong>${state.lastAction}</strong></p>` : ""}
             <div class="divider"></div>
-            <div class="section-grid grid-5">
+            <div class="section-grid orchestration-summary-grid">
               ${metric("DAG Status", "Success", "Semua task terakhir berhasil", "check_circle")}
               ${metric("Last Run", "26 Mei 2026", "10:42 WIB", "schedule")}
-              ${metric("Execution Time", safe(latency.pipeline_latency_seconds ? `${latency.pipeline_latency_seconds}s` : "00:04:23"), "Durasi run terakhir", "timer")}
+              ${metric("Execution Time", formatDuration(latency.pipeline_latency_seconds), "Durasi run terakhir", "timer")}
               ${metric("Next Run", "Manual", "Dijalankan lokal sesuai kebutuhan", "event")}
               ${metric("DAG Name", "keuangan_prodi_lakehouse_dag", "Airflow", "account_tree")}
             </div>
           </section>
-          <section class="section-grid grid-3">
-            <div class="glass-panel span-2">
+          <section class="section-grid orchestration-body-grid">
+            <div class="glass-panel">
               <h3 class="section-title">Pipeline Execution Flow</h3>
               ${pipelineFlow(["Start", "Extract Data", "Quality Gate", "Load Bronze", "Load Silver", "Load Gold", "Validate Mart", "Metrics", "Refresh Superset", "End"])}
             </div>
@@ -775,7 +895,7 @@
                 ["10:32", "quality_gate", "Success", "1m"],
                 ["10:35", "load_bronze", "Success", "4m"],
                 ["10:42", "validate_mart", "Success", "1m"]
-              ])}
+              ], "table-compact")}
             </div>
           </section>
           <section class="glass-panel">
@@ -808,8 +928,8 @@
       ];
       document.getElementById("page-analytics").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
-          <section class="section-grid grid-3">
-            <div class="glass-panel span-2">
+          <section class="section-grid analytics-top-grid">
+            <div class="glass-panel">
               <h3 class="section-title">Superset Status</h3>
               <p class="muted">Dashboard analitik piutang UKT Prodi terhubung ke dataset <strong>vw_dashboard_piutang_ukt</strong>.</p>
               <div class="divider"></div>
@@ -851,21 +971,23 @@
 
     function renderSystem() {
       const services = [
-        { name: "Airflow", role: "Orkestrasi DAG", key: "airflow", port: "8085", url: "http://localhost:8085", cred: "airflow / airflow", action: "Open" },
-        { name: "Superset", role: "BI Dashboard", key: "superset", port: "8089", url: "http://localhost:8089", cred: "admin / admin", action: "Open" },
-        { name: "MinIO Console", role: "Object Storage Console", key: "minioConsole", port: "9001 / API 9000", url: "http://localhost:9001 | API http://localhost:9000", openUrl: "http://localhost:9001", cred: "minioadmin / minioadmin", action: "Open" },
-        { name: "Spark Master", role: "Compute Master UI", key: "sparkMaster", port: "8080", url: "http://localhost:8080", cred: "-", action: "Open" },
-        { name: "Spark Worker", role: "Compute Worker UI", key: "sparkWorker", port: "8081", url: "http://localhost:8081", cred: "-", action: "Open" },
-        { name: "Trino", role: "SQL Query Engine", key: "trino", port: "8082", url: "http://localhost:8082/v1/info", cred: "-", action: "Open Info" },
-        { name: "PostgreSQL Metastore", role: "Metadata Database", key: "postgres", port: "5432", url: "localhost:5432", cred: "lakehouse / lakehouse | DB metastore", action: "Copy Connection", copy: "Host=localhost;Port=5432;Database=metastore;Username=lakehouse;Password=lakehouse" },
-        { name: "Portal Keuangan", role: "Portal Lokal", key: "portal", port: "8090", url: "http://localhost:8090", cred: "-", action: "Open" },
-        { name: "Portal Backend API", role: "Backend Lokal", key: "portalBackend", port: "8091", url: "http://localhost:8091/api/health", cred: "-", action: "Open Health" }
+        { name: "Airflow", role: "Orkestrasi DAG", key: "airflow", hostPort: "8085", containerPort: "8080", url: "http://localhost:8085", cred: "airflow / airflow", action: "Open" },
+        { name: "Superset", role: "BI Dashboard", key: "superset", hostPort: "8089", containerPort: "8088", url: "http://localhost:8089", cred: "admin / admin", action: "Open" },
+        { name: "MinIO API", role: "Object Storage API Health", key: "minioApi", hostPort: "9000", containerPort: "9000", url: "http://localhost:9000/minio/health/live", cred: "-", action: "Open Health" },
+        { name: "MinIO Console", role: "Object Storage Console", key: "minioConsole", hostPort: "9001", containerPort: "9001", url: "http://localhost:9001", cred: "minioadmin / minioadmin", action: "Open" },
+        { name: "Spark Master", role: "Compute Master UI", key: "sparkMaster", hostPort: "8080", containerPort: "8080", url: "http://localhost:8080", cred: "-", action: "Open" },
+        { name: "Spark Master RPC", role: "Compute Master TCP", key: "sparkRpc", hostPort: "7077", containerPort: "7077", url: "localhost:7077", cred: "-", action: "Copy Connection", copy: "spark://localhost:7077" },
+        { name: "Spark Worker", role: "Compute Worker UI", key: "sparkWorker", hostPort: "8081", containerPort: "8081", url: "http://localhost:8081", cred: "-", action: "Open" },
+        { name: "Trino", role: "SQL Query Engine", key: "trino", hostPort: "8082", containerPort: "8080", url: "http://localhost:8082/v1/info", cred: "-", action: "Open Info" },
+        { name: "PostgreSQL Metastore", role: "Metadata Database", key: "postgres", hostPort: "5432", containerPort: "5432", url: "localhost:5432", cred: "lakehouse / lakehouse | DB metastore", action: "Copy Connection", copy: "Host=localhost;Port=5432;Database=metastore;Username=lakehouse;Password=lakehouse" },
+        { name: "Portal Keuangan", role: "Portal Lokal", key: "portal", hostPort: "8090", containerPort: "8090", url: "http://localhost:8090", cred: "-", action: "Open" },
+        { name: "Portal Backend API", role: "Backend Lokal", key: "portalBackend", hostPort: "8091", containerPort: "8091", url: "http://localhost:8091/api/health", cred: "-", action: "Open Health" }
       ];
       const source = state.sourceStatus || {};
       const ref = state.referenceSummary || {};
       document.getElementById("page-system").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
-          <section class="section-grid grid-4">
+          <section class="section-grid system-services-grid">
             ${services.map(serviceCard).join("")}
           </section>
           <section class="section-grid grid-3">
@@ -892,6 +1014,8 @@
 
     function serviceCard(service) {
       const online = state.services[service.key];
+      const hostPort = service.hostPort || service.port;
+      const containerPort = service.containerPort || service.port;
       return `<article class="service-card">
         <div class="service-head">
           <div><h3 class="service-name">${service.name}</h3><p class="muted small" style="margin:.25rem 0 0;">${service.role}</p></div>
@@ -899,8 +1023,9 @@
         </div>
         <dl class="kv">
           <dt>Uptime</dt><dd>${online ? "Aktif" : "Belum terdeteksi"}</dd>
-          <dt>Port</dt><dd><code>${service.port}</code></dd>
-          <dt>URL / Host</dt><dd><code>${service.url}</code></dd>
+          <dt>Host Port</dt><dd><code>${hostPort}</code></dd>
+          <dt>Container Port</dt><dd><code>${containerPort}</code></dd>
+          <dt>URL</dt><dd><code>${service.url}</code></dd>
           <dt>Credential</dt><dd>${service.cred}</dd>
         </dl>
         <div class="card-actions">
@@ -910,8 +1035,8 @@
       </article>`;
     }
 
-    function activityTable(rows) {
-      return `<div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Aktivitas</th><th>Status</th><th>Sumber</th></tr></thead><tbody>
+    function activityTable(rows, tableClass = "table-wide") {
+      return `<div class="table-wrap ${tableClass}"><table><thead><tr><th>Waktu</th><th>Aktivitas</th><th>Status</th><th>Sumber</th></tr></thead><tbody>
         ${rows.map(row => `<tr><td>${row[0]}</td><td><strong>${row[1]}</strong></td><td>${row[2]}</td><td class="muted">${row[3]}</td></tr>`).join("")}
       </tbody></table></div>`;
     }
@@ -929,7 +1054,7 @@
     function dataTable(rows) {
       if (!rows.length) return emptyState();
       const columns = Object.keys(rows[0]).slice(0, 6);
-      return `<div class="table-wrap"><table><thead><tr>${columns.map(col => `<th>${col}</th>`).join("")}</tr></thead><tbody>
+      return `<div class="table-wrap table-preview"><table><thead><tr>${columns.map(col => `<th>${col}</th>`).join("")}</tr></thead><tbody>
         ${rows.map(row => `<tr>${columns.map(col => `<td>${safe(row[col])}</td>`).join("")}</tr>`).join("")}
       </tbody></table></div>`;
     }
@@ -942,6 +1067,7 @@
       renderOrkestrasi();
       renderAnalytics();
       renderSystem();
+      renderFooterStatus();
       bindCopyButtons();
       bindUploadButtons();
       bindPipelineButtons();
@@ -949,7 +1075,7 @@
     }
 
     function setRoute() {
-      const route = (location.hash || "#beranda").replace("#", "");
+      const route = (location.hash || "#/beranda").replace(/^#\/?/, "");
       const page = pages.find(([id]) => id === route) || pages[0];
       document.querySelectorAll(".page").forEach(el => el.classList.toggle("active", el.dataset.page === page[0]));
       document.querySelectorAll(".nav-item").forEach(el => {
