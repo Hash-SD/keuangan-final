@@ -435,6 +435,7 @@
       lastRun: "26 Mei 2026, 10:42 WIB",
       dashboardUrl: "http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/"
     };
+    const API_BASE_URL = "http://localhost:8091";
 
     const pages = [
       ["beranda", "Beranda", "home", "Ringkasan kondisi data keuangan, status pipeline, dan aktivitas sistem terbaru."],
@@ -451,9 +452,12 @@
       services: {},
       layers: {},
       dashboardStatus: "Waiting for Metrics",
+      activities: [],
+      serviceList: [],
       rejectedRows: [],
       goldPreview: [],
-      silverPreview: []
+      silverPreview: [],
+      lastAction: null
     };
 
     const rupiah = value => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value || 0)).replace(/\s/g, "");
@@ -525,7 +529,7 @@
           </section>
           <section class="glass-panel">
             <h3 class="section-title">Aktivitas Terakhir</h3>
-            ${activityTable([
+            ${activityTable(rowsFromActivities() || [
               ["10:45 WIB", "Gold mart validated", "Success", "System"],
               ["10:42 WIB", "Silver layer updated", "Success", "Airflow"],
               ["10:35 WIB", "Bronze ingestion selesai", "Success", "Airflow"],
@@ -578,10 +582,13 @@
     }
 
     function uploadCard(title, icon, path) {
+      const type = title.includes("PDF") ? "pdf" : title.includes("CSV") ? "csv" : "excel";
+      const accept = type === "pdf" ? ".pdf" : type === "csv" ? ".csv" : ".xlsx";
       return `<article class="glass-card upload-zone">
         <span class="material-symbols-outlined">${icon}</span>
         <div><h3 style="margin:0 0 .35rem;">Upload ${title}</h3><p class="muted small" style="margin:0;">Target folder: <code>${path}</code></p></div>
-        <button class="disabled-button" disabled><span class="material-symbols-outlined">lock</span>Menunggu integrasi backend</button>
+        <input id="upload-${type}" type="file" accept="${accept}" style="max-width:100%;">
+        <button class="secondary-button" data-upload="${type}"><span class="material-symbols-outlined">upload_file</span>Upload dummy</button>
       </article>`;
     }
 
@@ -621,7 +628,7 @@
           </section>
           <section class="glass-panel">
             <h3 class="section-title">Last Activity</h3>
-            ${activityTable([
+            ${activityTable(rowsFromActivities() || [
               ["10:45 WIB", "Gold validation PASS", "Success", "Metrics"],
               ["10:42 WIB", "Superset assets refreshed", state.services.superset ? "Ready" : "Superset Offline", "Superset"],
               ["10:22 WIB", "Dropout Rate dihitung 2%", "Success", "Metrics"]
@@ -695,10 +702,16 @@
                 <p class="muted" style="margin:0;">DAG utama pipeline lakehouse keuangan prodi.</p>
               </div>
               <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
-                <button class="disabled-button" disabled><span class="material-symbols-outlined">play_arrow</span>Trigger DAG menunggu integrasi API</button>
+                <button class="secondary-button" data-pipeline="quality-gate"><span class="material-symbols-outlined">fact_check</span>Quality Gate</button>
+                <button class="secondary-button" data-pipeline="bronze"><span class="material-symbols-outlined">database</span>Bronze</button>
+                <button class="secondary-button" data-pipeline="silver"><span class="material-symbols-outlined">filter_alt</span>Silver</button>
+                <button class="secondary-button" data-pipeline="gold"><span class="material-symbols-outlined">stars</span>Gold</button>
+                <button class="secondary-button" data-pipeline="metrics"><span class="material-symbols-outlined">monitoring</span>Metrics</button>
+                <button class="primary-button" data-pipeline="full-run"><span class="material-symbols-outlined">play_arrow</span>Full Run Basic</button>
                 <a class="primary-button" href="http://localhost:8085" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Open Airflow</a>
               </div>
             </div>
+            ${state.lastAction ? `<div class="divider"></div><p class="small muted" style="margin:0;">Aksi terakhir: <strong>${state.lastAction}</strong></p>` : ""}
             <div class="divider"></div>
             <div class="section-grid grid-5">
               ${metric("DAG Status", "Success", "Semua task terakhir berhasil", "check_circle")}
@@ -724,13 +737,15 @@
             </div>
           </section>
           <section class="glass-panel">
-            <h3 class="section-title">Logs Panel</h3>
+              <h3 class="section-title">Logs Panel</h3>
             <div class="logs-panel">
+              ${state.activities.length ? state.activities.slice(0, 8).map(item => logRow((item.time || "").slice(11) || "-", String(item.status || "INFO").toUpperCase(), item.message || item.action || "-")).join("") : `
               ${logRow("10:30:00", "INFO", "Starting DAG keuangan_prodi_lakehouse_dag")}
               ${logRow("10:32:10", "SUCCESS", "Quality Gate selesai: 784 valid rows, 16 rejected rows")}
               ${logRow("10:35:42", "SUCCESS", "Bronze layer ingestion completed")}
               ${logRow("10:42:00", "SUCCESS", "Gold validation PASS: Rp31.250.000 dan 15 penunggak")}
               ${logRow("10:45:12", "INFO", "Superset dashboard refresh requested")}
+              `}
             </div>
           </section>
         </div>`;
@@ -778,12 +793,12 @@
                 </div>
                 <label class="rating"><span class="small muted">Rating 1-5</span><select><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label>
               </div>`).join("")}
-              <div style="display:flex;justify-content:flex-end;margin-top:1rem;"><button type="button" class="disabled-button" disabled>Menunggu integrasi backend</button></div>
+              <div style="display:flex;justify-content:flex-end;margin-top:1rem;"><button type="button" class="secondary-button" id="uatSubmit">Submit UAT dummy</button></div>
             </form>
           </section>
           <section class="glass-panel">
             <h3 class="section-title">UAT History</h3>
-            ${activityTable([
+            ${activityTable(rowsFromActivities() || [
               ["26 Mei 2026", "Evaluasi dashboard oleh pengguna prodi", "Sangat baik", "15 responden"],
               ["26 Mei 2026", "Template UAT dibuat", "Ready", "System"]
             ])}
@@ -844,6 +859,16 @@
       </tbody></table></div>`;
     }
 
+    function rowsFromActivities() {
+      if (!state.activities.length) return null;
+      return state.activities.slice(0, 6).map(item => [
+        item.time || "-",
+        item.message || item.action || "-",
+        item.status || "-",
+        item.source || item.actor || "system"
+      ]);
+    }
+
     function dataTable(rows) {
       if (!rows.length) return emptyState();
       const columns = Object.keys(rows[0]).slice(0, 6);
@@ -861,6 +886,9 @@
       renderAnalytics();
       renderSystem();
       bindCopyButtons();
+      bindUploadButtons();
+      bindPipelineButtons();
+      bindUatSubmit();
     }
 
     function setRoute() {
@@ -906,20 +934,152 @@
       });
     }
 
+    async function apiGet(path) {
+      const response = await fetch(`${API_BASE_URL}${path}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`GET ${path} gagal (${response.status})`);
+      return response.json();
+    }
+
+    async function apiPost(path, body) {
+      const options = { method: "POST" };
+      if (body instanceof FormData) {
+        options.body = body;
+      } else if (body) {
+        options.headers = { "Content-Type": "application/json" };
+        options.body = JSON.stringify(body);
+      }
+      const response = await fetch(`${API_BASE_URL}${path}`, options);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.message || `POST ${path} gagal (${response.status})`);
+      return payload;
+    }
+
+    function tablePayloadToObjects(payload) {
+      if (!payload || !payload.available || !Array.isArray(payload.columns)) return [];
+      return payload.rows.map(row => Object.fromEntries(payload.columns.map((column, index) => [column, row[index]])));
+    }
+
+    function serviceListToMap(payload) {
+      const services = payload.services || [];
+      state.serviceList = services;
+      return Object.fromEntries(services.map(service => [service.key, service.status === "online"]));
+    }
+
+    function bindUploadButtons() {
+      document.querySelectorAll("[data-upload]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const type = button.getAttribute("data-upload");
+          const input = document.getElementById(`upload-${type}`);
+          if (!input.files.length) {
+            showToast("Pilih file dummy terlebih dahulu");
+            return;
+          }
+          const formData = new FormData();
+          formData.append("file", input.files[0]);
+          button.disabled = true;
+          button.textContent = "Uploading...";
+          try {
+            const result = await apiPost(`/api/upload/${type}`, formData);
+            state.lastAction = `Upload ${type}: ${result.status}`;
+            showToast(`Upload ${type} berhasil`);
+            await loadState();
+          } catch (error) {
+            showToast(error.message);
+            button.disabled = false;
+            button.innerHTML = `<span class="material-symbols-outlined">upload_file</span>Upload dummy`;
+          }
+        });
+      });
+    }
+
+    function bindPipelineButtons() {
+      document.querySelectorAll("[data-pipeline]").forEach(button => {
+        button.addEventListener("click", async () => {
+          const pipeline = button.getAttribute("data-pipeline");
+          button.disabled = true;
+          const old = button.innerHTML;
+          button.textContent = "Running...";
+          try {
+            const result = await apiPost(`/api/pipeline/${pipeline}`, pipeline === "full-run" ? { mode: "local-basic" } : null);
+            state.lastAction = `${pipeline}: ${result.status}`;
+            showToast(`${pipeline} ${result.status}`);
+            await loadState();
+          } catch (error) {
+            state.lastAction = `${pipeline}: failed`;
+            showToast(error.message);
+            button.disabled = false;
+            button.innerHTML = old;
+          }
+        });
+      });
+    }
+
+    function bindUatSubmit() {
+      const button = document.getElementById("uatSubmit");
+      if (!button) return;
+      button.addEventListener("click", async () => {
+        button.disabled = true;
+        button.textContent = "Submitting...";
+        try {
+          await apiPost("/api/uat/submit", { mode: "dummy" });
+          state.lastAction = "UAT dummy: success";
+          showToast("UAT dummy terkirim");
+          await loadState();
+        } catch (error) {
+          showToast(error.message);
+          button.disabled = false;
+          button.textContent = "Submit UAT dummy";
+        }
+      });
+    }
+
     async function loadState() {
       try {
-        const response = await fetch("/api/portal-state", { cache: "no-store" });
-        if (!response.ok) throw new Error("API unavailable");
-        Object.assign(state, await response.json());
-      } catch {
-        state.metrics = {
-          reconcile: { total_piutang: CONTROL.totalPiutang, jumlah_penunggak: CONTROL.penunggak, target_total_piutang: CONTROL.totalPiutang, target_jumlah_penunggak: CONTROL.penunggak, status: "pass" },
-          quality: { data_quality_score: CONTROL.qualityScore },
-          dropout: { total_rows: CONTROL.totalRows, valid_rows: CONTROL.validRows, rejected_rows: CONTROL.rejectedRows, dropout_rate: CONTROL.dropoutRate },
-          uat: { average_score: 4.6, category: "Sangat baik", response_count: 15 }
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview] = await Promise.all([
+          apiGet("/api/metrics"),
+          apiGet("/api/status/services"),
+          apiGet("/api/activity"),
+          apiGet("/api/lakehouse/summary"),
+          apiGet("/api/data/rejected-rows?limit=25"),
+          apiGet("/api/data/preview?layer=gold&limit=10").catch(() => null),
+          apiGet("/api/data/preview?layer=silver&limit=10").catch(() => null)
+        ]);
+        state.metrics = metrics.raw || {};
+        state.metrics.qualityGate = state.metrics.qualityGate || metrics.quality_gate;
+        state.metrics.reconcile = state.metrics.reconcile || metrics.control_total;
+        state.metrics.uat = state.metrics.uat || {};
+        state.services = serviceListToMap(services);
+        state.activities = activity.activities || [];
+        state.layers = {
+          bronzeReady: lakehouse.bronze?.status === "ready",
+          silverReady: lakehouse.silver?.status === "ready",
+          goldReady: lakehouse.gold?.status === "ready",
+          goldValid: Boolean(lakehouse.gold?.valid)
         };
-        state.layers = { bronzeReady: false, silverReady: false, goldReady: false, goldValid: true };
-        state.services = { portal: true, airflow: false, superset: false, minioConsole: false, minioApi: false, sparkMaster: false, sparkWorker: false, trino: false, postgres: false };
+        const hasMetrics = Boolean(metrics.available);
+        if (!state.layers.goldReady) state.dashboardStatus = "Waiting for Gold";
+        else if (!hasMetrics) state.dashboardStatus = "Waiting for Metrics";
+        else if (!state.services.superset) state.dashboardStatus = "Superset Offline";
+        else if (!state.layers.goldValid) state.dashboardStatus = "Validation Failed";
+        else state.dashboardStatus = "Ready";
+        state.rejectedRows = tablePayloadToObjects(rejected);
+        state.goldPreview = tablePayloadToObjects(goldPreview);
+        state.silverPreview = tablePayloadToObjects(silverPreview);
+      } catch {
+        try {
+          const response = await fetch("/api/portal-state", { cache: "no-store" });
+          if (!response.ok) throw new Error("Fallback API unavailable");
+          Object.assign(state, await response.json());
+        } catch {
+          state.metrics = {
+            reconcile: { total_piutang: CONTROL.totalPiutang, jumlah_penunggak: CONTROL.penunggak, target_total_piutang: CONTROL.totalPiutang, target_jumlah_penunggak: CONTROL.penunggak, status: "pass" },
+            quality: { data_quality_score: CONTROL.qualityScore },
+            dropout: { total_rows: CONTROL.totalRows, valid_rows: CONTROL.validRows, rejected_rows: CONTROL.rejectedRows, dropout_rate: CONTROL.dropoutRate },
+            uat: { average_score: 4.6, category: "Sangat baik", response_count: 15 }
+          };
+          state.layers = { bronzeReady: false, silverReady: false, goldReady: false, goldValid: true };
+          state.services = { portal: true, airflow: false, superset: false, minioConsole: false, minioApi: false, sparkMaster: false, sparkWorker: false, trino: false, postgres: false };
+        }
       }
       renderAll();
       setRoute();

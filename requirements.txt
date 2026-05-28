@@ -6,3 +6,6 @@ pypdf
 pytest
 psycopg2-binary
 requests
+flask
+flask-cors
+werkzeug

@@ -73,21 +73,32 @@ def build_piutang_rows(seed: int = 20260526) -> pd.DataFrame:
     ]
 
     prodi_data = load_prodi_data()
-    all_prodis = list(prodi_data.keys())
+    all_prodis = [prodi for prodi in prodi_data.keys() if prodi != "Sains Data"]
+    sains_data_nominals = [
+        2_500_000,
+        2_500_000,
+        2_250_000,
+        2_250_000,
+        2_000_000,
+        2_000_000,
+        2_000_000,
+        2_000_000,
+        2_000_000,
+        2_000_000,
+        1_750_000,
+        1_750_000,
+        1_750_000,
+        2_250_000,
+        2_250_000,
+    ]
 
     # Sains Data specific initial rows
     for idx in range(1, 16):
         kualitas, penyisihan = kualitas_options[idx % len(kualitas_options)]
         prodi = "Sains Data"
-        if prodi in prodi_data:
-            golongan = rng.randint(0, 7)
-            base_ukt = prodi_data[prodi]["ukts"][golongan]
-            # Randomize partial amount up to base_ukt
-            nominal = rng.randint(500_000, base_ukt)
-            # Align to 50k
-            nominal = (nominal // 50000) * 50000
-        else:
-            nominal = 2_500_000
+        golongan = rng.randint(0, 7)
+        base_ukt = prodi_data[prodi]["ukts"][golongan]
+        nominal = sains_data_nominals[idx - 1]
 
         rows.append(
             {
