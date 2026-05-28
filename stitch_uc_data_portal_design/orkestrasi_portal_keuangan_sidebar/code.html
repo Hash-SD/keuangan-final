@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Keuangan - Orkestrasi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Glassmorphism custom utilities */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .glass-nav {
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        /* Hide scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c6d5;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #727784;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f0f0f2",
+                        "surface-container-low": "#f3f3f5",
+                        "on-surface-variant": "#414753",
+                        "on-secondary-fixed-variant": "#30476d",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d9dadc",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#dfe8ff",
+                        "inverse-surface": "#2f3132",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#883700",
+                        "on-background": "#1a1c1d",
+                        "secondary-fixed": "#d7e3ff",
+                        "primary": "#004e9f",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-tertiary-fixed": "#341100",
+                        "secondary": "#495f87",
+                        "background": "#f9f9fb",
+                        "on-tertiary-fixed-variant": "#793000",
+                        "inverse-primary": "#aac7ff",
+                        "surface-container-highest": "#e2e2e4",
+                        "surface-bright": "#f9f9fb",
+                        "on-tertiary-container": "#ffe3d6",
+                        "on-secondary-container": "#425880",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#b9cffd",
+                        "primary-fixed-dim": "#aac7ff",
+                        "outline": "#727784",
+                        "on-primary-fixed": "#001b3e",
+                        "surface": "#f9f9fb",
+                        "outline-variant": "#c1c6d5",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "surface-container-high": "#e8e8ea",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#b0c7f5",
+                        "surface-variant": "#e2e2e4",
+                        "on-secondary-fixed": "#001b3e",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#005cba",
+                        "primary-fixed": "#d7e3ff",
+                        "tertiary-container": "#af4900",
+                        "on-surface": "#1a1c1d",
+                        "surface-container": "#eeeef0",
+                        "primary-container": "#0066cc",
+                        "on-primary-fixed-variant": "#00458e",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-b from-surface to-surface-container-high text-on-surface font-body min-h-screen antialiased flex flex-col md:flex-row-reverse overflow-x-hidden">
+<!-- Right Sidebar Navigation (TopNav JSON Adapted for Sidebar) -->
+<nav class="hidden md:flex flex-col w-64 h-screen fixed right-0 top-0 glass-nav z-50 px-6 py-8 shadow-[-10px_0_40px_rgba(0,0,0,0.02)]">
+<div class="mb-12">
+<h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-800 to-blue-600 font-headline tracking-tight">UC Data Lakehouse</h1>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<a class="px-4 py-3 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white/40 transition-all duration-300 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="cloud_upload">cloud_upload</span>
+<span class="font-medium text-sm">Upload</span>
+</a>
+<a class="px-4 py-3 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white/40 transition-all duration-300 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+<span class="font-medium text-sm">Admin Dashboard</span>
+</a>
+<a class="px-4 py-3 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white/40 transition-all duration-300 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="timeline">timeline</span>
+<span class="font-medium text-sm">Pipeline Tracker</span>
+</a>
+<a class="px-4 py-3 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-white/40 transition-all duration-300 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="monitoring">monitoring</span>
+<span class="font-medium text-sm">Superset</span>
+</a>
+<a class="px-4 py-3 rounded-xl bg-primary-container/10 text-blue-700 font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] transition-all duration-300 flex items-center gap-3 border-l-2 border-blue-600" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="account_tree">account_tree</span>
+<span class="font-semibold text-sm">Airflow</span>
+</a>
+</div>
+<div class="mt-auto flex justify-between items-center px-2 pt-6 border-t border-outline-variant/20">
+<button class="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-white/40 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</button>
+<button class="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-white/40 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="power_settings_new">power_settings_new</span>
+</button>
+<button class="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-white/40 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</div>
+</nav>
+<!-- Mobile Top Nav Bar -->
+<header class="md:hidden glass-nav sticky top-0 z-50 w-full h-16 flex justify-between items-center px-4 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+<h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-800 to-blue-600 font-headline">UC Data Lakehouse</h1>
+<button class="p-2 text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 w-full md:pr-64 min-h-screen relative z-10 p-6 md:p-12 lg:p-16 flex flex-col gap-8">
+<!-- Header Section -->
+<header class="flex flex-col gap-2 max-w-4xl">
+<h1 class="text-[2.5rem] md:text-[3.5rem] font-bold text-on-surface leading-tight font-display tracking-tight">Orkestrasi</h1>
+<p class="text-[1.125rem] text-on-surface-variant font-medium max-w-2xl">Monitoring DAG dan eksekusi pipeline keuangan secara real-time.</p>
+</header>
+<!-- Main Dashboard Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Summary & Flow -->
+<div class="lg:col-span-8 flex flex-col gap-8">
+<!-- DAG Summary Card -->
+<section class="glass-panel rounded-[1.5rem] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.04),0_2px_10px_rgba(0,0,0,0.02)] border-t border-white/40 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 relative z-10">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<h2 class="text-[1.5rem] font-semibold text-on-surface font-headline">finance_daily_ingest_v2</h2>
+<span class="px-3 py-1 rounded-full bg-emerald-100/80 text-emerald-800 text-xs font-bold uppercase tracking-wider flex items-center gap-1 backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Running
+                                </span>
+</div>
+<p class="text-sm text-on-surface-variant">Data extraction &amp; bronze layer transformation</p>
+</div>
+<!-- Admin Controls -->
+<div class="flex items-center gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-white/50 hover:bg-white text-on-surface text-sm font-semibold transition-all duration-300 shadow-sm border border-outline-variant/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span>
+                                Run Ingest
+                            </button>
+<button class="flex-1 md:flex-none px-5 py-2.5 rounded-xl bg-primary-container text-on-primary text-sm font-semibold hover:bg-primary transition-all duration-300 shadow-md shadow-primary/20 flex items-center justify-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="play_arrow">play_arrow</span>
+                                Trigger DAG
+                            </button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+<div class="flex flex-col gap-1">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Last Run</span>
+<span class="text-lg font-medium text-on-surface">10 Mins Ago</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Duration</span>
+<span class="text-lg font-medium text-on-surface">00:04:23</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Next Run</span>
+<span class="text-lg font-medium text-on-surface">Tomorrow 00:00</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Schedule</span>
+<span class="text-lg font-medium text-on-surface">@daily</span>
+</div>
+</div>
+</section>
+<!-- Execution Flow Visualization -->
+<section class="glass-panel rounded-[1.5rem] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.04),0_2px_10px_rgba(0,0,0,0.02)] border-t border-white/40">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-[1.125rem] font-semibold text-on-surface font-headline">Pipeline Execution Flow</h3>
+<button class="text-primary text-sm font-semibold hover:text-primary-container transition-colors flex items-center gap-1">
+                            Open in Airflow
+                            <span class="material-symbols-outlined text-[16px]" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+<!-- Flow Nodes (Simplified Visual Representation) -->
+<div class="relative py-4 overflow-x-auto pb-8">
+<!-- Connecting Line -->
+<div class="absolute top-[42px] left-8 right-8 h-1 bg-surface-container-highest rounded-full z-0"></div>
+<div class="absolute top-[42px] left-8 w-[60%] h-1 bg-primary rounded-full z-0 transition-all duration-1000"></div>
+<div class="flex items-center justify-between min-w-[600px] relative z-10 px-4">
+<!-- Node 1: Extract -->
+<div class="flex flex-col items-center gap-3 w-24">
+<div class="w-14 h-14 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-white">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+</div>
+<div class="text-center">
+<span class="block text-sm font-semibold text-on-surface">Extract</span>
+<span class="block text-[10px] text-on-surface-variant mt-0.5">Success</span>
+</div>
+</div>
+<!-- Node 2: Quality Gate -->
+<div class="flex flex-col items-center gap-3 w-24">
+<div class="w-14 h-14 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-white">
+<span class="material-symbols-outlined" data-icon="policy">policy</span>
+</div>
+<div class="text-center">
+<span class="block text-sm font-semibold text-on-surface">Quality Gate</span>
+<span class="block text-[10px] text-on-surface-variant mt-0.5">Success</span>
+</div>
+</div>
+<!-- Node 3: Bronze (Current) -->
+<div class="flex flex-col items-center gap-3 w-24">
+<div class="w-14 h-14 rounded-full bg-surface-container-lowest text-primary flex items-center justify-center shadow-lg ring-4 ring-primary border-2 border-primary-container relative">
+<div class="absolute inset-0 rounded-full border-2 border-primary animate-ping opacity-20"></div>
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+</div>
+<div class="text-center">
+<span class="block text-sm font-semibold text-primary">Bronze L1</span>
+<span class="block text-[10px] text-primary mt-0.5 font-medium animate-pulse">Running...</span>
+</div>
+</div>
+<!-- Node 4: Silver -->
+<div class="flex flex-col items-center gap-3 w-24 opacity-60">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest text-outline flex items-center justify-center ring-4 ring-white">
+<span class="material-symbols-outlined" data-icon="filter_alt">filter_alt</span>
+</div>
+<div class="text-center">
+<span class="block text-sm font-semibold text-on-surface-variant">Silver L2</span>
+<span class="block text-[10px] text-outline mt-0.5">Pending</span>
+</div>
+</div>
+<!-- Node 5: Gold -->
+<div class="flex flex-col items-center gap-3 w-24 opacity-60">
+<div class="w-14 h-14 rounded-full bg-surface-container-highest text-outline flex items-center justify-center ring-4 ring-white">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+</div>
+<div class="text-center">
+<span class="block text-sm font-semibold text-on-surface-variant">Gold L3</span>
+<span class="block text-[10px] text-outline mt-0.5">Pending</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Logs Terminal -->
+<div class="lg:col-span-4 flex flex-col h-full min-h-[400px]">
+<section class="glass-panel rounded-[1.5rem] p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04),0_2px_10px_rgba(0,0,0,0.02)] border-t border-white/40 flex-1 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-[1.125rem] font-semibold text-on-surface font-headline flex items-center gap-2">
+<span class="material-symbols-outlined text-outline" data-icon="terminal">terminal</span>
+                            System Logs
+                        </h3>
+<div class="flex gap-2">
+<button class="p-1.5 rounded-md hover:bg-surface-container transition-colors text-on-surface-variant" title="Clear Logs">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete_sweep">delete_sweep</span>
+</button>
+<button class="p-1.5 rounded-md hover:bg-surface-container transition-colors text-on-surface-variant" title="Download">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Terminal Window -->
+<div class="flex-1 bg-inverse-surface rounded-xl p-4 overflow-hidden relative group font-mono text-xs flex flex-col">
+<!-- macOS style window controls just for flair -->
+<div class="flex gap-1.5 mb-3 opacity-50">
+<div class="w-2.5 h-2.5 rounded-full bg-error"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary-fixed"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2 text-inverse-on-surface pr-2 custom-scrollbar">
+<div class="flex gap-3 opacity-80">
+<span class="text-surface-variant shrink-0">[10:45:01]</span>
+<span class="text-primary-fixed-dim">INFO</span>
+<span>Starting DAG run 'finance_daily_ingest_v2'</span>
+</div>
+<div class="flex gap-3 opacity-80">
+<span class="text-surface-variant shrink-0">[10:45:02]</span>
+<span class="text-primary-fixed-dim">INFO</span>
+<span>Executing task 'extract_core_banking'</span>
+</div>
+<div class="flex gap-3 opacity-80">
+<span class="text-surface-variant shrink-0">[10:46:15]</span>
+<span class="text-emerald-300">SUCCESS</span>
+<span>Task 'extract_core_banking' completed. 450,231 rows extracted.</span>
+</div>
+<div class="flex gap-3 opacity-80">
+<span class="text-surface-variant shrink-0">[10:46:16]</span>
+<span class="text-primary-fixed-dim">INFO</span>
+<span>Executing task 'quality_gate_checks'</span>
+</div>
+<div class="flex gap-3 opacity-80">
+<span class="text-surface-variant shrink-0">[10:48:30]</span>
+<span class="text-emerald-300">SUCCESS</span>
+<span>All quality checks passed. Null threshold &lt; 1%.</span>
+</div>
+<div class="flex gap-3">
+<span class="text-surface-variant shrink-0">[10:48:31]</span>
+<span class="text-primary-fixed-dim">INFO</span>
+<span class="text-white">Executing task 'transform_bronze_layer'</span>
+</div>
+<div class="flex gap-3 animate-pulse">
+<span class="text-surface-variant shrink-0">[10:49:05]</span>
+<span class="text-secondary-fixed-dim">EXEC</span>
+<span class="text-surface-dim">Writing partitions to s3://lakehouse-bronze/finance/dt=2023-10-25/...</span>
+</div>
+<div class="flex gap-3 animate-pulse mt-2">
+<span class="text-surface-variant shrink-0"></span>
+<span class="text-secondary-fixed-dim"></span>
+<span class="text-surface-dim">_</span>
+</div>
+</div>
+<!-- Scroll shadow indicator -->
+<div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-inverse-surface to-transparent pointer-events-none"></div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Global Footer Status Bar -->
+<footer class="fixed bottom-0 left-0 w-full md:w-[calc(100%-16rem)] h-8 glass-nav border-t border-white/40 flex items-center justify-between px-6 z-40 text-[10px] font-medium text-on-surface-variant uppercase tracking-widest backdrop-blur-md">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Airflow Connected</span>
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Cluster Healthy</span>
+</div>
+<div class="hidden sm:block">
+            Last Synced: Just now
+        </div>
+</footer>
+</body></html>
