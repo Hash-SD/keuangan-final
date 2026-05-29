@@ -62,7 +62,7 @@ def load_prodi_data() -> dict:
 }"""
     return json.loads(json_data)
 
-def build_piutang_rows(seed: int = 20260526) -> pd.DataFrame:
+def build_piutang_rows(seed: int = 99999999) -> pd.DataFrame:
     rng = random.Random(seed)
     rows = []
     kualitas_options = [

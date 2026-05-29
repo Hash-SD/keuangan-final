@@ -23,7 +23,7 @@ def _load_piutang_master() -> pd.DataFrame:
     return pd.read_csv(path, dtype={"nim": "string"})
 
 
-def build_transactions(seed: int = 20260526) -> pd.DataFrame:
+def build_transactions(seed: int = 99999999) -> pd.DataFrame:
     rng = random.Random(seed)
     piutang = _load_piutang_master()
     sains_nims = piutang.loc[piutang["prodi"] == "Sains Data", "nim"].tolist()
