@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
 from src.common.paths import DATA_DIR, GENERATED_DIR, RAW_DIR, ensure_parent
+from src.common.runtime_config import configured_batch_id
 from src.common.time_utils import utc_now_iso
 
 
@@ -50,6 +51,7 @@ def _master_maps() -> tuple[dict[tuple[str, str], int], dict[str, tuple[str, int
 
 
 def validate_transactions() -> dict:
+    batch_id = configured_batch_id()
     csv_paths = sorted((RAW_DIR / "csv").glob("transaksi_*.csv"))
     ukt_map, spi_map = _master_maps()
     rejected_rows = []
@@ -94,7 +96,7 @@ def validate_transactions() -> dict:
         for row_number, row in df[invalid_mask].iterrows():
             rejected_rows.append(
                 {
-                    "batch_id": "batch-dummy-20260526",
+                    "batch_id": batch_id,
                     "source_filename": csv_path.name,
                     "row_number": int(row_number) + 2,
                     "error_type": "transaction_validation",
@@ -116,7 +118,7 @@ def validate_transactions() -> dict:
     valid.to_csv(valid_path, index=False)
     pd.DataFrame(rejected_rows).to_csv(rejected_path, index=False)
     summary = {
-        "batch_id": "batch-dummy-20260526",
+        "batch_id": batch_id,
         "total_rows": total_rows,
         "valid_rows": len(valid),
         "rejected_rows": len(rejected_rows),

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
@@ -11,6 +13,7 @@ from .services.paths import PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
 from .services.reference import pdf_sample_status, reference_spi_preview, reference_summary, reference_ukt_preview, source_status
 from .services.system_status import service_statuses
+from src.common.runtime_config import get_runtime_config
 
 
 def create_app() -> Flask:
@@ -29,6 +32,25 @@ def create_app() -> Flask:
     @app.get("/api/health")
     def health():
         return jsonify({"status": "ok", "service": "portal-backend", "mode": "local-on-premise", "basis": "main.pdf"})
+
+    @app.get("/api/runtime-config")
+    def runtime_config():
+        config = get_runtime_config()
+        return jsonify(
+            {
+                "target_prodi": config.target_prodi,
+                "target_fakultas": config.target_fakultas,
+                "target_tahun_akademik": config.target_tahun_akademik,
+                "target_tahun_anggaran": config.target_tahun_anggaran,
+                "batch_id": config.batch_id,
+                "source_event": config.source_event_iso,
+                "target_total_piutang": config.target_total_piutang,
+                "target_jumlah_penunggak": config.target_jumlah_penunggak,
+                "target_total_pagu_rab": config.target_total_pagu_rab,
+                "dummy_transaction_rows": config.dummy_transaction_rows,
+                "dummy_invalid_rows": config.dummy_invalid_rows,
+            }
+        )
 
     @app.get("/api/status/services")
     def status_services():
@@ -151,4 +173,8 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8091, debug=False)
+    app.run(
+        host=os.getenv("PORTAL_BACKEND_BIND_HOST", "127.0.0.1"),
+        port=int(os.getenv("PORTAL_BACKEND_BIND_PORT", "8091")),
+        debug=False,
+    )

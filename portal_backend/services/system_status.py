@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import socket
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
@@ -25,18 +26,18 @@ def http_online(url: str, timeout: float = 0.25) -> bool:
 
 def service_statuses() -> dict[str, list[dict[str, Any]]]:
     definitions = [
-        {"key": "portal", "name": "Portal Keuangan", "role": "Portal Lokal", "port": 8090, "url": "http://localhost:8090", "kind": "http"},
-        {"key": "portalBackend", "name": "Portal Backend API", "role": "Local API", "port": 8091, "url": "http://localhost:8091/api/health", "kind": "http"},
-        {"key": "airflow", "name": "Airflow", "role": "Orchestration", "port": 8085, "url": "http://localhost:8085", "kind": "http"},
-        {"key": "superset", "name": "Superset", "role": "BI Dashboard", "port": 8089, "url": "http://localhost:8089", "kind": "http"},
-        {"key": "supersetHealth", "name": "Superset Health", "role": "BI Healthcheck", "port": 8089, "url": "http://localhost:8089/health", "kind": "http"},
-        {"key": "minioApi", "name": "MinIO API", "role": "Object Storage API Health", "port": 9000, "url": "http://localhost:9000/minio/health/live", "kind": "http"},
-        {"key": "minioConsole", "name": "MinIO Console", "role": "Object Storage Console", "port": 9001, "url": "http://localhost:9001", "kind": "http"},
-        {"key": "sparkMaster", "name": "Spark Master", "role": "Compute Master UI", "port": 8080, "url": "http://localhost:8080", "kind": "http"},
-        {"key": "sparkRpc", "name": "Spark Master RPC", "role": "Compute Master TCP", "port": 7077, "host": "localhost", "kind": "tcp", "action": "copy_connection"},
-        {"key": "sparkWorker", "name": "Spark Worker", "role": "Compute Worker UI", "port": 8081, "url": "http://localhost:8081", "kind": "http"},
-        {"key": "trino", "name": "Trino", "role": "SQL Query Engine", "port": 8082, "url": "http://localhost:8082/v1/info", "kind": "http"},
-        {"key": "postgres", "name": "PostgreSQL Metastore", "role": "Metadata Database", "port": 5432, "host": "localhost", "kind": "tcp", "action": "copy_connection"},
+        {"key": "portal", "name": "Portal Keuangan", "role": "Portal Lokal", "port": 8090, "url": f"http://{os.getenv('PORTAL_HOST', 'localhost')}:{os.getenv('PORTAL_PORT', '8090')}", "kind": "http"},
+        {"key": "portalBackend", "name": "Portal Backend API", "role": "Local API", "port": 8091, "url": f"http://{os.getenv('PORTAL_BACKEND_HOST', 'localhost')}:{os.getenv('PORTAL_BACKEND_PORT', '8091')}/api/health", "kind": "http"},
+        {"key": "airflow", "name": "Airflow", "role": "Orchestration", "port": 8085, "url": f"http://{os.getenv('AIRFLOW_HOST', 'localhost')}:{os.getenv('AIRFLOW_PORT', '8085')}", "kind": "http"},
+        {"key": "superset", "name": "Superset", "role": "BI Dashboard", "port": 8089, "url": f"http://{os.getenv('SUPERSET_HOST', 'localhost')}:{os.getenv('SUPERSET_PORT', '8089')}", "kind": "http"},
+        {"key": "supersetHealth", "name": "Superset Health", "role": "BI Healthcheck", "port": 8089, "url": f"http://{os.getenv('SUPERSET_HOST', 'localhost')}:{os.getenv('SUPERSET_PORT', '8089')}/health", "kind": "http"},
+        {"key": "minioApi", "name": "MinIO API", "role": "Object Storage API Health", "port": 9000, "url": f"http://{os.getenv('MINIO_HOST', 'localhost')}:{os.getenv('MINIO_API_PORT', '9000')}/minio/health/live", "kind": "http"},
+        {"key": "minioConsole", "name": "MinIO Console", "role": "Object Storage Console", "port": 9001, "url": f"http://{os.getenv('MINIO_HOST', 'localhost')}:{os.getenv('MINIO_CONSOLE_PORT', '9001')}", "kind": "http"},
+        {"key": "sparkMaster", "name": "Spark Master", "role": "Compute Master UI", "port": 8080, "url": f"http://{os.getenv('SPARK_MASTER_HOST', 'localhost')}:{os.getenv('SPARK_MASTER_UI_PORT', '8080')}", "kind": "http"},
+        {"key": "sparkRpc", "name": "Spark Master RPC", "role": "Compute Master TCP", "port": 7077, "host": os.getenv("SPARK_MASTER_HOST", "localhost"), "kind": "tcp", "action": "copy_connection"},
+        {"key": "sparkWorker", "name": "Spark Worker", "role": "Compute Worker UI", "port": 8081, "url": f"http://{os.getenv('SPARK_WORKER_HOST', 'localhost')}:{os.getenv('SPARK_WORKER_UI_PORT', '8081')}", "kind": "http"},
+        {"key": "trino", "name": "Trino", "role": "SQL Query Engine", "port": 8082, "url": f"http://{os.getenv('TRINO_HOST', 'localhost')}:{os.getenv('TRINO_PORT', '8082')}/v1/info", "kind": "http"},
+        {"key": "postgres", "name": "PostgreSQL Metastore", "role": "Metadata Database", "port": 5432, "host": os.getenv("POSTGRES_HOST", "localhost"), "kind": "tcp", "action": "copy_connection"},
     ]
     def check(service: dict[str, Any]) -> dict[str, Any]:
         if service["kind"] == "tcp":

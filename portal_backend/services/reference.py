@@ -8,6 +8,7 @@ from openpyxl import load_workbook
 
 from .files import csv_preview, relative_path
 from .paths import MASTER_BIAYA_EXCEL_PATH, MASTER_SPI_PATH, MASTER_UKT_PATH, PDF_SAMPLE_PATH, RAW_CSV_DIR, RAW_EXCEL_RAB_PATH, RAW_PDF_PATH
+from src.common.runtime_config import get_runtime_config
 
 
 CSV_REQUIRED_COLUMNS = {
@@ -67,12 +68,14 @@ def pdf_sample_status() -> dict[str, Any]:
 
 
 def excel_rab_status() -> dict[str, Any]:
+    config = get_runtime_config()
     if not RAW_EXCEL_RAB_PATH.exists():
         return {
             "status": "missing",
             "path": relative_path(RAW_EXCEL_RAB_PATH),
             "sheet": "RAB",
-            "total_pagu_expected": 150_000_000,
+            "target_prodi": config.target_prodi,
+            "total_pagu_expected": config.target_total_pagu_rab,
         }
     try:
         workbook = load_workbook(RAW_EXCEL_RAB_PATH, read_only=True, data_only=True)
@@ -90,13 +93,15 @@ def excel_rab_status() -> dict[str, Any]:
             "missing_columns": missing,
             "wide_format_detected": has_month_columns,
             "silver_unpivot_target": "data/generated/silver/rab_prodi_sains_data_long.csv",
-            "total_pagu_expected": 150_000_000,
+            "target_prodi": config.target_prodi,
+            "total_pagu_expected": config.target_total_pagu_rab,
         }
     except (OSError, StopIteration) as exc:
         return {"status": "error", "path": relative_path(RAW_EXCEL_RAB_PATH), "message": str(exc)}
 
 
 def source_status() -> dict[str, Any]:
+    config = get_runtime_config()
     csv_files = sorted(path for path in RAW_CSV_DIR.glob("transaksi_*.csv") if path.is_file())
     csv_statuses = [_csv_file_status(path) for path in csv_files]
     total_csv_rows = sum(item.get("rows", 0) for item in csv_statuses)
@@ -107,14 +112,16 @@ def source_status() -> dict[str, Any]:
             "expected_files": 2,
             "files": csv_statuses,
             "total_rows": total_csv_rows,
-            "target_rows": 800,
+            "target_rows": config.dummy_transaction_rows,
         },
         "excel": excel_rab_status(),
         "control_totals": {
-            "total_piutang_ukt_sains_data": 31_250_000,
-            "jumlah_mahasiswa_penunggak_sains_data": 15,
-            "total_pagu_rab": 150_000_000,
-            "csv_rows": 800,
+            "target_prodi": config.target_prodi,
+            "target_tahun_akademik": config.target_tahun_akademik,
+            "total_piutang_ukt_target": config.target_total_piutang,
+            "jumlah_mahasiswa_penunggak_target": config.target_jumlah_penunggak,
+            "total_pagu_rab": config.target_total_pagu_rab,
+            "csv_rows": config.dummy_transaction_rows,
         },
     }
 

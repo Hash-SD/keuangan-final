@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
 from src.common.paths import GENERATED_DIR, OUTPUTS_DIR
+from src.common.runtime_config import configured_batch_id
 
 
 def main() -> None:
@@ -23,7 +24,7 @@ def main() -> None:
     write_json(
         OUTPUTS_DIR / "metrics" / "data_quality_score.json",
         {
-            "batch_id": "batch-dummy-20260526",
+            "batch_id": configured_batch_id(),
             "completeness": round(completeness, 2),
             "validity": round(validity, 2),
             "consistency": round(consistency, 2),
@@ -35,4 +36,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

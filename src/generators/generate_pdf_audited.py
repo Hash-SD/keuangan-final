@@ -15,6 +15,7 @@ from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, RAW_DIR, ensure_parent
+from src.common.runtime_config import get_runtime_config
 
 def load_prodi_data() -> dict:
     json_data = """{
@@ -62,8 +63,37 @@ def load_prodi_data() -> dict:
 }"""
     return json.loads(json_data)
 
+def _target_nominals(config, prodi_info: dict, count: int, rng: random.Random) -> list[int]:
+    if config.target_prodi == "Sains Data" and config.target_total_piutang is None and count == 15:
+        return [
+            2_500_000,
+            2_500_000,
+            2_250_000,
+            2_250_000,
+            2_000_000,
+            2_000_000,
+            2_000_000,
+            2_000_000,
+            2_000_000,
+            2_000_000,
+            1_750_000,
+            1_750_000,
+            1_750_000,
+            2_250_000,
+            2_250_000,
+        ]
+    if config.target_total_piutang is not None and count > 0:
+        base = (config.target_total_piutang // count // 50_000) * 50_000
+        nominals = [base for _ in range(count)]
+        nominals[-1] += config.target_total_piutang - sum(nominals)
+        return nominals
+    ukts = prodi_info.get("ukts", [2_500_000])
+    return [(rng.choice(ukts) // 50_000) * 50_000 for _ in range(count)]
+
+
 def build_piutang_rows(seed: int = 99999999) -> pd.DataFrame:
-    rng = random.Random(seed)
+    config = get_runtime_config()
+    rng = random.Random(config.dummy_seed if seed == 99999999 else seed)
     rows = []
     kualitas_options = [
         ("Lancar", 0.5),
@@ -73,41 +103,30 @@ def build_piutang_rows(seed: int = 99999999) -> pd.DataFrame:
     ]
 
     prodi_data = load_prodi_data()
-    all_prodis = [prodi for prodi in prodi_data.keys() if prodi != "Sains Data"]
-    sains_data_nominals = [
-        2_500_000,
-        2_500_000,
-        2_250_000,
-        2_250_000,
-        2_000_000,
-        2_000_000,
-        2_000_000,
-        2_000_000,
-        2_000_000,
-        2_000_000,
-        1_750_000,
-        1_750_000,
-        1_750_000,
-        2_250_000,
-        2_250_000,
-    ]
+    prodi_data.setdefault(
+        config.target_prodi,
+        {"fakultas": config.target_fakultas, "ukts": [500_000, 1_000_000, 2_000_000, 3_500_000, 5_000_000, 6_500_000, 8_000_000, 9_500_000], "spi": 30_000_000},
+    )
+    all_prodis = [prodi for prodi in prodi_data.keys() if prodi != config.target_prodi]
+    target_count = config.target_jumlah_penunggak or 15
+    target_nominals = _target_nominals(config, prodi_data[config.target_prodi], target_count, rng)
 
-    # Sains Data specific initial rows
-    for idx in range(1, 16):
+    for idx in range(1, target_count + 1):
         kualitas, penyisihan = kualitas_options[idx % len(kualitas_options)]
-        prodi = "Sains Data"
+        prodi = config.target_prodi
         golongan = rng.randint(0, 7)
         base_ukt = prodi_data[prodi]["ukts"][golongan]
-        nominal = sains_data_nominals[idx - 1]
+        nominal = target_nominals[idx - 1]
+        prodi_slug = "".join(part[0] for part in prodi.split() if part).upper()[:3] or "PRD"
 
         rows.append(
             {
-                "nim": f"SD2024{idx:04d}",
-                "nama_debitur": f"Mahasiswa Dummy Sains {idx:02d}",
-                "fakultas": prodi_data.get(prodi, {}).get("fakultas", "Fakultas Sains"),
+                "nim": f"{prodi_slug}2024{idx:04d}",
+                "nama_debitur": f"Mahasiswa Dummy {prodi} {idx:02d}",
+                "fakultas": prodi_data.get(prodi, {}).get("fakultas", config.target_fakultas),
                 "prodi": prodi,
                 "semester": "Ganjil" if idx % 2 else "Genap",
-                "tahun_akademik": "2023/2024",
+                "tahun_akademik": config.target_tahun_akademik,
                 "umur_tunggakan": rng.randint(1, 6),
                 "kualitas": kualitas,
                 "persentase_penyisihan": penyisihan,
@@ -118,7 +137,7 @@ def build_piutang_rows(seed: int = 99999999) -> pd.DataFrame:
             }
         )
 
-    for idx in range(16, 804):
+    for idx in range(target_count + 1, 804):
         prodi = rng.choice(all_prodis)
         kualitas, penyisihan = rng.choice(kualitas_options)
         
@@ -139,7 +158,7 @@ def build_piutang_rows(seed: int = 99999999) -> pd.DataFrame:
                 "fakultas": prodi_data[prodi]["fakultas"],
                 "prodi": prodi,
                 "semester": rng.choice(["Ganjil", "Genap"]),
-                "tahun_akademik": rng.choice(["2022/2023", "2023/2024"]),
+                "tahun_akademik": rng.choice([config.target_tahun_akademik, "2022/2023"]),
                 "umur_tunggakan": umur_tunggakan,
                 "kualitas": kualitas,
                 "persentase_penyisihan": penyisihan,
@@ -157,6 +176,7 @@ def _rupiah(value: int) -> str:
 
 
 def write_pdf(path: Path | None = None) -> Path:
+    config = get_runtime_config()
     path = path or (RAW_DIR / "pdf" / "ITERA_LKTA2024Audited.pdf")
     ensure_parent(path)
     GENERATED_DIR.mkdir(parents=True, exist_ok=True)
@@ -166,7 +186,7 @@ def write_pdf(path: Path | None = None) -> Path:
     doc = SimpleDocTemplate(str(path), pagesize=landscape(A4), rightMargin=18, leftMargin=18, topMargin=18, bottomMargin=18)
     styles = getSampleStyleSheet()
     story = [
-        Paragraph("Laporan Keuangan Tahunan Audited 2024 - Data Dummy", styles["Title"]),
+        Paragraph(f"Laporan Keuangan Tahunan Audited {config.target_tahun_anggaran} - Data Dummy", styles["Title"]),
         Paragraph("Laporan Realisasi Anggaran", styles["Heading2"]),
         Paragraph("Pendapatan Penerimaan Negara Bukan Pajak: Rp170.036.699.916", styles["Normal"]),
         Paragraph("Catatan Hasil Reviu Piutang", styles["Heading2"]),
@@ -218,7 +238,7 @@ def write_pdf(path: Path | None = None) -> Path:
         )
     )
     story.append(table)
-    doc.title = "ITERA LKTA 2024 Audited Dummy"
+    doc.title = f"ITERA LKTA {config.target_tahun_anggaran} Audited Dummy"
     doc.author = "Synthetic Generator"
     doc.build(story)
     return path

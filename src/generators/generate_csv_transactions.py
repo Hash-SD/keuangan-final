@@ -10,6 +10,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, RAW_DIR, ensure_parent
+from src.common.runtime_config import get_runtime_config
 
 
 STATUSES = ["paid", "partial", "unpaid", "failed"]
@@ -24,18 +25,19 @@ def _load_piutang_master() -> pd.DataFrame:
 
 
 def build_transactions(seed: int = 99999999) -> pd.DataFrame:
-    rng = random.Random(seed)
+    config = get_runtime_config()
+    rng = random.Random(config.dummy_seed if seed == 99999999 else seed)
     piutang = _load_piutang_master()
-    sains_nims = piutang.loc[piutang["prodi"] == "Sains Data", "nim"].tolist()
+    target_nims = piutang.loc[piutang["prodi"] == config.target_prodi, "nim"].tolist()
     all_nims = piutang["nim"].tolist()
     rows = []
     start = datetime(2023, 8, 1)
 
-    for idx in range(800):
-        semester = "Ganjil" if idx < 400 else "Genap"
+    for idx in range(config.dummy_transaction_rows):
+        semester = "Ganjil" if idx < config.dummy_transaction_rows / 2 else "Genap"
         
         # Pick a random nim
-        nim_pool = sains_nims if idx % 17 == 0 else all_nims
+        nim_pool = target_nims if target_nims and idx % 17 == 0 else all_nims
         nim = rng.choice(nim_pool)
         
         # Look up their base_ukt from master
@@ -43,14 +45,14 @@ def build_transactions(seed: int = 99999999) -> pd.DataFrame:
         if not student_data.empty and "base_ukt" in student_data.columns:
             student_row = student_data.iloc[0]
             base_ukt = int(student_row["base_ukt"])
-            prodi = str(student_row.get("prodi", "Sains Data"))
-            fakultas = str(student_row.get("fakultas", "Fakultas Sains"))
+            prodi = str(student_row.get("prodi", config.target_prodi))
+            fakultas = str(student_row.get("fakultas", config.target_fakultas))
             golongan_ukt = str(student_row.get("golongan_ukt", "Gol. 1"))
             nominal_spi = int(student_row.get("spi", 30_000_000))
         else:
             base_ukt = 2_500_000
-            prodi = "Sains Data"
-            fakultas = "Fakultas Sains"
+            prodi = config.target_prodi
+            fakultas = config.target_fakultas
             golongan_ukt = "Gol. 1"
             nominal_spi = 30_000_000
 
@@ -69,7 +71,7 @@ def build_transactions(seed: int = 99999999) -> pd.DataFrame:
                 "nim_dummy": nim,
                 "tanggal": tanggal.strftime("%Y-%m-%d"),
                 "semester": semester,
-                "tahun_akademik": "2023/2024",
+                "tahun_akademik": config.target_tahun_akademik,
                 "jenis_biaya": jenis_biaya,
                 "prodi": prodi,
                 "fakultas": fakultas,
@@ -78,13 +80,13 @@ def build_transactions(seed: int = 99999999) -> pd.DataFrame:
                 "nominal_bayar": nominal_bayar,
                 "metode_bayar": rng.choice(METHODS),
                 "status_bayar": rng.choice(STATUSES),
-                "batch_id": f"BATCH-{semester.upper()}-2026",
+                "batch_id": config.batch_id,
                 "source_system": "AVITA",
-                "created_at": datetime(2026, 5, 26, 10, 0, 0).isoformat(),
+                "created_at": config.source_event_iso,
             }
         )
 
-    invalid_indices = list(range(0, 16))
+    invalid_indices = list(range(0, min(config.dummy_invalid_rows, len(rows))))
     for i, row_idx in enumerate(invalid_indices):
         if i % 4 == 0:
             rows[row_idx]["nim"] = ""

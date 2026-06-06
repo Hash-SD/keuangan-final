@@ -91,12 +91,14 @@ docker-compose up -d
 
 ## 🌐 Service URLs (Akses Portal & Monitoring)
 
-Sistem ini menyediakan antarmuka monitoring terpusat untuk setiap layanannya. 
+Sistem ini menyediakan antarmuka monitoring terpusat untuk setiap layanannya.
 
-**Jalankan Portal Induk secara Lokal:**
+**Jalankan seluruh stack, termasuk Portal Induk dan Backend API:**
 ```powershell
-.\scripts\start_portal.ps1
+docker compose up -d
 ```
+
+Portal juga tetap dapat dijalankan secara lokal melalui `.\scripts\start_portal_backend.ps1` untuk kebutuhan debugging, tetapi mode normal proyek adalah melalui Docker Compose.
 
 | Layanan | URL Akses | Kredensial Default | Deskripsi |
 |---|---|---|---|

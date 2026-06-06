@@ -238,6 +238,138 @@ services:
     networks:
       - lakehouse_net
 
+  portal-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.portal
+    image: keuangan-portal:latest
+    container_name: keuangan-portal-backend
+    restart: unless-stopped
+    depends_on:
+      airflow-webserver:
+        condition: service_healthy
+      superset:
+        condition: service_healthy
+      trino:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      postgres-metastore:
+        condition: service_healthy
+    environment:
+      PYTHONPATH: /opt/lakehouse
+      PORTAL_BACKEND_BIND_HOST: 0.0.0.0
+      PORTAL_BACKEND_BIND_PORT: 8091
+      PORTAL_GUNICORN_WORKERS: ${PORTAL_GUNICORN_WORKERS:-2}
+      PORTAL_GUNICORN_THREADS: ${PORTAL_GUNICORN_THREADS:-4}
+      PORTAL_GUNICORN_TIMEOUT: ${PORTAL_GUNICORN_TIMEOUT:-120}
+      PORTAL_TARGET_PRODI: ${PORTAL_TARGET_PRODI:-Sains Data}
+      PORTAL_TARGET_FAKULTAS: ${PORTAL_TARGET_FAKULTAS:-Fakultas Sains}
+      PORTAL_TARGET_TAHUN_AKADEMIK: ${PORTAL_TARGET_TAHUN_AKADEMIK:-2023/2024}
+      PORTAL_TARGET_TAHUN_ANGGARAN: ${PORTAL_TARGET_TAHUN_ANGGARAN:-2024}
+      PORTAL_BATCH_ID: ${PORTAL_BATCH_ID:-batch-dummy-20260526}
+      PORTAL_SOURCE_EVENT_ISO: ${PORTAL_SOURCE_EVENT_ISO:-2026-05-26T10:00:00+00:00}
+      PORTAL_TARGET_TOTAL_PIUTANG: ${PORTAL_TARGET_TOTAL_PIUTANG:-}
+      PORTAL_TARGET_JUMLAH_PENUNGGAK: ${PORTAL_TARGET_JUMLAH_PENUNGGAK:-}
+      PORTAL_TARGET_TOTAL_PAGU_RAB: ${PORTAL_TARGET_TOTAL_PAGU_RAB:-150000000}
+      PORTAL_DUMMY_SEED: ${PORTAL_DUMMY_SEED:-99999999}
+      PORTAL_DUMMY_TRANSACTION_ROWS: ${PORTAL_DUMMY_TRANSACTION_ROWS:-800}
+      PORTAL_DUMMY_INVALID_ROWS: ${PORTAL_DUMMY_INVALID_ROWS:-16}
+      PORTAL_HOST: portal-frontend
+      PORTAL_PORT: 8090
+      PORTAL_BACKEND_HOST: portal-backend
+      PORTAL_BACKEND_PORT: 8091
+      AIRFLOW_HOST: airflow-webserver
+      AIRFLOW_PORT: 8080
+      SUPERSET_HOST: superset
+      SUPERSET_PORT: 8088
+      MINIO_HOST: minio
+      MINIO_API_PORT: 9000
+      MINIO_CONSOLE_PORT: 9001
+      SPARK_MASTER_HOST: spark-master
+      SPARK_MASTER_UI_PORT: 8080
+      SPARK_WORKER_HOST: spark-worker
+      SPARK_WORKER_UI_PORT: 8081
+      TRINO_HOST: trino
+      TRINO_PORT: 8080
+      POSTGRES_HOST: postgres-metastore
+      POSTGRES_PORT: 5432
+    ports:
+      - "8091:8091"
+    volumes:
+      - ./:/opt/lakehouse
+    working_dir: /opt/lakehouse
+    entrypoint: /bin/sh
+    command: >
+      -c "gunicorn portal_backend.app:app
+      --bind 0.0.0.0:8091
+      --workers $${PORTAL_GUNICORN_WORKERS}
+      --threads $${PORTAL_GUNICORN_THREADS}
+      --timeout $${PORTAL_GUNICORN_TIMEOUT}
+      --access-logfile -
+      --error-logfile -"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8091/api/health', timeout=5)"]
+      interval: 20s
+      timeout: 10s
+      retries: 12
+    networks:
+      - lakehouse_net
+
+  portal-frontend:
+    image: keuangan-portal:latest
+    container_name: keuangan-portal-frontend
+    restart: unless-stopped
+    depends_on:
+      portal-backend:
+        condition: service_healthy
+    environment:
+      PORTAL_HOST: 0.0.0.0
+      PORTAL_PORT: 8090
+      PORTAL_TARGET_PRODI: ${PORTAL_TARGET_PRODI:-Sains Data}
+      PORTAL_TARGET_FAKULTAS: ${PORTAL_TARGET_FAKULTAS:-Fakultas Sains}
+      PORTAL_TARGET_TAHUN_AKADEMIK: ${PORTAL_TARGET_TAHUN_AKADEMIK:-2023/2024}
+      PORTAL_TARGET_TAHUN_ANGGARAN: ${PORTAL_TARGET_TAHUN_ANGGARAN:-2024}
+      PORTAL_BATCH_ID: ${PORTAL_BATCH_ID:-batch-dummy-20260526}
+      PORTAL_SOURCE_EVENT_ISO: ${PORTAL_SOURCE_EVENT_ISO:-2026-05-26T10:00:00+00:00}
+      PORTAL_TARGET_TOTAL_PIUTANG: ${PORTAL_TARGET_TOTAL_PIUTANG:-}
+      PORTAL_TARGET_JUMLAH_PENUNGGAK: ${PORTAL_TARGET_JUMLAH_PENUNGGAK:-}
+      PORTAL_TARGET_TOTAL_PAGU_RAB: ${PORTAL_TARGET_TOTAL_PAGU_RAB:-150000000}
+      PORTAL_DUMMY_SEED: ${PORTAL_DUMMY_SEED:-99999999}
+      PORTAL_DUMMY_TRANSACTION_ROWS: ${PORTAL_DUMMY_TRANSACTION_ROWS:-800}
+      PORTAL_DUMMY_INVALID_ROWS: ${PORTAL_DUMMY_INVALID_ROWS:-16}
+      AIRFLOW_HOST: airflow-webserver
+      AIRFLOW_PORT: 8080
+      SUPERSET_HOST: superset
+      SUPERSET_PORT: 8088
+      MINIO_HOST: minio
+      MINIO_API_PORT: 9000
+      MINIO_CONSOLE_PORT: 9001
+      SPARK_MASTER_HOST: spark-master
+      SPARK_MASTER_UI_PORT: 8080
+      SPARK_WORKER_HOST: spark-worker
+      SPARK_WORKER_UI_PORT: 8081
+      TRINO_HOST: trino
+      TRINO_PORT: 8080
+      POSTGRES_HOST: postgres-metastore
+      POSTGRES_PORT: 5432
+      PORTAL_BACKEND_HOST: portal-backend
+      PORTAL_BACKEND_PORT: 8091
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./:/opt/lakehouse
+    working_dir: /opt/lakehouse
+    entrypoint: python
+    command: portal/server.py
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090', timeout=5)"]
+      interval: 20s
+      timeout: 10s
+      retries: 12
+    networks:
+      - lakehouse_net
+
 networks:
   lakehouse_net:
     name: lakehouse_net

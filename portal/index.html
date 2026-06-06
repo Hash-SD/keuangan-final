@@ -814,8 +814,10 @@
 
   <script>
     const CONTROL = {
-      totalPiutang: 31250000,
-      penunggak: 15,
+      targetProdi: "Sains Data",
+      targetTahunAkademik: "2023/2024",
+      totalPiutang: 0,
+      penunggak: 0,
       paguRab: 150000000,
       totalRows: 800,
       validRows: 784,
@@ -847,6 +849,7 @@
       sourceStatus: null,
       pdfStatus: null,
       referenceSummary: null,
+      runtimeConfig: null,
       rejectedRows: [],
       goldPreview: [],
       silverPreview: [],
@@ -858,6 +861,11 @@
     const badge = (text, type = "ok") => `<span class="status-badge status-${type}"><span class="dot" style="width:6px;height:6px;"></span>${text}</span>`;
     const safe = value => value === undefined || value === null || value === "" ? "-" : value;
     const has = value => value !== undefined && value !== null;
+    const runtimeTarget = () => state.runtimeConfig || state.metrics.runtime_config || {
+      target_prodi: CONTROL.targetProdi,
+      target_tahun_akademik: CONTROL.targetTahunAkademik,
+      target_total_pagu_rab: CONTROL.paguRab
+    };
     const formatDuration = value => {
       let seconds = Number(value || 0);
       if (!Number.isFinite(seconds) || seconds <= 0) return "-";
@@ -1008,12 +1016,13 @@
       const rec = state.metrics.reconcile || {};
       const quality = state.metrics.quality || {};
       const lp = latestPipelineActivity();
+      const target = runtimeTarget();
       
       document.getElementById("page-beranda").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid home-metrics-grid">
-            ${tailwindCard("Total Piutang UKT", rupiah(rec.total_piutang || CONTROL.totalPiutang), "Kontrol Prodi Sains Data", "account_balance_wallet", "#3b82f6", "#eff6ff")}
-            ${tailwindCard("Mahasiswa Penunggak", n(rec.jumlah_penunggak || CONTROL.penunggak), "Dari total mahasiswa aktif", "person", "#ea580c", "#ffedd5")}
+            ${tailwindCard("Total Piutang UKT", rupiah(rec.total_piutang ?? CONTROL.totalPiutang), `Kontrol Prodi ${target.target_prodi}`, "account_balance_wallet", "#3b82f6", "#eff6ff")}
+            ${tailwindCard("Mahasiswa Penunggak", n(rec.jumlah_penunggak ?? CONTROL.penunggak), "Dari total mahasiswa aktif", "person", "#ea580c", "#ffedd5")}
             ${tailwindCard("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Semua gate lulus", "verified", "#6366f1", "#e0e7ff")}
             ${tailwindCard("Pipeline Status", lp ? String(lp.status || "Success") : "Success", `Last run: ${lp ? formatLastRun(lp.time) : (state.metrics.latency?.last_run || "28 Mei 2026, 18:05 WIB")}`, "account_tree", "#10b981", "#d1fae5", "#16a34a")}
           </section>
@@ -1037,6 +1046,7 @@
       const q = qualitySummary();
       const source = state.sourceStatus || {};
       const ref = state.referenceSummary || {};
+      const target = runtimeTarget();
       document.getElementById("page-data").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid grid-4 w-full">
@@ -1092,7 +1102,7 @@
           <section class="section-grid grid-3">
             ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "1 dokumen PDF digital, ekstraksi teks programmatic")}
             ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "2 file transaksi, target 800 rows")}
-            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", "RAB Prodi Sains Data, target pagu Rp150.000.000")}
+            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `RAB Prodi ${target.target_prodi}, target pagu ${rupiah(target.target_total_pagu_rab ?? CONTROL.paguRab)}`)}
           </section>
 
           <section class="glass-panel w-full">
@@ -1269,19 +1279,19 @@
               <div style="display:flex; flex-wrap:wrap; gap:1.25rem;">
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Expected total piutang</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${rupiah(rec.target_total_piutang || CONTROL.totalPiutang)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${rupiah(rec.target_total_piutang ?? CONTROL.totalPiutang)}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Actual total piutang</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${rupiah(rec.total_piutang || CONTROL.totalPiutang)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${rupiah(rec.total_piutang ?? CONTROL.totalPiutang)}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Expected penunggak</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${n(rec.target_jumlah_penunggak || CONTROL.penunggak)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${n(rec.target_jumlah_penunggak ?? CONTROL.penunggak)}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Actual penunggak</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${n(rec.jumlah_penunggak || CONTROL.penunggak)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${n(rec.jumlah_penunggak ?? CONTROL.penunggak)}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Status Quality Gate</dt>
@@ -1325,7 +1335,7 @@
         logRow("10:30:00", "INFO", "Starting DAG keuangan_prodi_lakehouse_dag"),
         logRow("10:32:10", "SUCCESS", `Quality Gate selesai: ${CONTROL.validRows} baris valid, ${CONTROL.rejectedRows} baris dikarantina`),
         logRow("10:35:42", "SUCCESS", "Bronze layer raw ingestion selesai"),
-        logRow("10:42:00", "SUCCESS", `Gold validation PASS: Total piutang ${new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(CONTROL.totalPiutang)} dengan ${CONTROL.penunggak} mahasiswa penunggak`),
+        logRow("10:42:00", "SUCCESS", `Gold validation PASS: Total piutang ${new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(state.metrics.reconcile?.total_piutang ?? CONTROL.totalPiutang)} dengan ${state.metrics.reconcile?.jumlah_penunggak ?? CONTROL.penunggak} mahasiswa penunggak`),
         logRow("10:45:12", "INFO", "Superset dashboard assets synchronization requested successfully")
       ].join("");
 
@@ -1708,7 +1718,7 @@
           <section class="section-grid grid-3 w-full">
             ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "Status sample proposal main.pdf")}
             ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "Status dua file transaksi dummy")}
-            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", "Status file RAB Prodi Sains Data")}
+            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `Status file RAB Prodi ${runtimeTarget().target_prodi}`)}
           </section>
 
           <section class="section-grid grid-4 w-full">
@@ -1990,7 +2000,7 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary, runtimeConfig] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -2000,9 +2010,11 @@
           apiGet("/api/data/preview?layer=silver&limit=10").catch(() => null),
           apiGet("/api/data/source-status").catch(() => null),
           apiGet("/api/pdf/sample-status").catch(() => null),
-          apiGet("/api/reference/summary").catch(() => null)
+          apiGet("/api/reference/summary").catch(() => null),
+          apiGet("/api/runtime-config").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
+        state.metrics.runtime_config = metrics.runtime_config;
         state.metrics.qualityGate = state.metrics.qualityGate || metrics.quality_gate;
         state.metrics.reconcile = state.metrics.reconcile || metrics.control_total;
         state.metrics.uat = state.metrics.uat || {};
@@ -2026,6 +2038,7 @@
         state.sourceStatus = sourceStatus;
         state.pdfStatus = pdfStatus;
         state.referenceSummary = referenceSummary;
+        state.runtimeConfig = runtimeConfig || metrics.runtime_config || null;
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });

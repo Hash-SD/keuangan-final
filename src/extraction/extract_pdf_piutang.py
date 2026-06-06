@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
 from src.common.paths import GENERATED_DIR, OUTPUTS_DIR, RAW_DIR, ensure_parent
+from src.common.runtime_config import configured_batch_id
 
 
 PDF_INPUT = RAW_DIR / "pdf" / "ITERA_LKTA2024Audited.pdf"
@@ -115,7 +116,7 @@ def extract_fact_piutang_ukt_prodi(pdf_path: str | Path = PDF_INPUT) -> pd.DataF
                 rows.append(match.groups())
         df = pd.DataFrame(rows)
     df["source_filename"] = Path(pdf_path).name
-    df["batch_id"] = "batch-dummy-20260526"
+    df["batch_id"] = configured_batch_id()
     ensure_parent(SILVER_FACT_PIUTANG)
     df.to_csv(SILVER_FACT_PIUTANG, index=False)
     return df
@@ -129,4 +130,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

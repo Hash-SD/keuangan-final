@@ -4,17 +4,26 @@ from typing import Any
 
 from .files import read_json
 from .paths import DATA_DIR, OUTPUTS_DIR
+from src.common.runtime_config import get_runtime_config
 
 
-CONTROL = {
-    "total_piutang": 31_250_000,
-    "jumlah_penunggak": 15,
-    "total_rows": 800,
-    "valid_rows": 784,
-    "rejected_rows": 16,
-    "dropout_rate": 2.0,
-    "data_quality_score": 100.0,
-}
+def _control_defaults() -> dict[str, Any]:
+    config = get_runtime_config()
+    rejected_rows = min(config.dummy_invalid_rows, config.dummy_transaction_rows)
+    valid_rows = max(config.dummy_transaction_rows - rejected_rows, 0)
+    return {
+        "target_prodi": config.target_prodi,
+        "target_tahun_akademik": config.target_tahun_akademik,
+        "target_tahun_anggaran": config.target_tahun_anggaran,
+        "total_piutang": config.target_total_piutang or 0,
+        "jumlah_penunggak": config.target_jumlah_penunggak or 0,
+        "total_pagu_rab": config.target_total_pagu_rab,
+        "total_rows": config.dummy_transaction_rows,
+        "valid_rows": valid_rows,
+        "rejected_rows": rejected_rows,
+        "dropout_rate": (rejected_rows / config.dummy_transaction_rows * 100) if config.dummy_transaction_rows else 0,
+        "data_quality_score": 100.0,
+    }
 
 
 def _seconds_to_label(seconds: int | float | None) -> str:
@@ -28,6 +37,7 @@ def _seconds_to_label(seconds: int | float | None) -> str:
 
 
 def metrics_payload() -> dict[str, Any]:
+    control = _control_defaults()
     control_total = read_json(OUTPUTS_DIR / "metrics" / "reconcile_control_total.json")
     latency = read_json(OUTPUTS_DIR / "metrics" / "pipeline_latency.json")
     freshness = read_json(OUTPUTS_DIR / "metrics" / "data_freshness.json")
@@ -39,28 +49,35 @@ def metrics_payload() -> dict[str, Any]:
     if not available:
         return {"available": False, "message": "Belum ada hasil pipeline. Jalankan pipeline terlebih dahulu."}
 
+    reconcile_fallback = {
+        "target_prodi": control["target_prodi"],
+        "total_piutang": control["total_piutang"],
+        "jumlah_penunggak": control["jumlah_penunggak"],
+        "target_total_piutang": control["total_piutang"],
+        "target_jumlah_penunggak": control["jumlah_penunggak"],
+        "status": "pass",
+        "validation_mode": "configured_fallback",
+    }
     quality_gate_payload = quality_gate or dropout or {}
     return {
         "available": True,
-        "control_total": control_total or {
-            "total_piutang": CONTROL["total_piutang"],
-            "jumlah_penunggak": CONTROL["jumlah_penunggak"],
-            "status": "pass",
-        },
+        "runtime_config": control,
+        "control_total": control_total or reconcile_fallback,
         "control_total_proposal": {
-            "expected_total_piutang": (control_total or {}).get("target_total_piutang", CONTROL["total_piutang"]),
-            "actual_total_piutang": (control_total or {}).get("total_piutang", CONTROL["total_piutang"]),
-            "expected_penunggak": (control_total or {}).get("target_jumlah_penunggak", CONTROL["jumlah_penunggak"]),
-            "actual_penunggak": (control_total or {}).get("jumlah_penunggak", CONTROL["jumlah_penunggak"]),
+            "target_prodi": (control_total or {}).get("target_prodi", control["target_prodi"]),
+            "expected_total_piutang": (control_total or {}).get("target_total_piutang", control["total_piutang"]),
+            "actual_total_piutang": (control_total or {}).get("total_piutang", control["total_piutang"]),
+            "expected_penunggak": (control_total or {}).get("target_jumlah_penunggak", control["jumlah_penunggak"]),
+            "actual_penunggak": (control_total or {}).get("jumlah_penunggak", control["jumlah_penunggak"]),
             "status": (control_total or {}).get("status", "pass"),
         },
         "quality_gate": {
-            "total_rows": quality_gate_payload.get("total_rows", CONTROL["total_rows"]),
-            "valid_rows": quality_gate_payload.get("valid_rows", CONTROL["valid_rows"]),
-            "rejected_rows": quality_gate_payload.get("rejected_rows", CONTROL["rejected_rows"]),
-            "dropout_rate": quality_gate_payload.get("dropout_rate", CONTROL["dropout_rate"]),
+            "total_rows": quality_gate_payload.get("total_rows", control["total_rows"]),
+            "valid_rows": quality_gate_payload.get("valid_rows", control["valid_rows"]),
+            "rejected_rows": quality_gate_payload.get("rejected_rows", control["rejected_rows"]),
+            "dropout_rate": quality_gate_payload.get("dropout_rate", control["dropout_rate"]),
         },
-        "data_quality_score": (quality or {}).get("data_quality_score", CONTROL["data_quality_score"]),
+        "data_quality_score": (quality or {}).get("data_quality_score", control["data_quality_score"]),
         "pipeline_latency": _seconds_to_label((latency or {}).get("pipeline_latency_seconds") or (latency or {}).get("latency_seconds")),
         "pipeline_latency_raw": latency,
         "data_freshness": "Updated recently" if freshness else "-",

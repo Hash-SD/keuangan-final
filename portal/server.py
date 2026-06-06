@@ -3,13 +3,15 @@ from __future__ import annotations
 import csv
 import json
 import mimetypes
+import os
 import socket
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
 
-PORT = 8090
+HOST = os.getenv("PORTAL_HOST", "localhost")
+PORT = int(os.getenv("PORTAL_PORT", "8090"))
 PORTAL_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PORTAL_DIR.parent
 
@@ -77,14 +79,15 @@ def portal_state():
     }
     services = {
         "portal": True,
-        "airflow": port_open("localhost", 8085),
-        "superset": port_open("localhost", 8089),
-        "minioApi": port_open("localhost", 9000),
-        "minioConsole": port_open("localhost", 9001),
-        "sparkMaster": port_open("localhost", 8080),
-        "sparkWorker": port_open("localhost", 8081),
-        "trino": port_open("localhost", 8082),
-        "postgres": port_open("localhost", 5432),
+        "airflow": port_open(os.getenv("AIRFLOW_HOST", "localhost"), int(os.getenv("AIRFLOW_PORT", "8085"))),
+        "superset": port_open(os.getenv("SUPERSET_HOST", "localhost"), int(os.getenv("SUPERSET_PORT", "8089"))),
+        "minioApi": port_open(os.getenv("MINIO_HOST", "localhost"), int(os.getenv("MINIO_API_PORT", "9000"))),
+        "minioConsole": port_open(os.getenv("MINIO_HOST", "localhost"), int(os.getenv("MINIO_CONSOLE_PORT", "9001"))),
+        "sparkMaster": port_open(os.getenv("SPARK_MASTER_HOST", "localhost"), int(os.getenv("SPARK_MASTER_UI_PORT", "8080"))),
+        "sparkWorker": port_open(os.getenv("SPARK_WORKER_HOST", "localhost"), int(os.getenv("SPARK_WORKER_UI_PORT", "8081"))),
+        "trino": port_open(os.getenv("TRINO_HOST", "localhost"), int(os.getenv("TRINO_PORT", "8082"))),
+        "postgres": port_open(os.getenv("POSTGRES_HOST", "localhost"), int(os.getenv("POSTGRES_PORT", "5432"))),
+        "portalBackend": port_open(os.getenv("PORTAL_BACKEND_HOST", "localhost"), int(os.getenv("PORTAL_BACKEND_PORT", "8091"))),
     }
     has_metrics = all(
         metrics[key] is not None
@@ -150,6 +153,6 @@ class PortalHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = ThreadingHTTPServer(("localhost", PORT), PortalHandler)
-    print(f"Portal lokal aktif: http://localhost:{PORT}")
+    server = ThreadingHTTPServer((HOST, PORT), PortalHandler)
+    print(f"Portal lokal aktif: http://{HOST}:{PORT}")
     server.serve_forever()

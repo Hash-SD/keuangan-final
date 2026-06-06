@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
 from src.common.paths import DATA_DIR, RAW_DIR, ensure_parent
+from src.common.runtime_config import configured_batch_id
 from src.common.time_utils import utc_now_iso
 
 
@@ -35,7 +36,7 @@ def copy_raw_to_bronze() -> dict:
                 "contains_real_personal_data": False,
             }
         )
-    metadata = {"batch_id": "batch-dummy-20260526", "files": outputs}
+    metadata = {"batch_id": configured_batch_id(), "files": outputs}
     write_json(DATA_DIR / "generated" / "bronze" / "ingestion_metadata.json", metadata)
     return metadata
 
