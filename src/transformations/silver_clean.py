@@ -8,6 +8,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import DATA_DIR, GENERATED_DIR, RAW_DIR, ensure_parent
+from src.common.runtime_paths import raw_rab_path, silver_rab_path
 from src.extraction.extract_pdf_piutang import extract_dim_kualitas_piutang, extract_fact_piutang_ukt_prodi, extract_master_control_total
 from src.generators.generate_excel_rab import MONTHS
 
@@ -34,16 +35,18 @@ def clean_silver() -> dict:
     master_spi.to_csv(GENERATED_DIR / "silver" / "silver_master_spi.csv", index=False)
     mahasiswa.to_csv(GENERATED_DIR / "silver" / "silver_mahasiswa.csv", index=False)
 
-    rab = pd.read_excel(RAW_DIR / "excel" / "rab_prodi_sains_data.xlsx", sheet_name="RAB")
+    rab = pd.read_excel(raw_rab_path(), sheet_name="RAB")
     rab_long = rab.melt(
         id_vars=["kode_akun", "nama_kegiatan", "kategori", "total_pagu"],
         value_vars=MONTHS,
         var_name="bulan",
         value_name="alokasi_rp",
     )
-    rab_path = GENERATED_DIR / "silver" / "rab_prodi_sains_data_long.csv"
+    rab_path = silver_rab_path()
     ensure_parent(rab_path)
     rab_long.to_csv(rab_path, index=False)
+    if rab_path.name != "rab_prodi_sains_data_long.csv":
+        rab_long.to_csv(GENERATED_DIR / "silver" / "rab_prodi_sains_data_long.csv", index=False)
     rab_long.to_csv(GENERATED_DIR / "silver" / "silver_rab.csv", index=False)
     return {
         "piutang_rows": len(piutang),

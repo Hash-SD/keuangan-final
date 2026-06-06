@@ -19,12 +19,6 @@ print('Real JS var declarations (should be const/let):', len(var_decls))
 for v in var_decls:
     print(' -', v)
 
-# Validate final JS
-try:
-    new Function = None  # just check syntax manually
-    print('\nJS syntax: checking...')
-    with open('temp_check.js', 'w', encoding='utf-8') as f:
-        f.write(js)
-    print('Written temp_check.js for node validation')
-except Exception as e:
-    print('Error:', e)
+with open('temp_check.js', 'w', encoding='utf-8') as f:
+    f.write(js)
+print('\nWritten temp_check.js for node validation')

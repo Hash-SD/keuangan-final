@@ -15,6 +15,8 @@ def _control_defaults() -> dict[str, Any]:
         "target_prodi": config.target_prodi,
         "target_tahun_akademik": config.target_tahun_akademik,
         "target_tahun_anggaran": config.target_tahun_anggaran,
+        "target_label": config.target_label,
+        "validation_mode": config.validation_mode,
         "total_piutang": config.target_total_piutang or 0,
         "jumlah_penunggak": config.target_jumlah_penunggak or 0,
         "total_pagu_rab": config.target_total_pagu_rab,
@@ -51,6 +53,8 @@ def metrics_payload() -> dict[str, Any]:
 
     reconcile_fallback = {
         "target_prodi": control["target_prodi"],
+        "target_tahun_akademik": control["target_tahun_akademik"],
+        "target_label": control["target_label"],
         "total_piutang": control["total_piutang"],
         "jumlah_penunggak": control["jumlah_penunggak"],
         "target_total_piutang": control["total_piutang"],
@@ -65,6 +69,8 @@ def metrics_payload() -> dict[str, Any]:
         "control_total": control_total or reconcile_fallback,
         "control_total_proposal": {
             "target_prodi": (control_total or {}).get("target_prodi", control["target_prodi"]),
+            "target_tahun_akademik": (control_total or {}).get("target_tahun_akademik", control["target_tahun_akademik"]),
+            "target_label": (control_total or {}).get("target_label", control["target_label"]),
             "expected_total_piutang": (control_total or {}).get("target_total_piutang", control["total_piutang"]),
             "actual_total_piutang": (control_total or {}).get("total_piutang", control["total_piutang"]),
             "expected_penunggak": (control_total or {}).get("target_jumlah_penunggak", control["jumlah_penunggak"]),

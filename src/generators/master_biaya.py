@@ -8,6 +8,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, RAW_DIR, ensure_parent
+from src.common.runtime_paths import sample_pdf_path
 from src.generators.generate_pdf_audited import load_prodi_data
 
 
@@ -91,7 +92,7 @@ def write_master_biaya() -> list[Path]:
     metadata = pd.DataFrame(
         [
             {"key": "source_type", "value": "dummy_reference"},
-            {"key": "source_pdf", "value": "data/samples/ITERA_LKTA2024Audited.pdf"},
+            {"key": "source_pdf", "value": sample_pdf_path().as_posix()},
             {"key": "generated_for", "value": "Portal Keuangan"},
             {"key": "contains_real_personal_data", "value": "false"},
         ]

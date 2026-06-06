@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import re
 
 
 DEFAULT_SOURCE_EVENT_ISO = "2026-05-26T10:00:00+00:00"
@@ -25,6 +26,11 @@ def _env_float(name: str, default: float) -> float:
     if value is None or value.strip() == "":
         return default
     return float(value.strip())
+
+
+def slugify(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
+    return slug or "target"
 
 
 def _source_event() -> datetime:
@@ -55,6 +61,18 @@ class RuntimeConfig:
     def batch_year(self) -> str:
         return self.source_event.strftime("%Y")
 
+    @property
+    def target_label(self) -> str:
+        return f"{self.target_prodi} - Tahun Akademik {self.target_tahun_akademik}"
+
+    @property
+    def validation_mode(self) -> str:
+        return "observed_only" if self.target_total_piutang is None and self.target_jumlah_penunggak is None else "explicit_target"
+
+    @property
+    def target_slug(self) -> str:
+        return slugify(f"{self.target_prodi}_{self.target_tahun_akademik}")
+
 
 def get_runtime_config() -> RuntimeConfig:
     return RuntimeConfig(
@@ -79,3 +97,7 @@ def source_event_iso() -> str:
 
 def configured_batch_id() -> str:
     return get_runtime_config().batch_id
+
+
+def configured_target_label() -> str:
+    return get_runtime_config().target_label

@@ -19,6 +19,9 @@ def main() -> None:
         OUTPUTS_DIR / "metrics" / "data_freshness.json",
         {
             "batch_id": config.batch_id,
+            "target_prodi": config.target_prodi,
+            "target_tahun_akademik": config.target_tahun_akademik,
+            "target_label": config.target_label,
             "source_event": source_event.isoformat(),
             "dashboard_available": dashboard_available.isoformat(),
             "freshness_seconds": int((dashboard_available - source_event).total_seconds()),

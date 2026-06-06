@@ -10,10 +10,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
 from src.common.paths import GENERATED_DIR, OUTPUTS_DIR
-from src.common.runtime_config import configured_batch_id
+from src.common.runtime_config import configured_batch_id, get_runtime_config
 
 
 def main() -> None:
+    config = get_runtime_config()
     fact = pd.read_csv(GENERATED_DIR / "gold" / "fact_piutang_ukt_prodi.csv")
     reconcile = json.loads((OUTPUTS_DIR / "metrics" / "reconcile_control_total.json").read_text(encoding="utf-8"))
     completeness = float(100 * fact.notna().mean().mean())
@@ -25,6 +26,9 @@ def main() -> None:
         OUTPUTS_DIR / "metrics" / "data_quality_score.json",
         {
             "batch_id": configured_batch_id(),
+            "target_prodi": config.target_prodi,
+            "target_tahun_akademik": config.target_tahun_akademik,
+            "target_label": config.target_label,
             "completeness": round(completeness, 2),
             "validity": round(validity, 2),
             "consistency": round(consistency, 2),

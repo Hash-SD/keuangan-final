@@ -19,6 +19,9 @@ def main() -> None:
         OUTPUTS_DIR / "metrics" / "pipeline_latency.json",
         {
             "batch_id": config.batch_id,
+            "target_prodi": config.target_prodi,
+            "target_tahun_akademik": config.target_tahun_akademik,
+            "target_label": config.target_label,
             "source_arrival": source_arrival.isoformat(),
             "gold_ready": gold_ready.isoformat(),
             "latency_seconds": int((gold_ready - source_arrival).total_seconds()),

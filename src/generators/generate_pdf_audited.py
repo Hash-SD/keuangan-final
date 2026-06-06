@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, RAW_DIR, ensure_parent
 from src.common.runtime_config import get_runtime_config
+from src.common.runtime_paths import raw_pdf_path
 
 def load_prodi_data() -> dict:
     json_data = """{
@@ -177,7 +178,7 @@ def _rupiah(value: int) -> str:
 
 def write_pdf(path: Path | None = None) -> Path:
     config = get_runtime_config()
-    path = path or (RAW_DIR / "pdf" / "ITERA_LKTA2024Audited.pdf")
+    path = path or raw_pdf_path()
     ensure_parent(path)
     GENERATED_DIR.mkdir(parents=True, exist_ok=True)
     df = build_piutang_rows()

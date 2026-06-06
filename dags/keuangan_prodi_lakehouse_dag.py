@@ -48,6 +48,7 @@ with DAG(
     load_gold_postgres_fallback = BashOperator(
         task_id="load_gold_postgres_fallback",
         bash_command=f"{PY} /opt/airflow/src/sql/load_gold_to_postgres.py",
+        append_env=True,
         env={
             "POSTGRES_HOST": "postgres-metastore",
             "POSTGRES_PORT": "5432",
@@ -60,6 +61,7 @@ with DAG(
     refresh_superset_dataset = BashOperator(
         task_id="refresh_superset_dataset",
         bash_command=f"{PY} /opt/airflow/src/sql/setup_superset_assets.py",
+        append_env=True,
         env={
             "SUPERSET_BASE_URL": "http://superset:8088",
             "PYTHONPATH": "/opt/airflow",
@@ -68,6 +70,7 @@ with DAG(
     refresh_superset_dashboard = BashOperator(
         task_id="refresh_superset_dashboard",
         bash_command=f"{PY} /opt/airflow/src/sql/setup_superset_dashboard.py",
+        append_env=True,
         env={
             "SUPERSET_BASE_URL": "http://superset:8088",
             "PYTHONPATH": "/opt/airflow",

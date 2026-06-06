@@ -864,8 +864,10 @@
     const runtimeTarget = () => state.runtimeConfig || state.metrics.runtime_config || {
       target_prodi: CONTROL.targetProdi,
       target_tahun_akademik: CONTROL.targetTahunAkademik,
+      target_label: `${CONTROL.targetProdi} - Tahun Akademik ${CONTROL.targetTahunAkademik}`,
       target_total_pagu_rab: CONTROL.paguRab
     };
+    const targetLabel = () => runtimeTarget().target_label || `${runtimeTarget().target_prodi} - Tahun Akademik ${runtimeTarget().target_tahun_akademik}`;
     const formatDuration = value => {
       let seconds = Number(value || 0);
       if (!Number.isFinite(seconds) || seconds <= 0) return "-";
@@ -1021,7 +1023,7 @@
       document.getElementById("page-beranda").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid home-metrics-grid">
-            ${tailwindCard("Total Piutang UKT", rupiah(rec.total_piutang ?? CONTROL.totalPiutang), `Kontrol Prodi ${target.target_prodi}`, "account_balance_wallet", "#3b82f6", "#eff6ff")}
+            ${tailwindCard("Total Piutang UKT", rupiah(rec.total_piutang ?? CONTROL.totalPiutang), `Kontrol ${targetLabel()}`, "account_balance_wallet", "#3b82f6", "#eff6ff")}
             ${tailwindCard("Mahasiswa Penunggak", n(rec.jumlah_penunggak ?? CONTROL.penunggak), "Dari total mahasiswa aktif", "person", "#ea580c", "#ffedd5")}
             ${tailwindCard("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Semua gate lulus", "verified", "#6366f1", "#e0e7ff")}
             ${tailwindCard("Pipeline Status", lp ? String(lp.status || "Success") : "Success", `Last run: ${lp ? formatLastRun(lp.time) : (state.metrics.latency?.last_run || "28 Mei 2026, 18:05 WIB")}`, "account_tree", "#10b981", "#d1fae5", "#16a34a")}
@@ -1102,13 +1104,13 @@
           <section class="section-grid grid-3">
             ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "1 dokumen PDF digital, ekstraksi teks programmatic")}
             ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "2 file transaksi, target 800 rows")}
-            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `RAB Prodi ${target.target_prodi}, target pagu ${rupiah(target.target_total_pagu_rab ?? CONTROL.paguRab)}`)}
+            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `RAB ${targetLabel()}, target pagu ${rupiah(target.target_total_pagu_rab ?? CONTROL.paguRab)}`)}
           </section>
 
           <section class="glass-panel w-full">
             <h3 class="section-title" style="display:flex; align-items:center; gap:0.5rem; color:#0f172a;">
               <span class="material-symbols-outlined" style="color:var(--primary);">upload_file</span>
-              Ingest New Source File
+              Ingest New Source File ${tooltip(`Periode aktif: ${targetLabel()}`)}
             </h3>
             <p class="muted small" style="margin-bottom:1.25rem; color:#475569;">Pilih berkas sumber data keuangan untuk diunggah ke layer raw Lakehouse (MinIO S3).</p>
             <div class="section-grid grid-3">
@@ -1167,7 +1169,7 @@
       const accept = type === "pdf" ? ".pdf" : type === "csv" ? ".csv" : ".xlsx";
       return `<article class="glass-card upload-zone">
         <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--primary); margin-bottom:-0.5rem;">${icon}</span>
-        <div><h3 style="margin:0 0 .35rem;">Upload ${title}</h3><p class="muted small" style="margin:0;">Target folder: <code>${path}</code></p></div>
+        <div><h3 style="margin:0 0 .35rem;">Upload ${title}</h3><p class="muted small" style="margin:0;">${targetLabel()}<br>Target folder: <code>${path}</code></p></div>
         <div style="width:100%; display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
           <input id="upload-${type}" type="file" accept="${accept}" style="display:none;" onchange="document.getElementById('filename-${type}').textContent = this.files.length ? this.files[0].name : 'Belum ada file dipilih'; document.getElementById('filename-${type}').style.color = '#0f172a';">
           <label for="upload-${type}" class="secondary-button" style="cursor:pointer; padding:0.4rem 1rem; border-radius:999px;">
@@ -1185,8 +1187,8 @@
       const detail = title.includes("CSV")
         ? `${payload?.total_rows ?? 0} / ${payload?.target_rows ?? CONTROL.totalRows} rows`
         : title.includes("PDF")
-          ? (payload?.path || payload?.message || "data/samples/ITERA_LKTA2024Audited.pdf")
-          : (payload?.path || "data/raw/excel/rab_prodi_sains_data.xlsx");
+          ? (payload?.path || payload?.message || runtimeTarget().paths?.sample_pdf || "data/samples/ITERA_LKTA2024Audited.pdf")
+          : (payload?.path || runtimeTarget().paths?.raw_rab || "data/raw/excel/rab_prodi_sains_data.xlsx");
       return `<article class="glass-card">
         <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;">
           <div>
@@ -1718,11 +1720,11 @@
           <section class="section-grid grid-3 w-full">
             ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "Status sample proposal main.pdf")}
             ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "Status dua file transaksi dummy")}
-            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `Status file RAB Prodi ${runtimeTarget().target_prodi}`)}
+            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `Status file RAB ${targetLabel()}`)}
           </section>
 
           <section class="section-grid grid-4 w-full">
-            ${metric("PDF Sample", ref.pdf_sample?.available ? "Available" : "Missing", "data/samples/ITERA_LKTA2024Audited.pdf", "picture_as_pdf")}
+            ${metric("PDF Sample", ref.pdf_sample?.available ? "Available" : "Missing", runtimeTarget().paths?.sample_pdf || "data/samples/ITERA_LKTA2024Audited.pdf", "picture_as_pdf")}
             ${metric("Master UKT CSV", ref.ukt?.available ? "Available" : "Missing", `${ref.ukt?.rows || 0} rows`, "school")}
             ${metric("Master SPI CSV", ref.spi?.available ? "Available" : "Missing", `${ref.spi?.rows || 0} rows`, "payments")}
             ${metric("Master Biaya Excel", ref.excel?.master_biaya_available ? "Available" : "Missing", "data/raw/excel/master_biaya_itera.xlsx", "table_chart")}

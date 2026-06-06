@@ -223,38 +223,43 @@ def _position_json(chart_ids: list[int]) -> dict[str, Any]:
 def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
     config = get_runtime_config()
     target_prodi = config.target_prodi
+    target_tahun = config.target_tahun_akademik
     total_piutang = _metric("Total Piutang", "SUM", "nominal_piutang_rp")
     jumlah_penunggak = _metric("Jumlah Penunggak", "COUNT_DISTINCT", "nim")
     count_rows = _metric("Jumlah Baris", "COUNT", "piutang_key")
 
     target_prodi_filter = _filter("nama_prodi", "==", target_prodi)
     target_prodi_query_filter = _query_filter("nama_prodi", "==", target_prodi)
+    target_tahun_filter = _filter("tahun_akademik", "==", target_tahun)
+    target_tahun_query_filter = _query_filter("tahun_akademik", "==", target_tahun)
+    target_filters = [target_prodi_filter, target_tahun_filter]
+    target_query_filters = [target_prodi_query_filter, target_tahun_query_filter]
     return [
         _chart_payload(
             dataset_id,
-            f"Total Piutang UKT - {target_prodi}",
+            f"Total Piutang UKT - {target_prodi} {target_tahun}",
             "big_number_total",
             {
                 "metric": total_piutang,
-                "adhoc_filters": [target_prodi_filter],
+                "adhoc_filters": target_filters,
                 "header_font_size": 0.45,
                 "subheader_font_size": 0.16,
                 "y_axis_format": ",d",
             },
-            {"metrics": [total_piutang], "columns": [], "filters": [target_prodi_query_filter], "orderby": [[total_piutang, False]]},
+            {"metrics": [total_piutang], "columns": [], "filters": target_query_filters, "orderby": [[total_piutang, False]]},
         ),
         _chart_payload(
             dataset_id,
-            f"Jumlah Mahasiswa Penunggak - {target_prodi}",
+            f"Jumlah Mahasiswa Penunggak - {target_prodi} {target_tahun}",
             "big_number_total",
             {
                 "metric": jumlah_penunggak,
-                "adhoc_filters": [target_prodi_filter],
+                "adhoc_filters": target_filters,
                 "header_font_size": 0.45,
                 "subheader_font_size": 0.16,
                 "y_axis_format": ",d",
             },
-            {"metrics": [jumlah_penunggak], "columns": [], "filters": [target_prodi_query_filter], "orderby": [[jumlah_penunggak, False]]},
+            {"metrics": [jumlah_penunggak], "columns": [], "filters": target_query_filters, "orderby": [[jumlah_penunggak, False]]},
         ),
         _chart_payload(
             dataset_id,

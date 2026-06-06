@@ -49,7 +49,8 @@ docker compose config
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\full_run.ps1
 python -m pytest tests -v
 docker exec keuangan-spark-master /opt/spark/bin/spark-submit --packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.10.1,org.apache.iceberg:iceberg-aws-bundle:1.10.1,org.postgresql:postgresql:42.7.3 /opt/lakehouse/src/transformations/load_gold_iceberg.py
-docker exec keuangan-trino trino --catalog iceberg --schema gold --execute "SELECT SUM(nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key WHERE o.nama_prodi = 'Sains Data'"
+$tahun = (Get-Content .env | Select-String '^PORTAL_TARGET_TAHUN_AKADEMIK=').ToString().Split('=',2)[1]
+docker exec keuangan-trino trino --catalog iceberg --schema gold --execute "SELECT o.nama_prodi, w.tahun_akademik, SUM(f.nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key JOIN dim_waktu_tunggakan w ON f.waktu_tunggakan_key = w.waktu_tunggakan_key WHERE o.nama_prodi = 'Sains Data' AND w.tahun_akademik = '$tahun' GROUP BY o.nama_prodi, w.tahun_akademik"
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\check_ports.ps1
 ```
 
@@ -58,9 +59,9 @@ Expected:
 - Python compile: no error.
 - Compose config: valid.
 - Full run: selesai tanpa error.
-- Tests: `6 passed`.
+- Tests: seluruh suite pytest lulus.
 - Spark Iceberg load: 6 tabel Gold tertulis ke `s3://lakehouse/warehouse/gold`.
-- Trino Iceberg: `"31250000","15"`.
+- Trino Iceberg: hasil sesuai data Sains Data pada `PORTAL_TARGET_TAHUN_AKADEMIK`; nominal strict hanya wajib jika target kontrol di `.env` diisi.
 - Port lokal: semua OK.
 
 ## Catatan Produksi Nyata

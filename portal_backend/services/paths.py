@@ -2,15 +2,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.runtime_paths import raw_pdf_path, raw_rab_path, sample_pdf_path, silver_rab_path
+
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 PORTAL_DIR = ROOT_DIR / "portal"
 DATA_DIR = ROOT_DIR / "data"
 OUTPUTS_DIR = ROOT_DIR / "outputs"
 ACTIVITY_LOG_PATH = OUTPUTS_DIR / "reports" / "activity_log.json"
-PDF_SAMPLE_PATH = DATA_DIR / "samples" / "ITERA_LKTA2024Audited.pdf"
-RAW_PDF_PATH = DATA_DIR / "raw" / "pdf" / "ITERA_LKTA2024Audited.pdf"
-RAW_EXCEL_RAB_PATH = DATA_DIR / "raw" / "excel" / "rab_prodi_sains_data.xlsx"
+PDF_SAMPLE_PATH = sample_pdf_path()
+RAW_PDF_PATH = raw_pdf_path()
+RAW_EXCEL_RAB_PATH = raw_rab_path()
+SILVER_RAB_PATH = silver_rab_path()
 RAW_CSV_DIR = DATA_DIR / "raw" / "csv"
 MASTER_UKT_PATH = DATA_DIR / "generated" / "master_ukt_itera.csv"
 MASTER_SPI_PATH = DATA_DIR / "generated" / "master_spi_itera.csv"

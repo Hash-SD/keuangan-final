@@ -7,7 +7,7 @@ from typing import Any
 from openpyxl import load_workbook
 
 from .files import csv_preview, relative_path
-from .paths import MASTER_BIAYA_EXCEL_PATH, MASTER_SPI_PATH, MASTER_UKT_PATH, PDF_SAMPLE_PATH, RAW_CSV_DIR, RAW_EXCEL_RAB_PATH, RAW_PDF_PATH
+from .paths import MASTER_BIAYA_EXCEL_PATH, MASTER_SPI_PATH, MASTER_UKT_PATH, PDF_SAMPLE_PATH, RAW_CSV_DIR, RAW_EXCEL_RAB_PATH, RAW_PDF_PATH, SILVER_RAB_PATH
 from src.common.runtime_config import get_runtime_config
 
 
@@ -53,7 +53,7 @@ def pdf_sample_status() -> dict[str, Any]:
     if not PDF_SAMPLE_PATH.exists():
         return {
             "available": False,
-            "message": "PDF audited belum ditemukan. Letakkan file di data/samples/ITERA_LKTA2024Audited.pdf",
+            "message": f"PDF audited belum ditemukan. Letakkan file di {relative_path(PDF_SAMPLE_PATH)}",
             "ocr_required": False,
             "method": "programmatic_text_extraction",
         }
@@ -75,6 +75,7 @@ def excel_rab_status() -> dict[str, Any]:
             "path": relative_path(RAW_EXCEL_RAB_PATH),
             "sheet": "RAB",
             "target_prodi": config.target_prodi,
+            "target_tahun_anggaran": config.target_tahun_anggaran,
             "total_pagu_expected": config.target_total_pagu_rab,
         }
     try:
@@ -92,8 +93,9 @@ def excel_rab_status() -> dict[str, Any]:
             "columns": header,
             "missing_columns": missing,
             "wide_format_detected": has_month_columns,
-            "silver_unpivot_target": "data/generated/silver/rab_prodi_sains_data_long.csv",
+            "silver_unpivot_target": relative_path(SILVER_RAB_PATH),
             "target_prodi": config.target_prodi,
+            "target_tahun_anggaran": config.target_tahun_anggaran,
             "total_pagu_expected": config.target_total_pagu_rab,
         }
     except (OSError, StopIteration) as exc:

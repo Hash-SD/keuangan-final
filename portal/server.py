@@ -5,6 +5,7 @@ import json
 import mimetypes
 import os
 import socket
+import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -14,6 +15,9 @@ HOST = os.getenv("PORTAL_HOST", "localhost")
 PORT = int(os.getenv("PORTAL_PORT", "8090"))
 PORTAL_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PORTAL_DIR.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from src.common.runtime_paths import silver_rab_path
 
 
 def read_json(relative_path: str):
@@ -65,7 +69,7 @@ def portal_state():
         "bronzeMetadata": exists("data/generated/bronze/ingestion_metadata.json"),
         "silverFact": exists("data/generated/silver/fact_piutang_ukt_prodi.csv"),
         "silverTransactions": exists("data/generated/silver/transactions_clean.csv"),
-        "silverRab": exists("data/generated/silver/rab_prodi_sains_data_long.csv"),
+        "silverRab": silver_rab_path().exists(),
         "goldFact": exists("data/generated/gold/fact_piutang_ukt_prodi.csv"),
         "goldDashboard": exists("data/generated/gold/vw_dashboard_piutang_ukt.csv"),
         "qualitySummary": exists("data/quarantine/logs/quality_gate_summary.json"),

@@ -16,8 +16,12 @@ def reconcile() -> dict:
     config = get_runtime_config()
     fact = pd.read_csv(GENERATED_DIR / "gold" / "fact_piutang_ukt_prodi.csv")
     org = pd.read_csv(GENERATED_DIR / "gold" / "dim_organisasi.csv")
-    data = fact.merge(org, on="organisasi_key")
-    target_data = data[data["nama_prodi"] == config.target_prodi]
+    waktu = pd.read_csv(GENERATED_DIR / "gold" / "dim_waktu_tunggakan.csv")
+    data = fact.merge(org, on="organisasi_key").merge(waktu, on="waktu_tunggakan_key")
+    target_data = data[
+        (data["nama_prodi"] == config.target_prodi)
+        & (data["tahun_akademik"] == config.target_tahun_akademik)
+    ]
     total_piutang = int(target_data["nominal_piutang_rp"].sum())
     jumlah_penunggak = int(target_data["jumlah_mhs_penunggak"].sum())
     target_total = config.target_total_piutang
@@ -25,6 +29,8 @@ def reconcile() -> dict:
     observed_only = target_total is None and target_penunggak is None
     result = {
         "target_prodi": config.target_prodi,
+        "target_tahun_akademik": config.target_tahun_akademik,
+        "target_label": config.target_label,
         "total_piutang": total_piutang,
         "jumlah_penunggak": jumlah_penunggak,
         "target_total_piutang": target_total if target_total is not None else total_piutang,

@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import RAW_DIR, ensure_parent
 from src.common.runtime_config import get_runtime_config
+from src.common.runtime_paths import raw_rab_path
 
 
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
@@ -41,7 +42,7 @@ def build_rab() -> pd.DataFrame:
 
 def write_rab(path: Path | None = None) -> Path:
     config = get_runtime_config()
-    path = path or (RAW_DIR / "excel" / "rab_prodi_sains_data.xlsx")
+    path = path or raw_rab_path()
     ensure_parent(path)
     rab = build_rab()
     metadata = pd.DataFrame(

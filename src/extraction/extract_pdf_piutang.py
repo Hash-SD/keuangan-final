@@ -12,9 +12,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.common.logging_utils import write_json
 from src.common.paths import GENERATED_DIR, OUTPUTS_DIR, RAW_DIR, ensure_parent
 from src.common.runtime_config import configured_batch_id
+from src.common.runtime_paths import raw_pdf_path
 
 
-PDF_INPUT = RAW_DIR / "pdf" / "ITERA_LKTA2024Audited.pdf"
+PDF_INPUT = raw_pdf_path()
 SILVER_DIM_KUALITAS = GENERATED_DIR / "silver" / "dim_kualitas_piutang.csv"
 SILVER_FACT_PIUTANG = GENERATED_DIR / "silver" / "fact_piutang_ukt_prodi.csv"
 CONTROL_TOTAL_JSON = OUTPUTS_DIR / "metrics" / "master_control_total.json"

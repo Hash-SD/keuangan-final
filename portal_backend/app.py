@@ -6,7 +6,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 from .services.activity import append_activity, read_activities
-from .services.files import csv_preview, resolve_preview_file, save_upload
+from .services.files import csv_preview, relative_path, resolve_preview_file, save_upload
 from .services.lakehouse import lakehouse_summary
 from .services.metrics import metrics_payload
 from .services.paths import PORTAL_DIR
@@ -14,6 +14,7 @@ from .services.pipeline import run_command_group, run_full
 from .services.reference import pdf_sample_status, reference_spi_preview, reference_summary, reference_ukt_preview, source_status
 from .services.system_status import service_statuses
 from src.common.runtime_config import get_runtime_config
+from src.common.runtime_paths import raw_pdf_path, raw_rab_path, sample_pdf_path, silver_rab_path
 
 
 def create_app() -> Flask:
@@ -42,13 +43,21 @@ def create_app() -> Flask:
                 "target_fakultas": config.target_fakultas,
                 "target_tahun_akademik": config.target_tahun_akademik,
                 "target_tahun_anggaran": config.target_tahun_anggaran,
+                "target_label": config.target_label,
                 "batch_id": config.batch_id,
                 "source_event": config.source_event_iso,
+                "validation_mode": config.validation_mode,
                 "target_total_piutang": config.target_total_piutang,
                 "target_jumlah_penunggak": config.target_jumlah_penunggak,
                 "target_total_pagu_rab": config.target_total_pagu_rab,
                 "dummy_transaction_rows": config.dummy_transaction_rows,
                 "dummy_invalid_rows": config.dummy_invalid_rows,
+                "paths": {
+                    "raw_pdf": relative_path(raw_pdf_path()),
+                    "sample_pdf": relative_path(sample_pdf_path()),
+                    "raw_rab": relative_path(raw_rab_path()),
+                    "silver_rab": relative_path(silver_rab_path()),
+                },
             }
         )
 
@@ -119,7 +128,7 @@ def create_app() -> Flask:
             source="upload",
             status=result["status"],
             target=result.get("path", ""),
-            message=result.get("message", f"Upload {upload_type} {result['status']}."),
+            message=result.get("message", f"Upload {upload_type} {result['status']} untuk {result.get('target_label', 'periode aktif')}."),
         )
         return jsonify(result), status_code
 

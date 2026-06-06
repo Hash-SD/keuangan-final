@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .files import read_json
-from .paths import DATA_DIR, OUTPUTS_DIR
+from .paths import DATA_DIR, OUTPUTS_DIR, SILVER_RAB_PATH
 
 
 def _count_rows(path: Path) -> int | None:
@@ -23,7 +23,7 @@ def lakehouse_summary() -> dict[str, Any]:
     silver_files = [
         DATA_DIR / "generated" / "silver" / "fact_piutang_ukt_prodi.csv",
         DATA_DIR / "generated" / "silver" / "transactions_clean.csv",
-        DATA_DIR / "generated" / "silver" / "rab_prodi_sains_data_long.csv",
+        SILVER_RAB_PATH,
     ]
     gold_fact = DATA_DIR / "generated" / "gold" / "fact_piutang_ukt_prodi.csv"
     gold_dashboard = DATA_DIR / "generated" / "gold" / "vw_dashboard_piutang_ukt.csv"

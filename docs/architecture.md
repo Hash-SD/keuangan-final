@@ -4,7 +4,7 @@ Sistem memakai Medallion Architecture:
 
 - Bronze: data mentah PDF/CSV/Excel disimpan dengan metadata lineage.
 - Silver: data dibersihkan, tipe distandarkan, dan data invalid dipisahkan ke quarantine.
-- Gold: star schema untuk analisis piutang UKT Prodi Sains Data.
+- Gold: star schema untuk analisis piutang UKT Prodi Sains Data lintas tahun akademik dengan format data yang sama.
 
 Komponen target:
 
@@ -14,4 +14,3 @@ Komponen target:
 - Trino untuk query SQL atas Gold layer.
 - Superset untuk dashboard.
 - Airflow untuk orkestrasi DAG end-to-end.
-

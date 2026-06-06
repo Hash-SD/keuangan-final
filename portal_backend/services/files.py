@@ -7,7 +7,8 @@ from typing import Any
 
 from werkzeug.utils import secure_filename
 
-from .paths import DEFAULT_PREVIEW_FILES, PREVIEW_LAYER_DIRS, ROOT_DIR, UPLOAD_DIRS
+from .paths import DEFAULT_PREVIEW_FILES, OUTPUTS_DIR, PREVIEW_LAYER_DIRS, ROOT_DIR, UPLOAD_DIRS
+from src.common.runtime_paths import active_period_metadata
 
 
 def relative_path(path: Path) -> str:
@@ -86,13 +87,23 @@ def save_upload(file_storage, upload_type: str, allowed_extensions: set[str]) ->
     if target_dir.resolve() not in target.parents:
         return {"status": "failed", "message": "Path upload tidak valid."}
     file_storage.save(target)
+    period = active_period_metadata()
     response = {
         "status": "success",
         "type": upload_type,
         "filename": filename,
         "path": relative_path(target),
+        **period,
     }
+    write_json(
+        OUTPUTS_DIR / "reports" / "latest_upload_metadata.json",
+        {
+            **period,
+            "type": upload_type,
+            "filename": filename,
+            "path": relative_path(target),
+        },
+    )
     if upload_type == "csv":
         response["preview"] = csv_preview(target, limit=10)
     return response
-

@@ -61,6 +61,21 @@ Untuk memastikan pipeline berjalan 100% akurat dan rekonsiliasi data lulus, sist
 | **Jumlah mahasiswa penunggak Sains Data** | `15 Mahasiswa` |
 | **Total pagu RAB Sains Data** | `Rp 150.000.000` |
 
+Nilai di atas adalah default reproduksi data dummy Bab 4. Fokus sistem tetap Prodi Sains Data, tetapi periode dan nilai kontrol bisa diganti dari `.env` tanpa mengedit kode:
+
+```env
+PORTAL_TARGET_PRODI=Sains Data
+PORTAL_TARGET_FAKULTAS=Fakultas Sains
+PORTAL_TARGET_TAHUN_AKADEMIK=2024/2025
+PORTAL_TARGET_TAHUN_ANGGARAN=2025
+PORTAL_BATCH_ID=batch-sains-data-2025
+PORTAL_TARGET_TOTAL_PIUTANG=
+PORTAL_TARGET_JUMLAH_PENUNGGAK=
+PORTAL_TARGET_TOTAL_PAGU_RAB=200000000
+```
+
+Jika `PORTAL_TARGET_TOTAL_PIUTANG` dan `PORTAL_TARGET_JUMLAH_PENUNGGAK` dikosongkan, rekonsiliasi berjalan dalam mode observasi untuk Sains Data pada tahun akademik aktif dan tidak terkunci ke nominal tertentu.
+
 ---
 
 ## 🚀 Quick Start (Local Environment)
@@ -121,13 +136,10 @@ Hasil pemrosesan akhir (Gold Layer) dimuat sebagai tabel **Apache Iceberg** di d
 Kueri validasi dapat dieksekusi secara langsung melalui Trino Engine:
 
 ```powershell
-docker exec keuangan-trino trino --catalog iceberg --schema gold --execute "SELECT SUM(nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key WHERE o.nama_prodi = 'Sains Data'"
+$tahun = (Get-Content .env | Select-String '^PORTAL_TARGET_TAHUN_AKADEMIK=').ToString().Split('=',2)[1]
+docker exec keuangan-trino trino --catalog iceberg --schema gold --execute "SELECT o.nama_prodi, w.tahun_akademik, SUM(f.nominal_piutang_rp), COUNT(*) FROM fact_piutang_ukt_prodi f JOIN dim_organisasi o ON f.organisasi_key = o.organisasi_key JOIN dim_waktu_tunggakan w ON f.waktu_tunggakan_key = w.waktu_tunggakan_key WHERE o.nama_prodi = 'Sains Data' AND w.tahun_akademik = '$tahun' GROUP BY o.nama_prodi, w.tahun_akademik"
 ```
-**Output Diharapkan:**
-```text
-"31250000","15"
-```
-*(Angka di atas harus selaras dengan ketentuan Nilai Kontrol Uji Coba).*
+Query ini tetap fokus Sains Data, tetapi tahun akademiknya mengikuti `.env`.
 
 ---
 
