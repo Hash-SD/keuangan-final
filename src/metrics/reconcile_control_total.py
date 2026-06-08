@@ -18,6 +18,12 @@ def reconcile() -> dict:
     org = pd.read_csv(GENERATED_DIR / "gold" / "dim_organisasi.csv")
     waktu = pd.read_csv(GENERATED_DIR / "gold" / "dim_waktu_tunggakan.csv")
     data = fact.merge(org, on="organisasi_key").merge(waktu, on="waktu_tunggakan_key")
+    for column in ["tahun_akademik", "tahun_anggaran", "semester"]:
+        if column not in data.columns:
+            for candidate in [f"{column}_x", f"{column}_y"]:
+                if candidate in data.columns:
+                    data[column] = data[candidate]
+                    break
     target_data = data[
         (data["nama_prodi"] == config.target_prodi)
         & (data["tahun_akademik"] == config.target_tahun_akademik)

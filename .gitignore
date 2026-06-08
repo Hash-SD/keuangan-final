@@ -13,10 +13,17 @@ data/generated/
 data/raw/pdf/*.pdf
 data/raw/csv/*.csv
 data/raw/excel/*.xlsx
+data/raw/pdf/**/*.pdf
+data/raw/csv/**/*.csv
+data/raw/excel/**/*.xlsx
+data/uploads/staging/
 data/quarantine/
 outputs/metrics/*.json
 outputs/metrics/*.csv
 outputs/reports/
+outputs/evidence/
+outputs/logs/
+outputs/screenshots/
 outputs/uat/*.csv
 outputs/uat/*.json
 config/spark/jars/*.jar
@@ -24,5 +31,4 @@ config/spark/jars/*.jar
 # IDE and Editor folders
 .agents/
 .windsurf/
-
 

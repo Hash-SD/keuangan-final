@@ -14,12 +14,24 @@ def active_context():
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def active_generation_summary():
+    context = active_context()
+    batch_id = context.get("batch_id")
+    path = ROOT / "outputs" / "reports" / f"data_generation_{batch_id}.json"
+    if not batch_id or not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def test_piutang_sains_data_control_total():
     df = pd.read_csv(ROOT / "data" / "generated" / "dummy_piutang_master.csv")
     sains = df[df["prodi"] == "Sains Data"]
+    summary = active_generation_summary()
+    expected_penunggak = summary.get("jumlah_penunggak_target", 15)
+    expected_piutang = summary.get("total_piutang_target", 31_250_000)
     assert len(df) == 803
-    assert len(sains) == 15
-    assert int(sains["nominal_piutang_rp"].sum()) == 31_250_000
+    assert len(sains) == expected_penunggak
+    assert int(sains["nominal_piutang_rp"].sum()) == expected_piutang
 
 
 def test_csv_transactions_shape_and_invalid_rate():
