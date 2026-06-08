@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, ensure_parent
 from src.common.logging_utils import write_json
-from src.common.runtime_paths import active_dataset_pointer
+from src.common.runtime_paths import active_dataset_pointer, active_period_metadata
 from src.common.time_utils import utc_now_iso
 
 
@@ -18,8 +18,16 @@ GOLD_DIR = GENERATED_DIR / "gold"
 
 def build_gold() -> dict:
     pointer = active_dataset_pointer() or {}
+    period_metadata = active_period_metadata()
     piutang = pd.read_csv(GENERATED_DIR / "silver" / "fact_piutang_ukt_prodi.csv", dtype={"nim": "string"})
     kualitas = pd.read_csv(GENERATED_DIR / "silver" / "dim_kualitas_piutang.csv")
+    if "dataset_session_id" not in piutang.columns:
+        piutang["dataset_session_id"] = pointer.get("session_id") or "dummy"
+    if "tahun_anggaran" not in piutang.columns:
+        piutang["tahun_anggaran"] = period_metadata.get("target_tahun_anggaran")
+    if "source_event" not in piutang.columns:
+        piutang["source_event"] = period_metadata.get("source_event")
+    piutang["periode_key"] = piutang["tahun_akademik"].astype(str).str.replace("/", "-", regex=False) + "-" + piutang["semester"].astype(str).str.lower()
 
     dim_organisasi = piutang[["fakultas", "prodi"]].drop_duplicates().reset_index(drop=True)
     dim_organisasi.insert(0, "organisasi_key", range(1, len(dim_organisasi) + 1))
@@ -29,14 +37,27 @@ def build_gold() -> dict:
     dim_mahasiswa = piutang[["nim", "nama_debitur"]].drop_duplicates().reset_index(drop=True)
     dim_mahasiswa.insert(0, "mahasiswa_key", range(1, len(dim_mahasiswa) + 1))
 
-    dim_waktu = piutang[["semester", "tahun_akademik", "umur_tunggakan"]].drop_duplicates().reset_index(drop=True)
+    dim_waktu = piutang[["semester", "tahun_akademik", "tahun_anggaran", "periode_key", "umur_tunggakan"]].drop_duplicates().reset_index(drop=True)
     dim_waktu.insert(0, "waktu_tunggakan_key", range(1, len(dim_waktu) + 1))
 
     fact = piutang.merge(dim_organisasi, left_on=["fakultas", "prodi"], right_on=["nama_fakultas", "nama_prodi"])
     fact = fact.merge(dim_mahasiswa, on=["nim", "nama_debitur"])
     fact = fact.merge(kualitas[["kualitas_piutang_key", "kualitas"]], on="kualitas")
-    fact = fact.merge(dim_waktu, on=["semester", "tahun_akademik", "umur_tunggakan"])
-    fact = fact[["organisasi_key", "mahasiswa_key", "kualitas_piutang_key", "waktu_tunggakan_key", "nominal_piutang_rp", "source_filename", "batch_id"]]
+    fact = fact.merge(dim_waktu, on=["semester", "tahun_akademik", "tahun_anggaran", "periode_key", "umur_tunggakan"])
+    fact = fact[[
+        "organisasi_key",
+        "mahasiswa_key",
+        "kualitas_piutang_key",
+        "waktu_tunggakan_key",
+        "dataset_session_id",
+        "tahun_akademik",
+        "tahun_anggaran",
+        "semester",
+        "periode_key",
+        "nominal_piutang_rp",
+        "source_filename",
+        "batch_id",
+    ]]
     fact.insert(0, "piutang_key", range(1, len(fact) + 1))
     fact["jumlah_mhs_penunggak"] = 1
     fact["created_at"] = utc_now_iso()
@@ -49,7 +70,11 @@ def build_gold() -> dict:
     fact.to_csv(GOLD_DIR / "fact_piutang_ukt_prodi.csv", index=False)
     pd.read_csv(GENERATED_DIR / "silver" / "silver_master_ukt.csv").to_csv(GOLD_DIR / "dim_biaya_ukt.csv", index=False)
     pd.read_csv(GENERATED_DIR / "silver" / "silver_master_spi.csv").to_csv(GOLD_DIR / "dim_biaya_spi.csv", index=False)
-    dashboard = fact.merge(dim_organisasi, on="organisasi_key").merge(dim_mahasiswa, on="mahasiswa_key").merge(kualitas, on="kualitas_piutang_key").merge(dim_waktu, on="waktu_tunggakan_key")
+    dashboard = fact.merge(dim_organisasi, on="organisasi_key").merge(dim_mahasiswa, on="mahasiswa_key").merge(kualitas, on="kualitas_piutang_key").merge(dim_waktu, on="waktu_tunggakan_key", suffixes=("", "_dim"))
+    for column in ["tahun_akademik", "tahun_anggaran", "semester", "periode_key"]:
+        dim_column = f"{column}_dim"
+        if column not in dashboard.columns and dim_column in dashboard.columns:
+            dashboard[column] = dashboard[dim_column]
     dashboard.to_csv(GOLD_DIR / "vw_dashboard_piutang_ukt.csv", index=False)
     result = {
         "fact_rows": len(fact),

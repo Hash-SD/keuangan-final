@@ -22,9 +22,13 @@ from src.common.time_utils import utc_now_iso
 STAGING_ROOT = DATA_DIR / "uploads" / "staging"
 ACTIVE_SESSION_PATH = OUTPUTS_DIR / "reports" / "active_upload_session.json"
 UPLOAD_REGISTRY_PATH = OUTPUTS_DIR / "reports" / "upload_registry.json"
+DATASET_REGISTRY_PATH = OUTPUTS_DIR / "reports" / "dataset_registry.json"
+AVAILABLE_PERIODS_PATH = OUTPUTS_DIR / "reports" / "available_periods.json"
 LATEST_UPLOAD_METADATA_PATH = OUTPUTS_DIR / "reports" / "latest_upload_metadata.json"
 ACTIVE_DATASET_POINTER_PATH = OUTPUTS_DIR / "reports" / "active_dataset_pointer.json"
 SYSTEM_TRUTH_STATUS_PATH = OUTPUTS_DIR / "reports" / "system_truth_status.json"
+SESSION_STATUS_FILENAME = "session_status.json"
+VALIDATION_PREVIEW_FILENAME = "validation_preview.json"
 
 CSV_REQUIRED_COLUMNS = {
     "transaction_id",
@@ -99,14 +103,39 @@ def _session_dir(session: dict[str, Any]) -> Path:
     return STAGING_ROOT / session["session_id"]
 
 
+def _session_status_path(session: dict[str, Any]) -> Path:
+    return _session_dir(session) / SESSION_STATUS_FILENAME
+
+
+def _validation_preview_path(session: dict[str, Any]) -> Path:
+    return _session_dir(session) / VALIDATION_PREVIEW_FILENAME
+
+
+def _session_record(session: dict[str, Any]) -> dict[str, Any]:
+    record = {key: value for key, value in session.items() if key not in {"readiness", "validation_errors", "raw_layer", "pipeline_state", "message", "dataset_pointer"}}
+    files = record.setdefault("files", {"pdf": None, "csv": [], "excel": None})
+    if isinstance(files.get("pdf"), dict) and "items" in files["pdf"] and files["pdf"].get("available") is False:
+        files["pdf"] = None
+    if isinstance(files.get("excel"), dict) and "items" in files["excel"] and files["excel"].get("available") is False:
+        files["excel"] = None
+    if isinstance(files.get("csv"), dict):
+        files["csv"] = files["csv"].get("files") or files["csv"].get("items") or []
+    files.setdefault("csv", [])
+    files.setdefault("pdf", None)
+    files.setdefault("excel", None)
+    return record
+
+
 def _save_session(session: dict[str, Any]) -> dict[str, Any]:
+    session = _session_record(session)
     session["updated_at"] = utc_now_iso()
     session_dir = _session_dir(session)
     session_dir.mkdir(parents=True, exist_ok=True)
     write_json(session_dir / "context.json", session["context"])
     write_json(ACTIVE_SESSION_PATH, session)
-    preview = session if "readiness" in session else session_status(session)
-    write_json(session_dir / "validation_preview.json", preview)
+    status = quick_session_status(session)
+    write_json(_session_status_path(session), status)
+    write_json(_validation_preview_path(session), status)
     return session
 
 
@@ -160,6 +189,7 @@ def update_session(form: Any, files: Any) -> dict[str, Any]:
     session = active_session(create=True)
     if session.get("status") == "committed":
         session = _empty_session()
+    touched_types: set[str] = set()
     payload = {key: form.get(key) for key in form if form.get(key) not in (None, "")}
     if payload:
         session["context"] = normalize_context(payload, base=session.get("context") or read_active_context(), source="upload_session")
@@ -169,12 +199,14 @@ def update_session(form: Any, files: Any) -> dict[str, Any]:
         if Path(pdf.filename).suffix.lower() != ".pdf":
             raise ValueError("File PDF harus berekstensi .pdf.")
         session["files"]["pdf"] = _store_file(session, "pdf", pdf)
+        touched_types.add("pdf")
 
     excel = files.get("excel") or files.get("file_excel")
     if excel and excel.filename:
         if Path(excel.filename).suffix.lower() != ".xlsx":
             raise ValueError("File Excel RAB harus berekstensi .xlsx.")
         session["files"]["excel"] = _store_file(session, "excel", excel)
+        touched_types.add("excel")
 
     csv_files = [item for item in [*files.getlist("csv"), *files.getlist("file"), *files.getlist("files")] if item and item.filename]
     for csv_file in csv_files:
@@ -183,9 +215,13 @@ def update_session(form: Any, files: Any) -> dict[str, Any]:
         item = _store_file(session, "csv", csv_file)
         session["files"]["csv"] = [existing for existing in session["files"].get("csv", []) if existing.get("filename") != item["filename"]]
         session["files"]["csv"].append(item)
+        touched_types.add("csv")
 
     _save_session(session)
-    return session_status(session)
+    status = quick_session_status(session)
+    for upload_type in sorted(touched_types):
+        status = validate_uploaded_file_once(status, upload_type)
+    return status
 
 
 def update_context(payload: Any) -> dict[str, Any]:
@@ -198,7 +234,7 @@ def update_context(payload: Any) -> dict[str, Any]:
         session["context"]["status"] = "draft_saved"
         session["context_status"] = "draft_saved"
     _save_session(session)
-    return session_status(session)
+    return quick_session_status(session)
 
 
 def update_file(upload_type: str, files: Any) -> dict[str, Any]:
@@ -266,13 +302,36 @@ def remove_file(upload_type: str, filename: str | None = None, file_id: str | No
         files[upload_type] = None
 
     _save_session(session)
-    return {**session_status(session), "message": "File dihapus dari sesi upload."}
+    return {**quick_session_status(session), "message": "File dihapus dari sesi upload."}
 
 
 def _path_from_item(item: dict[str, Any] | None) -> Path | None:
     if not item or not item.get("path"):
         return None
     return ROOT_DIR / item["path"]
+
+
+def _light_file_errors(item: dict[str, Any] | None, label: str, suffix: str) -> list[str]:
+    path = _path_from_item(item)
+    if path is None or not path.exists():
+        return [f"{label} belum tersedia."]
+    if path.suffix.lower() != suffix:
+        return [f"File {label} harus berekstensi {suffix}."]
+    if path.stat().st_size <= 0:
+        return [f"File {label} kosong."]
+    return []
+
+
+def _cached_validation_errors(session: dict[str, Any]) -> dict[str, list[str]]:
+    cached = _read_json(_session_status_path(session)) or _read_json(_validation_preview_path(session)) or {}
+    errors = cached.get("validation_errors") if isinstance(cached, dict) else None
+    if not isinstance(errors, dict):
+        return {"pdf": [], "csv": [], "excel": []}
+    return {
+        "pdf": list(errors.get("pdf") or []),
+        "csv": list(errors.get("csv") or []),
+        "excel": list(errors.get("excel") or []),
+    }
 
 
 def _validate_pdf(item: dict[str, Any] | None) -> list[str]:
@@ -332,20 +391,19 @@ def _validate_excel(item: dict[str, Any] | None) -> tuple[dict[str, Any] | None,
     return item, errors
 
 
-def session_status(session: dict[str, Any] | None = None) -> dict[str, Any]:
+def _build_session_status(session: dict[str, Any], validation_errors: dict[str, list[str]]) -> dict[str, Any]:
     session = session or active_session(create=False)
     session = _normalize_session_files(session)
     files = session.setdefault("files", {"pdf": None, "csv": [], "excel": None})
-    pdf_errors = _validate_pdf(files.get("pdf"))
-    csv_errors: list[str] = []
-    updated_csv = []
-    for item in files.get("csv", []):
-        updated, errors = _validate_csv_item(dict(item))
-        updated_csv.append(updated)
-        csv_errors.extend(errors)
-    excel_item, excel_errors = _validate_excel(files.get("excel"))
-    files["csv"] = updated_csv
-    files["excel"] = excel_item
+    pdf_errors = validation_errors.get("pdf") or _light_file_errors(files.get("pdf"), "PDF", ".pdf")
+    csv_errors = validation_errors.get("csv") or []
+    updated_csv = list(files.get("csv", []))
+    if not updated_csv:
+        csv_errors = csv_errors or ["CSV transaksi belum tersedia."]
+    else:
+        for item in updated_csv:
+            csv_errors.extend(_light_file_errors(item, "CSV", ".csv"))
+    excel_errors = validation_errors.get("excel") or _light_file_errors(files.get("excel"), "Excel", ".xlsx")
     context_ready = bool(session.get("context", {}).get("target_tahun_akademik") and session.get("context", {}).get("target_tahun_anggaran"))
     readiness = {
         "context_ready": context_ready,
@@ -414,6 +472,61 @@ def session_status(session: dict[str, Any] | None = None) -> dict[str, Any]:
     }
 
 
+def quick_session_status(session: dict[str, Any] | None = None) -> dict[str, Any]:
+    session = _session_record(session or active_session(create=False))
+    return _build_session_status(session, _cached_validation_errors(session))
+
+
+def validate_uploaded_file_once(session: dict[str, Any], upload_type: str) -> dict[str, Any]:
+    session = _session_record(session)
+    session = _normalize_session_files(session)
+    cached_errors = _cached_validation_errors(session)
+    files = session["files"]
+    if upload_type == "pdf":
+        cached_errors["pdf"] = _validate_pdf(files.get("pdf"))
+    elif upload_type == "csv":
+        csv_errors: list[str] = []
+        updated_csv = []
+        for item in files.get("csv", []):
+            updated, errors = _validate_csv_item(dict(item))
+            updated_csv.append(updated)
+            csv_errors.extend(errors)
+        files["csv"] = updated_csv
+        cached_errors["csv"] = csv_errors
+    elif upload_type == "excel":
+        excel_item, excel_errors = _validate_excel(files.get("excel"))
+        files["excel"] = excel_item
+        cached_errors["excel"] = excel_errors
+    status = _build_session_status(session, cached_errors)
+    write_json(_session_status_path(session), status)
+    write_json(_validation_preview_path(session), status)
+    return status
+
+
+def validate_session_for_commit(session: dict[str, Any] | None = None) -> dict[str, Any]:
+    session = _session_record(session or active_session(create=False))
+    session = _normalize_session_files(session)
+    files = session["files"]
+    pdf_errors = _validate_pdf(files.get("pdf"))
+    csv_errors: list[str] = []
+    updated_csv = []
+    for item in files.get("csv", []):
+        updated, errors = _validate_csv_item(dict(item))
+        updated_csv.append(updated)
+        csv_errors.extend(errors)
+    excel_item, excel_errors = _validate_excel(files.get("excel"))
+    files["csv"] = updated_csv
+    files["excel"] = excel_item
+    status = _build_session_status(session, {"pdf": pdf_errors, "csv": csv_errors, "excel": excel_errors})
+    write_json(_session_status_path(session), status)
+    write_json(_validation_preview_path(session), status)
+    return status
+
+
+def session_status(session: dict[str, Any] | None = None) -> dict[str, Any]:
+    return quick_session_status(session)
+
+
 def _target_path(session: dict[str, Any], upload_type: str, item: dict[str, Any]) -> Path:
     context = session["context"]
     prefix = f"{session['session_id']}_{secure_filename(item['filename'])}"
@@ -435,6 +548,8 @@ def _copy_item(session: dict[str, Any], upload_type: str, item: dict[str, Any]) 
 
 
 def _write_registry(session: dict[str, Any], pointer: dict[str, Any]) -> None:
+    previous = _read_json(UPLOAD_REGISTRY_PATH) or {}
+    previous_sessions = [item for item in previous.get("sessions", []) if item.get("session_id") != session["session_id"]]
     registry = {
         "active_session_id": session["session_id"],
         "active": {
@@ -442,7 +557,7 @@ def _write_registry(session: dict[str, Any], pointer: dict[str, Any]) -> None:
             "csv": session["files"]["csv"]["files"],
             "excel": session["files"]["excel"],
         },
-        "sessions": [session],
+        "sessions": [session, *previous_sessions],
         "files": {
             "pdf": [session["files"]["pdf"]],
             "csv": session["files"]["csv"]["files"],
@@ -452,6 +567,60 @@ def _write_registry(session: dict[str, Any], pointer: dict[str, Any]) -> None:
         "updated_at": utc_now_iso(),
     }
     write_json(UPLOAD_REGISTRY_PATH, registry)
+
+
+def _dataset_entry(session: dict[str, Any], pointer: dict[str, Any]) -> dict[str, Any]:
+    context = session.get("context") or {}
+    return {
+        "dataset_id": session["session_id"],
+        "session_id": session["session_id"],
+        "status": "committed",
+        "target_prodi": context.get("target_prodi"),
+        "target_fakultas": context.get("target_fakultas"),
+        "tahun_akademik": context.get("target_tahun_akademik"),
+        "tahun_anggaran": context.get("target_tahun_anggaran"),
+        "target_label": context.get("target_label"),
+        "committed_at": session.get("committed_at"),
+        "raw_paths": {
+            "pdf": pointer.get("active_pdf"),
+            "csv": pointer.get("active_csv_files") or [],
+            "excel": pointer.get("active_excel"),
+        },
+        "dataset_pointer": pointer,
+    }
+
+
+def _write_dataset_registry(session: dict[str, Any], pointer: dict[str, Any]) -> None:
+    existing = _read_json(DATASET_REGISTRY_PATH) or {}
+    datasets = [item for item in existing.get("datasets", []) if item.get("session_id") != session["session_id"]]
+    entry = _dataset_entry(session, pointer)
+    datasets = [entry, *datasets]
+    registry = {
+        "active_dataset_id": entry["dataset_id"],
+        "active_session_id": session["session_id"],
+        "updated_at": utc_now_iso(),
+        "datasets": datasets,
+    }
+    write_json(DATASET_REGISTRY_PATH, registry)
+    periods = []
+    seen = set()
+    for item in datasets:
+        key = (item.get("tahun_akademik"), item.get("tahun_anggaran"), item.get("target_prodi"))
+        if key in seen or not any(key):
+            continue
+        seen.add(key)
+        periods.append(
+            {
+                "dataset_id": item.get("dataset_id"),
+                "session_id": item.get("session_id"),
+                "tahun_akademik": item.get("tahun_akademik"),
+                "tahun_anggaran": item.get("tahun_anggaran"),
+                "target_prodi": item.get("target_prodi"),
+                "target_fakultas": item.get("target_fakultas"),
+                "status": item.get("status"),
+            }
+        )
+    write_json(AVAILABLE_PERIODS_PATH, {"updated_at": utc_now_iso(), "periods": periods})
 
 
 def _write_post_commit_truth(session: dict[str, Any]) -> None:
@@ -474,7 +643,7 @@ def _write_post_commit_truth(session: dict[str, Any]) -> None:
 
 
 def commit_session() -> dict[str, Any]:
-    status = session_status(active_session(create=False))
+    status = validate_session_for_commit(active_session(create=False))
     if not status["readiness"]["can_commit"]:
         status["status"] = "commit_failed"
         status["commit_status"] = "commit_failed"
@@ -514,6 +683,11 @@ def commit_session() -> dict[str, Any]:
         "active_pdf": pdf["canonical_path"],
         "active_csv_files": [item["canonical_path"] for item in csv_items],
         "active_excel": excel["canonical_path"],
+        "target_prodi": status["context"].get("target_prodi"),
+        "target_fakultas": status["context"].get("target_fakultas"),
+        "tahun_akademik": status["context"].get("target_tahun_akademik"),
+        "tahun_anggaran": status["context"].get("target_tahun_anggaran"),
+        "target_label": status["context"].get("target_label"),
         "context_source": "upload_session",
         "status": "committed",
         "created_at": utc_now_iso(),
@@ -537,10 +711,11 @@ def commit_session() -> dict[str, Any]:
         },
     )
     _write_registry(status, pointer)
+    _write_dataset_registry(status, pointer)
     write_active_context(status["context"], source="upload_session")
     _write_post_commit_truth(status)
     _save_session(status)
-    return {**session_status(status), "dataset_pointer": pointer, "message": "Dataset berhasil di-commit ke Raw Layer. Quality Gate belum dijalankan."}
+    return {**quick_session_status(status), "dataset_pointer": pointer, "message": "Dataset berhasil di-commit ke Raw Layer. Quality Gate belum dijalankan."}
 
 
 def reset_session() -> dict[str, Any]:
@@ -550,4 +725,4 @@ def reset_session() -> dict[str, Any]:
         shutil.rmtree(session_dir, ignore_errors=True)
     if ACTIVE_SESSION_PATH.exists():
         ACTIVE_SESSION_PATH.unlink()
-    return session_status(active_session(create=True))
+    return quick_session_status(active_session(create=True))

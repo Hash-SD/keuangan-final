@@ -38,7 +38,7 @@ def copy_raw_to_bronze() -> dict:
                 "bronze_path": str(target),
                 "row_count": row_count,
                 "ingested_at": utc_now_iso(),
-                "dummy_data": True,
+                "dummy_data": pointer.get("dataset_mode") != "uploaded",
                 "contains_real_personal_data": False,
             }
         )

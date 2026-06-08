@@ -27,6 +27,7 @@ class StorageConfig:
 
 
 LAYER_DEFINITIONS: dict[str, dict[str, Any]] = {
+    "staging": {"local_path": DATA_DIR / "uploads" / "staging", "prefix": "staging", "ready_when": "exists"},
     "raw": {"local_path": RAW_DIR, "prefix": "raw", "ready_when": "files"},
     "bronze": {"local_path": GENERATED_DIR / "bronze", "prefix": "bronze", "ready_when": "files"},
     "silver": {"local_path": GENERATED_DIR / "silver", "prefix": "silver", "ready_when": "files"},
@@ -84,8 +85,8 @@ def _layer_status(local_path: Path | None, ready_when: str, file_count: int) -> 
         return "configured"
     if local_path is None or not local_path.exists():
         return "missing"
-    if ready_when == "files":
-        return "ready" if file_count > 0 else "missing"
+    if file_count == 0:
+        return "empty"
     return "ready"
 
 

@@ -9,16 +9,35 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import DATA_DIR, GENERATED_DIR, RAW_DIR, ensure_parent
 from src.common.logging_utils import write_json
-from src.common.runtime_paths import active_dataset_pointer, raw_rab_path, silver_rab_path
+from src.common.runtime_paths import active_dataset_pointer, active_period_metadata, raw_rab_path, silver_rab_path
 from src.extraction.extract_pdf_piutang import extract_dim_kualitas_piutang, extract_fact_piutang_ukt_prodi, extract_master_control_total
 from src.generators.generate_excel_rab import MONTHS
 
 
+def _apply_period_columns(df: pd.DataFrame, pointer: dict, metadata: dict[str, str]) -> pd.DataFrame:
+    result = df.copy()
+    if "dataset_session_id" not in result.columns or result["dataset_session_id"].isna().all():
+        result["dataset_session_id"] = pointer.get("session_id") or "dummy"
+    if "tahun_akademik" not in result.columns or result["tahun_akademik"].isna().all():
+        result["tahun_akademik"] = metadata.get("target_tahun_akademik")
+    if "tahun_anggaran" not in result.columns or result["tahun_anggaran"].isna().all():
+        result["tahun_anggaran"] = metadata.get("target_tahun_anggaran")
+    if "semester" not in result.columns:
+        result["semester"] = "Tidak diketahui"
+    if "source_file" not in result.columns:
+        result["source_file"] = result.get("source_filename", "unknown")
+    if "source_event" not in result.columns:
+        result["source_event"] = metadata.get("source_event")
+    return result
+
+
 def clean_silver() -> dict:
     pointer = active_dataset_pointer() or {}
+    period_metadata = active_period_metadata()
     extract_master_control_total()
     dim_kualitas = extract_dim_kualitas_piutang()
     piutang = extract_fact_piutang_ukt_prodi()
+    piutang = _apply_period_columns(piutang, pointer, period_metadata)
     piutang["nominal_piutang_rp"] = pd.to_numeric(piutang["nominal_piutang_rp"], errors="coerce").astype("int64")
     piutang["umur_tunggakan"] = pd.to_numeric(piutang["umur_tunggakan"], errors="coerce").astype("int64")
     piutang_path = GENERATED_DIR / "silver" / "fact_piutang_ukt_prodi.csv"
@@ -26,6 +45,7 @@ def clean_silver() -> dict:
     piutang.to_csv(piutang_path, index=False)
 
     trx = pd.read_csv(GENERATED_DIR / "bronze" / "csv_transactions_valid.csv", dtype={"nim": "string"})
+    trx = _apply_period_columns(trx, pointer, period_metadata)
     trx_path = GENERATED_DIR / "silver" / "transactions_clean.csv"
     ensure_parent(trx_path)
     trx.to_csv(trx_path, index=False)
@@ -44,6 +64,7 @@ def clean_silver() -> dict:
         var_name="bulan",
         value_name="alokasi_rp",
     )
+    rab_long = _apply_period_columns(rab_long, pointer, period_metadata)
     rab_path = silver_rab_path()
     ensure_parent(rab_path)
     rab_long.to_csv(rab_path, index=False)

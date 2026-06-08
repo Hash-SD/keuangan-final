@@ -358,13 +358,13 @@ def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
             "Rincian Piutang Mahasiswa",
             "table",
             {
-                "all_columns": ["nama_prodi", "nim", "nama_debitur", "semester", "kualitas", "nominal_piutang_rp"],
+                "all_columns": ["tahun_akademik", "tahun_anggaran", "nama_prodi", "nim", "nama_debitur", "semester", "kualitas", "nominal_piutang_rp"],
                 "order_by_cols": ["[\"nominal_piutang_rp\", false]"],
                 "page_length": 25,
                 "table_timestamp_format": "smart_date",
             },
             {
-                "columns": ["nama_prodi", "nim", "nama_debitur", "semester", "kualitas", "nominal_piutang_rp"],
+                "columns": ["tahun_akademik", "tahun_anggaran", "nama_prodi", "nim", "nama_debitur", "semester", "kualitas", "nominal_piutang_rp"],
                 "metrics": [],
                 "orderby": [["nominal_piutang_rp", False]],
             },
@@ -390,6 +390,7 @@ def main() -> None:
         "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
         "chart_ids": chart_ids,
         "chart_count": len(chart_ids),
+        "native_filter_columns": ["tahun_akademik", "tahun_anggaran", "semester", "nama_prodi", "kualitas"],
     }
     write_json(OUTPUTS_DIR / "reports" / "superset_dashboard.json", result)
     print(result)

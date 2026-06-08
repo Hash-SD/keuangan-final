@@ -7,7 +7,15 @@ from pathlib import Path
 import pytest
 
 from portal_backend.app import create_app
-from portal_backend.services.upload_session import ACTIVE_DATASET_POINTER_PATH, ACTIVE_SESSION_PATH, reset_session
+from portal_backend.services.upload_session import (
+    ACTIVE_DATASET_POINTER_PATH,
+    ACTIVE_SESSION_PATH,
+    AVAILABLE_PERIODS_PATH,
+    DATASET_REGISTRY_PATH,
+    LATEST_UPLOAD_METADATA_PATH,
+    UPLOAD_REGISTRY_PATH,
+    reset_session,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,7 +26,7 @@ SYSTEM_TRUTH_PATH = ROOT / "outputs" / "reports" / "system_truth_status.json"
 @pytest.fixture(autouse=True)
 def restore_upload_state():
     snapshots = {}
-    for path in [ACTIVE_DATASET_POINTER_PATH, ACTIVE_SESSION_PATH, ACTIVE_CONTEXT_PATH, SYSTEM_TRUTH_PATH]:
+    for path in [ACTIVE_DATASET_POINTER_PATH, ACTIVE_SESSION_PATH, ACTIVE_CONTEXT_PATH, SYSTEM_TRUTH_PATH, UPLOAD_REGISTRY_PATH, LATEST_UPLOAD_METADATA_PATH, DATASET_REGISTRY_PATH, AVAILABLE_PERIODS_PATH]:
         snapshots[path] = path.read_bytes() if path.exists() else None
     yield
     for path, content in snapshots.items():

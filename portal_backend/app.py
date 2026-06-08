@@ -39,6 +39,35 @@ def create_app() -> Flask:
     def health():
         return jsonify({"status": "ok", "service": "portal-backend", "mode": "local-on-premise", "basis": "main.pdf"})
 
+    @app.get("/api/readiness")
+    def readiness():
+        checks = {}
+        for name, path in {
+            "outputs_reports": OUTPUTS_DIR / "reports",
+            "uploads_staging": PORTAL_DIR.parent / "data" / "uploads" / "staging",
+            "raw": PORTAL_DIR.parent / "data" / "raw",
+        }.items():
+            checks[name] = {"status": "ready" if path.exists() else "missing", "path": relative_path(path)}
+        upload_status = session_status()
+        truth = build_system_truth_status(write_outputs=False)
+        manifest = read_json(OUTPUTS_DIR / "reports" / "storage_manifest.json")
+        checks["upload_session"] = {"status": "ready", "session_id": upload_status.get("session_id"), "readiness": upload_status.get("readiness")}
+        checks["system_truth"] = {"status": "ready", "generated_at": truth.get("generated_at")}
+        checks["storage_manifest"] = {"status": "ready" if manifest and not manifest.get("_error") else "missing", "source": "outputs/reports/storage_manifest.json"}
+        checks["superset"] = truth.get("services", {}).get("superset", {"status": "unreachable"})
+        ready = all(item.get("status") in {"ready", "empty", "skipped", "mapped", "configured", "unreachable"} for item in checks.values())
+        return jsonify({"status": "ready" if ready else "not_ready", "checks": checks})
+
+    @app.get("/api/superset/status")
+    def superset_status():
+        truth = build_system_truth_status(write_outputs=False)
+        return jsonify(
+            {
+                "service": truth.get("services", {}).get("superset", {"status": "unreachable"}),
+                "dashboard": truth.get("dashboard", {"status": "not_started"}),
+            }
+        )
+
     @app.get("/api/runtime-config")
     def runtime_config():
         context = read_active_context()

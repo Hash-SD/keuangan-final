@@ -8,25 +8,7 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Portal Ekosistem Data Lakehouse Keuangan</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb' /%3E%3Csvg x='20' y='20' width='60' height='60' viewBox='0 -960 960 960'%3E%3Cpath fill='%23ffffff' d='M200-120v-80h560v80H200Zm80-160v-360h80v360h-80Zm200 0v-360h80v360h-80Zm200 0v-360h80v360h-80ZM160-760v-80l320-160 320 160v80H160Z'/%3E%3C/svg%3E%3C/svg%3E">
-  <!-- Tailwind CSS (CDN - dev only) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-  <!-- Google Fonts: Inter (Variable) + Material Symbols -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <!-- Offline-safe local utility CSS replaces CDN dependencies during validation. -->
   <style>
     :root {
       --primary: #004e9f;
@@ -66,6 +48,82 @@
     button, input, textarea { font: inherit; }
     button { cursor: pointer; }
     button:disabled { cursor: not-allowed; opacity: .62; }
+    .flex { display: flex; }
+    .flex-row { flex-direction: row; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1 1 0%; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: .5rem; }
+    .gap-3 { gap: .75rem; }
+    .w-full { width: 100%; }
+    .w-5 { width: 1.25rem; }
+    .h-5 { height: 1.25rem; }
+    .w-10 { width: 2.5rem; }
+    .h-10 { height: 2.5rem; }
+    .w-64 { width: 16rem; }
+    .h-screen { height: 100vh; }
+    .min-h-screen { min-height: 100vh; }
+    .min-w-0 { min-width: 0; }
+    .max-w-4xl { max-width: 56rem; }
+    .sticky { position: sticky; }
+    .relative { position: relative; }
+    .top-0 { top: 0; }
+    .z-20 { z-index: 20; }
+    .p-4 { padding: 1rem; }
+    .p-5 { padding: 1.25rem; }
+    .p-8 { padding: 2rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .py-2 { padding-top: .5rem; padding-bottom: .5rem; }
+    .py-3 { padding-top: .75rem; padding-bottom: .75rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .mr-3 { margin-right: .75rem; }
+    .mt-2 { margin-top: .5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .ml-4 { margin-left: 1rem; }
+    .bg-white { background: #fff; }
+    .bg-gray-50 { background: #f9fafb; }
+    .bg-blue-50\/70 { background: rgba(239, 246, 255, .7); }
+    .bg-blue-600 { background: #2563eb; }
+    .bg-red-600 { background: #dc2626; }
+    .bg-red-700, .hover\:bg-red-700:hover { background: #b91c1c; }
+    .bg-red-800 { background: #991b1b; }
+    .text-white { color: #fff; }
+    .text-gray-400 { color: #9ca3af; }
+    .text-gray-500 { color: #6b7280; }
+    .text-gray-700 { color: #374151; }
+    .text-gray-900 { color: #111827; }
+    .text-blue-600 { color: #2563eb; }
+    .text-xs { font-size: .75rem; }
+    .text-sm, .text-\[14px\] { font-size: .875rem; }
+    .text-lg { font-size: 1.125rem; }
+    .text-2xl { font-size: 1.5rem; }
+    .text-\[18px\] { font-size: 18px; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .font-extrabold { font-weight: 800; }
+    .leading-tight { line-height: 1.25; }
+    .leading-relaxed { line-height: 1.625; }
+    .tracking-tight { letter-spacing: 0; }
+    .rounded-xl { border-radius: .75rem; }
+    .border { border: 1px solid #e5e7eb; }
+    .border-r { border-right: 1px solid #e5e7eb; }
+    .border-b { border-bottom: 1px solid #f3f4f6; }
+    .border-t { border-top: 1px solid #f3f4f6; }
+    .border-gray-100 { border-color: #f3f4f6; }
+    .border-gray-200 { border-color: #e5e7eb; }
+    .overflow-y-auto { overflow-y: auto; }
+    .overflow-x-hidden { overflow-x: hidden; }
+    .shadow-sm { box-shadow: 0 1px 2px rgba(15, 23, 42, .08); }
+    .transition-all, .transition-colors { transition: all .2s ease; }
+    .cursor-pointer { cursor: pointer; }
+    .outline-none { outline: none; }
+    .space-y-1\.5 > * + * { margin-top: .375rem; }
     .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
     .icon-fill { font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24; }
 
@@ -909,8 +967,16 @@
       rejectedRows: [],
       goldPreview: [],
       silverPreview: [],
-      lastAction: null
+      lastAction: null,
+      isUserEditing: false,
+      isUploading: false,
+      isCommitting: false,
+      isAutosaving: false,
+      lastUserInputAt: 0,
+      dirtyFields: new Set(),
+      uploadingTypes: new Set()
     };
+    let routeAbortController = null;
 
     const rupiah = value => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value || 0)).replace(/\s/g, "");
     const n = value => new Intl.NumberFormat("id-ID").format(Number(value || 0));
@@ -1390,6 +1456,7 @@
     function uploadStatus(type, payload) {
       const items = uploadItems(type, payload);
       const errors = state.uploadSession?.validation_errors?.[type] || [];
+      if (state.uploadingTypes.has(type)) return { text: "Mengunggah", type: "info" };
       if (errors.length) return { text: "Gagal validasi", type: "error" };
       if (!items.length) return { text: "Belum dipilih", type: "warn" };
       if (state.uploadSession?.readiness?.[`${type}_ready`]) return { text: "Siap", type: "ok" };
@@ -2067,14 +2134,22 @@
       </tbody></table></div>`;
     }
 
-    function renderAll() {
-      renderBeranda();
-      renderData();
-      renderDashboard();
-      renderLakehouse();
-      renderOrkestrasi();
-      renderAnalytics();
-      renderSystem();
+    function currentRoute() {
+      return (location.hash || "#/beranda").replace(/^#\/?/, "");
+    }
+
+    function renderActivePage() {
+      const route = currentRoute();
+      const renderers = {
+        beranda: renderBeranda,
+        data: renderData,
+        dashboard: renderDashboard,
+        lakehouse: renderLakehouse,
+        orkestrasi: renderOrkestrasi,
+        analytics: renderAnalytics,
+        system: renderSystem
+      };
+      (renderers[route] || renderBeranda)();
       renderFooterStatus();
       bindCopyButtons();
       bindRuntimeContextControls();
@@ -2084,13 +2159,34 @@
       bindUatSubmit();
     }
 
-    function renderCurrentPage() {
-      renderAll();
-      setRoute();
+    function renderAll() {
+      renderBeranda();
+      renderData();
+      renderDashboard();
+      renderLakehouse();
+      renderOrkestrasi();
+      renderAnalytics();
+      renderSystem();
+      renderActivePage();
     }
 
-    function setRoute() {
-      const route = (location.hash || "#/beranda").replace(/^#\/?/, "");
+    function renderDataOnly() {
+      renderData();
+      renderFooterStatus();
+      bindRuntimeContextControls();
+      bindUploadButtons();
+      bindUploadSessionControls();
+      bindPipelineButtons();
+    }
+
+    function renderCurrentPage() {
+      renderActivePage();
+      setRoute({ scroll: false });
+    }
+
+    function setRoute(options = {}) {
+      const { scroll = true } = options;
+      const route = currentRoute();
       const page = pages.find(([id]) => id === route) || pages[0];
       document.querySelectorAll(".page").forEach(el => el.classList.toggle("active", el.dataset.page === page[0]));
       document.querySelectorAll("a[data-nav]").forEach(el => {
@@ -2106,7 +2202,7 @@
       document.getElementById("pageTitle").textContent = page[1];
       document.getElementById("pageDescription").textContent = page[3];
       document.title = `Portal Keuangan - ${page[1]}`;
-      window.scrollTo({ top: 0, behavior: "instant" });
+      if (scroll) window.scrollTo({ top: 0, behavior: "instant" });
     }
 
     function renderShell() {
@@ -2148,8 +2244,8 @@
       });
     }
 
-    async function apiGet(path) {
-      const response = await fetch(`${API_BASE_URL}${path}`, { cache: "no-store" });
+    async function apiGet(path, options = {}) {
+      const response = await fetch(`${API_BASE_URL}${path}`, { cache: "no-store", signal: options.signal });
       if (!response.ok) throw new Error(`GET ${path} gagal (${response.status})`);
       return response.json();
     }
@@ -2215,8 +2311,23 @@
       document.querySelectorAll("#ctx-target-prodi, #ctx-target-fakultas, #ctx-target-tahun-akademik, #ctx-target-tahun-anggaran, #ctx-source-event").forEach(input => {
         if (input.dataset.bound) return;
         input.dataset.bound = "true";
-        input.addEventListener("input", () => scheduleContextAutosave());
+        input.addEventListener("focus", () => {
+          state.isUserEditing = true;
+          state.dirtyFields.add(input.id);
+        });
+        input.addEventListener("input", () => {
+          state.isUserEditing = true;
+          state.lastUserInputAt = Date.now();
+          state.dirtyFields.add(input.id);
+          scheduleContextAutosave();
+        });
         input.addEventListener("change", () => scheduleContextAutosave());
+        input.addEventListener("blur", () => {
+          window.setTimeout(() => {
+            if (!state.isAutosaving && Date.now() - state.lastUserInputAt >= 1800) state.isUserEditing = false;
+            state.dirtyFields.delete(input.id);
+          }, 2000);
+        });
       });
     }
 
@@ -2224,6 +2335,7 @@
     function scheduleContextAutosave() {
       window.clearTimeout(contextAutosaveTimer);
       state.contextSaveStatus = "saving";
+      state.isAutosaving = true;
       updateContextAutosaveStatus();
       contextAutosaveTimer = window.setTimeout(saveUploadContextDraft, 650);
     }
@@ -2239,14 +2351,24 @@
         state.uploadSession = result;
         state.runtimeConfig = result.context || state.runtimeConfig;
         state.contextSaveStatus = result.readiness?.context_ready ? "saved" : "idle";
+        state.isAutosaving = false;
         updateContextAutosaveStatus();
-        showToast("Konteks periode tersimpan sementara.");
-        renderCurrentPage();
+        updateUploadReadinessPanel();
       } catch (error) {
         state.contextSaveStatus = "failed";
+        state.isAutosaving = false;
         updateContextAutosaveStatus();
         showToast(error.message || "Gagal menyimpan konteks");
       }
+    }
+
+    function updateUploadReadinessPanel() {
+      if (currentRoute() !== "data") return;
+      const active = document.activeElement;
+      if (active && active.matches?.("#ctx-target-prodi, #ctx-target-fakultas, #ctx-target-tahun-akademik, #ctx-target-tahun-anggaran, #ctx-source-event")) {
+        return;
+      }
+      renderDataOnly();
     }
 
     function tablePayloadToObjects(payload) {
@@ -2285,6 +2407,9 @@
         formData.append("upload_type", type);
         Array.from(input.files).forEach(file => formData.append("file", file));
         input.disabled = true;
+        state.isUploading = true;
+        state.uploadingTypes.add(type);
+        renderDataOnly();
         try {
           const result = await apiPost("/api/upload/session/file", formData);
           state.lastAction = `Upload session ${type}: ${result.status}`;
@@ -2293,11 +2418,14 @@
           const labels = { pdf: "PDF tersimpan sementara di staging.", csv: "CSV tersimpan sementara di staging.", excel: "Excel tersimpan sementara di staging." };
           showToast(labels[type] || "File tersimpan sementara di staging.");
           input.value = "";
-          renderCurrentPage();
+          renderDataOnly();
         } catch (error) {
           showToast(error.message);
         } finally {
           input.disabled = false;
+          state.isUploading = false;
+          state.uploadingTypes.delete(type);
+          renderDataOnly();
         }
     }
 
@@ -2306,7 +2434,7 @@
         const result = await apiDelete("/api/upload/session/file", { upload_type: type, filename });
         state.uploadSession = result;
         showToast("File dihapus dari sesi upload.");
-        renderCurrentPage();
+        renderDataOnly();
       } catch (error) {
         showToast(error.message);
       }
@@ -2318,6 +2446,7 @@
         commit.dataset.bound = "true";
         commit.addEventListener("click", async () => {
           commit.disabled = true;
+          state.isCommitting = true;
           const old = commit.innerHTML;
           commit.textContent = "Committing...";
           try {
@@ -2335,17 +2464,19 @@
                 metricsReady: false,
                 reportsReady: false
               };
-              renderCurrentPage();
+              renderDataOnly();
             }
-            await loadState();
+            await loadLightweightStateForCurrentRoute();
             if (result.status === "committed") {
               state.uploadSession = result;
-              renderCurrentPage();
+              renderDataOnly();
             }
           } catch (error) {
             showToast(error.message);
             commit.disabled = false;
             commit.innerHTML = old;
+          } finally {
+            state.isCommitting = false;
           }
         });
       }
@@ -2361,7 +2492,7 @@
             const payload = await apiDelete("/api/upload/session/reset", {});
             state.uploadSession = payload;
             showToast("Sesi upload direset");
-            renderCurrentPage();
+            renderDataOnly();
           } catch (error) {
             showToast(error.message);
             reset.disabled = false;
@@ -2374,8 +2505,17 @@
       return Array.from(document.querySelectorAll("input[type='file']")).some(input => input.files && input.files.length > 0);
     }
 
+    function canBackgroundRefresh() {
+      if (hasPendingUploadSelection()) return false;
+      if (state.isUserEditing || state.isUploading || state.isCommitting || state.isAutosaving) return false;
+      if (Date.now() - state.lastUserInputAt < 2500) return false;
+      return true;
+    }
+
     function bindPipelineButtons() {
       document.querySelectorAll("[data-pipeline]").forEach(button => {
+        if (button.dataset.bound) return;
+        button.dataset.bound = "true";
         button.addEventListener("click", async () => {
           const pipeline = button.getAttribute("data-pipeline");
           button.disabled = true;
@@ -2399,6 +2539,8 @@
     function bindUatSubmit() {
       const button = document.getElementById("uatSubmit");
       if (!button) return;
+      if (button.dataset.bound) return;
+      button.dataset.bound = "true";
       button.addEventListener("click", async () => {
         button.disabled = true;
         button.textContent = "Submitting...";
@@ -2485,16 +2627,80 @@
         }
       }
       renderAll();
-      setRoute();
+      setRoute({ scroll: false });
+    }
+
+    async function loadDataPageState() {
+      if (routeAbortController) routeAbortController.abort();
+      routeAbortController = new AbortController();
+      const { signal } = routeAbortController;
+      const [activity, runtimeConfig, truth, uploadSession] = await Promise.all([
+        apiGet("/api/activity", { signal }).catch(() => null),
+        apiGet("/api/runtime-config", { signal }).catch(() => null),
+        apiGet("/api/system-truth/status", { signal }).catch(() => null),
+        apiGet("/api/upload/session/status", { signal }).catch(() => null)
+      ]);
+      if (signal.aborted) return;
+      if (activity) state.activities = activity.activities || [];
+      if (runtimeConfig && !state.isUserEditing) state.runtimeConfig = runtimeConfig;
+      if (truth) {
+        state.truth = truth;
+        const truthLayers = truth.layers || {};
+        state.layers = {
+          ...state.layers,
+          rawReady: truthLayers.raw?.status === "ready",
+          bronzeReady: truthLayers.bronze?.status === "ready",
+          silverReady: truthLayers.silver?.status === "ready",
+          goldReady: truthLayers.gold?.status === "ready",
+          quarantineReady: truthLayers.quarantine?.status === "ready",
+          metricsReady: truthLayers.metrics?.status === "ready",
+          reportsReady: truthLayers.reports?.status === "ready",
+          goldValid: truth.reconciliation?.status === "validated"
+        };
+      }
+      if (uploadSession) state.uploadSession = uploadSession;
+      renderDataOnly();
+      setRoute({ scroll: false });
+    }
+
+    async function loadDashboardPageState() {
+      await loadState();
+    }
+
+    async function loadLakehousePageState() {
+      await loadState();
+    }
+
+    async function loadSystemPageState() {
+      await loadState();
+    }
+
+    async function loadLightweightStateForCurrentRoute() {
+      const route = currentRoute();
+      if (route === "data") {
+        await loadDataPageState();
+      } else if (route === "dashboard") {
+        await loadDashboardPageState();
+      } else if (route === "lakehouse") {
+        await loadLakehousePageState();
+      } else if (route === "system") {
+        await loadSystemPageState();
+      } else {
+        await loadState();
+      }
     }
 
     renderShell();
-    window.addEventListener("hashchange", setRoute);
-    setRoute();
-    loadState();
+    window.addEventListener("hashchange", () => {
+      renderActivePage();
+      setRoute({ scroll: true });
+      loadLightweightStateForCurrentRoute().catch(() => {});
+    });
+    setRoute({ scroll: true });
+    loadLightweightStateForCurrentRoute();
     window.setInterval(() => {
-      if (!hasPendingUploadSelection()) loadState();
-    }, 15000);
+      if (canBackgroundRefresh()) loadLightweightStateForCurrentRoute();
+    }, 30000);
   </script>
   <script type="text/javascript">
     const dict = {

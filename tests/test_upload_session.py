@@ -7,7 +7,15 @@ from pathlib import Path
 import pytest
 
 from portal_backend.app import create_app
-from portal_backend.services.upload_session import ACTIVE_DATASET_POINTER_PATH, ACTIVE_SESSION_PATH, reset_session
+from portal_backend.services.upload_session import (
+    ACTIVE_DATASET_POINTER_PATH,
+    ACTIVE_SESSION_PATH,
+    AVAILABLE_PERIODS_PATH,
+    DATASET_REGISTRY_PATH,
+    LATEST_UPLOAD_METADATA_PATH,
+    UPLOAD_REGISTRY_PATH,
+    reset_session,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,7 +26,7 @@ SYSTEM_TRUTH_PATH = ROOT / "outputs" / "reports" / "system_truth_status.json"
 @pytest.fixture(autouse=True)
 def restore_upload_state():
     snapshots = {}
-    for path in [ACTIVE_DATASET_POINTER_PATH, ACTIVE_SESSION_PATH, ACTIVE_CONTEXT_PATH, SYSTEM_TRUTH_PATH]:
+    for path in [ACTIVE_DATASET_POINTER_PATH, ACTIVE_SESSION_PATH, ACTIVE_CONTEXT_PATH, SYSTEM_TRUTH_PATH, UPLOAD_REGISTRY_PATH, LATEST_UPLOAD_METADATA_PATH, DATASET_REGISTRY_PATH, AVAILABLE_PERIODS_PATH]:
         snapshots[path] = path.read_bytes() if path.exists() else None
     yield
     for path, content in snapshots.items():
@@ -163,6 +171,8 @@ def test_upload_session_commit_success_writes_pointer_and_truth_status():
     assert pointer["dataset_mode"] == "uploaded"
     assert pointer["status"] == "committed"
     assert len(pointer["active_csv_files"]) == 2
+    assert json.loads(DATASET_REGISTRY_PATH.read_text(encoding="utf-8"))["active_session_id"] == payload["session_id"]
+    assert json.loads(AVAILABLE_PERIODS_PATH.read_text(encoding="utf-8"))["periods"][0]["tahun_akademik"] == "2025/2026"
     assert truth["layers"]["raw"]["status"] == "ready"
     assert truth["layers"]["bronze"]["status"] == "not_started"
     assert truth["uat"]["status"] == "manual_input_required"

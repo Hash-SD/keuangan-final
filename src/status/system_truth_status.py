@@ -118,8 +118,10 @@ def _source_status(base_dir: Path) -> dict[str, Any]:
     }
     result = {}
     for source_type, files in layers.items():
+        source_dir = raw_dir / source_type
+        status = "ready" if files else "empty" if source_dir.exists() else "missing"
         result[source_type] = {
-            "status": "ready" if files else "missing",
+            "status": status,
             "file_count": len(files),
             "files": [_rel(path, base_dir) for path in sorted(files)],
             "message": "Artefak sumber tersedia." if files else "Artefak sumber belum tersedia.",
@@ -240,11 +242,13 @@ def _metric_file_status(base_dir: Path, filename: str, keys: list[str]) -> dict[
 def _uat_status(base_dir: Path) -> dict[str, Any]:
     uat_dir = base_dir / "outputs" / "uat"
     template = uat_dir / "uat_template.csv"
-    responses = uat_dir / "uat_dummy_response.csv"
+    responses = uat_dir / "uat_response.csv"
+    dummy_responses = uat_dir / "uat_dummy_response.csv"
     summary = uat_dir / "uat_score_summary.json"
     matrix = uat_dir / "uat_matrix_summary.json"
     template_available = template.exists()
     responses_available = responses.exists() and (_csv_row_count(responses) or 0) > 0
+    dummy_responses_available = dummy_responses.exists() and (_csv_row_count(dummy_responses) or 0) > 0
     summary_payload = _read_json(summary)
     matrix_payload = _read_json(matrix)
 
@@ -254,7 +258,7 @@ def _uat_status(base_dir: Path) -> dict[str, Any]:
         source = None
     elif not responses_available:
         status = "manual_input_required"
-        message = "Instrumen tersedia tetapi belum ada penilaian."
+        message = "Instrumen tersedia tetapi belum ada penilaian final."
         source = _rel(template, base_dir)
     elif not summary_payload or not matrix_payload:
         status = "not_available"
@@ -276,6 +280,7 @@ def _uat_status(base_dir: Path) -> dict[str, Any]:
         "status": status,
         "template_available": template_available,
         "responses_available": responses_available,
+        "dummy_responses_available": dummy_responses_available,
         "respondent_count": respondent_count if status == "completed" else 0,
         "average_score": summary_payload.get("average_score") if status == "completed" and summary_payload else None,
         "percentage": summary_payload.get("percentage") if status == "completed" and summary_payload else None,
