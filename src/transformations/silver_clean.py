@@ -8,12 +8,14 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import DATA_DIR, GENERATED_DIR, RAW_DIR, ensure_parent
-from src.common.runtime_paths import raw_rab_path, silver_rab_path
+from src.common.logging_utils import write_json
+from src.common.runtime_paths import active_dataset_pointer, raw_rab_path, silver_rab_path
 from src.extraction.extract_pdf_piutang import extract_dim_kualitas_piutang, extract_fact_piutang_ukt_prodi, extract_master_control_total
 from src.generators.generate_excel_rab import MONTHS
 
 
 def clean_silver() -> dict:
+    pointer = active_dataset_pointer() or {}
     extract_master_control_total()
     dim_kualitas = extract_dim_kualitas_piutang()
     piutang = extract_fact_piutang_ukt_prodi()
@@ -48,14 +50,18 @@ def clean_silver() -> dict:
     if rab_path.name != "rab_prodi_sains_data_long.csv":
         rab_long.to_csv(GENERATED_DIR / "silver" / "rab_prodi_sains_data_long.csv", index=False)
     rab_long.to_csv(GENERATED_DIR / "silver" / "silver_rab.csv", index=False)
-    return {
+    result = {
         "piutang_rows": len(piutang),
         "kualitas_rows": len(dim_kualitas),
         "transaction_rows": len(trx),
         "rab_rows": len(rab_long),
         "master_ukt_rows": len(master_ukt),
         "master_spi_rows": len(master_spi),
+        "dataset_mode": pointer.get("dataset_mode", "dummy"),
+        "upload_session_id": pointer.get("session_id"),
     }
+    write_json(GENERATED_DIR / "silver" / "silver_metadata.json", result)
+    return result
 
 
 def main() -> None:

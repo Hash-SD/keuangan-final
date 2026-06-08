@@ -15,7 +15,6 @@ from src.common.runtime_config import configured_batch_id
 from src.common.runtime_paths import raw_pdf_path
 
 
-PDF_INPUT = raw_pdf_path()
 SILVER_DIM_KUALITAS = GENERATED_DIR / "silver" / "dim_kualitas_piutang.csv"
 SILVER_FACT_PIUTANG = GENERATED_DIR / "silver" / "fact_piutang_ukt_prodi.csv"
 CONTROL_TOTAL_JSON = OUTPUTS_DIR / "metrics" / "master_control_total.json"
@@ -38,7 +37,12 @@ def _parse_idr(value: str) -> int:
     return int(re.sub(r"[^\d]", "", value))
 
 
-def extract_master_control_total(pdf_path: str | Path = PDF_INPUT) -> dict:
+def _pdf_input(pdf_path: str | Path | None = None) -> Path:
+    return Path(pdf_path) if pdf_path is not None else raw_pdf_path()
+
+
+def extract_master_control_total(pdf_path: str | Path | None = None) -> dict:
+    pdf_path = _pdf_input(pdf_path)
     controls = {
         "pendapatan_pnbp": None,
         "total_piutang_mahasiswa": None,
@@ -69,7 +73,8 @@ def extract_master_control_total(pdf_path: str | Path = PDF_INPUT) -> dict:
     return controls
 
 
-def extract_dim_kualitas_piutang(pdf_path: str | Path = PDF_INPUT) -> pd.DataFrame:
+def extract_dim_kualitas_piutang(pdf_path: str | Path | None = None) -> pd.DataFrame:
+    pdf_path = _pdf_input(pdf_path)
     rows = []
     with pdfplumber.open(str(pdf_path)) as pdf:
         for page_idx, page in enumerate(pdf.pages, start=1):
@@ -103,7 +108,8 @@ def extract_dim_kualitas_piutang(pdf_path: str | Path = PDF_INPUT) -> pd.DataFra
     return df
 
 
-def extract_fact_piutang_ukt_prodi(pdf_path: str | Path = PDF_INPUT) -> pd.DataFrame:
+def extract_fact_piutang_ukt_prodi(pdf_path: str | Path | None = None) -> pd.DataFrame:
+    pdf_path = _pdf_input(pdf_path)
     master = GENERATED_DIR / "dummy_piutang_master.csv"
     if master.exists():
         df = pd.read_csv(master, dtype={"nim": "string"})

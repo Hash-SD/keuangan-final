@@ -9,6 +9,7 @@ from openpyxl import load_workbook
 from .files import csv_preview, relative_path, upload_registry
 from .paths import MASTER_BIAYA_EXCEL_PATH, MASTER_SPI_PATH, MASTER_UKT_PATH, PDF_SAMPLE_PATH, RAW_CSV_DIR, RAW_EXCEL_RAB_PATH, RAW_PDF_PATH, SILVER_RAB_PATH
 from .runtime_context import read_active_context
+from src.common.runtime_paths import active_csv_paths, active_dataset_pointer, raw_pdf_path, raw_rab_path
 
 
 CSV_REQUIRED_COLUMNS = {
@@ -50,6 +51,20 @@ def _csv_file_status(path: Path) -> dict[str, Any]:
 
 
 def pdf_sample_status() -> dict[str, Any]:
+    pointer = active_dataset_pointer()
+    if pointer and pointer.get("active_pdf"):
+        path = Path(__file__).resolve().parents[2] / pointer["active_pdf"]
+        return {
+            "available": path.exists(),
+            "path": relative_path(path),
+            "raw_pdf_available": path.exists(),
+            "raw_path": relative_path(path),
+            "uploaded_path": pointer["active_pdf"],
+            "canonical_path": pointer["active_pdf"],
+            "method": "programmatic_text_extraction",
+            "ocr_required": False,
+            "dataset_mode": "uploaded",
+        }
     registry = upload_registry()
     active_pdf = registry.get("active", {}).get("pdf") or {}
     uploaded_pdf_path = None
@@ -85,17 +100,18 @@ def pdf_sample_status() -> dict[str, Any]:
 
 def excel_rab_status() -> dict[str, Any]:
     config = read_active_context()
-    if not RAW_EXCEL_RAB_PATH.exists():
+    rab_path = raw_rab_path()
+    if not rab_path.exists():
         return {
             "status": "missing",
-            "path": relative_path(RAW_EXCEL_RAB_PATH),
+            "path": relative_path(rab_path),
             "sheet": "RAB",
             "target_prodi": config["target_prodi"],
             "target_tahun_anggaran": config["target_tahun_anggaran"],
             "total_pagu_expected": config["target_total_pagu_rab"],
         }
     try:
-        workbook = load_workbook(RAW_EXCEL_RAB_PATH, read_only=True, data_only=True)
+        workbook = load_workbook(rab_path, read_only=True, data_only=True)
         sheet_name = "RAB" if "RAB" in workbook.sheetnames else workbook.sheetnames[0]
         worksheet = workbook[sheet_name]
         header = [str(cell.value).strip() if cell.value is not None else "" for cell in next(worksheet.iter_rows(min_row=1, max_row=1))]
@@ -104,7 +120,7 @@ def excel_rab_status() -> dict[str, Any]:
         missing = sorted(required_minimal - {column.lower() for column in header})
         return {
             "status": "ready" if not missing and has_month_columns else "needs_review",
-            "path": relative_path(RAW_EXCEL_RAB_PATH),
+            "path": relative_path(rab_path),
             "sheet": sheet_name,
             "columns": header,
             "missing_columns": missing,
@@ -115,7 +131,7 @@ def excel_rab_status() -> dict[str, Any]:
             "total_pagu_expected": config["target_total_pagu_rab"],
         }
     except (OSError, StopIteration) as exc:
-        return {"status": "error", "path": relative_path(RAW_EXCEL_RAB_PATH), "message": str(exc)}
+        return {"status": "error", "path": relative_path(rab_path), "message": str(exc)}
 
 
 def source_status() -> dict[str, Any]:
@@ -129,7 +145,7 @@ def source_status() -> dict[str, Any]:
             if path.exists():
                 csv_files.append(path)
     if not csv_files:
-        csv_files = sorted(path for path in RAW_CSV_DIR.glob("transaksi_*.csv") if path.is_file())
+        csv_files = active_csv_paths()
     csv_statuses = [_csv_file_status(path) for path in csv_files]
     total_csv_rows = sum(item.get("rows", 0) for item in csv_statuses)
     target_rows = int(config.get("dummy_transaction_rows") or 0)

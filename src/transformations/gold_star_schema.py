@@ -8,6 +8,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, ensure_parent
+from src.common.logging_utils import write_json
+from src.common.runtime_paths import active_dataset_pointer
 from src.common.time_utils import utc_now_iso
 
 
@@ -15,6 +17,7 @@ GOLD_DIR = GENERATED_DIR / "gold"
 
 
 def build_gold() -> dict:
+    pointer = active_dataset_pointer() or {}
     piutang = pd.read_csv(GENERATED_DIR / "silver" / "fact_piutang_ukt_prodi.csv", dtype={"nim": "string"})
     kualitas = pd.read_csv(GENERATED_DIR / "silver" / "dim_kualitas_piutang.csv")
 
@@ -48,7 +51,14 @@ def build_gold() -> dict:
     pd.read_csv(GENERATED_DIR / "silver" / "silver_master_spi.csv").to_csv(GOLD_DIR / "dim_biaya_spi.csv", index=False)
     dashboard = fact.merge(dim_organisasi, on="organisasi_key").merge(dim_mahasiswa, on="mahasiswa_key").merge(kualitas, on="kualitas_piutang_key").merge(dim_waktu, on="waktu_tunggakan_key")
     dashboard.to_csv(GOLD_DIR / "vw_dashboard_piutang_ukt.csv", index=False)
-    return {"fact_rows": len(fact), "dashboard_rows": len(dashboard)}
+    result = {
+        "fact_rows": len(fact),
+        "dashboard_rows": len(dashboard),
+        "dataset_mode": pointer.get("dataset_mode", "dummy"),
+        "upload_session_id": pointer.get("session_id"),
+    }
+    write_json(GOLD_DIR / "gold_metadata.json", result)
+    return result
 
 
 def main() -> None:

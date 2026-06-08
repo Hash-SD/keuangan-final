@@ -1,0 +1,57 @@
+{
+  "session_id": "upload-2026-06-08-124902-8309c9",
+  "status": "draft",
+  "context": {
+    "target_prodi": "Sains Data",
+    "target_fakultas": "Fakultas Sains",
+    "target_tahun_akademik": "2025/2026",
+    "target_tahun_anggaran": "2026",
+    "batch_id": "batch-sains-data-2026",
+    "source_event": "2026-05-26T10:00:00+00:00",
+    "dummy_transaction_rows": 800,
+    "dummy_invalid_rows": 16,
+    "target_total_piutang": null,
+    "target_jumlah_penunggak": null,
+    "target_total_pagu_rab": 150000000,
+    "source": "upload_session",
+    "target_label": "Sains Data - Tahun Akademik 2025/2026",
+    "validation_mode": "observed_only"
+  },
+  "files": {
+    "pdf": {
+      "available": true,
+      "filename": "laporan_audited_2026.pdf",
+      "path": "data/uploads/staging/upload-2026-06-08-124902-8309c9/pdf/laporan_audited_2026.pdf",
+      "status": "staged",
+      "size_bytes": 88669
+    },
+    "csv": {
+      "available": false,
+      "count": 0,
+      "files": [],
+      "status": "missing"
+    },
+    "excel": {
+      "available": false,
+      "status": "missing"
+    }
+  },
+  "created_at": "2026-06-08T12:49:02+00:00",
+  "updated_at": "2026-06-08T12:49:02+00:00",
+  "commit_status": "not_committed",
+  "readiness": {
+    "period_ready": true,
+    "pdf_ready": true,
+    "csv_ready": false,
+    "excel_ready": false,
+    "can_commit": false
+  },
+  "validation_errors": {
+    "pdf": [],
+    "csv": [],
+    "excel": [
+      "Excel RAB belum tersedia."
+    ]
+  },
+  "message": "Sesi upload belum lengkap: CSV transaksi, Excel RAB belum tersedia."
+}

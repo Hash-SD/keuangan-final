@@ -1,28 +1,23 @@
 from __future__ import annotations
 
 import os
-import shutil
-
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 from .services.activity import append_activity, read_activities
-from .services.files import csv_preview, read_json, record_upload, relative_path, resolve_preview_file, save_upload, update_active_upload_context
+from .services.files import csv_preview, read_json, relative_path, resolve_preview_file
 from .services.lakehouse import lakehouse_summary
 from .services.metrics import metrics_payload
 from .services.paths import OUTPUTS_DIR, PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
 from .services.reference import pdf_sample_status, reference_spi_preview, reference_summary, reference_ukt_preview, source_status
 from .services.runtime_context import (
-    context_from_form,
-    infer_context_from_csv,
-    infer_context_from_excel,
-    period_metadata,
     read_active_context,
     scenario_manifest,
     write_active_context,
 )
 from .services.system_status import service_statuses
+from .services.upload_session import commit_session, remove_file, reset_session, session_status, update_context, update_file, update_session
 from src.common.runtime_paths import raw_pdf_path, raw_rab_path, sample_pdf_path, silver_rab_path
 from src.status.system_truth_status import build_system_truth_status
 
@@ -79,6 +74,94 @@ def create_app() -> Flask:
     @app.get("/api/upload/scenarios")
     def upload_scenarios():
         return jsonify({"scenarios": scenario_manifest()})
+
+    @app.get("/api/upload/session/status")
+    def upload_session_status():
+        return jsonify(session_status())
+
+    @app.post("/api/upload/session")
+    def upload_session_post():
+        try:
+            result = update_session(request.form, request.files)
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
+        append_activity(
+            action="upload_session_stage",
+            source="upload",
+            status="success",
+            target=result.get("session_id", ""),
+            message=result.get("message", "File berhasil disimpan di staging."),
+        )
+        return jsonify(result)
+
+    @app.post("/api/upload/session/context")
+    def upload_session_context():
+        payload = request.get_json(silent=True) or request.form
+        try:
+            result = update_context(payload)
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
+        append_activity(
+            action="upload_session_context",
+            source="upload",
+            status="success",
+            target=result.get("session_id", ""),
+            message="Konteks periode tersimpan sementara.",
+        )
+        return jsonify(result)
+
+    @app.post("/api/upload/session/file")
+    def upload_session_file():
+        upload_type = (request.form.get("upload_type") or "").strip().lower()
+        try:
+            result = update_file(upload_type, request.files)
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
+        labels = {"pdf": "PDF", "csv": "CSV", "excel": "Excel"}
+        append_activity(
+            action="upload_session_file",
+            source="upload",
+            status="success",
+            target=result.get("session_id", ""),
+            message=f"{labels.get(upload_type, 'File')} tersimpan sementara di staging.",
+        )
+        return jsonify(result)
+
+    @app.delete("/api/upload/session/file")
+    def upload_session_file_delete():
+        payload = request.get_json(silent=True) or {}
+        upload_type = str(payload.get("upload_type") or "").strip().lower()
+        try:
+            result = remove_file(upload_type, filename=payload.get("filename"), file_id=payload.get("file_id"))
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
+        append_activity(
+            action="upload_session_file_remove",
+            source="upload",
+            status="success",
+            target=result.get("session_id", ""),
+            message="File dihapus dari sesi upload.",
+        )
+        return jsonify(result)
+
+    @app.post("/api/upload/session/commit")
+    def upload_session_commit():
+        result = commit_session()
+        status_code = 200 if result.get("status") == "committed" else 400
+        append_activity(
+            action="upload_session_commit",
+            source="upload",
+            status="success" if status_code == 200 else "failed",
+            target=result.get("session_id", ""),
+            message=result.get("message", "Commit sesi upload diproses."),
+        )
+        return jsonify(result), status_code
+
+    @app.delete("/api/upload/session/reset")
+    def upload_session_reset():
+        result = reset_session()
+        append_activity("upload_session_reset", "upload", "success", "Sesi upload direset.", result.get("session_id", ""))
+        return jsonify(result)
 
     @app.get("/api/status/services")
     def status_services():
@@ -151,69 +234,21 @@ def create_app() -> Flask:
         return jsonify(payload)
 
     def _upload(upload_type: str, allowed_extensions: set[str]):
-        uploads = request.files.getlist("file")
-        if not uploads:
-            return jsonify({"status": "failed", "message": "Field file wajib diisi."}), 400
-        if upload_type != "csv" and len(uploads) > 1:
-            return jsonify({"status": "failed", "message": "PDF dan Excel hanya menerima satu file per upload."}), 400
-
-        context = context_from_form(request.form) or read_active_context()
-        context = write_active_context(context, source="upload_form")
-        results = [save_upload(uploaded, upload_type, allowed_extensions, period=period_metadata(context)) for uploaded in uploads]
-        for item in results:
-            if item.get("status") != "success" or not item.get("path"):
-                continue
-            source_path = PORTAL_DIR.parent / item["path"]
-            canonical = raw_pdf_path() if upload_type == "pdf" else raw_rab_path() if upload_type == "excel" else None
-            if canonical is not None:
-                canonical.parent.mkdir(parents=True, exist_ok=True)
-                if source_path.resolve() != canonical.resolve():
-                    shutil.copyfile(source_path, canonical)
-                item["canonical_path"] = relative_path(canonical)
-                record_upload(item)
-        failed = [item for item in results if item["status"] != "success"]
-        successful_paths = [PORTAL_DIR.parent / item["path"] for item in results if item["status"] == "success" and item.get("path")]
-        inferred_context = None
-        try:
-            if upload_type == "csv":
-                inferred_context = infer_context_from_csv(successful_paths, base=context)
-            elif upload_type == "excel" and successful_paths:
-                inferred_context = infer_context_from_excel(successful_paths[0], base=context)
-            if inferred_context is not None:
-                context = write_active_context(inferred_context, source=inferred_context.get("source", "inferred_upload"))
-                period = period_metadata(context)
-                update_active_upload_context(period)
-                for item in results:
-                    if item.get("status") == "success":
-                        item.update(period)
-                        record_upload(item)
-        except Exception as exc:
-            append_activity("infer_runtime_context", "upload", "failed", f"Gagal membaca konteks dari file upload: {exc}", "runtime_context")
-        if len(results) == 1:
-            result = results[0]
-        else:
-            successful = [item for item in results if item["status"] == "success"]
-            result = {
-                "status": "failed" if failed else "success",
-                "type": upload_type,
-                "files": successful,
-                "failed_files": failed,
-                "message": (
-                    f"{len(successful)} file {upload_type} berhasil diupload."
-                    if not failed
-                    else f"{len(failed)} dari {len(results)} file {upload_type} gagal diupload."
-                ),
-            }
-        result["context"] = context
-        status_code = 200 if result["status"] == "success" else 400
         append_activity(
-            action=f"upload_{upload_type}",
+            action=f"upload_{upload_type}_legacy_blocked",
             source="upload",
-            status=result["status"],
-            target=result.get("path", "") or ", ".join(item.get("path", "") for item in result.get("files", [])),
-            message=result.get("message", f"Upload {upload_type} {result['status']} untuk {result.get('target_label', 'periode aktif')}."),
+            status="skipped",
+            target="/api/upload/session",
+            message="Endpoint upload lama tidak lagi melakukan commit final. Gunakan sesi upload terpadu.",
         )
-        return jsonify(result), status_code
+        return jsonify(
+            {
+                "status": "failed",
+                "message": "Endpoint upload per file sudah dinonaktifkan sebagai alur utama. Gunakan /api/upload/session lalu /api/upload/session/commit.",
+                "replacement_endpoint": "/api/upload/session",
+                "allowed_extensions": sorted(allowed_extensions),
+            }
+        ), 410
 
     @app.post("/api/upload/pdf")
     def upload_pdf():

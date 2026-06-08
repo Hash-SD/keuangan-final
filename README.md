@@ -115,6 +115,10 @@ docker compose up -d
 
 Portal juga tetap dapat dijalankan secara lokal melalui `.\scripts\start_portal_backend.ps1` untuk kebutuhan debugging, tetapi mode normal proyek adalah melalui Docker Compose.
 
+### Alur Upload Manual Data Lakehouse
+
+Pada halaman **Data Ingestion**, bagian **Konteks Periode Data** melekat langsung pada draft sesi upload. Perubahan Prodi, Fakultas, Tahun Akademik, Tahun Anggaran, dan Tanggal Sumber disimpan otomatis ke staging session. File PDF audited, satu atau lebih CSV transaksi, dan Excel RAB juga langsung disimpan sementara saat dipilih. Dataset baru hanya masuk Raw Layer setelah tombol **Unggah ke Data Lakehouse** aktif dan diklik; Quality Gate, Bronze, Silver, Gold, Metrics, dan Dashboard tetap berstatus belum dijalankan sampai pipeline ETL benar-benar dijalankan.
+
 | Layanan | URL Akses | Kredensial Default | Deskripsi |
 |---|---|---|---|
 | **Portal Induk** | [http://localhost:8090](http://localhost:8090) | - | Akses semua tautan terpusat |

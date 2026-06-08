@@ -433,7 +433,7 @@
     .source-pill { padding: .55rem .7rem; border-radius: .7rem; background: rgba(255,255,255,.72); border: 1px solid rgba(193,198,213,.24); font-weight: 700; font-size: .82rem; text-align: center; }
 
     .upload-zone {
-      min-height: 190px;
+      min-height: 220px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -443,6 +443,38 @@
       border: 2px dashed rgba(0, 78, 159, .34);
     }
     .upload-zone .material-symbols-outlined { font-size: 2.4rem; color: var(--primary); }
+    .upload-file-list { width: 100%; display: grid; gap: .45rem; margin-top: .5rem; }
+    .upload-chip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: .5rem;
+      width: 100%;
+      border: 1px solid #dbe3ef;
+      background: #f8fafc;
+      border-radius: .55rem;
+      padding: .5rem .55rem;
+      text-align: left;
+    }
+    .upload-chip strong,
+    .upload-chip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chip-remove {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #475569;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .chip-remove:hover { color: #b91c1c; border-color: #fecaca; background: #fff1f2; }
+    .inline-status { display: inline-flex; align-items: center; gap: .4rem; color: #475569; font-weight: 700; }
+    .context-panel-compact { padding: 1.25rem; }
     .empty-state {
       min-height: 180px;
       display: grid;
@@ -845,7 +877,7 @@
       targetTahunAkademik: "2023/2024",
       dashboardUrl: "http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/"
     };
-    const API_BASE_URL = "http://localhost:8091";
+    const API_BASE_URL = window.location.port === "8090" ? "http://localhost:8091" : window.location.origin;
 
     let pages = [
       ["beranda", "Portal Ekosistem Data Lakehouse Keuangan", "home", "Memantau semua proses data keuangan (UKT, SPI, RAB) dari file mentah sampai siap dianalisis."],
@@ -869,6 +901,8 @@
       referenceSummary: null,
       runtimeConfig: null,
       scenarios: [],
+      uploadSession: null,
+      contextSaveStatus: "idle",
       lakehouse: null,
       storageManifest: null,
       truth: null,
@@ -883,6 +917,12 @@
     const badge = (text, type = "info") => `<span class="status-badge status-${type}"><span class="dot" style="width:6px;height:6px;"></span>${text}</span>`;
     const safe = value => value === undefined || value === null || value === "" ? "-" : value;
     const has = value => value !== undefined && value !== null;
+    function formatBytes(bytes) {
+      const value = Number(bytes || 0);
+      if (value < 1024) return `${value} B`;
+      if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+      return `${(value / 1024 / 1024).toFixed(1)} MB`;
+    }
     const truthValue = item => item && ["validated", "completed", "ready"].includes(item.status) ? item.value : null;
     function statusType(status) {
       const value = String(status || "").toLowerCase();
@@ -1166,18 +1206,7 @@
 
           ${runtimeContextPanel()}
 
-          <section class="glass-panel w-full">
-            <h3 class="section-title" style="display:flex; align-items:center; gap:0.5rem; color:#0f172a;">
-              <span class="material-symbols-outlined" style="color:var(--primary);">upload_file</span>
-              Ingest New Source File ${tooltip(`Periode aktif: ${targetLabel()}`)}
-            </h3>
-            <p class="muted small" style="margin-bottom:1.25rem; color:#475569;">Pilih berkas sumber data keuangan untuk diunggah ke layer raw Lakehouse (MinIO S3).</p>
-            <div class="section-grid grid-3">
-              ${uploadCard("PDF Audited", "picture_as_pdf", "data/raw/pdf/")}
-              ${uploadCard("CSV Transaksi", "csv", "data/raw/csv/")}
-              ${uploadCard("Excel RAB", "table_chart", "data/raw/excel/")}
-            </div>
-          </section>
+          ${uploadSessionPanel()}
 
           <section class="glass-panel w-full">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.5rem;">
@@ -1221,49 +1250,158 @@
 
     function runtimeContextPanel() {
       const target = runtimeTarget();
-      return `<section class="glass-panel w-full">
-        <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap; margin-bottom:1rem;">
+      const session = state.uploadSession || {};
+      const readiness = session.readiness || {};
+      const contextStatus = contextStatusLabel(session, readiness);
+      const saveText = contextAutosaveText();
+      return `<section class="glass-panel context-panel-compact w-full">
+        <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap; margin-bottom:.85rem;">
           <div>
-            <h3 class="section-title" style="margin:0; color:#0f172a;">Periode Data Opsional</h3>
-            <p class="small muted" style="margin:.25rem 0 0;">Boleh dikosongkan. Sistem akan membaca tahun, batch, rows, pagu, dan target validasi dari file CSV/Excel yang diupload.</p>
+            <h3 class="section-title" style="margin:0; color:#0f172a;">Konteks Periode Data</h3>
+            <p class="small muted" style="margin:.25rem 0 0;">Konteks ini melekat pada sesi upload. Sistem dapat membaca metadata dari file jika tersedia.</p>
           </div>
-          ${badge(target.target_label || targetLabel(), "info")}
+          ${badge(contextStatus.text, contextStatus.type)}
         </div>
         <div class="section-grid grid-2">
+          <label class="small muted" style="display:grid; gap:.35rem; font-weight:700;">Prodi
+            <input id="ctx-target-prodi" class="form-input" value="${safe(target.target_prodi || "Sains Data")}" placeholder="Sains Data">
+          </label>
+          <label class="small muted" style="display:grid; gap:.35rem; font-weight:700;">Fakultas
+            <input id="ctx-target-fakultas" class="form-input" value="${safe(target.target_fakultas || "Fakultas Sains")}" placeholder="Fakultas Sains">
+          </label>
           <label class="small muted" style="display:grid; gap:.35rem; font-weight:700;">Tahun Akademik
-            <input id="ctx-target-tahun-akademik" class="form-input" value="" placeholder="${safe(target.target_tahun_akademik || "2024/2025")}">
+            <input id="ctx-target-tahun-akademik" class="form-input" value="${safe(target.target_tahun_akademik || "2024/2025")}" placeholder="2024/2025">
           </label>
           <label class="small muted" style="display:grid; gap:.35rem; font-weight:700;">Tahun Anggaran
-            <input id="ctx-target-tahun-anggaran" class="form-input" value="" placeholder="${safe(target.target_tahun_anggaran || "2025")}">
+            <input id="ctx-target-tahun-anggaran" class="form-input" value="${safe(target.target_tahun_anggaran || "2025")}" placeholder="2025">
+          </label>
+          <label class="small muted" style="display:grid; gap:.35rem; font-weight:700;">Tanggal Sumber
+            <input id="ctx-source-event" class="form-input" value="${safe(target.source_event || "2026-06-08T00:00:00Z")}" placeholder="2026-06-08T00:00:00Z">
           </label>
         </div>
-        <div style="display:grid; gap:.65rem; margin-top:1rem;">
-          <button type="button" class="secondary-button" id="saveRuntimeContext" style="width:100%; justify-content:center;">Simpan Periode</button>
-          <p class="small muted" style="margin:0;">Gunakan hanya jika file belum punya metadata tahun yang jelas.</p>
+        <div style="margin-top:.75rem;display:flex;justify-content:space-between;gap:.75rem;align-items:center;flex-wrap:wrap;">
+          <span id="contextAutosaveStatus" class="small inline-status">${saveText}</span>
+          <span class="small muted">${safe(session.context?.target_label || target.target_label || targetLabel())}</span>
         </div>
       </section>`;
     }
 
-    function uploadCard(title, icon, path) {
-      const type = title.includes("PDF") ? "pdf" : title.includes("CSV") ? "csv" : "excel";
+    function contextStatusLabel(session, readiness) {
+      if (session?.context?.source === "inferred_csv" || session?.context?.source === "inferred_excel") return { text: "Metadata dari file", type: "ok" };
+      if (readiness?.context_ready) return { text: "Konteks tersimpan", type: "ok" };
+      if (state.contextSaveStatus === "saving") return { text: "Draft", type: "info" };
+      return { text: "Belum lengkap", type: "warn" };
+    }
+
+    function contextAutosaveText() {
+      if (state.contextSaveStatus === "saving") return "Menyimpan...";
+      if (state.contextSaveStatus === "failed") return "Gagal menyimpan konteks";
+      if (state.contextSaveStatus === "saved") return "Tersimpan sementara";
+      const readiness = state.uploadSession?.readiness || {};
+      return readiness.context_ready ? "Tersimpan sementara" : "Belum lengkap";
+    }
+
+    function uploadSessionPanel() {
+      const session = state.uploadSession || {};
+      const readiness = session.readiness || {};
+      const files = session.files || {};
+      const canCommit = readiness.can_commit === true && session.status !== "committed";
+      const commitMessage = uploadCommitMessage(session, readiness);
+      return `<section class="glass-panel w-full">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+          <div>
+            <h3 class="section-title" style="display:flex;align-items:center;gap:0.5rem;color:#0f172a;margin:0;">
+              <span class="material-symbols-outlined" style="color:var(--primary);">upload_file</span>
+              Sesi Upload Data Lakehouse ${tooltip(`Periode aktif: ${targetLabel()}`)}
+            </h3>
+            <p class="muted small" style="margin:.35rem 0 0;color:#475569;">Simpan PDF, CSV, dan Excel ke staging terlebih dahulu. Raw Layer baru diperbarui setelah tombol final diklik.</p>
+          </div>
+          ${badge(session.status || "draft", session.status === "committed" ? "ok" : "info")}
+        </div>
+        <div class="section-grid grid-3">
+          ${uploadCard("PDF Audited", "picture_as_pdf", "pdf", "Dokumen laporan audited PDF", files.pdf)}
+          ${uploadCard("CSV Transaksi", "csv", "csv", "Satu atau lebih file transaksi", files.csv)}
+          ${uploadCard("Excel RAB", "table_chart", "excel", "Workbook RAB sheet RAB", files.excel)}
+        </div>
+        <div class="divider"></div>
+        <div class="section-grid grid-4">
+          ${sessionReadinessCard("Periode", readiness.context_ready || readiness.period_ready, session.context?.target_tahun_akademik || targetLabel())}
+          ${sessionReadinessCard("PDF", readiness.pdf_ready, files.pdf?.filename || "Belum tersedia")}
+          ${sessionReadinessCard("CSV", readiness.csv_ready, `${files.csv?.count || 0} file`)}
+          ${sessionReadinessCard("Excel", readiness.excel_ready, files.excel?.filename || "Belum tersedia")}
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-top:1.25rem;">
+          <button type="button" class="primary-button" id="commitUploadSession" title="${safe(commitMessage)}" ${canCommit ? "" : "disabled"}><span class="material-symbols-outlined" style="font-size:18px;">cloud_upload</span>Unggah ke Data Lakehouse</button>
+          <button type="button" class="secondary-button" id="resetUploadSession"><span class="material-symbols-outlined" style="font-size:18px;">refresh</span>Reset Sesi</button>
+          <span class="small muted" style="overflow-wrap:anywhere;">${safe(commitMessage)}</span>
+        </div>
+        ${session.status === "committed" ? `<div class="divider"></div><div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;"><p class="small muted" style="margin:0;overflow-wrap:anywhere;flex:1;">Session ID: <code>${safe(session.session_id)}</code>. Raw Layer committed. Quality Gate belum dijalankan.</p><button type="button" class="secondary-button" data-pipeline="quality-gate"><span class="material-symbols-outlined" style="font-size:18px;">security</span>Jalankan Quality Gate</button></div>` : ""}
+      </section>`;
+    }
+
+    function uploadCommitMessage(session, readiness) {
+      if (session?.status === "committed") return "Dataset aktif sudah tersedia di Raw Layer. Quality Gate belum dijalankan.";
+      if (readiness?.can_commit) return "Semua file siap. Data dapat diunggah ke Data Lakehouse.";
+      const missing = [];
+      if (!(readiness?.context_ready || readiness?.period_ready)) missing.push("periode");
+      if (!readiness?.pdf_ready) missing.push("PDF");
+      if (!readiness?.csv_ready) missing.push("CSV");
+      if (!readiness?.excel_ready) missing.push("Excel");
+      return missing.length ? `Lengkapi ${missing.join(", ")} sebelum commit.` : "Lengkapi PDF, CSV, dan Excel sebelum commit.";
+    }
+
+    function sessionReadinessCard(label, ready, detail) {
+      return `<article class="glass-card" style="padding:1rem;">
+        <div style="display:flex;justify-content:space-between;gap:.75rem;align-items:center;">
+          <strong>${safe(label)}</strong>
+          ${badge(ready ? "Siap" : "Belum", ready ? "ok" : "warn")}
+        </div>
+        <p class="small muted" style="margin:.5rem 0 0;overflow-wrap:anywhere;">${safe(detail)}</p>
+      </article>`;
+    }
+
+    function uploadCard(title, icon, type, description, payload) {
       const accept = type === "pdf" ? ".pdf" : type === "csv" ? ".csv" : ".xlsx";
       const multiple = type === "csv" ? "multiple" : "";
       const browseLabel = type === "csv" ? "Browse File CSV" : "Browse File";
-      const filenameScript = type === "csv"
-        ? "const names = Array.from(this.files).map(file => file.name); document.getElementById('filename-csv').textContent = names.length ? names.join(', ') : 'Belum ada file dipilih'; document.getElementById('filename-csv').style.color = '#0f172a';"
-        : `document.getElementById('filename-${type}').textContent = this.files.length ? this.files[0].name : 'Belum ada file dipilih'; document.getElementById('filename-${type}').style.color = '#0f172a';`;
+      const items = uploadItems(type, payload);
+      const status = uploadStatus(type, payload);
       return `<article class="glass-card upload-zone">
         <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--primary); margin-bottom:-0.5rem;">${icon}</span>
-        <div><h3 style="margin:0 0 .35rem;">Upload ${title}</h3><p class="muted small" style="margin:0;">${targetLabel()}<br>Target folder: <code>${path}</code></p></div>
+        <div><h3 style="margin:0 0 .35rem;">${title}</h3><p class="muted small" style="margin:0;">${description}<br>${badge(status.text, status.type)}</p></div>
         <div style="width:100%; display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
-          <input id="upload-${type}" type="file" accept="${accept}" ${multiple} style="display:none;" onchange="${filenameScript}">
+          <input id="upload-${type}" type="file" accept="${accept}" ${multiple} style="display:none;" data-upload-input="${type}">
           <label for="upload-${type}" class="secondary-button" style="cursor:pointer; padding:0.4rem 1rem; border-radius:999px;">
             <span class="material-symbols-outlined" style="font-size:16px;">search</span> ${browseLabel}
           </label>
-          <span id="filename-${type}" class="small muted" style="min-height:16px; margin-bottom:0.5rem; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:90%;">Belum ada file dipilih</span>
+          <div id="filename-${type}" class="upload-file-list">${items.length ? items.map(item => uploadChip(type, item, payload?.status || item.status)).join("") : `<span class="small muted">Belum ada file dipilih</span>`}</div>
         </div>
-        <button type="button" class="primary-button" data-upload="${type}" style="width:100%; justify-content:center; margin-top:-0.5rem;"><span class="material-symbols-outlined" style="font-size:18px;">cloud_upload</span>Unggah Ke Lakehouse</button>
       </article>`;
+    }
+
+    function uploadItems(type, payload) {
+      if (!payload) return [];
+      if (Array.isArray(payload.items)) return payload.items;
+      if (type === "csv" && Array.isArray(payload.files)) return payload.files;
+      if (payload.available && payload.filename) return [payload];
+      return [];
+    }
+
+    function uploadStatus(type, payload) {
+      const items = uploadItems(type, payload);
+      const errors = state.uploadSession?.validation_errors?.[type] || [];
+      if (errors.length) return { text: "Gagal validasi", type: "error" };
+      if (!items.length) return { text: "Belum dipilih", type: "warn" };
+      if (state.uploadSession?.readiness?.[`${type}_ready`]) return { text: "Siap", type: "ok" };
+      return { text: "Tersimpan sementara", type: "info" };
+    }
+
+    function uploadChip(type, item, fallbackStatus) {
+      const filename = item.filename || item.file_id || "-";
+      return `<div class="upload-chip" data-upload-chip="${type}" data-filename="${safe(filename)}">
+        <span><strong title="${safe(filename)}">${safe(filename)}</strong><br><span class="small muted">${formatBytes(item.size_bytes)} &bull; ${safe(item.status || fallbackStatus || "staged")}</span></span>
+        <button type="button" class="chip-remove" data-remove-upload="${type}" data-filename="${safe(filename)}" aria-label="Hapus ${safe(filename)}">X</button>
+      </div>`;
     }
 
     function sourceStatusCard(title, payload, icon, note) {
@@ -1941,8 +2079,14 @@
       bindCopyButtons();
       bindRuntimeContextControls();
       bindUploadButtons();
+      bindUploadSessionControls();
       bindPipelineButtons();
       bindUatSubmit();
+    }
+
+    function renderCurrentPage() {
+      renderAll();
+      setRoute();
     }
 
     function setRoute() {
@@ -2042,8 +2186,22 @@
     function runtimeContextPayloadFromForm() {
       const value = id => document.getElementById(id)?.value?.trim() || "";
       const payload = {};
+      if (value("ctx-target-prodi")) payload.target_prodi = value("ctx-target-prodi");
+      if (value("ctx-target-fakultas")) payload.target_fakultas = value("ctx-target-fakultas");
       if (value("ctx-target-tahun-akademik")) payload.target_tahun_akademik = value("ctx-target-tahun-akademik");
       if (value("ctx-target-tahun-anggaran")) payload.target_tahun_anggaran = value("ctx-target-tahun-anggaran");
+      if (value("ctx-source-event")) payload.source_event = value("ctx-source-event");
+      return payload;
+    }
+
+    async function apiDelete(path, body) {
+      const response = await fetch(`${API_BASE_URL}${path}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body || {}),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.message || `DELETE ${path} gagal (${response.status})`);
       return payload;
     }
 
@@ -2054,25 +2212,40 @@
     }
 
     function bindRuntimeContextControls() {
-      const button = document.getElementById("saveRuntimeContext");
-      if (button && !button.dataset.bound) {
-        button.dataset.bound = "true";
-        button.addEventListener("click", async () => {
-          button.disabled = true;
-          const old = button.innerHTML;
-          button.textContent = "Menyimpan...";
-          try {
-            const result = await apiPost("/api/runtime-context", runtimeContextPayloadFromForm());
-            state.runtimeConfig = result.context;
-            showToast("Konteks periode disimpan");
-            await loadState();
-          } catch (error) {
-            showToast(error.message);
-          } finally {
-            button.disabled = false;
-            button.innerHTML = old;
-          }
-        });
+      document.querySelectorAll("#ctx-target-prodi, #ctx-target-fakultas, #ctx-target-tahun-akademik, #ctx-target-tahun-anggaran, #ctx-source-event").forEach(input => {
+        if (input.dataset.bound) return;
+        input.dataset.bound = "true";
+        input.addEventListener("input", () => scheduleContextAutosave());
+        input.addEventListener("change", () => scheduleContextAutosave());
+      });
+    }
+
+    let contextAutosaveTimer = null;
+    function scheduleContextAutosave() {
+      window.clearTimeout(contextAutosaveTimer);
+      state.contextSaveStatus = "saving";
+      updateContextAutosaveStatus();
+      contextAutosaveTimer = window.setTimeout(saveUploadContextDraft, 650);
+    }
+
+    function updateContextAutosaveStatus() {
+      const target = document.getElementById("contextAutosaveStatus");
+      if (target) target.textContent = contextAutosaveText();
+    }
+
+    async function saveUploadContextDraft() {
+      try {
+        const result = await apiPost("/api/upload/session/context", runtimeContextPayloadFromForm());
+        state.uploadSession = result;
+        state.runtimeConfig = result.context || state.runtimeConfig;
+        state.contextSaveStatus = result.readiness?.context_ready ? "saved" : "idle";
+        updateContextAutosaveStatus();
+        showToast("Konteks periode tersimpan sementara.");
+        renderCurrentPage();
+      } catch (error) {
+        state.contextSaveStatus = "failed";
+        updateContextAutosaveStatus();
+        showToast(error.message || "Gagal menyimpan konteks");
       }
     }
 
@@ -2088,40 +2261,113 @@
     }
 
     function bindUploadButtons() {
-      document.querySelectorAll("[data-upload]").forEach(button => {
-        button.addEventListener("click", async () => {
-          const type = button.getAttribute("data-upload");
-          const input = document.getElementById(`upload-${type}`);
-          if (!input.files.length) {
-            showToast("Pilih file dummy terlebih dahulu");
-            return;
-          }
-          const formData = new FormData();
-          appendRuntimeContext(formData);
-          Array.from(input.files).forEach(file => formData.append("file", file));
-          button.disabled = true;
-          const old = button.innerHTML;
-          button.textContent = "Uploading...";
-          try {
-            const result = await apiPost(`/api/upload/${type}`, formData);
-            state.lastAction = `Upload ${type}: ${result.status}`;
-            if (result.context) state.runtimeConfig = result.context;
-            const count = result.files?.length || input.files.length;
-            showToast(`Upload ${type} berhasil (${count} file)`);
-            input.value = "";
-            const filename = document.getElementById(`filename-${type}`);
-            if (filename) {
-              filename.textContent = "Belum ada file dipilih";
-              filename.style.color = "";
-            }
-            await loadState();
-          } catch (error) {
-            showToast(error.message);
-            button.disabled = false;
-            button.innerHTML = old;
-          }
+      document.querySelectorAll("[data-upload-input]").forEach(input => {
+        if (input.dataset.bound) return;
+        input.dataset.bound = "true";
+        input.addEventListener("change", async () => {
+          const type = input.getAttribute("data-upload-input");
+          if (!input.files?.length) return;
+          await uploadFilesToSession(type, input);
         });
       });
+      document.querySelectorAll("[data-remove-upload]").forEach(button => {
+        if (button.dataset.bound) return;
+        button.dataset.bound = "true";
+        button.addEventListener("click", async () => {
+          await removeUploadFromSession(button.getAttribute("data-remove-upload"), button.getAttribute("data-filename"));
+        });
+      });
+    }
+
+    async function uploadFilesToSession(type, input) {
+        const formData = new FormData();
+        appendRuntimeContext(formData);
+        formData.append("upload_type", type);
+        Array.from(input.files).forEach(file => formData.append("file", file));
+        input.disabled = true;
+        try {
+          const result = await apiPost("/api/upload/session/file", formData);
+          state.lastAction = `Upload session ${type}: ${result.status}`;
+          if (result.context) state.runtimeConfig = result.context;
+          state.uploadSession = result;
+          const labels = { pdf: "PDF tersimpan sementara di staging.", csv: "CSV tersimpan sementara di staging.", excel: "Excel tersimpan sementara di staging." };
+          showToast(labels[type] || "File tersimpan sementara di staging.");
+          input.value = "";
+          renderCurrentPage();
+        } catch (error) {
+          showToast(error.message);
+        } finally {
+          input.disabled = false;
+        }
+    }
+
+    async function removeUploadFromSession(type, filename) {
+      try {
+        const result = await apiDelete("/api/upload/session/file", { upload_type: type, filename });
+        state.uploadSession = result;
+        showToast("File dihapus dari sesi upload.");
+        renderCurrentPage();
+      } catch (error) {
+        showToast(error.message);
+      }
+    }
+
+    function bindUploadSessionControls() {
+      const commit = document.getElementById("commitUploadSession");
+      if (commit && !commit.dataset.bound) {
+        commit.dataset.bound = "true";
+        commit.addEventListener("click", async () => {
+          commit.disabled = true;
+          const old = commit.innerHTML;
+          commit.textContent = "Committing...";
+          try {
+            const result = await apiPost("/api/upload/session/commit", {});
+            state.uploadSession = result;
+            showToast(result.message || "Sesi upload berhasil di-commit ke Raw Layer.");
+            if (result.status === "committed") {
+              state.layers = {
+                ...state.layers,
+                rawReady: true,
+                bronzeReady: false,
+                silverReady: false,
+                goldReady: false,
+                goldValid: false,
+                metricsReady: false,
+                reportsReady: false
+              };
+              renderCurrentPage();
+            }
+            await loadState();
+            if (result.status === "committed") {
+              state.uploadSession = result;
+              renderCurrentPage();
+            }
+          } catch (error) {
+            showToast(error.message);
+            commit.disabled = false;
+            commit.innerHTML = old;
+          }
+        });
+      }
+      const reset = document.getElementById("resetUploadSession");
+      if (reset && !reset.dataset.bound) {
+        reset.dataset.bound = "true";
+        reset.addEventListener("click", async () => {
+          if (state.uploadSession?.status === "committed" && !window.confirm("Reset hanya akan mengosongkan draft baru. Dataset aktif tidak dihapus.")) {
+            return;
+          }
+          reset.disabled = true;
+          try {
+            const payload = await apiDelete("/api/upload/session/reset", {});
+            state.uploadSession = payload;
+            showToast("Sesi upload direset");
+            renderCurrentPage();
+          } catch (error) {
+            showToast(error.message);
+            reset.disabled = false;
+          }
+        });
+      }
     }
 
     function hasPendingUploadSelection() {
@@ -2171,7 +2417,7 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary, runtimeConfig, scenarios, truth] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary, runtimeConfig, scenarios, truth, uploadSession] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -2184,7 +2430,8 @@
           apiGet("/api/reference/summary").catch(() => null),
           apiGet("/api/runtime-config").catch(() => null),
           apiGet("/api/upload/scenarios").catch(() => null),
-          apiGet("/api/system-truth/status").catch(() => null)
+          apiGet("/api/system-truth/status").catch(() => null),
+          apiGet("/api/upload/session/status").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
         state.truth = truth || metrics.raw?.truth || lakehouse.truth || null;
@@ -2222,6 +2469,7 @@
         state.referenceSummary = referenceSummary;
         state.runtimeConfig = runtimeConfig || metrics.runtime_config || null;
         state.scenarios = scenarios?.scenarios || [];
+        state.uploadSession = uploadSession;
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });

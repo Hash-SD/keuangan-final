@@ -1,0 +1,16 @@
+{
+  "target_prodi": "Sains Data",
+  "target_fakultas": "Fakultas Sains",
+  "target_tahun_akademik": "2023/2024",
+  "target_tahun_anggaran": "2024",
+  "batch_id": "batch-sains-data-2024",
+  "source_event": "2026-05-26T10:00:00+00:00",
+  "dummy_transaction_rows": 800,
+  "dummy_invalid_rows": 16,
+  "target_total_piutang": 31250000,
+  "target_jumlah_penunggak": 15,
+  "target_total_pagu_rab": 150000000,
+  "source": "runtime_defaults",
+  "target_label": "Sains Data - Tahun Akademik 2023/2024",
+  "validation_mode": "explicit_target"
+}

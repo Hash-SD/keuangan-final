@@ -1,0 +1,240 @@
+{
+  "session_id": "upload-2026-06-08-142829-b186ed",
+  "status": "draft_ready",
+  "context": {
+    "target_prodi": "Sains Data",
+    "target_fakultas": "Fakultas Sains",
+    "target_tahun_akademik": "2025/2026",
+    "target_tahun_anggaran": "2026",
+    "batch_id": "batch-sains-data-2026",
+    "source_event": "2026-06-08T00:00:00Z",
+    "dummy_transaction_rows": 800,
+    "dummy_invalid_rows": 16,
+    "target_total_piutang": null,
+    "target_jumlah_penunggak": null,
+    "target_total_pagu_rab": 150000000,
+    "source": "upload_session",
+    "target_label": "Sains Data - Tahun Akademik 2025/2026",
+    "validation_mode": "observed_only",
+    "status": "draft_saved"
+  },
+  "files": {
+    "pdf": {
+      "available": true,
+      "filename": "laporan.pdf",
+      "file_id": "laporan.pdf",
+      "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/pdf/laporan.pdf",
+      "status": "staged",
+      "size_bytes": 88809,
+      "items": [
+        {
+          "available": true,
+          "filename": "laporan.pdf",
+          "file_id": "laporan.pdf",
+          "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/pdf/laporan.pdf",
+          "status": "staged",
+          "size_bytes": 88809
+        }
+      ]
+    },
+    "csv": {
+      "available": true,
+      "count": 2,
+      "files": [
+        {
+          "available": true,
+          "filename": "transaksi_ganjil.csv",
+          "file_id": "transaksi_ganjil.csv",
+          "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/csv/transaksi_ganjil.csv",
+          "status": "staged",
+          "size_bytes": 77010,
+          "columns": [
+            "transaction_id",
+            "nim",
+            "nim_dummy",
+            "tanggal",
+            "semester",
+            "tahun_akademik",
+            "jenis_biaya",
+            "prodi",
+            "fakultas",
+            "golongan_ukt",
+            "nominal_tagihan",
+            "nominal_bayar",
+            "metode_bayar",
+            "status_bayar",
+            "batch_id",
+            "source_system",
+            "created_at"
+          ]
+        },
+        {
+          "available": true,
+          "filename": "transaksi_genap.csv",
+          "file_id": "transaksi_genap.csv",
+          "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/csv/transaksi_genap.csv",
+          "status": "staged",
+          "size_bytes": 76972,
+          "columns": [
+            "transaction_id",
+            "nim",
+            "nim_dummy",
+            "tanggal",
+            "semester",
+            "tahun_akademik",
+            "jenis_biaya",
+            "prodi",
+            "fakultas",
+            "golongan_ukt",
+            "nominal_tagihan",
+            "nominal_bayar",
+            "metode_bayar",
+            "status_bayar",
+            "batch_id",
+            "source_system",
+            "created_at"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "available": true,
+          "filename": "transaksi_ganjil.csv",
+          "file_id": "transaksi_ganjil.csv",
+          "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/csv/transaksi_ganjil.csv",
+          "status": "staged",
+          "size_bytes": 77010,
+          "columns": [
+            "transaction_id",
+            "nim",
+            "nim_dummy",
+            "tanggal",
+            "semester",
+            "tahun_akademik",
+            "jenis_biaya",
+            "prodi",
+            "fakultas",
+            "golongan_ukt",
+            "nominal_tagihan",
+            "nominal_bayar",
+            "metode_bayar",
+            "status_bayar",
+            "batch_id",
+            "source_system",
+            "created_at"
+          ]
+        },
+        {
+          "available": true,
+          "filename": "transaksi_genap.csv",
+          "file_id": "transaksi_genap.csv",
+          "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/csv/transaksi_genap.csv",
+          "status": "staged",
+          "size_bytes": 76972,
+          "columns": [
+            "transaction_id",
+            "nim",
+            "nim_dummy",
+            "tanggal",
+            "semester",
+            "tahun_akademik",
+            "jenis_biaya",
+            "prodi",
+            "fakultas",
+            "golongan_ukt",
+            "nominal_tagihan",
+            "nominal_bayar",
+            "metode_bayar",
+            "status_bayar",
+            "batch_id",
+            "source_system",
+            "created_at"
+          ]
+        }
+      ],
+      "status": "staged"
+    },
+    "excel": {
+      "available": true,
+      "filename": "rab.xlsx",
+      "file_id": "rab.xlsx",
+      "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/excel/rab.xlsx",
+      "status": "staged",
+      "size_bytes": 6059,
+      "sheets": [
+        "RAB",
+        "metadata"
+      ],
+      "columns": [
+        "kode_akun",
+        "nama_kegiatan",
+        "kategori",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "Mei",
+        "Jun",
+        "Jul",
+        "Agu",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Des",
+        "total_pagu"
+      ],
+      "items": [
+        {
+          "available": true,
+          "filename": "rab.xlsx",
+          "file_id": "rab.xlsx",
+          "path": "data/uploads/staging/upload-2026-06-08-142829-b186ed/excel/rab.xlsx",
+          "status": "staged",
+          "size_bytes": 6059,
+          "sheets": [
+            "RAB",
+            "metadata"
+          ],
+          "columns": [
+            "kode_akun",
+            "nama_kegiatan",
+            "kategori",
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "Mei",
+            "Jun",
+            "Jul",
+            "Agu",
+            "Sep",
+            "Okt",
+            "Nov",
+            "Des",
+            "total_pagu"
+          ]
+        }
+      ]
+    }
+  },
+  "created_at": "2026-06-08T14:28:29+00:00",
+  "updated_at": "2026-06-08T14:28:29+00:00",
+  "commit_status": "not_committed",
+  "context_status": "draft_saved",
+  "readiness": {
+    "context_ready": true,
+    "period_ready": true,
+    "pdf_ready": true,
+    "csv_ready": true,
+    "excel_ready": true,
+    "can_commit": true
+  },
+  "validation_errors": {
+    "pdf": [],
+    "csv": [],
+    "excel": []
+  },
+  "raw_layer": null,
+  "pipeline_state": null,
+  "message": "Semua file wajib tersedia. Data siap diunggah ke Data Lakehouse."
+}

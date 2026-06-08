@@ -6,10 +6,10 @@ import os
 from typing import Any
 
 from .activity import append_activity
-from .files import upload_registry
 from .metrics import metrics_payload
 from .paths import ROOT_DIR
 from .runtime_context import context_env, read_active_context
+from src.common.runtime_paths import active_dataset_pointer, dataset_mode
 
 
 COMMANDS: dict[str, list[list[str]]] = {
@@ -56,6 +56,10 @@ def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
     commands = COMMANDS.get(name)
     if commands is None:
         return {"status": "failed", "message": f"Command tidak dikenal: {name}", "steps": []}
+    if name == "generate-data" and dataset_mode() == "uploaded":
+        message = "Generate dummy data dilewati karena DATASET_MODE=uploaded dan active_dataset_pointer committed tersedia."
+        append_activity("generate_data", "raw", "skipped", message, "active_dataset_pointer")
+        return {"status": "success", "command": name, "skipped": True, "message": message, "steps": [], "context": read_active_context()}
 
     steps = []
     status = "success"
@@ -108,8 +112,7 @@ def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
 
 
 def _has_active_uploaded_sources() -> bool:
-    active = upload_registry().get("active", {})
-    return any(bool(active.get(upload_type)) for upload_type in ("pdf", "csv", "excel"))
+    return bool(active_dataset_pointer())
 
 
 def _full_run_steps() -> list[str]:

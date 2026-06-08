@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.common.logging_utils import write_json
 from src.common.paths import DATA_DIR, GENERATED_DIR, RAW_DIR, ensure_parent
 from src.common.runtime_config import configured_batch_id, get_runtime_config
+from src.common.runtime_paths import active_csv_paths, active_dataset_pointer
 from src.common.time_utils import utc_now_iso
 
 
@@ -53,7 +54,8 @@ def _master_maps() -> tuple[dict[tuple[str, str], int], dict[str, tuple[str, int
 def validate_transactions() -> dict:
     config = get_runtime_config()
     batch_id = configured_batch_id()
-    csv_paths = sorted((RAW_DIR / "csv").glob("transaksi_*.csv"))
+    pointer = active_dataset_pointer() or {}
+    csv_paths = active_csv_paths()
     ukt_map, spi_map = _master_maps()
     rejected_rows = []
     valid_frames = []
@@ -120,6 +122,9 @@ def validate_transactions() -> dict:
     pd.DataFrame(rejected_rows).to_csv(rejected_path, index=False)
     summary = {
         "batch_id": batch_id,
+        "dataset_mode": pointer.get("dataset_mode", "dummy"),
+        "upload_session_id": pointer.get("session_id"),
+        "source_files": [str(path) for path in csv_paths],
         "target_prodi": config.target_prodi,
         "target_tahun_akademik": config.target_tahun_akademik,
         "target_label": config.target_label,

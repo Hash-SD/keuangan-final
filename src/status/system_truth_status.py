@@ -112,9 +112,9 @@ def _configured_value(value: Any, source: str = "runtime_config") -> dict[str, A
 def _source_status(base_dir: Path) -> dict[str, Any]:
     raw_dir = base_dir / "data" / "raw"
     layers = {
-        "pdf": list((raw_dir / "pdf").glob("*.pdf")),
-        "csv": list((raw_dir / "csv").glob("*.csv")),
-        "excel": list((raw_dir / "excel").glob("*.xlsx")),
+        "pdf": list((raw_dir / "pdf").rglob("*.pdf")),
+        "csv": list((raw_dir / "csv").rglob("*.csv")),
+        "excel": list((raw_dir / "excel").rglob("*.xlsx")),
     }
     result = {}
     for source_type, files in layers.items():
@@ -446,6 +446,84 @@ def _bab4_evidence(truth: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _active_upload_pointer(base_dir: Path) -> dict[str, Any] | None:
+    pointer = _read_json(base_dir / "outputs" / "reports" / "active_dataset_pointer.json")
+    if pointer and pointer.get("dataset_mode") == "uploaded" and pointer.get("status") == "committed" and pointer.get("session_id"):
+        return pointer
+    return None
+
+
+def _session_matches(payload: dict[str, Any] | None, session_id: str) -> bool:
+    return bool(payload and payload.get("upload_session_id") == session_id)
+
+
+def _not_started_artifact(name: str, message: str) -> dict[str, Any]:
+    return {
+        "status": "not_started",
+        "required": [name],
+        "existing": [],
+        "file_count": 0,
+        "message": message,
+    }
+
+
+def _apply_uploaded_session_freshness(truth: dict[str, Any], base_dir: Path) -> None:
+    pointer = _active_upload_pointer(base_dir)
+    if not pointer:
+        return
+
+    session_id = str(pointer["session_id"])
+    truth["dataset_mode"] = "uploaded"
+    truth["upload_session"] = {"session_id": session_id, "status": "committed", "source": "active_dataset_pointer.json"}
+    truth["layers"]["raw"] = {
+        "status": "ready",
+        "required": [
+            pointer.get("active_pdf"),
+            *(pointer.get("active_csv_files") or []),
+            pointer.get("active_excel"),
+        ],
+        "existing": [
+            item
+            for item in [pointer.get("active_pdf"), *(pointer.get("active_csv_files") or []), pointer.get("active_excel")]
+            if item and (base_dir / item).exists()
+        ],
+        "file_count": 2 + len(pointer.get("active_csv_files") or []),
+        "message": "Raw layer berisi sesi upload committed.",
+    }
+
+    quality_payload = _read_json(base_dir / "data" / "quarantine" / "logs" / "quality_gate_summary.json")
+    bronze_payload = _read_json(base_dir / "data" / "generated" / "bronze" / "ingestion_metadata.json")
+    silver_payload = _read_json(base_dir / "data" / "generated" / "silver" / "silver_metadata.json")
+    gold_payload = _read_json(base_dir / "data" / "generated" / "gold" / "gold_metadata.json")
+
+    if not _session_matches(quality_payload, session_id):
+        truth["quality_gate"] = {
+            "status": "not_started",
+            "total_rows": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
+            "valid_rows": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
+            "rejected_rows": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
+            "dropout_rate": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
+        }
+    if not _session_matches(bronze_payload, session_id):
+        truth["layers"]["bronze"] = _not_started_artifact("data/generated/bronze/ingestion_metadata.json", "Bronze belum tersedia untuk sesi upload aktif.")
+    if not _session_matches(silver_payload, session_id):
+        truth["layers"]["silver"] = _not_started_artifact("data/generated/silver/silver_metadata.json", "Silver belum tersedia untuk sesi upload aktif.")
+    if not _session_matches(gold_payload, session_id):
+        truth["layers"]["gold"] = _not_started_artifact("data/generated/gold/gold_metadata.json", "Gold belum tersedia untuk sesi upload aktif.")
+
+    if not _session_matches(gold_payload, session_id):
+        truth["layers"]["metrics"] = _not_started_artifact("outputs/metrics", "Metrics belum tersedia untuk sesi upload aktif.")
+        for metric_name, payload in truth["metrics"].items():
+            truth["metrics"][metric_name] = {key: _value(None, "not_started", None, "Metrics belum tersedia untuk sesi upload aktif.") for key in payload if key != "status"} | {"status": "not_started"}
+        truth["dashboard"] = {"status": "not_started", "source": None, "message": "Dashboard belum diperbarui untuk sesi upload aktif."}
+    truth["uat"] = {
+        "status": "manual_input_required",
+        "uat_status": "manual_input_required",
+        "message": "UAT membutuhkan input manual untuk sesi upload aktif.",
+        "respondent_count": 0,
+    }
+
+
 def build_system_truth_status(base_dir: Path | str | None = None, write_outputs: bool = False) -> dict[str, Any]:
     base = Path(base_dir) if base_dir is not None else ROOT_DIR
     config = get_runtime_config()
@@ -474,6 +552,7 @@ def build_system_truth_status(base_dir: Path | str | None = None, write_outputs:
     }
     truth["storage"] = _storage_status(base, services)
     truth["dashboard"] = _superset_dashboard_status(base, services)
+    _apply_uploaded_session_freshness(truth, base)
     truth["bab4_evidence"] = _bab4_evidence(truth)
 
     if write_outputs:

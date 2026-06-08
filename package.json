@@ -1,0 +1,29 @@
+{
+  "name": "keuangan-final",
+  "version": "1.0.0",
+  "description": "![Python](https://img.shields.io/badge/python-3.11+-blue.svg) ![Docker](https://img.shields.io/badge/docker-ready-blue.svg) ![Apache Spark](https://img.shields.io/badge/Apache_Spark-active-E25A1C.svg) ![Trino](https://img.shields.io/badge/Trino-SQL-DD00A1.svg) ![Superset](https://img.shields.io/badge/Apache_Superset-BI-20A7C9.svg)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hash-SD/keuangan-final.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Hash-SD/keuangan-final/issues"
+  },
+  "homepage": "https://github.com/Hash-SD/keuangan-final#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "playwright": "^1.60.0"
+  }
+}
