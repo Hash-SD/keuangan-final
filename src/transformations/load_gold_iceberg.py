@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from pyspark.sql import SparkSession
@@ -10,6 +11,11 @@ GOLD_DIR = ROOT / "data" / "generated" / "gold"
 
 
 def main() -> None:
+    minio_endpoint = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
+    minio_access_key = os.getenv("MINIO_ACCESS_KEY") or os.getenv("MINIO_ROOT_USER") or os.getenv("AWS_ACCESS_KEY_ID", "minioadmin")
+    minio_secret_key = os.getenv("MINIO_SECRET_KEY") or os.getenv("MINIO_ROOT_PASSWORD") or os.getenv("AWS_SECRET_ACCESS_KEY", "minioadmin")
+    minio_bucket = os.getenv("MINIO_BUCKET", "lakehouse")
+    iceberg_warehouse = os.getenv("ICEBERG_WAREHOUSE", f"s3://{minio_bucket}/warehouse")
     spark = (
         SparkSession.builder.appName("load-gold-iceberg")
         .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
@@ -19,11 +25,11 @@ def main() -> None:
         .config("spark.sql.catalog.iceberg.uri", "jdbc:postgresql://postgres-metastore:5432/metastore")
         .config("spark.sql.catalog.iceberg.jdbc.user", "lakehouse")
         .config("spark.sql.catalog.iceberg.jdbc.password", "lakehouse")
-        .config("spark.sql.catalog.iceberg.warehouse", "s3://lakehouse/warehouse")
+        .config("spark.sql.catalog.iceberg.warehouse", iceberg_warehouse)
         .config("spark.sql.catalog.iceberg.io-impl", "org.apache.iceberg.aws.s3.S3FileIO")
-        .config("spark.sql.catalog.iceberg.s3.endpoint", "http://minio:9000")
-        .config("spark.sql.catalog.iceberg.s3.access-key-id", "minioadmin")
-        .config("spark.sql.catalog.iceberg.s3.secret-access-key", "minioadmin")
+        .config("spark.sql.catalog.iceberg.s3.endpoint", minio_endpoint)
+        .config("spark.sql.catalog.iceberg.s3.access-key-id", minio_access_key)
+        .config("spark.sql.catalog.iceberg.s3.secret-access-key", minio_secret_key)
         .config("spark.sql.catalog.iceberg.s3.path-style-access", "true")
         .config("spark.sql.catalog.iceberg.client.region", "us-east-1")
         .config("spark.sql.defaultCatalog", "iceberg")

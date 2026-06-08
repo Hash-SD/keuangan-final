@@ -45,6 +45,17 @@ with DAG(
             f"{PY} /opt/airflow/src/metrics/generate_uat.py"
         ),
     )
+    generate_storage_manifest = BashOperator(
+        task_id="generate_storage_manifest",
+        bash_command=f"{PY} /opt/airflow/src/storage/storage_manifest.py",
+        append_env=True,
+        env={
+            "PYTHONPATH": "/opt/airflow",
+            "MINIO_ENDPOINT": "http://minio:9000",
+            "MINIO_BUCKET": "lakehouse",
+            "MINIO_UPLOAD_ENABLED": "false",
+        },
+    )
     load_gold_postgres_fallback = BashOperator(
         task_id="load_gold_postgres_fallback",
         bash_command=f"{PY} /opt/airflow/src/sql/load_gold_to_postgres.py",
@@ -78,4 +89,4 @@ with DAG(
     )
     end = EmptyOperator(task_id="end")
 
-    start >> generate_dummy_data >> quality_gate_process >> extract_bronze >> clean_silver >> load_gold_schema >> validate_mart >> calculate_metrics >> load_gold_postgres_fallback >> refresh_superset_dataset >> refresh_superset_dashboard >> end
+    start >> generate_dummy_data >> quality_gate_process >> extract_bronze >> clean_silver >> load_gold_schema >> validate_mart >> calculate_metrics >> generate_storage_manifest >> load_gold_postgres_fallback >> refresh_superset_dataset >> refresh_superset_dashboard >> end

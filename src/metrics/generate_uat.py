@@ -9,34 +9,106 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
 from src.common.paths import OUTPUTS_DIR, ensure_parent
+from src.common.runtime_config import configured_batch_id
+from src.common.time_utils import utc_now_iso
 
 
 QUESTIONS = [
     ("Navigation Facility", "Apakah filter prodi, semester, dan status piutang mudah digunakan?"),
-    ("Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Gauge Chart, dan tabel mudah dibaca?"),
+    ("Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Pie Chart, Line Chart, dan Table mudah dibaca?"),
     ("Data Relevance", "Apakah informasi piutang sesuai dengan kebutuhan pemantauan prodi?"),
     ("Data Consistency", "Apakah rincian mahasiswa, status kualitas, dan nominal tampil konsisten tanpa duplikasi?"),
     ("Usefulness in Decision", "Apakah informasi piutang macet membantu prioritas tindak lanjut?"),
 ]
 
+SIMULATED_SCORES = {
+    "Navigation Facility": [5, 5, 5, 5, 4],
+    "Clarity of Visualization": [5, 5, 5, 5, 5],
+    "Data Relevance": [5, 5, 5, 4, 5],
+    "Data Consistency": [5, 5, 4, 5, 5],
+    "Usefulness in Decision": [5, 4, 5, 5, 5],
+}
+
+
+def _category(score: float) -> str:
+    if score >= 4.21:
+        return "Sangat baik"
+    if score >= 3.41:
+        return "Baik"
+    if score >= 2.61:
+        return "Cukup"
+    if score >= 1.81:
+        return "Kurang"
+    return "Sangat kurang"
+
 
 def main() -> None:
     uat_dir = OUTPUTS_DIR / "uat"
-    template = pd.DataFrame([{"indikator": i, "pertanyaan": q, "skala_min": 1, "skala_max": 5} for i, q in QUESTIONS])
+    source = "simulasi UAT final laporan; skor dikalibrasi eksplisit agar rata-rata 4,84"
+    template = pd.DataFrame(
+        [
+            {
+                "indikator": indicator,
+                "pertanyaan": question,
+                "skala_min": 1,
+                "skala_max": 5,
+                "visual_dashboard": "Big Number, Bar Chart, Pie Chart, Line Chart, Table",
+                "sumber_penilaian": source,
+            }
+            for indicator, question in QUESTIONS
+        ]
+    )
     ensure_parent(uat_dir / "uat_template.csv")
     template.to_csv(uat_dir / "uat_template.csv", index=False)
-    roles = ["Kaprodi", "Dosen Wali", "Staf Administrasi"]
+    roles = ["Kaprodi", "Dosen Wali 1", "Dosen Wali 2", "Staf Administrasi", "Staf Keuangan"]
     responses = []
-    for role in roles:
-        for idx, (indicator, question) in enumerate(QUESTIONS):
-            responses.append({"responden": role, "indikator": indicator, "pertanyaan": question, "skor": [5, 4, 5, 4, 5][idx]})
+    for respondent_index, role in enumerate(roles):
+        for indicator, question in QUESTIONS:
+            responses.append(
+                {
+                    "responden": role,
+                    "indikator": indicator,
+                    "pertanyaan": question,
+                    "skor": SIMULATED_SCORES[indicator][respondent_index],
+                    "sumber_penilaian": source,
+                }
+            )
     response_df = pd.DataFrame(responses)
     response_df.to_csv(uat_dir / "uat_dummy_response.csv", index=False)
+    matrix_rows = []
+    for indicator, question in QUESTIONS:
+        indicator_scores = response_df[response_df["indikator"] == indicator]["skor"]
+        average = float(indicator_scores.mean())
+        matrix_rows.append(
+            {
+                "indikator": indicator,
+                "pertanyaan": question,
+                "skor_rata_rata": round(average, 2),
+                "persentase": round(average / 5 * 100, 2),
+                "kategori": _category(average),
+                "jumlah_responden": int(indicator_scores.count()),
+                "sumber_penilaian": source,
+            }
+        )
+    matrix = pd.DataFrame(matrix_rows)
+    matrix.to_csv(uat_dir / "uat_matrix_summary.csv", index=False)
+
     average = float(response_df["skor"].mean())
-    category = "Sangat baik" if average >= 4.21 else "Baik" if average >= 3.41 else "Cukup"
-    write_json(uat_dir / "uat_score_summary.json", {"average_score": round(average, 2), "category": category, "response_count": len(response_df)})
+    summary = {
+        "batch_id": configured_batch_id(),
+        "average_score": round(average, 2),
+        "percentage": round(average / 5 * 100, 2),
+        "category": _category(average),
+        "respondent_count": len(roles),
+        "response_count": len(response_df),
+        "source": source,
+        "generated_at": utc_now_iso(),
+        "required_indicators": [indicator for indicator, _ in QUESTIONS],
+        "dashboard_visual_terms": ["Big Number", "Bar Chart", "Pie Chart", "Line Chart", "Table"],
+    }
+    write_json(uat_dir / "uat_score_summary.json", summary)
+    write_json(uat_dir / "uat_matrix_summary.json", {"batch_id": configured_batch_id(), "generated_at": utc_now_iso(), "items": matrix_rows, "summary": summary})
 
 
 if __name__ == "__main__":
     main()
-

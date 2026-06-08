@@ -17,8 +17,19 @@ from src.common.runtime_config import get_runtime_config
 
 
 BASE_URL = os.getenv("SUPERSET_BASE_URL", "http://localhost:8089")
+PUBLIC_BASE_URL = os.getenv("SUPERSET_PUBLIC_URL", "http://localhost:8089")
 DASHBOARD_TITLE = "Dashboard Piutang UKT Prodi"
 DASHBOARD_SLUG = "dashboard-piutang-ukt-prodi"
+MANAGED_STATIC_CHART_NAMES = {
+    "Piutang UKT per Prodi",
+    "Distribusi Kualitas Piutang",
+    "Tren Piutang per Semester",
+    "Rincian Piutang Mahasiswa",
+}
+MANAGED_CONTEXTUAL_CHART_PREFIXES = (
+    "Total Piutang UKT - ",
+    "Jumlah Mahasiswa Penunggak - ",
+)
 
 
 def _request_with_wait(session: requests.Session, method: str, url: str, attempts: int = 30, **kwargs: Any) -> requests.Response:
@@ -122,16 +133,54 @@ def _get_items(session: requests.Session, resource: str) -> list[dict[str, Any]]
     return response.json().get("result", [])
 
 
+def _delete_resource(session: requests.Session, resource: str, item_id: int) -> None:
+    response = session.delete(f"{BASE_URL}/api/v1/{resource}/{item_id}", timeout=30)
+    if response.status_code != 404:
+        response.raise_for_status()
+
+
+def _is_managed_chart_name(name: str, active_names: set[str]) -> bool:
+    return (
+        name in active_names
+        or name in MANAGED_STATIC_CHART_NAMES
+        or any(name.startswith(prefix) for prefix in MANAGED_CONTEXTUAL_CHART_PREFIXES)
+    )
+
+
+def _deduplicate_charts_by_name(session: requests.Session, charts: list[dict[str, Any]], chart_name: str) -> dict[str, Any] | None:
+    matches = [item for item in charts if item.get("slice_name") == chart_name]
+    if not matches:
+        return None
+    matches.sort(key=lambda item: int(item["id"]))
+    keep = matches[0]
+    for duplicate in matches[1:]:
+        _delete_resource(session, "chart", duplicate["id"])
+    return keep
+
+
 def _upsert_chart(session: requests.Session, payload: dict[str, Any]) -> int:
     charts = _get_items(session, "chart")
-    existing = next((item for item in charts if item.get("slice_name") == payload["slice_name"]), None)
+    existing = _deduplicate_charts_by_name(session, charts, payload["slice_name"])
+    chart_id = None
     if existing:
         chart_id = existing["id"]
         response = session.put(f"{BASE_URL}/api/v1/chart/{chart_id}", json=payload, timeout=60)
     else:
         response = session.post(f"{BASE_URL}/api/v1/chart/", json=payload, timeout=60)
     response.raise_for_status()
-    return response.json().get("id") or response.json().get("result", {}).get("id") or existing["id"]
+    chart_id = response.json().get("id") or response.json().get("result", {}).get("id") or chart_id
+    if chart_id is None:
+        raise RuntimeError(f"Superset did not return an id for chart {payload['slice_name']!r}")
+    return chart_id
+
+
+def _delete_stale_managed_charts(session: requests.Session, active_chart_ids: list[int], active_names: set[str]) -> None:
+    active_ids = set(active_chart_ids)
+    for chart in _get_items(session, "chart"):
+        chart_id = chart.get("id")
+        chart_name = str(chart.get("slice_name", ""))
+        if chart_id not in active_ids and _is_managed_chart_name(chart_name, active_names):
+            _delete_resource(session, "chart", chart_id)
 
 
 def _delete_test_assets(session: requests.Session) -> None:
@@ -145,7 +194,11 @@ def _delete_test_assets(session: requests.Session) -> None:
 
 def _upsert_dashboard(session: requests.Session, chart_ids: list[int]) -> int:
     dashboards = _get_items(session, "dashboard")
-    existing = next((item for item in dashboards if item.get("slug") == DASHBOARD_SLUG or item.get("dashboard_title") == DASHBOARD_TITLE), None)
+    matches = [item for item in dashboards if item.get("slug") == DASHBOARD_SLUG or item.get("dashboard_title") == DASHBOARD_TITLE]
+    matches.sort(key=lambda item: int(item["id"]))
+    existing = matches[0] if matches else None
+    for duplicate in matches[1:]:
+        _delete_resource(session, "dashboard", duplicate["id"])
     base_payload = {
         "dashboard_title": DASHBOARD_TITLE,
         "slug": DASHBOARD_SLUG,
@@ -326,13 +379,17 @@ def main() -> None:
     if not asset_path.exists():
         raise FileNotFoundError("Run setup_superset_assets.py before setup_superset_dashboard.py")
     dataset_id = json.loads(asset_path.read_text(encoding="utf-8"))["dataset_id"]
-    chart_ids = [_upsert_chart(session, payload) for payload in _chart_definitions(dataset_id)]
+    chart_definitions = _chart_definitions(dataset_id)
+    active_names = {payload["slice_name"] for payload in chart_definitions}
+    chart_ids = [_upsert_chart(session, payload) for payload in chart_definitions]
+    _delete_stale_managed_charts(session, chart_ids, active_names)
     dashboard_id = _upsert_dashboard(session, chart_ids)
     result = {
         "dashboard_id": dashboard_id,
         "dashboard_title": DASHBOARD_TITLE,
-        "dashboard_url": f"{BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
+        "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
         "chart_ids": chart_ids,
+        "chart_count": len(chart_ids),
     }
     write_json(OUTPUTS_DIR / "reports" / "superset_dashboard.json", result)
     print(result)

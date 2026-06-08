@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import os
 from typing import Any
 
 from .activity import append_activity
+from .files import upload_registry
 from .metrics import metrics_payload
 from .paths import ROOT_DIR
+from .runtime_context import context_env, read_active_context
 
 
 COMMANDS: dict[str, list[list[str]]] = {
@@ -22,11 +25,16 @@ COMMANDS: dict[str, list[list[str]]] = {
         [sys.executable, "src/metrics/dropout_rate.py"],
         [sys.executable, "src/metrics/data_quality_score.py"],
         [sys.executable, "src/metrics/generate_uat.py"],
+        [sys.executable, "src/storage/storage_manifest.py"],
+        [sys.executable, "src/status/system_truth_status.py"],
     ],
+    "storage-manifest": [[sys.executable, "src/storage/storage_manifest.py"]],
+    "truth-status": [[sys.executable, "src/status/system_truth_status.py"]],
     "validate-gold": [[sys.executable, "src/metrics/reconcile_control_total.py"]],
 }
 
 FULL_RUN_BASIC = ["generate-data", "quality-gate", "bronze", "silver", "gold", "metrics"]
+FULL_RUN_UPLOADED_SOURCES = ["quality-gate", "bronze", "silver", "gold", "metrics"]
 ACTIVITY_ACTIONS = {
     "generate-data": ("generate_data", "raw"),
     "quality-gate": ("quality_gate_process", "quality_gate"),
@@ -34,6 +42,8 @@ ACTIVITY_ACTIONS = {
     "silver": ("clean_silver", "silver"),
     "gold": ("load_gold_schema", "gold"),
     "metrics": ("metrics", "outputs/metrics"),
+    "storage-manifest": ("storage_manifest", "outputs/reports"),
+    "truth-status": ("system_truth_status", "outputs/reports"),
     "validate-gold": ("validate_mart", "gold"),
 }
 
@@ -49,11 +59,14 @@ def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
 
     steps = []
     status = "success"
+    active_context = read_active_context()
+    env = {**os.environ, **context_env(active_context)}
     for args in commands:
         try:
             completed = subprocess.run(
                 args,
                 cwd=ROOT_DIR,
+                env=env,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -88,10 +101,21 @@ def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
         target="local scripts",
         message=f"Pipeline step {name} {status}.",
     )
-    response = {"status": status, "command": name, "steps": steps}
+    response = {"status": status, "command": name, "steps": steps, "context": active_context}
     if name in {"quality-gate", "metrics", "validate-gold"}:
         response["metrics"] = metrics_payload()
     return response
+
+
+def _has_active_uploaded_sources() -> bool:
+    active = upload_registry().get("active", {})
+    return any(bool(active.get(upload_type)) for upload_type in ("pdf", "csv", "excel"))
+
+
+def _full_run_steps() -> list[str]:
+    if _has_active_uploaded_sources():
+        return FULL_RUN_UPLOADED_SOURCES
+    return FULL_RUN_BASIC
 
 
 def run_full(mode: str = "local-basic") -> dict[str, Any]:
@@ -101,11 +125,18 @@ def run_full(mode: str = "local-basic") -> dict[str, Any]:
 
     results = []
     status = "success"
-    for name in [*FULL_RUN_BASIC, "validate-gold"]:
+    steps = _full_run_steps()
+    for name in [*steps, "validate-gold"]:
         result = run_command_group(name, timeout=900)
         results.append(result)
         if result["status"] != "success":
             status = "failed"
             break
     append_activity("full-run", "pipeline", status, f"Full run {mode} {status}.", "local scripts")
-    return {"status": status, "mode": mode, "steps": results, "metrics": metrics_payload()}
+    return {
+        "status": status,
+        "mode": mode,
+        "source_mode": "uploaded_sources" if steps == FULL_RUN_UPLOADED_SOURCES else "generated_dummy",
+        "steps": results,
+        "metrics": metrics_payload(),
+    }

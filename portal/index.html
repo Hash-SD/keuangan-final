@@ -244,6 +244,7 @@
     .status-ok { color: #166534; background: #f0fdf4; border-color: #dcfce7; }
     .status-warn { color: #854d0e; background: #fffbeb; border-color: #fef3c7; }
     .status-error { color: #991b1b; background: #fef2f2; border-color: #fee2e2; }
+    .status-info { color: #475569; background: #f8fafc; border-color: #e2e8f0; }
     .status-info { color: #1e3a8a; background: #eff6ff; border-color: #dbeafe; }
     .primary-button, .secondary-button, .disabled-button {
       min-height: 40px;
@@ -369,7 +370,15 @@
       position: absolute;
       top: 0; left: 0; bottom: 0;
       width: 100%;
-      background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.1) 30%, rgba(2, 132, 199, 0.85) 50%, rgba(56, 189, 248, 0.1) 70%, transparent 100%);
+      background: linear-gradient(90deg, #16a34a 0%, #0ea5e9 50%, #2563eb 100%);
+      transform-origin: left;
+      transition: width .35s ease;
+    }
+    .pipeline-track-pulse {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.28) 45%, transparent 70%);
       animation: pipeline-flow-anim 2.5s infinite linear;
     }
     @keyframes pipeline-flow-anim {
@@ -402,6 +411,24 @@
       color: #94a3b8;
     }
     .node-label { font-size: .8rem; font-weight: 750; color: var(--on-surface); line-height: 1.4; word-break: normal; white-space: normal; }
+    .node-state {
+      margin-top: .45rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .28rem;
+      padding: .22rem .5rem;
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 800;
+      line-height: 1;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .node-state.ready { color: #166534; background: #dcfce7; border-color: #bbf7d0; }
+    .node-state.waiting { color: #854d0e; background: #fef3c7; border-color: #fde68a; }
+    .node-state.failed { color: #991b1b; background: #fee2e2; border-color: #fecaca; }
+    .node-state.online { color: #075985; background: #e0f2fe; border-color: #bae6fd; }
+    .node-state.offline { color: #475569; background: #f1f5f9; border-color: #e2e8f0; }
     .lineage-sources { display: grid; gap: .55rem; min-width: 130px; }
     .source-pill { padding: .55rem .7rem; border-radius: .7rem; background: rgba(255,255,255,.72); border: 1px solid rgba(193,198,213,.24); font-weight: 700; font-size: .82rem; text-align: center; }
 
@@ -816,15 +843,6 @@
     const CONTROL = {
       targetProdi: "Sains Data",
       targetTahunAkademik: "2023/2024",
-      totalPiutang: 0,
-      penunggak: 0,
-      paguRab: 150000000,
-      totalRows: 800,
-      validRows: 784,
-      rejectedRows: 16,
-      dropoutRate: 2,
-      qualityScore: 100,
-      lastRun: "26 Mei 2026, 10:42 WIB",
       dashboardUrl: "http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/"
     };
     const API_BASE_URL = "http://localhost:8091";
@@ -850,6 +868,10 @@
       pdfStatus: null,
       referenceSummary: null,
       runtimeConfig: null,
+      scenarios: [],
+      lakehouse: null,
+      storageManifest: null,
+      truth: null,
       rejectedRows: [],
       goldPreview: [],
       silverPreview: [],
@@ -858,14 +880,20 @@
 
     const rupiah = value => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value || 0)).replace(/\s/g, "");
     const n = value => new Intl.NumberFormat("id-ID").format(Number(value || 0));
-    const badge = (text, type = "ok") => `<span class="status-badge status-${type}"><span class="dot" style="width:6px;height:6px;"></span>${text}</span>`;
+    const badge = (text, type = "info") => `<span class="status-badge status-${type}"><span class="dot" style="width:6px;height:6px;"></span>${text}</span>`;
     const safe = value => value === undefined || value === null || value === "" ? "-" : value;
     const has = value => value !== undefined && value !== null;
+    const truthValue = item => item && ["validated", "completed", "ready"].includes(item.status) ? item.value : null;
+    function statusType(status) {
+      const value = String(status || "").toLowerCase();
+      if (["ready", "validated", "uploaded", "created", "completed", "online", "pass"].includes(value)) return "ok";
+      if (["failed", "rejected", "unreachable", "inconsistent", "configured_unreachable", "offline"].includes(value)) return "error";
+      return "info";
+    }
     const runtimeTarget = () => state.runtimeConfig || state.metrics.runtime_config || {
       target_prodi: CONTROL.targetProdi,
       target_tahun_akademik: CONTROL.targetTahunAkademik,
-      target_label: `${CONTROL.targetProdi} - Tahun Akademik ${CONTROL.targetTahunAkademik}`,
-      target_total_pagu_rab: CONTROL.paguRab
+      target_label: `${CONTROL.targetProdi} - Tahun Akademik ${CONTROL.targetTahunAkademik}`
     };
     const targetLabel = () => runtimeTarget().target_label || `${runtimeTarget().target_prodi} - Tahun Akademik ${runtimeTarget().target_tahun_akademik}`;
     const formatDuration = value => {
@@ -898,16 +926,41 @@
       </article>`;
     }
 
-    function renderFlowDiagram(nodes) {
+    function realMedallionNodes() {
+      const layers = state.truth?.layers || {};
+      const source = state.truth?.sources || {};
+      const rawReady = layers.raw?.status === "ready";
+      const bronzeReady = layers.bronze?.status === "ready";
+      const silverReady = layers.silver?.status === "ready";
+      const goldReady = layers.gold?.status === "ready";
+      const goldFailed = goldReady && state.layers.goldValid === false;
+      const supersetStatus = state.truth?.services?.superset?.status || (state.services.superset ? "ready" : "unreachable");
+      const supersetOnline = supersetStatus === "ready";
+      return [
+        { title: "Raw Data", desc: "PDF/CSV/Excel sumber", icon: "description", color: "#ffffff", bg: "#64748b", ready: rawReady, statusText: rawReady ? "ready" : "missing", statusType: rawReady ? "ready" : "waiting" },
+        { title: "Bronze Layer", desc: state.lakehouse?.bronze?.description || "Raw ingestion", icon: "database", color: "#ffffff", bg: "#b45309", ready: bronzeReady, statusText: layers.bronze?.status || "missing", statusType: bronzeReady ? "ready" : "waiting" },
+        { title: "Silver Layer", desc: state.lakehouse?.silver?.description || "Cleansing & validasi", icon: "filter_alt", color: "#ffffff", bg: "#64748b", ready: silverReady, statusText: layers.silver?.status || "missing", statusType: silverReady ? "ready" : "waiting" },
+        { title: "Gold Layer", desc: state.lakehouse?.gold?.description || "Star schema & mart", icon: "stars", color: "#ffffff", bg: "#ca8a04", ready: goldReady && !goldFailed, statusText: goldFailed ? "failed" : layers.gold?.status || "missing", statusType: goldFailed ? "failed" : goldReady ? "ready" : "waiting" },
+        { title: "Superset BI", desc: "Dashboard visualisasi", icon: "dashboard", color: "#ffffff", bg: "#0284c7", ready: supersetOnline && goldReady && !goldFailed, statusText: supersetStatus, statusType: supersetOnline ? "online" : "offline" }
+      ];
+    }
+
+    function renderFlowDiagram(nodes = realMedallionNodes()) {
       const flowWidth = Math.max(800, nodes.length * 150);
-      return `<div class="pipeline-flow"><div style="width:100%; min-width:${flowWidth}px; position:relative;"><div class="pipeline-track"><div class="pipeline-track-fill"></div></div><div class="pipeline-nodes">${nodes.map(node => `
+      const statusAware = nodes.some(node => Object.prototype.hasOwnProperty.call(node, "ready") || node.statusText);
+      const consecutiveReady = statusAware ? nodes.findIndex(node => !node.ready) : nodes.length;
+      const readyCount = consecutiveReady === -1 ? nodes.length : Math.max(0, consecutiveReady);
+      const progress = statusAware && nodes.length > 1 ? Math.max(0, Math.min(100, ((readyCount - 1) / (nodes.length - 1)) * 100)) : 100;
+      const pulse = statusAware && readyCount > 0 && readyCount < nodes.length ? `<div class="pipeline-track-pulse"></div>` : "";
+      return `<div class="pipeline-flow"><div style="width:100%; min-width:${flowWidth}px; position:relative;"><div class="pipeline-track"><div class="pipeline-track-fill" style="width:${progress}%;"></div>${pulse}</div><div class="pipeline-nodes">${nodes.map(node => `
         <div class="pipeline-node">
-          <div class="node-icon" style="background:${node.bg}; color:${node.color};">
+          <div class="node-icon" style="background:${node.bg}; color:${node.color}; border-color:${!statusAware || node.ready ? "#ffffff" : "#cbd5e1"};">
             <span class="material-symbols-outlined icon-fill" style="font-size:24px;">${node.icon}</span>
           </div>
           <div class="node-label">
             <div style="font-weight:700; color:#1f2937;">${node.title}</div>
             ${node.desc ? `<div style="font-size:0.75rem; color:#6b7280; margin-top:0.25rem; font-weight:500; line-height:1.2;">${node.desc}</div>` : ""}
+            ${node.statusText ? `<span class="node-state ${node.statusType || (node.ready ? "ready" : "waiting")}">${node.statusText}</span>` : ""}
           </div>
         </div>
       `).join("")}</div></div></div>`;
@@ -971,13 +1024,18 @@
     }
 
     function qualitySummary() {
-      const q = state.metrics.qualityGate || state.metrics.dropout || {};
+      const q = state.metrics.qualityGate || {};
+      const totalRows = q.total_rows ?? null;
+      const rejectedRows = q.rejected_rows ?? null;
+      const validRows = q.valid_rows ?? null;
+      const dropoutRate = q.dropout_rate ?? null;
       return {
-        totalRows: q.total_rows || CONTROL.totalRows,
-        validRows: q.valid_rows || CONTROL.validRows,
-        rejectedRows: q.rejected_rows || CONTROL.rejectedRows,
-        dropoutRate: q.dropout_rate ?? CONTROL.dropoutRate,
-        status: "Valid dengan catatan"
+        totalRows,
+        validRows,
+        rejectedRows,
+        dropoutRate,
+        available: q.status === "validated",
+        status: q.status || "missing"
       };
     }
 
@@ -1019,27 +1077,25 @@
       const quality = state.metrics.quality || {};
       const lp = latestPipelineActivity();
       const target = runtimeTarget();
+      const qualityValue = has(quality.data_quality_score) ? `${quality.data_quality_score}%` : "-";
+      const pipelineValue = lp ? String(lp.status || "-") : "Belum ada run";
+      const pipelineNote = lp ? `Last run: ${formatLastRun(lp.time)}` : "Menunggu aktivitas pipeline realtime";
       
       document.getElementById("page-beranda").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid home-metrics-grid">
-            ${tailwindCard("Total Piutang UKT", rupiah(rec.total_piutang ?? CONTROL.totalPiutang), `Kontrol ${targetLabel()}`, "account_balance_wallet", "#3b82f6", "#eff6ff")}
-            ${tailwindCard("Mahasiswa Penunggak", n(rec.jumlah_penunggak ?? CONTROL.penunggak), "Dari total mahasiswa aktif", "person", "#ea580c", "#ffedd5")}
-            ${tailwindCard("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Semua gate lulus", "verified", "#6366f1", "#e0e7ff")}
-            ${tailwindCard("Pipeline Status", lp ? String(lp.status || "Success") : "Success", `Last run: ${lp ? formatLastRun(lp.time) : (state.metrics.latency?.last_run || "28 Mei 2026, 18:05 WIB")}`, "account_tree", "#10b981", "#d1fae5", "#16a34a")}
+            ${tailwindCard("Total Piutang UKT", has(rec.total_piutang) ? rupiah(rec.total_piutang) : "-", `Kontrol ${targetLabel()}`, "account_balance_wallet", "#3b82f6", "#eff6ff")}
+            ${tailwindCard("Mahasiswa Penunggak", has(rec.jumlah_penunggak) ? n(rec.jumlah_penunggak) : "-", "Dari hasil rekonsiliasi terakhir", "person", "#ea580c", "#ffedd5")}
+            ${tailwindCard("Data Quality Score", qualityValue, has(quality.data_quality_score) ? "Dari metrik Quality Gate terakhir" : "Belum ada metrik Quality Gate", "verified", "#6366f1", "#e0e7ff")}
+            ${tailwindCard("Pipeline Status", pipelineValue, pipelineNote, "account_tree", lp?.status === "success" ? "#10b981" : "#64748b", lp?.status === "success" ? "#d1fae5" : "#f8fafc", lp?.status === "success" ? "#16a34a" : "#475569")}
           </section>
           <section class="glass-panel">
             <h3 class="section-title">Medallion Data Pipeline Flow</h3>
-            ${renderFlowDiagram(MEDALLION_NODES)}
+            ${renderFlowDiagram()}
           </section>
           <section class="glass-panel">
             <h3 class="section-title">Ingestion History & Pipeline Logs</h3>
-            ${activityTable(rowsFromActivities() || [
-              ["10:45 WIB", "Gold layer data mart validated successfully", "Success", "Metrics Engine"],
-              ["10:42 WIB", "Silver layer transformation and cleansing applied", "Success", "Spark Executor"],
-              ["10:35 WIB", "Bronze ingestion and metadata catalog generation completed", "Success", "MinIO Storage"],
-              ["10:30 WIB", "Quality Gate processed 800 source records", "Success", "Quality Gate"]
-            ])}
+            ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada aktivitas pipeline.", "Jalankan pipeline atau upload data untuk melihat log realtime.")}
           </section>
         </div>`;
     }
@@ -1049,23 +1105,24 @@
       const source = state.sourceStatus || {};
       const ref = state.referenceSummary || {};
       const target = runtimeTarget();
+      const qualityRate = q.totalRows ? `${((q.validRows / q.totalRows) * 100).toFixed(1)}%` : "-";
       document.getElementById("page-data").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid grid-4 w-full">
             ${[
               {
                 label: "Status Ingestion Terakhir",
-                value: q.rejectedRows === 0 ? "Success" : `Partial`,
-                sub: q.rejectedRows === 0 ? "Semua baris lolos Quality Gate" : `${q.rejectedRows} baris dikarantina`,
-                color: q.rejectedRows === 0 ? "#166534" : "#92400e",
-                bg: q.rejectedRows === 0 ? "#f0fdf4" : "#fffbeb",
-                border: q.rejectedRows === 0 ? "#86efac" : "#fcd34d",
-                icon: q.rejectedRows === 0 ? "check_circle" : "warning"
+                value: q.available ? (q.rejectedRows === 0 ? "validated" : "validated") : "Belum ada data",
+                sub: q.available ? (q.rejectedRows === 0 ? "Semua baris lolos Quality Gate" : `${q.rejectedRows} baris dikarantina`) : "Menunggu hasil Quality Gate realtime",
+                color: !q.available ? "#475569" : q.rejectedRows === 0 ? "#166534" : "#92400e",
+                bg: !q.available ? "#f8fafc" : q.rejectedRows === 0 ? "#f0fdf4" : "#fffbeb",
+                border: !q.available ? "#e2e8f0" : q.rejectedRows === 0 ? "#86efac" : "#fcd34d",
+                icon: !q.available ? "hourglass_empty" : q.rejectedRows === 0 ? "check_circle" : "warning"
               },
               {
                 label: "Quality Gate Score",
-                value: `${((q.validRows / q.totalRows) * 100).toFixed(1)}%`,
-                sub: q.validRows === q.totalRows ? "Sempurna — 0 baris ditolak" : "Ada baris yang tidak lolos validasi",
+                value: qualityRate,
+                sub: q.available ? (q.validRows === q.totalRows ? "Sempurna, 0 baris ditolak" : "Ada baris yang tidak lolos validasi") : "Belum ada hasil validasi",
                 color: "#0b57d0",
                 bg: "#eff6ff",
                 border: "#93c5fd",
@@ -1073,21 +1130,21 @@
               },
               {
                 label: "Valid Rows Diproses",
-                value: n(q.validRows),
-                sub: `dari ${n(q.totalRows)} total baris sumber`,
-                color: "#166534",
-                bg: "#f0fdf4",
-                border: "#86efac",
+                value: q.available ? n(q.validRows) : "-",
+                sub: q.available ? `dari ${n(q.totalRows)} total baris sumber` : "Belum ada hasil Quality Gate",
+                color: q.available ? "#166534" : "#475569",
+                bg: q.available ? "#f0fdf4" : "#f8fafc",
+                border: q.available ? "#86efac" : "#e2e8f0",
                 icon: "table_rows"
               },
               {
                 label: "Baris Dikarantina",
-                value: n(q.rejectedRows),
-                sub: q.rejectedRows === 0 ? "Tidak ada baris yang ditolak" : "Baris gagal validasi integritas",
-                color: q.rejectedRows === 0 ? "#475569" : "#ba1a1a",
-                bg: q.rejectedRows === 0 ? "#f8fafc" : "#fff1f2",
-                border: q.rejectedRows === 0 ? "#e2e8f0" : "#fca5a5",
-                icon: q.rejectedRows === 0 ? "shield" : "block"
+                value: q.available ? n(q.rejectedRows) : "-",
+                sub: q.available ? (q.rejectedRows === 0 ? "Tidak ada baris yang ditolak" : "Baris gagal validasi integritas") : "Belum ada log karantina",
+                color: !q.available || q.rejectedRows === 0 ? "#475569" : "#ba1a1a",
+                bg: !q.available || q.rejectedRows === 0 ? "#f8fafc" : "#fff1f2",
+                border: !q.available || q.rejectedRows === 0 ? "#e2e8f0" : "#fca5a5",
+                icon: !q.available || q.rejectedRows === 0 ? "shield" : "block"
               }
             ].map(c => `
               <div style="background:${c.bg}; border:1.5px solid ${c.border}; border-radius:1rem; padding:1.5rem; display:flex; flex-direction:column; gap:0.5rem;">
@@ -1103,9 +1160,11 @@
 
           <section class="section-grid grid-3">
             ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "1 dokumen PDF digital, ekstraksi teks programmatic")}
-            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "2 file transaksi, target 800 rows")}
+            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", `2 file transaksi, target ${n(source.csv?.target_rows ?? target.dummy_transaction_rows ?? 0)} rows`)}
             ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `RAB ${targetLabel()}, target pagu ${rupiah(target.target_total_pagu_rab ?? CONTROL.paguRab)}`)}
           </section>
+
+          ${runtimeContextPanel()}
 
           <section class="glass-panel w-full">
             <h3 class="section-title" style="display:flex; align-items:center; gap:0.5rem; color:#0f172a;">
@@ -1155,25 +1214,51 @@
               </h3>
               <p class="small muted" style="margin-top:0.25rem; color:#475569;">Riwayat aktivitas eksekusi pipeline data penyerapan ke dalam S3/MinIO Lakehouse.</p>
             </div>
-            ${activityTable(rowsFromActivities() || [
-              ["10:30 WIB", "CSV Transaksi diproses dari data/raw/csv/", "Success (Cleaned)", "Quality Gate"],
-              ["10:28 WIB", "Excel RAB diproses dari data/raw/excel/", "Success", "Spark Executor"],
-              ["10:25 WIB", "PDF Audited diproses dari data/raw/pdf/", "Success", "Ingestion Agent"]
-            ])}
+            ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada riwayat ingestion.", "Upload file atau jalankan pipeline untuk mengisi log realtime.")}
           </section>
         </div>`;
+    }
+
+    function runtimeContextPanel() {
+      const target = runtimeTarget();
+      return `<section class="glass-panel w-full">
+        <div style="display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; flex-wrap:wrap; margin-bottom:1rem;">
+          <div>
+            <h3 class="section-title" style="margin:0; color:#0f172a;">Periode Data Opsional</h3>
+            <p class="small muted" style="margin:.25rem 0 0;">Boleh dikosongkan. Sistem akan membaca tahun, batch, rows, pagu, dan target validasi dari file CSV/Excel yang diupload.</p>
+          </div>
+          ${badge(target.target_label || targetLabel(), "info")}
+        </div>
+        <div class="section-grid grid-2">
+          <label class="small muted" style="display:grid; gap:.35rem; font-weight:700;">Tahun Akademik
+            <input id="ctx-target-tahun-akademik" class="form-input" value="" placeholder="${safe(target.target_tahun_akademik || "2024/2025")}">
+          </label>
+          <label class="small muted" style="display:grid; gap:.35rem; font-weight:700;">Tahun Anggaran
+            <input id="ctx-target-tahun-anggaran" class="form-input" value="" placeholder="${safe(target.target_tahun_anggaran || "2025")}">
+          </label>
+        </div>
+        <div style="display:grid; gap:.65rem; margin-top:1rem;">
+          <button type="button" class="secondary-button" id="saveRuntimeContext" style="width:100%; justify-content:center;">Simpan Periode</button>
+          <p class="small muted" style="margin:0;">Gunakan hanya jika file belum punya metadata tahun yang jelas.</p>
+        </div>
+      </section>`;
     }
 
     function uploadCard(title, icon, path) {
       const type = title.includes("PDF") ? "pdf" : title.includes("CSV") ? "csv" : "excel";
       const accept = type === "pdf" ? ".pdf" : type === "csv" ? ".csv" : ".xlsx";
+      const multiple = type === "csv" ? "multiple" : "";
+      const browseLabel = type === "csv" ? "Browse File CSV" : "Browse File";
+      const filenameScript = type === "csv"
+        ? "const names = Array.from(this.files).map(file => file.name); document.getElementById('filename-csv').textContent = names.length ? names.join(', ') : 'Belum ada file dipilih'; document.getElementById('filename-csv').style.color = '#0f172a';"
+        : `document.getElementById('filename-${type}').textContent = this.files.length ? this.files[0].name : 'Belum ada file dipilih'; document.getElementById('filename-${type}').style.color = '#0f172a';`;
       return `<article class="glass-card upload-zone">
         <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--primary); margin-bottom:-0.5rem;">${icon}</span>
         <div><h3 style="margin:0 0 .35rem;">Upload ${title}</h3><p class="muted small" style="margin:0;">${targetLabel()}<br>Target folder: <code>${path}</code></p></div>
         <div style="width:100%; display:flex; flex-direction:column; gap:0.4rem; align-items:center;">
-          <input id="upload-${type}" type="file" accept="${accept}" style="display:none;" onchange="document.getElementById('filename-${type}').textContent = this.files.length ? this.files[0].name : 'Belum ada file dipilih'; document.getElementById('filename-${type}').style.color = '#0f172a';">
+          <input id="upload-${type}" type="file" accept="${accept}" ${multiple} style="display:none;" onchange="${filenameScript}">
           <label for="upload-${type}" class="secondary-button" style="cursor:pointer; padding:0.4rem 1rem; border-radius:999px;">
-            <span class="material-symbols-outlined" style="font-size:16px;">search</span> Browse File
+            <span class="material-symbols-outlined" style="font-size:16px;">search</span> ${browseLabel}
           </label>
           <span id="filename-${type}" class="small muted" style="min-height:16px; margin-bottom:0.5rem; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:90%;">Belum ada file dipilih</span>
         </div>
@@ -1185,7 +1270,7 @@
       const status = payload?.available === true ? "ready" : payload?.status || (payload ? "missing" : "missing");
       const isReady = status === "ready" || payload?.available === true;
       const detail = title.includes("CSV")
-        ? `${payload?.total_rows ?? 0} / ${payload?.target_rows ?? CONTROL.totalRows} rows`
+        ? `${payload?.total_rows ?? 0} / ${payload?.target_rows ?? runtimeTarget().dummy_transaction_rows ?? 0} rows`
         : title.includes("PDF")
           ? (payload?.path || payload?.message || runtimeTarget().paths?.sample_pdf || "data/samples/ITERA_LKTA2024Audited.pdf")
           : (payload?.path || runtimeTarget().paths?.raw_rab || "data/raw/excel/rab_prodi_sains_data.xlsx");
@@ -1209,48 +1294,45 @@
       const latency = state.metrics.latency || {};
       const freshness = state.metrics.freshness || {};
       const ref = state.referenceSummary || {};
-      const dashType = state.dashboardStatus === "Ready" ? "ok" : state.dashboardStatus === "Superset Offline" ? "error" : "warn";
+      const dashStatus = state.truth?.dashboard?.status || state.dashboardStatus;
+      const dashType = statusType(dashStatus);
       document.getElementById("page-dashboard").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid dashboard-metrics-grid">
-            ${metric("Data Quality Score", `${quality.data_quality_score ?? CONTROL.qualityScore}%`, "Semua Quality Gate lolos", "verified")}
-            ${metric("Dropout Rate", `${q.dropoutRate}%`, `${q.rejectedRows} quarantine dari ${q.totalRows} baris`, "trending_down")}
+            ${metric("Data Quality Score", has(quality.data_quality_score) ? `${quality.data_quality_score}%` : "-", has(quality.data_quality_score) ? "Dari metrik Quality Gate terakhir" : "Belum ada metrik Quality Gate", "verified")}
+            ${metric("Dropout Rate", has(q.dropoutRate) ? `${q.dropoutRate}%` : "-", q.available ? `${q.rejectedRows} quarantine dari ${q.totalRows} baris` : "Belum ada hasil Quality Gate", "trending_down")}
             ${metric("Pipeline Latency", (() => {
               const raw = latency.pipeline_latency_seconds || latency.latency_seconds;
               if (!raw) return "-";
               return formatDuration(raw);
             })(), "Waktu pemrosesan end-to-end pipeline terakhir", "speed")}
-            ${metric("Data Freshness", safe(freshness.data_freshness_status || freshness.status || "Fresh"), "Sinkronisasi layer Gold terakhir", "update")}
-            ${metric("Quarantine Rows", n(q.rejectedRows), "Baris gagal Quality Gate", "rule_folder")}
-            ${metric("Gold Validation", (state.layers.goldValid ? "PASS" : "Waiting"), "Kesesuaian total saldo & penunggak", "stars")}
-            ${metric("Prodi Referensi", n(ref.ukt?.program_count || 41), "Master prodi terdaftar", "domain")}
-            ${metric("Kombinasi Master UKT", n(ref.ukt?.rows || 328), "Prodi x Golongan UKT", "grid_view")}
-            ${metric("Master SPI", n(ref.spi?.rows || 41), "Referensi SPI per prodi", "payments")}
+            ${metric("Data Freshness", freshness.status === "validated" ? safe(freshness.freshness_seconds?.value ?? freshness.data_freshness_status?.value) : "-", freshness.status === "validated" ? "Dibaca dari artefak freshness" : "Belum ada hasil freshness", "update")}
+            ${metric("Quarantine Rows", q.available ? n(q.rejectedRows) : "-", "Baris gagal Quality Gate", "rule_folder")}
+            ${metric("Gold Validation", state.layers.goldValid ? "PASS" : state.truth?.reconciliation?.status || "missing", state.layers.goldValid ? "Rekonsiliasi tervalidasi" : "Belum ada rekonsiliasi valid", "stars")}
+            ${metric("Prodi Referensi", has(ref.ukt?.program_count) ? n(ref.ukt.program_count) : "-", "Master prodi terdaftar", "domain")}
+            ${metric("Kombinasi Master UKT", has(ref.ukt?.rows) ? n(ref.ukt.rows) : "-", "Prodi x Golongan UKT", "grid_view")}
+            ${metric("Master SPI", has(ref.spi?.rows) ? n(ref.spi.rows) : "-", "Referensi SPI per prodi", "payments")}
           </section>
           <section class="glass-panel w-full">
             <h3 class="section-title">Medallion Data Pipeline Flow</h3>
-            ${renderFlowDiagram(MEDALLION_NODES)}
+            ${renderFlowDiagram()}
           </section>
           <section class="section-grid dashboard-flow-grid w-full">
             <div class="glass-panel" style="display:flex; flex-direction:column; height:100%;">
               <div style="flex:1;">
                 <h3 class="section-title">Latest Pipeline Activities ${tooltip("Log terbaru dari eksekusi pipeline Airflow.")}</h3>
-                ${activityTable(rowsFromActivities() || [
-                  ["10:45 WIB", "Gold validation PASS successfully", "Success", "Metrics Engine"],
-                  ["10:42 WIB", "Superset assets and datasets refreshed", state.services.superset ? "Ready" : "Superset Offline", "Superset Agent"],
-                  ["10:22 WIB", "Dropout Rate evaluated at 2%", "Success", "Metrics Engine"]
-                ])}
+                ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada aktivitas pipeline.", "Jalankan pipeline untuk melihat aktivitas realtime.")}
               </div>
             </div>
             <div class="glass-panel" style="display:flex; flex-direction:column; height:100%;">
               <div style="flex:1;">
                 <h3 class="section-title">Superset Service Integration ${tooltip("Status koneksi live antara Data Lakehouse dan BI Superset.")}</h3>
                 <dl class="kv">
-                  <dt>Status Service</dt><dd>${badge(state.services.superset ? "Online" : "Offline", state.services.superset ? "ok" : "error")}</dd>
+                  <dt>Status Service</dt><dd>${badge(state.truth?.services?.superset?.status || "unreachable", statusType(state.truth?.services?.superset?.status || "unreachable"))}</dd>
                   <dt>Dashboard Name</dt><dd>Dashboard Piutang UKT Prodi</dd>
                   <dt>View Dataset</dt><dd>vw_dashboard_piutang_ukt</dd>
-                  <dt>Last Refresh</dt><dd>${CONTROL.lastRun}</dd>
-                  <dt>Status Dashboard</dt><dd>${badge(state.dashboardStatus, dashType)}</dd>
+                  <dt>Last Refresh</dt><dd>${latestPipelineActivity() ? formatLastRun(latestPipelineActivity().time) : "-"}</dd>
+                  <dt>Status Dashboard</dt><dd>${badge(dashStatus, dashType)}</dd>
                 </dl>
               </div>
               <div class="divider"></div>
@@ -1262,17 +1344,23 @@
 
     function renderLakehouse() {
       const rec = state.metrics.reconcile || {};
-      const validationAvailable = has(state.metrics.reconcile);
+      const validationAvailable = state.truth?.reconciliation?.status === "validated";
+      const storageLayers = state.storageManifest?.layers || state.lakehouse?.storage?.manifest?.layers || {};
       document.getElementById("page-lakehouse").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid grid-3">
-            ${layerCard("Bronze Layer", "database", "Raw Ingestion - Menyimpan berkas sumber data keuangan mentah ke S3/MinIO.", state.layers.bronzeReady, "#b45309")}
-            ${layerCard("Silver Layer", "filter_alt", "Cleaned & Conformed - Data piutang dan RAB hasil pembersihan, standardisasi, serta validasi.", state.layers.silverReady, "#64748b")}
-            ${layerCard("Gold Layer", "stars", "Analytical Data Mart - Star schema teroptimasi untuk query analitis dan visualisasi Superset.", state.layers.goldReady, "#ca8a04")}
+            ${layerCard("Bronze Layer", "database", "Raw Ingestion - Menyimpan berkas sumber data keuangan mentah ke S3/MinIO.", state.truth?.layers?.bronze?.status || "missing", "#b45309")}
+            ${layerCard("Silver Layer", "filter_alt", "Cleaned & Conformed - Data piutang dan RAB hasil pembersihan, standardisasi, serta validasi.", state.truth?.layers?.silver?.status || "missing", "#64748b")}
+            ${layerCard("Gold Layer", "stars", "Analytical Data Mart - Star schema teroptimasi untuk query analitis dan visualisasi Superset.", state.truth?.layers?.gold?.status || "missing", "#ca8a04")}
           </section>
           <section class="glass-panel w-full">
             <h3 class="section-title">Data Lakehouse Lineage Diagram ${tooltip("Alur pergerakan data dari file mentah hingga menjadi visualisasi analitik.")}</h3>
-            ${renderFlowDiagram(MEDALLION_NODES)}
+            ${renderFlowDiagram()}
+          </section>
+
+          <section class="glass-panel w-full">
+            <h3 class="section-title">MinIO/S3 Storage Layer Mapping ${tooltip("Status jujur lokasi lokal dan prefix S3-compatible untuk setiap layer lakehouse.")}</h3>
+            ${Object.keys(storageLayers).length ? storageLayerTable(storageLayers) : emptyState("Storage manifest belum tersedia.", "Jalankan pipeline metrics atau task storage manifest untuk membuat outputs/reports/storage_manifest.json.")}
           </section>
           
           <section class="glass-panel w-full">
@@ -1281,47 +1369,64 @@
               <div style="display:flex; flex-wrap:wrap; gap:1.25rem;">
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Expected total piutang</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${rupiah(rec.target_total_piutang ?? CONTROL.totalPiutang)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.target_total_piutang) ? rupiah(rec.target_total_piutang) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Actual total piutang</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${rupiah(rec.total_piutang ?? CONTROL.totalPiutang)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.total_piutang) ? rupiah(rec.total_piutang) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Expected penunggak</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${n(rec.target_jumlah_penunggak ?? CONTROL.penunggak)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.target_jumlah_penunggak) ? n(rec.target_jumlah_penunggak) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Actual penunggak</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${n(rec.jumlah_penunggak ?? CONTROL.penunggak)}</dd>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.jumlah_penunggak) ? n(rec.jumlah_penunggak) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Status Quality Gate</dt>
-                  <dd style="margin:0; transform: scale(1.05);">${badge(String(rec.status || "pass").toUpperCase() + " (Passed)", String(rec.status || "pass").toLowerCase() === "pass" ? "ok" : "error")}</dd>
+                  <dd style="margin:0; transform: scale(1.05);">${badge(String(rec.status || "missing").toUpperCase(), statusType(rec.status))}</dd>
                 </div>
               </div>` : emptyState("Validasi Gold belum tersedia.", "Jalankan pipeline validasi terlebih dahulu.")}
           </section>
 
           <section class="glass-panel w-full">
             <h3 class="section-title">Layer Sync History ${tooltip("Catatan sinkronisasi dan pembentukan struktur tabel di setiap layer.")}</h3>
-            ${activityTable([
-              ["10:35 WIB", "Bronze ingestion metadata generated successfully", state.layers.bronzeReady ? "Ready" : "Waiting", "Bronze Ingest"],
-              ["10:42 WIB", "Silver fact table and transaction clean views processed", state.layers.silverReady ? "Ready" : "Waiting", "Silver Transpile"],
-              ["10:45 WIB", "Gold data mart dashboard view catalog synchronized", state.layers.goldReady ? "Ready" : "Waiting", "Gold Schema"]
-            ])}
+            ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada riwayat sinkronisasi layer.", "Jalankan Bronze, Silver, atau Gold untuk menampilkan log realtime.")}
           </section>
         </div>`;
     }
 
-    function layerCard(title, icon, text, ready, colorCode) {
+    function storageLayerTable(layers) {
+      const order = ["raw", "bronze", "silver", "gold", "quarantine", "metrics", "reports", "iceberg_warehouse"];
+      const rows = order.filter(name => layers[name]).map(name => {
+        const item = layers[name];
+        const ready = ["ready", "configured"].includes(String(item.status || "").toLowerCase());
+        return `<tr>
+          <td><strong>${name.replaceAll("_", " ")}</strong></td>
+          <td>${badge(item.status || "missing", statusType(item.status))}</td>
+          <td>${badge(item.storage_status || "mapped", statusType(item.storage_status))}</td>
+          <td style="text-align:right;">${n(item.file_count || 0)}</td>
+          <td><code>${safe(item.local_path)}</code></td>
+          <td><code>${safe(item.s3_prefix)}</code></td>
+        </tr>`;
+      }).join("");
+      return `<div class="table-wrap table-wide"><table>
+        <thead><tr><th>Layer</th><th>Status</th><th>Storage</th><th style="text-align:right;">File</th><th>Local Path</th><th>S3 Prefix</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`;
+    }
+
+    function layerCard(title, icon, text, status, colorCode) {
       const color = colorCode || "var(--primary)";
+      const ready = status === true || status === "ready";
       return `<article class="glass-panel" style="display:flex; flex-direction:column; justify-content:space-between; border-top: 4px solid ${color};">
         <div>
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.2rem;">
             <div style="width:52px; height:52px; border-radius:14px; background:${color}15; color:${color}; display:flex; align-items:center; justify-content:center; border: 1px solid ${color}30;">
               <span class="material-symbols-outlined" style="font-size:28px;">${icon}</span>
             </div>
-            ${badge(ready ? "Ready" : "Waiting", ready ? "ok" : "warn")}
+            ${badge(typeof status === "string" ? status : ready ? "ready" : "missing", statusType(typeof status === "string" ? status : ready ? "ready" : "missing"))}
           </div>
           <h3 style="margin:0 0 .5rem; font-size:1.15rem; color:#0f172a;">${title}</h3>
           <p class="muted" style="margin:0; line-height:1.6; font-size:0.88rem;">${text}</p>
@@ -1333,16 +1438,8 @@
       const latency = state.metrics.latency || {};
       const q = qualitySummary();
 
-      const defaultLogs = [
-        logRow("10:30:00", "INFO", "Starting DAG keuangan_prodi_lakehouse_dag"),
-        logRow("10:32:10", "SUCCESS", `Quality Gate selesai: ${CONTROL.validRows} baris valid, ${CONTROL.rejectedRows} baris dikarantina`),
-        logRow("10:35:42", "SUCCESS", "Bronze layer raw ingestion selesai"),
-        logRow("10:42:00", "SUCCESS", `Gold validation PASS: Total piutang ${new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(state.metrics.reconcile?.total_piutang ?? CONTROL.totalPiutang)} dengan ${state.metrics.reconcile?.jumlah_penunggak ?? CONTROL.penunggak} mahasiswa penunggak`),
-        logRow("10:45:12", "INFO", "Superset dashboard assets synchronization requested successfully")
-      ].join("");
-
       const logRows = state.activities.length ? state.activities.slice(0, 8).map(item => {
-        const time = (item.time || "").slice(11, 19) || "10:30:00";
+        const time = (item.time || "").slice(11, 19) || "-";
         const level = String(item.status || "INFO").toUpperCase();
         const text = item.message || item.action || "-";
         let levelClass = "info";
@@ -1350,7 +1447,7 @@
         else if (level.includes("WARN")) levelClass = "warn";
         else if (level.includes("ERR") || level.includes("FAIL")) levelClass = "error";
         return `<div class="terminal-line"><span class="terminal-time">[${time}]</span><span class="terminal-level ${levelClass}">${level}:</span><span class="terminal-text">${text}</span></div>`;
-      }).join("") : defaultLogs;
+      }).join("") : `<div class="terminal-line"><span class="terminal-level info">INFO:</span><span class="terminal-text">Belum ada aktivitas pipeline realtime.</span></div>`;
 
       document.getElementById("page-orkestrasi").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
@@ -1385,7 +1482,7 @@
               ${metric("Last Run", (() => { const lp = latestPipelineActivity(); if (lp) return formatLastRun(lp.time); const m = state.metrics.latency || {}; return m.last_run || "-"; })(), "Waktu pipeline terakhir dieksekusi", "schedule")}
               ${metric("Next Run", "Manual", "Dijalankan lokal sesuai kebutuhan", "event")}
               ${metric("Execution Time", (() => { const raw = latency.pipeline_latency_seconds; return raw ? formatDuration(raw) : "-"; })(), "Durasi run terakhir berdasarkan log Airflow", "timer")}
-              ${metric("DAG Status", (() => { const lp = latestPipelineActivity(); return lp ? String(lp.status || "Success") : "-"; })(), (() => { const lp = latestPipelineActivity(); return lp ? "Status task pipeline terakhir" : "Belum ada eksekusi"; })(), "check_circle")}
+              ${metric("DAG Status", (() => { const lp = latestPipelineActivity(); return lp ? String(lp.status || "-") : "-"; })(), (() => { const lp = latestPipelineActivity(); return lp ? "Status task pipeline terakhir" : "Belum ada eksekusi"; })(), "check_circle")}
               ${metric("DAG Name", "keuangan_prodi_lakehouse", "Airflow", "account_tree")}
             </div>
           </section>
@@ -1462,6 +1559,8 @@
     function renderAnalytics() {
       const submissions = getUATSubmissions();
       const stats = computeUATStats(submissions);
+      const officialUat = state.metrics.uat || {};
+      const officialMatrix = officialUat.status === "completed" ? (state.metrics.uatMatrix?.items || []) : [];
       const distColors = ["#10b981","#0ea5e9","#f59e0b","#f97316","#ef4444"];
 
       const dashboardSection = stats ? `
@@ -1519,11 +1618,21 @@
           <div class="glass-panel" style="margin-top: 0;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <h3 class="section-title" style="color:#0f172a; margin:0;">Superset Integration Status</h3>
-              ${badge(state.services.superset ? "Online" : "Offline", state.services.superset ? "ok" : "error")}
+              ${badge(state.truth?.services?.superset?.status || "unreachable", statusType(state.truth?.services?.superset?.status || "unreachable"))}
             </div>
-            <p class="muted" style="font-size:0.9rem; line-height:1.5; margin-top:0.5rem;">Dashboard analitik piutang UKT Prodi terhubung secara real-time ke dataset <strong>vw_dashboard_piutang_ukt</strong>.</p>
+            <p class="muted" style="font-size:0.9rem; line-height:1.5; margin-top:0.5rem;">Dashboard analitik piutang UKT Prodi hanya dinyatakan tersedia jika artefak dashboard dan layanan Superset tervalidasi.</p>
             <div class="divider"></div>
             <a class="primary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span> Buka Superset Dashboard</a>
+          </div>
+
+          <div class="uat-card">
+            <h3 class="section-title" style="margin-bottom: 1rem;">Matriks UAT Final</h3>
+            <div class="section-grid grid-3" style="margin-bottom:1rem;">
+              ${metric("Rata-rata UAT", officialUat.status === "completed" && has(officialUat.average_score) ? `${officialUat.average_score}/5` : "-", officialUat.message || "Belum ada hasil UAT", "analytics")}
+              ${metric("Persentase UAT", officialUat.status === "completed" && has(officialUat.percentage) ? `${officialUat.percentage}%` : "-", officialUat.source || "Belum ada sumber hasil UAT", "percent")}
+              ${metric("Kategori UAT", officialUat.status === "completed" ? officialUat.category || "-" : officialUat.status || "missing", "Interpretasi skor final", "verified")}
+            </div>
+            ${officialMatrix.length ? uatMatrixTable(officialMatrix) : emptyState("Matriks UAT belum tersedia.", "Jalankan src/metrics/generate_uat.py untuk membuat uat_matrix_summary.json.")}
           </div>
 
           <div class="uat-card">
@@ -1552,7 +1661,7 @@
                 <h4 class="form-label" style="font-size:1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.75rem; margin-bottom:-0.5rem; color:#0f172a;">Evaluasi Kriteria</h4>
                 ${[
                   ["Navigation Facility", "Apakah filter prodi, semester, dan status piutang mudah digunakan?"],
-                  ["Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Gauge Chart, dan tabel mudah dibaca?"],
+                  ["Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Pie Chart, Line Chart, dan Table mudah dibaca?"],
                   ["Data Relevance", "Apakah informasi piutang sesuai dengan kebutuhan pemantauan prodi?"],
                   ["Data Consistency", "Apakah rincian mahasiswa, status kualitas, dan nominal piutang tampil konsisten tanpa duplikasi?"],
                   ["Usefulness in Decision", "Apakah informasi piutang macet membantu prioritas tindak lanjut oleh Kaprodi atau dosen wali?"]
@@ -1625,9 +1734,10 @@
       
       const serviceRows = services.map(service => {
         const online = state.services[service.key];
+        const truthStatus = state.truth?.services?.[service.key]?.status || (online ? "ready" : "unreachable");
         const hostPort = service.hostPort || service.port;
         const containerPort = service.containerPort || service.port;
-        const statusBadge = badge(online ? "Online" : "Offline", online ? "ok" : "error");
+        const statusBadge = badge(truthStatus, statusType(truthStatus));
         return `
           <tr class="hover:bg-gray-50/50">
             <td class="font-mono text-xs font-semibold text-blue-700" style="vertical-align: middle;">${service.name}</td>
@@ -1646,7 +1756,7 @@
       }).join("");
 
       const logRows = state.activities.length ? state.activities.slice(0, 8).map(item => {
-        const time = (item.time || "").slice(11, 19) || "17:00:12";
+        const time = (item.time || "").slice(11, 19) || "-";
         const level = String(item.status || "INFO").toUpperCase();
         const text = item.message || item.action || "-";
         let levelClass = "info";
@@ -1654,16 +1764,11 @@
         else if (level.includes("WARN")) levelClass = "warn";
         else if (level.includes("ERR") || level.includes("FAIL")) levelClass = "error";
         return `<div class="terminal-line"><span class="terminal-time">[${time}]</span><span class="terminal-level ${levelClass}">${level}:</span><span class="terminal-text">${text}</span></div>`;
-      }).join("") : `
-        <div class="terminal-line"><span class="terminal-time">[16:50:12]</span><span class="terminal-level info">INFO:</span><span class="terminal-text">Portal Backend API started successfully on http://localhost:8091</span></div>
-        <div class="terminal-line"><span class="terminal-time">[16:50:15]</span><span class="terminal-level info">INFO:</span><span class="terminal-text">Successfully established connection to Object Storage MinIO on port 9000</span></div>
-        <div class="terminal-line"><span class="terminal-time">[16:50:16]</span><span class="terminal-level info">INFO:</span><span class="terminal-text">Mounting Apache Iceberg metadata catalog from Postgres catalog metastore</span></div>
-        <div class="terminal-line"><span class="terminal-time">[16:51:02]</span><span class="terminal-level warn">WARN:</span><span class="terminal-text">Superset visualization initializing assets. Please await dashboard registration...</span></div>
-        <div class="terminal-line"><span class="terminal-time">[16:52:45]</span><span class="terminal-level success">SUCCESS:</span><span class="terminal-text">Observability metrics and heartbeat tests completed. All services are healthy.</span></div>
-      `;
+      }).join("") : `<div class="terminal-line"><span class="terminal-level info">INFO:</span><span class="terminal-text">Belum ada aktivitas sistem realtime.</span></div>`;
 
-      const onlineCount = Object.entries(state.services || {}).filter(([key, value]) => key !== "portal" && value).length;
-      const totalServices = Object.entries(state.services || {}).filter(([key]) => key !== "portal").length;
+      const serviceTruthEntries = Object.entries(state.truth?.services || {}).filter(([key]) => key !== "portal");
+      const onlineCount = serviceTruthEntries.filter(([, value]) => value.status === "ready").length;
+      const totalServices = serviceTruthEntries.length;
 
       document.getElementById("page-system").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
@@ -1680,30 +1785,30 @@
               },
               {
                 label: "Trino / Iceberg",
-                value: state.services.trino ? "Terhubung" : "Offline",
-                sub: state.services.trino ? "Catalog Iceberg tersinkronisasi (Port 8082)" : "Trino SQL Engine tidak merespons",
-                color: state.services.trino ? "#166534" : "#ba1a1a",
-                bg: state.services.trino ? "#f0fdf4" : "#fff1f2",
-                border: state.services.trino ? "#86efac" : "#fca5a5",
-                icon: state.services.trino ? "hub" : "link_off"
+                value: state.truth?.services?.trino?.status || "unreachable",
+                sub: state.truth?.services?.trino?.message || "Trino SQL Engine belum tervalidasi",
+                color: state.truth?.services?.trino?.status === "ready" ? "#166534" : "#ba1a1a",
+                bg: state.truth?.services?.trino?.status === "ready" ? "#f0fdf4" : "#fff1f2",
+                border: state.truth?.services?.trino?.status === "ready" ? "#86efac" : "#fca5a5",
+                icon: state.truth?.services?.trino?.status === "ready" ? "hub" : "link_off"
               },
               {
                 label: "MinIO Object Storage",
-                value: state.services.minioApi ? "Online" : "Offline",
-                sub: state.services.minioApi ? "Bucket S3 tersedia dan dapat diakses" : "MinIO API tidak merespons",
-                color: state.services.minioApi ? "#166534" : "#ba1a1a",
-                bg: state.services.minioApi ? "#f0fdf4" : "#fff1f2",
-                border: state.services.minioApi ? "#86efac" : "#fca5a5",
-                icon: state.services.minioApi ? "storage" : "storage"
+                value: state.truth?.services?.minioApi?.status || "unreachable",
+                sub: state.truth?.services?.minioApi?.message || "MinIO API belum tervalidasi",
+                color: state.truth?.services?.minioApi?.status === "ready" ? "#166534" : "#ba1a1a",
+                bg: state.truth?.services?.minioApi?.status === "ready" ? "#f0fdf4" : "#fff1f2",
+                border: state.truth?.services?.minioApi?.status === "ready" ? "#86efac" : "#fca5a5",
+                icon: "storage"
               },
               {
                 label: "Portal API Backend",
-                value: state.services.portalBackend ? "200 OK" : "Offline",
-                sub: state.services.portalBackend ? "Backend merespons dengan status sehat" : "Backend API tidak merespons (Port 8091)",
-                color: state.services.portalBackend ? "#0b57d0" : "#ba1a1a",
-                bg: state.services.portalBackend ? "#eff6ff" : "#fff1f2",
-                border: state.services.portalBackend ? "#93c5fd" : "#fca5a5",
-                icon: state.services.portalBackend ? "api" : "cloud_off"
+                value: state.truth?.services?.portalBackend?.status || "unreachable",
+                sub: state.truth?.services?.portalBackend?.message || "Backend API belum tervalidasi",
+                color: state.truth?.services?.portalBackend?.status === "ready" ? "#0b57d0" : "#ba1a1a",
+                bg: state.truth?.services?.portalBackend?.status === "ready" ? "#eff6ff" : "#fff1f2",
+                border: state.truth?.services?.portalBackend?.status === "ready" ? "#93c5fd" : "#fca5a5",
+                icon: state.truth?.services?.portalBackend?.status === "ready" ? "api" : "cloud_off"
               }
             ].map(c => `
               <div style="background:${c.bg}; border:1.5px solid ${c.border}; border-radius:1rem; padding:1.5rem; display:flex; flex-direction:column; gap:0.5rem;">
@@ -1718,8 +1823,8 @@
           </section>
 
           <section class="section-grid grid-3 w-full">
-            ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "Status sample proposal main.pdf")}
-            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "Status dua file transaksi dummy")}
+            ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "Status dokumen PDF aktif")}
+            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "Status dua file transaksi aktif")}
             ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `Status file RAB ${targetLabel()}`)}
           </section>
 
@@ -1756,11 +1861,7 @@
 
           <section class="glass-panel w-full">
             <h3 class="section-title" style="color:#0f172a;">Audit Trail Infrastruktur</h3>
-            ${activityTable([
-              ["26 Mei 2026", "Portal lokal tersedia di port 8090", "Operational", "Portal"],
-              ["26 Mei 2026", "Superset host menggunakan port 8089", "Configured", "Docker Compose"],
-              ["26 Mei 2026", "PostgreSQL metastore memakai database metastore", "Configured", "PostgreSQL"]
-            ])}
+            ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada audit trail realtime.", "Aktivitas upload, pipeline, dan service check akan tampil di sini.")}
           </section>
 
           <section class="terminal-window w-full">
@@ -1782,15 +1883,16 @@
 
     function serviceCard(service) {
       const online = state.services[service.key];
+      const truthStatus = state.truth?.services?.[service.key]?.status || (online ? "ready" : "unreachable");
       const hostPort = service.hostPort || service.port;
       const containerPort = service.containerPort || service.port;
       return `<article class="service-card">
         <div class="service-head">
           <div><h3 class="service-name">${service.name}</h3><p class="muted small" style="margin:.25rem 0 0;">${service.role}</p></div>
-          ${badge(online ? "Online" : "Offline", online ? "ok" : "warn")}
+          ${badge(truthStatus, statusType(truthStatus))}
         </div>
         <dl class="kv">
-          <dt>Uptime</dt><dd>${online ? "Aktif" : "Belum terdeteksi"}</dd>
+          <dt>Status</dt><dd>${truthStatus}</dd>
           <dt>Host Port</dt><dd><code>${hostPort}</code></dd>
           <dt>Container Port</dt><dd><code>${containerPort}</code></dd>
           <dt>URL</dt><dd><code>${service.url}</code></dd>
@@ -1837,6 +1939,7 @@
       renderSystem();
       renderFooterStatus();
       bindCopyButtons();
+      bindRuntimeContextControls();
       bindUploadButtons();
       bindPipelineButtons();
       bindUatSubmit();
@@ -1921,6 +2024,58 @@
       return payload;
     }
 
+    function uatMatrixTable(items) {
+      return `<div class="table-wrap table-wide"><table>
+        <thead><tr><th>Indikator</th><th>Pertanyaan</th><th style="text-align:right;">Skor</th><th style="text-align:right;">Persentase</th><th>Kategori</th><th style="text-align:right;">Responden</th><th>Sumber</th></tr></thead>
+        <tbody>${items.map(item => `<tr>
+          <td><strong>${safe(item.indikator)}</strong></td>
+          <td>${safe(item.pertanyaan)}</td>
+          <td style="text-align:right;">${safe(item.skor_rata_rata)}</td>
+          <td style="text-align:right;">${safe(item.persentase)}%</td>
+          <td>${badge(item.kategori || "-", "ok")}</td>
+          <td style="text-align:right;">${n(item.jumlah_responden || 0)}</td>
+          <td class="muted">${safe(item.sumber_penilaian)}</td>
+        </tr>`).join("")}</tbody>
+      </table></div>`;
+    }
+
+    function runtimeContextPayloadFromForm() {
+      const value = id => document.getElementById(id)?.value?.trim() || "";
+      const payload = {};
+      if (value("ctx-target-tahun-akademik")) payload.target_tahun_akademik = value("ctx-target-tahun-akademik");
+      if (value("ctx-target-tahun-anggaran")) payload.target_tahun_anggaran = value("ctx-target-tahun-anggaran");
+      return payload;
+    }
+
+    function appendRuntimeContext(formData) {
+      Object.entries(runtimeContextPayloadFromForm()).forEach(([key, value]) => {
+        if (value !== "") formData.append(key, value);
+      });
+    }
+
+    function bindRuntimeContextControls() {
+      const button = document.getElementById("saveRuntimeContext");
+      if (button && !button.dataset.bound) {
+        button.dataset.bound = "true";
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          const old = button.innerHTML;
+          button.textContent = "Menyimpan...";
+          try {
+            const result = await apiPost("/api/runtime-context", runtimeContextPayloadFromForm());
+            state.runtimeConfig = result.context;
+            showToast("Konteks periode disimpan");
+            await loadState();
+          } catch (error) {
+            showToast(error.message);
+          } finally {
+            button.disabled = false;
+            button.innerHTML = old;
+          }
+        });
+      }
+    }
+
     function tablePayloadToObjects(payload) {
       if (!payload || !payload.available || !Array.isArray(payload.columns)) return [];
       return payload.rows.map(row => Object.fromEntries(payload.columns.map((column, index) => [column, row[index]])));
@@ -1942,21 +2097,35 @@
             return;
           }
           const formData = new FormData();
-          formData.append("file", input.files[0]);
+          appendRuntimeContext(formData);
+          Array.from(input.files).forEach(file => formData.append("file", file));
           button.disabled = true;
+          const old = button.innerHTML;
           button.textContent = "Uploading...";
           try {
             const result = await apiPost(`/api/upload/${type}`, formData);
             state.lastAction = `Upload ${type}: ${result.status}`;
-            showToast(`Upload ${type} berhasil`);
+            if (result.context) state.runtimeConfig = result.context;
+            const count = result.files?.length || input.files.length;
+            showToast(`Upload ${type} berhasil (${count} file)`);
+            input.value = "";
+            const filename = document.getElementById(`filename-${type}`);
+            if (filename) {
+              filename.textContent = "Belum ada file dipilih";
+              filename.style.color = "";
+            }
             await loadState();
           } catch (error) {
             showToast(error.message);
             button.disabled = false;
-            button.innerHTML = `<span class="material-symbols-outlined">upload_file</span>Upload dummy`;
+            button.innerHTML = old;
           }
         });
       });
+    }
+
+    function hasPendingUploadSelection() {
+      return Array.from(document.querySelectorAll("input[type='file']")).some(input => input.files && input.files.length > 0);
     }
 
     function bindPipelineButtons() {
@@ -2002,7 +2171,7 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary, runtimeConfig] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary, runtimeConfig, scenarios, truth] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -2013,27 +2182,38 @@
           apiGet("/api/data/source-status").catch(() => null),
           apiGet("/api/pdf/sample-status").catch(() => null),
           apiGet("/api/reference/summary").catch(() => null),
-          apiGet("/api/runtime-config").catch(() => null)
+          apiGet("/api/runtime-config").catch(() => null),
+          apiGet("/api/upload/scenarios").catch(() => null),
+          apiGet("/api/system-truth/status").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
+        state.truth = truth || metrics.raw?.truth || lakehouse.truth || null;
         state.metrics.runtime_config = metrics.runtime_config;
-        state.metrics.qualityGate = state.metrics.qualityGate || metrics.quality_gate;
-        state.metrics.reconcile = state.metrics.reconcile || metrics.control_total;
-        state.metrics.uat = state.metrics.uat || {};
+        state.metrics.qualityGate = metrics.quality_gate || {};
+        state.metrics.reconcile = metrics.control_total || null;
+        state.metrics.quality = { data_quality_score: metrics.data_quality_score };
+        state.metrics.latency = metrics.pipeline_latency_raw || state.metrics.latency || {};
+        state.metrics.freshness = metrics.data_freshness_raw || state.metrics.freshness || {};
+        state.metrics.uat = state.truth?.uat || {};
+        state.metrics.uatMatrix = state.truth?.uat?.matrix || null;
         state.services = serviceListToMap(services);
         state.activities = activity.activities || [];
+        state.lakehouse = lakehouse;
+        state.storageManifest = state.truth?.storage?.manifest || lakehouse.storage?.manifest || state.metrics.storageManifest || null;
+        const storageLayers = state.storageManifest?.layers || {};
+        const truthLayers = state.truth?.layers || {};
         state.layers = {
-          bronzeReady: lakehouse.bronze?.status === "ready",
-          silverReady: lakehouse.silver?.status === "ready",
-          goldReady: lakehouse.gold?.status === "ready",
-          goldValid: Boolean(lakehouse.gold?.valid)
+          rawReady: truthLayers.raw?.status === "ready",
+          bronzeReady: truthLayers.bronze?.status === "ready",
+          silverReady: truthLayers.silver?.status === "ready",
+          goldReady: truthLayers.gold?.status === "ready",
+          quarantineReady: truthLayers.quarantine?.status === "ready",
+          metricsReady: truthLayers.metrics?.status === "ready",
+          reportsReady: truthLayers.reports?.status === "ready",
+          icebergWarehouseConfigured: storageLayers.iceberg_warehouse?.status === "configured",
+          goldValid: state.truth?.reconciliation?.status === "validated"
         };
-        const hasMetrics = Boolean(metrics.available);
-        if (!state.layers.goldReady) state.dashboardStatus = "Waiting for Gold";
-        else if (!hasMetrics) state.dashboardStatus = "Waiting for Metrics";
-        else if (!state.services.superset) state.dashboardStatus = "Superset Offline";
-        else if (!state.layers.goldValid) state.dashboardStatus = "Validation Failed";
-        else state.dashboardStatus = "Ready";
+        state.dashboardStatus = state.truth?.dashboard?.status || "not_started";
         state.rejectedRows = tablePayloadToObjects(rejected);
         state.goldPreview = tablePayloadToObjects(goldPreview);
         state.silverPreview = tablePayloadToObjects(silverPreview);
@@ -2041,19 +2221,18 @@
         state.pdfStatus = pdfStatus;
         state.referenceSummary = referenceSummary;
         state.runtimeConfig = runtimeConfig || metrics.runtime_config || null;
+        state.scenarios = scenarios?.scenarios || [];
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });
           if (!response.ok) throw new Error("Fallback API unavailable");
           Object.assign(state, await response.json());
         } catch {
-          state.metrics = {
-            reconcile: { total_piutang: CONTROL.totalPiutang, jumlah_penunggak: CONTROL.penunggak, target_total_piutang: CONTROL.totalPiutang, target_jumlah_penunggak: CONTROL.penunggak, status: "pass" },
-            quality: { data_quality_score: CONTROL.qualityScore },
-            dropout: { total_rows: CONTROL.totalRows, valid_rows: CONTROL.validRows, rejected_rows: CONTROL.rejectedRows, dropout_rate: CONTROL.dropoutRate },
-            uat: { average_score: 4.6, category: "Sangat baik", response_count: 15 }
-          };
-          state.layers = { bronzeReady: false, silverReady: false, goldReady: false, goldValid: true };
+          state.metrics = {};
+          state.lakehouse = null;
+          state.storageManifest = null;
+          state.truth = null;
+          state.layers = { bronzeReady: false, silverReady: false, goldReady: false, goldValid: false };
           state.services = { portal: true, airflow: false, superset: false, minioConsole: false, minioApi: false, sparkMaster: false, sparkWorker: false, trino: false, postgres: false };
         }
       }
@@ -2065,6 +2244,9 @@
     window.addEventListener("hashchange", setRoute);
     setRoute();
     loadState();
+    window.setInterval(() => {
+      if (!hasPendingUploadSelection()) loadState();
+    }, 15000);
   </script>
   <script type="text/javascript">
     const dict = {

@@ -7,6 +7,8 @@ from typing import Any
 
 import requests
 
+from src.status.system_truth_status import build_system_truth_status
+
 
 def tcp_online(host: str, port: int, timeout: float = 0.25) -> bool:
     try:
@@ -25,6 +27,8 @@ def http_online(url: str, timeout: float = 0.25) -> bool:
 
 
 def service_statuses() -> dict[str, list[dict[str, Any]]]:
+    truth = build_system_truth_status(write_outputs=True)
+    truth_services = truth.get("services", {})
     definitions = [
         {"key": "portal", "name": "Portal Keuangan", "role": "Portal Lokal", "port": 8090, "url": f"http://{os.getenv('PORTAL_HOST', 'localhost')}:{os.getenv('PORTAL_PORT', '8090')}", "kind": "http"},
         {"key": "portalBackend", "name": "Portal Backend API", "role": "Local API", "port": 8091, "url": f"http://{os.getenv('PORTAL_BACKEND_HOST', 'localhost')}:{os.getenv('PORTAL_BACKEND_PORT', '8091')}/api/health", "kind": "http"},
@@ -58,6 +62,14 @@ def service_statuses() -> dict[str, list[dict[str, Any]]]:
                 services_by_key[key] = {**original, "status": "unknown"}
 
     services = [services_by_key[service["key"]] for service in definitions]
+    for service in services:
+        truth_item = truth_services.get(service["key"])
+        if truth_item:
+            service["truth_status"] = truth_item.get("status")
+            service["status"] = "online" if truth_item.get("status") == "ready" else "offline"
+            service["message"] = truth_item.get("message")
+    if "docker" in truth_services:
+        services.append({"key": "docker", "name": "Docker Engine", "role": "Container Runtime", "status": "online" if truth_services["docker"].get("status") == "ready" else "offline", "truth_status": truth_services["docker"].get("status"), "message": truth_services["docker"].get("message")})
     return {"services": services}
 
 

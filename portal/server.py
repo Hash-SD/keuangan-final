@@ -9,10 +9,14 @@ import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib import error as urlerror
+from urllib import request as urlrequest
 
 
 HOST = os.getenv("PORTAL_HOST", "localhost")
 PORT = int(os.getenv("PORTAL_PORT", "8090"))
+BACKEND_HOST = os.getenv("PORTAL_BACKEND_HOST", "localhost")
+BACKEND_PORT = int(os.getenv("PORTAL_BACKEND_PORT", "8091"))
 PORTAL_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PORTAL_DIR.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -129,6 +133,9 @@ class PortalHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/portal-state":
             self.send_json(portal_state())
             return
+        if parsed.path.startswith("/api/"):
+            self.proxy_to_backend("GET")
+            return
         if parsed.path in {"/", "/index.html"}:
             self.send_file(PORTAL_DIR / "index.html")
             return
@@ -138,9 +145,57 @@ class PortalHandler(BaseHTTPRequestHandler):
             return
         self.send_error(404)
 
-    def send_json(self, payload):
+    def do_POST(self):  # noqa: N802
+        parsed = urlparse(self.path)
+        if parsed.path.startswith("/api/"):
+            self.proxy_to_backend("POST")
+            return
+        self.send_error(405)
+
+    def proxy_to_backend(self, method: str):
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        body = self.rfile.read(length) if length else None
+        backend_url = f"http://{BACKEND_HOST}:{BACKEND_PORT}{self.path}"
+        headers = {}
+        for name in ("Accept", "Content-Type", "Authorization"):
+            value = self.headers.get(name)
+            if value:
+                headers[name] = value
+
+        req = urlrequest.Request(backend_url, data=body, headers=headers, method=method)
+        try:
+            with urlrequest.urlopen(req, timeout=30) as response:  # noqa: S310 - local backend proxy
+                response_body = response.read()
+                self.send_response(response.status)
+                self.forward_backend_headers(response.headers, len(response_body))
+                self.end_headers()
+                self.wfile.write(response_body)
+        except urlerror.HTTPError as exc:
+            response_body = exc.read()
+            self.send_response(exc.code)
+            self.forward_backend_headers(exc.headers, len(response_body))
+            self.end_headers()
+            self.wfile.write(response_body)
+        except OSError as exc:
+            self.send_json(
+                {
+                    "error": "portal_backend_unreachable",
+                    "message": f"Portal backend tidak bisa dihubungi di {BACKEND_HOST}:{BACKEND_PORT}",
+                    "detail": str(exc),
+                },
+                status=502,
+            )
+
+    def forward_backend_headers(self, headers, content_length: int):
+        skip = {"connection", "content-length", "date", "server", "transfer-encoding"}
+        for name, value in headers.items():
+            if name.lower() not in skip:
+                self.send_header(name, value)
+        self.send_header("Content-Length", str(content_length))
+
+    def send_json(self, payload, status: int = 200):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-        self.send_response(200)
+        self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()

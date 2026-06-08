@@ -1,9 +1,17 @@
 from pathlib import Path
 
+import json
 import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def active_context():
+    path = ROOT / "outputs" / "reports" / "active_runtime_context.json"
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def test_piutang_sains_data_control_total():
@@ -23,11 +31,17 @@ def test_csv_transactions_shape_and_invalid_rate():
     invalid_tanggal = pd.to_datetime(df["tanggal"], errors="coerce").isna()
     invalid_status = ~df["status_bayar"].isin(["paid", "partial", "unpaid", "failed"])
     invalid = invalid_nim | invalid_nominal | invalid_tanggal | invalid_status
-    assert len(df) == 800
-    assert 0.01 <= invalid.mean() <= 0.03
+    context = active_context()
+    expected_rows = context.get("dummy_transaction_rows", 800)
+    expected_invalid = context.get("dummy_invalid_rows")
+    assert len(df) == expected_rows
+    if expected_invalid is None:
+        assert 0.01 <= invalid.mean() <= 0.03
+    else:
+        assert int(invalid.sum()) == expected_invalid
 
 
 def test_rab_control_total():
     rab = pd.read_excel(ROOT / "data" / "raw" / "excel" / "rab_prodi_sains_data.xlsx", sheet_name="RAB")
-    assert int(rab["total_pagu"].sum()) == 150_000_000
-
+    expected_pagu = active_context().get("target_total_pagu_rab", 150_000_000)
+    assert int(rab["total_pagu"].sum()) == expected_pagu

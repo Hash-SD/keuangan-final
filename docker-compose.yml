@@ -131,6 +131,12 @@ services:
       PORTAL_SAMPLE_PDF_FILENAME: ${PORTAL_SAMPLE_PDF_FILENAME:-}
       PORTAL_RAB_FILENAME: ${PORTAL_RAB_FILENAME:-}
       PORTAL_SILVER_RAB_FILENAME: ${PORTAL_SILVER_RAB_FILENAME:-}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-lakehouse}
+      MINIO_SECURE: ${MINIO_SECURE:-false}
+      MINIO_UPLOAD_ENABLED: ${MINIO_UPLOAD_ENABLED:-false}
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
       - ./dags:/opt/airflow/dags
@@ -173,6 +179,12 @@ services:
       PORTAL_SAMPLE_PDF_FILENAME: ${PORTAL_SAMPLE_PDF_FILENAME:-}
       PORTAL_RAB_FILENAME: ${PORTAL_RAB_FILENAME:-}
       PORTAL_SILVER_RAB_FILENAME: ${PORTAL_SILVER_RAB_FILENAME:-}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-lakehouse}
+      MINIO_SECURE: ${MINIO_SECURE:-false}
+      MINIO_UPLOAD_ENABLED: ${MINIO_UPLOAD_ENABLED:-false}
     user: "${AIRFLOW_UID:-50000}:0"
     ports:
       - "8085:8080"
@@ -221,6 +233,12 @@ services:
       PORTAL_SAMPLE_PDF_FILENAME: ${PORTAL_SAMPLE_PDF_FILENAME:-}
       PORTAL_RAB_FILENAME: ${PORTAL_RAB_FILENAME:-}
       PORTAL_SILVER_RAB_FILENAME: ${PORTAL_SILVER_RAB_FILENAME:-}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-lakehouse}
+      MINIO_SECURE: ${MINIO_SECURE:-false}
+      MINIO_UPLOAD_ENABLED: ${MINIO_UPLOAD_ENABLED:-false}
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
       - ./dags:/opt/airflow/dags
@@ -346,6 +364,12 @@ services:
       TRINO_PORT: 8080
       POSTGRES_HOST: postgres-metastore
       POSTGRES_PORT: 5432
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-lakehouse}
+      MINIO_SECURE: ${MINIO_SECURE:-false}
+      MINIO_UPLOAD_ENABLED: ${MINIO_UPLOAD_ENABLED:-false}
     ports:
       - "8091:8091"
     volumes:
