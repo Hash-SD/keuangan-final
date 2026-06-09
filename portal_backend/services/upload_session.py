@@ -629,6 +629,7 @@ def _write_post_commit_truth(session: dict[str, Any]) -> None:
         "dataset_mode": "uploaded",
         "upload_session": {"session_id": session["session_id"], "status": "committed"},
         "layers": {
+            "staging": {"status": "committed", "message": "Staging session sudah di-commit ke Raw Layer."},
             "raw": {"status": "ready", "message": "Raw layer berisi sesi upload committed."},
             "quality_gate": {"status": "not_started", "message": "Quality Gate belum dijalankan."},
             "bronze": {"status": "not_started", "message": "Bronze belum tersedia."},

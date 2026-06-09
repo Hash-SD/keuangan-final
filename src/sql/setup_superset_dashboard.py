@@ -12,8 +12,9 @@ import requests
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
-from src.common.paths import OUTPUTS_DIR
+from src.common.paths import GENERATED_DIR, OUTPUTS_DIR
 from src.common.runtime_config import get_runtime_config
+from src.common.runtime_paths import active_period_metadata
 
 
 BASE_URL = os.getenv("SUPERSET_BASE_URL", "http://localhost:8089")
@@ -21,6 +22,8 @@ PUBLIC_BASE_URL = os.getenv("SUPERSET_PUBLIC_URL", "http://localhost:8089")
 DASHBOARD_TITLE = "Dashboard Piutang UKT Multi Tahun Prodi"
 DASHBOARD_SLUG = "dashboard-piutang-ukt-prodi"
 MANAGED_STATIC_CHART_NAMES = {
+    "Total Piutang UKT",
+    "Jumlah Mahasiswa Penunggak",
     "Total Piutang UKT Multi Tahun",
     "Jumlah Mahasiswa Penunggak Multi Tahun",
     "Piutang UKT per Tahun Akademik",
@@ -198,7 +201,6 @@ def _delete_test_assets(session: requests.Session) -> None:
 
 
 def _upsert_dashboard(session: requests.Session, chart_ids: list[int]) -> int:
-    config = get_runtime_config()
     dashboards = _get_items(session, "dashboard")
     matches = [item for item in dashboards if item.get("slug") == DASHBOARD_SLUG or item.get("dashboard_title") == DASHBOARD_TITLE]
     matches.sort(key=lambda item: int(item["id"]))
@@ -219,7 +221,7 @@ def _upsert_dashboard(session: requests.Session, chart_ids: list[int]) -> int:
                 "color_scheme": "supersetColors",
                 "native_filter_configuration": _native_filter_configuration(
                     dataset_id=_dashboard_dataset_id(chart_ids),
-                    default_prodi=config.target_prodi,
+                    defaults=_runtime_filter_defaults(),
                 ),
             }
         ),
@@ -253,28 +255,35 @@ def _dashboard_dataset_id(chart_ids: list[int]) -> int | None:
     return json.loads(asset_path.read_text(encoding="utf-8")).get("dataset_id")
 
 
-def _native_filter_configuration(dataset_id: int | None, default_prodi: str | None = None) -> list[dict[str, Any]]:
-    def native_filter(filter_id: str, name: str, column: str, default_values: list[str] | None = None) -> dict[str, Any]:
-        default_values = default_values or []
-        extra_form_data: dict[str, Any] = {}
-        if default_values:
-            extra_form_data = {
+def _native_filter_configuration(dataset_id: int | None, defaults: dict[str, list[Any]] | None = None) -> list[dict[str, Any]]:
+    defaults = defaults or {}
+
+    def default_data_mask(column: str) -> dict[str, Any]:
+        values = defaults.get(column) or []
+        if not values:
+            return {"extraFormData": {}, "filterState": {"value": None}}
+        return {
+            "extraFormData": {
                 "adhoc_filters": [
                     {
                         "clause": "WHERE",
-                        "comparator": default_values,
+                        "comparator": values,
                         "expressionType": "SIMPLE",
                         "operator": "IN",
                         "subject": column,
                     }
                 ]
-            }
+            },
+            "filterState": {"value": values},
+        }
+
+    def native_filter(filter_id: str, name: str, column: str) -> dict[str, Any]:
         return {
             "id": filter_id,
             "name": name,
             "filterType": "filter_select",
             "targets": [{"datasetId": dataset_id, "column": {"name": column}}],
-            "defaultDataMask": {"extraFormData": extra_form_data, "filterState": {"value": default_values}},
+            "defaultDataMask": default_data_mask(column),
             "cascadeParentIds": [],
             "scope": {"rootPath": ["ROOT_ID"], "excluded": []},
             "type": "NATIVE_FILTER",
@@ -286,10 +295,120 @@ def _native_filter_configuration(dataset_id: int | None, default_prodi: str | No
         native_filter("native_filter_tahun_akademik", "Tahun Akademik", "tahun_akademik"),
         native_filter("native_filter_tahun_anggaran", "Tahun Anggaran", "tahun_anggaran"),
         native_filter("native_filter_semester", "Semester", "semester"),
-        native_filter("native_filter_prodi", "Program Studi", "nama_prodi", [default_prodi] if default_prodi else []),
+        native_filter("native_filter_prodi", "Program Studi", "nama_prodi"),
         native_filter("native_filter_kualitas", "Kualitas Piutang", "kualitas"),
-        native_filter("native_filter_session", "Upload Session", "dataset_session_id"),
     ]
+
+
+def _available_filter_values() -> dict[str, set[str]]:
+    path = GENERATED_DIR / "gold" / "vw_dashboard_piutang_ukt.csv"
+    values = {
+        "tahun_akademik": set(),
+        "tahun_anggaran": set(),
+        "semester": set(),
+        "nama_prodi": set(),
+        "kualitas": set(),
+    }
+    if not path.exists():
+        return values
+    try:
+        import pandas as pd
+
+        frame = pd.read_csv(path, dtype="string")
+    except Exception:
+        return values
+    for column in values:
+        if column in frame.columns:
+            values[column] = {str(item) for item in frame[column].dropna().unique() if str(item).strip()}
+    return values
+
+
+def _runtime_filter_defaults(available_values: dict[str, set[str]] | None = None) -> dict[str, list[Any]]:
+    config = get_runtime_config()
+    period = active_period_metadata()
+    target_prodi = period.get("target_prodi") or config.target_prodi
+    target_tahun_akademik = period.get("target_tahun_akademik") or config.target_tahun_akademik
+    target_tahun_anggaran = period.get("target_tahun_anggaran") or config.target_tahun_anggaran
+    available_values = available_values if available_values is not None else _available_filter_values()
+    defaults = {"nama_prodi": [target_prodi]}
+    if target_tahun_akademik in available_values.get("tahun_akademik", set()):
+        defaults["tahun_akademik"] = [target_tahun_akademik]
+    if target_tahun_anggaran in available_values.get("tahun_anggaran", set()):
+        defaults["tahun_anggaran"] = [int(target_tahun_anggaran) if target_tahun_anggaran.isdigit() else target_tahun_anggaran]
+    return defaults
+
+
+def _chart_static_locks(chart_payloads: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    locked_columns = {"nama_prodi", "tahun_akademik", "tahun_anggaran"}
+    locks = []
+    for payload in chart_payloads:
+        params = json.loads(payload.get("params") or "{}")
+        context = json.loads(payload.get("query_context") or "{}")
+        for item in params.get("adhoc_filters", []):
+            if item.get("subject") in locked_columns:
+                locks.append({"chart": payload["slice_name"], "location": "params.adhoc_filters", "filter": item})
+        for query in context.get("queries", []):
+            for item in query.get("filters", []):
+                if item.get("col") in locked_columns:
+                    locks.append({"chart": payload["slice_name"], "location": "query_context.filters", "filter": item})
+    return locks
+
+
+def _dashboard_filter_validation(
+    session: requests.Session,
+    dashboard_id: int,
+    dataset_id: int,
+    chart_payloads: list[dict[str, Any]],
+) -> dict[str, Any]:
+    response = session.get(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", timeout=30)
+    response.raise_for_status()
+    result = response.json().get("result", {})
+    metadata = result.get("json_metadata") or "{}"
+    if isinstance(metadata, str):
+        metadata = json.loads(metadata or "{}")
+    filters = metadata.get("native_filter_configuration", [])
+    default_values = {
+        item.get("name"): item.get("defaultDataMask", {}).get("filterState", {}).get("value")
+        for item in filters
+    }
+    default_extra_form_data = {
+        item.get("name"): item.get("defaultDataMask", {}).get("extraFormData", {})
+        for item in filters
+    }
+    excluded_scopes = {item.get("name"): item.get("scope", {}).get("excluded", []) for item in filters}
+    enable_empty_filter = {
+        item.get("name"): item.get("controlValues", {}).get("enableEmptyFilter")
+        for item in filters
+    }
+    static_locks = _chart_static_locks(chart_payloads)
+    unlocked = (
+        bool(filters)
+        and all(value == [] for value in excluded_scopes.values())
+        and all(value is True for value in enable_empty_filter.values())
+        and not static_locks
+    )
+    return {
+        "status": "validated",
+        "superset_api_status": "ready",
+        "dashboard_id": dashboard_id,
+        "dataset_id": dataset_id,
+        "filter_count": len(filters),
+        "filter_columns": [
+            item.get("targets", [{}])[0].get("column", {}).get("name")
+            for item in filters
+        ],
+        "filters_created": [item.get("name") for item in filters],
+        "default_values": default_values,
+        "default_filter": default_values,
+        "default_extra_form_data": default_extra_form_data,
+        "excluded_scopes": excluded_scopes,
+        "enable_empty_filter": enable_empty_filter,
+        "has_static_lock": bool(static_locks),
+        "static_locks": static_locks,
+        "charts_follow_native_filter": not static_locks and all(item.get("scope", {}).get("excluded", []) == [] for item in filters),
+        "unlocked": unlocked,
+        "message": "Native filters memiliki default awal yang bisa dihapus dan tidak ada static chart lock." if unlocked else "Native filter atau chart lock masih perlu diperiksa.",
+    }
 
 
 def _position_json(chart_ids: list[int]) -> dict[str, Any]:
@@ -339,7 +458,7 @@ def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
     return [
         _chart_payload(
             dataset_id,
-            "Total Piutang UKT Multi Tahun",
+            "Total Piutang UKT",
             "big_number_total",
             {
                 "metric": total_piutang,
@@ -351,7 +470,7 @@ def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
         ),
         _chart_payload(
             dataset_id,
-            "Jumlah Mahasiswa Penunggak Multi Tahun",
+            "Jumlah Mahasiswa Penunggak",
             "big_number_total",
             {
                 "metric": jumlah_penunggak,
@@ -363,30 +482,16 @@ def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
         ),
         _chart_payload(
             dataset_id,
-            "Piutang UKT per Tahun Akademik",
-            "echarts_timeseries_bar",
-            {
-                "metrics": [total_piutang],
-                "x_axis": "tahun_akademik",
-                "orientation": "vertical",
-                "show_legend": False,
-                "y_axis_format": ",d",
-                "sort_series_type": "sum",
-            },
-            {"metrics": [total_piutang], "columns": ["tahun_akademik"], "orderby": [["tahun_akademik", True]]},
-        ),
-        _chart_payload(
-            dataset_id,
-            "Tren Piutang per Periode",
+            "Tren Piutang per Semester",
             "echarts_timeseries_line",
             {
                 "metrics": [total_piutang],
-                "x_axis": "periode_key",
+                "x_axis": "semester",
                 "groupby": ["tahun_akademik"],
                 "show_legend": True,
                 "y_axis_format": ",d",
             },
-            {"metrics": [total_piutang], "columns": ["periode_key", "tahun_akademik"], "orderby": [["periode_key", True]]},
+            {"metrics": [total_piutang], "columns": ["semester", "tahun_akademik"], "orderby": [["tahun_akademik", True], ["semester", True]]},
         ),
         _chart_payload(
             dataset_id,
@@ -417,7 +522,7 @@ def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
         ),
         _chart_payload(
             dataset_id,
-            "Rincian Piutang Mahasiswa Multi Tahun",
+            "Rincian Piutang Mahasiswa",
             "table",
             {
                 "all_columns": [
@@ -457,27 +562,51 @@ def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
 
 
 def main() -> None:
-    session = _login()
-    _delete_test_assets(session)
     asset_path = OUTPUTS_DIR / "reports" / "superset_assets.json"
-    if not asset_path.exists():
-        raise FileNotFoundError("Run setup_superset_assets.py before setup_superset_dashboard.py")
-    dataset_id = json.loads(asset_path.read_text(encoding="utf-8"))["dataset_id"]
-    chart_definitions = _chart_definitions(dataset_id)
-    active_names = {payload["slice_name"] for payload in chart_definitions}
-    chart_ids = [_upsert_chart(session, payload) for payload in chart_definitions]
-    _delete_stale_managed_charts(session, chart_ids, active_names)
-    dashboard_id = _upsert_dashboard(session, chart_ids)
+    try:
+        session = _login()
+        _delete_test_assets(session)
+        if not asset_path.exists():
+            raise FileNotFoundError("Run setup_superset_assets.py before setup_superset_dashboard.py")
+        dataset_id = json.loads(asset_path.read_text(encoding="utf-8"))["dataset_id"]
+        chart_definitions = _chart_definitions(dataset_id)
+        active_names = {payload["slice_name"] for payload in chart_definitions}
+        chart_ids = [_upsert_chart(session, payload) for payload in chart_definitions]
+        _delete_stale_managed_charts(session, chart_ids, active_names)
+        dashboard_id = _upsert_dashboard(session, chart_ids)
+        filter_validation = _dashboard_filter_validation(session, dashboard_id, dataset_id, chart_definitions)
+    except requests.RequestException as exc:
+        result = {
+            "status": "unreachable",
+            "superset_api_status": "unreachable",
+            "dashboard_id": None,
+            "dataset_id": None,
+            "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
+            "message": f"Superset unreachable: {exc}",
+        }
+        write_json(OUTPUTS_DIR / "reports" / "superset_dashboard_status.json", result)
+        write_json(OUTPUTS_DIR / "reports" / "superset_filters_validation.json", result)
+        print(result)
+        return
     result = {
+        "status": "validated",
+        "superset_api_status": "ready",
         "dashboard_id": dashboard_id,
+        "dataset_id": dataset_id,
         "dashboard_title": DASHBOARD_TITLE,
         "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
         "chart_ids": chart_ids,
         "chart_count": len(chart_ids),
-        "native_filter_columns": ["tahun_akademik", "tahun_anggaran", "semester", "nama_prodi", "kualitas", "dataset_session_id"],
+        "native_filter_columns": ["tahun_akademik", "tahun_anggaran", "semester", "nama_prodi", "kualitas"],
+        "default_filter": filter_validation["default_filter"],
+        "has_static_lock": filter_validation["has_static_lock"],
+        "charts_follow_native_filter": filter_validation["charts_follow_native_filter"],
+        "native_filters_unlocked": filter_validation["unlocked"],
         "dashboard_context": "multi_year",
     }
     write_json(OUTPUTS_DIR / "reports" / "superset_dashboard.json", result)
+    write_json(OUTPUTS_DIR / "reports" / "superset_dashboard_status.json", result)
+    write_json(OUTPUTS_DIR / "reports" / "superset_filters_validation.json", filter_validation)
     print(result)
 
 

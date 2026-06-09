@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -33,6 +34,7 @@ LAYER_DEFINITIONS: dict[str, dict[str, Any]] = {
     "silver": {"local_path": GENERATED_DIR / "silver", "prefix": "silver", "ready_when": "files"},
     "gold": {"local_path": GENERATED_DIR / "gold", "prefix": "gold", "ready_when": "files"},
     "quarantine": {"local_path": DATA_DIR / "quarantine", "prefix": "quarantine", "ready_when": "exists"},
+    "manifests": {"local_path": OUTPUTS_DIR / "reports", "prefix": "manifests", "ready_when": "exists"},
     "metrics": {"local_path": OUTPUTS_DIR / "metrics", "prefix": "metrics", "ready_when": "files"},
     "reports": {"local_path": OUTPUTS_DIR / "reports", "prefix": "reports", "ready_when": "exists"},
     "iceberg_warehouse": {"local_path": None, "prefix": "warehouse", "ready_when": "configured"},
@@ -78,6 +80,21 @@ def _iter_files(path: Path | None) -> list[Path]:
     if path is None or not path.exists():
         return []
     return sorted(item for item in path.rglob("*") if item.is_file())
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _dataset_session_from_relative(relative_to_layer: str) -> str | None:
+    first = relative_to_layer.split("/", 1)[0]
+    if first.startswith(("upload-", "session-", "dummy-")):
+        return first
+    return None
 
 
 def _layer_status(local_path: Path | None, ready_when: str, file_count: int) -> str:
@@ -158,10 +175,12 @@ def _upload_files(config: StorageConfig, files_by_layer: dict[str, list[dict[str
                 client.upload_file(str(path), config.bucket, object_key)
                 uploaded += 1
                 file_item["storage_status"] = "uploaded"
+                file_item["status"] = "uploaded"
                 file_item["s3_uri"] = f"s3://{config.bucket}/{object_key}"
             except Exception as exc:
                 failed += 1
                 file_item["storage_status"] = "mapped"
+                file_item["status"] = "mapped"
                 errors.append(f"{object_key}: {exc}")
 
     return {
@@ -186,14 +205,23 @@ def _manifest_payload(config: StorageConfig, mapping: dict[str, Any]) -> dict[st
             size = path.stat().st_size
             total_size += size
             relative_to_layer = path.relative_to(local_path).as_posix() if local_path else path.name
+            object_path = f"{definition['prefix']}/{relative_to_layer}"
             file_items.append(
                 {
+                    "dataset_session_id": _dataset_session_from_relative(relative_to_layer),
+                    "batch_id": configured_batch_id(),
+                    "layer": layer,
+                    "object_path": object_path,
+                    "bucket": config.bucket,
+                    "timestamp": utc_now_iso(),
+                    "checksum": _sha256(path),
+                    "status": "mapped",
                     "path": _relative(path),
                     "absolute_path": str(path.resolve()),
                     "relative_to_layer": relative_to_layer,
                     "size_bytes": size,
                     "storage_status": "mapped",
-                    "s3_uri": f"s3://{config.bucket}/{definition['prefix']}/{relative_to_layer}",
+                    "s3_uri": f"s3://{config.bucket}/{object_path}",
                 }
             )
         files_by_layer[layer] = file_items
@@ -219,7 +247,77 @@ def _manifest_payload(config: StorageConfig, mapping: dict[str, Any]) -> dict[st
         "minio_endpoint": config.endpoint,
         "bucket": config.bucket,
         "upload": upload,
+        "lineage": _lineage_payload(config, layer_summaries),
         "layers": layer_summaries,
+    }
+
+
+def _lineage_payload(config: StorageConfig, layer_summaries: dict[str, Any]) -> list[dict[str, Any]]:
+    transitions = [("staging", "raw"), ("raw", "bronze"), ("bronze", "silver"), ("silver", "gold")]
+    lineage = []
+    for source, target in transitions:
+        source_layer = layer_summaries.get(source, {})
+        target_layer = layer_summaries.get(target, {})
+        lineage.append(
+            {
+                "batch_id": configured_batch_id(),
+                "from_layer": source,
+                "to_layer": target,
+                "from_prefix": f"s3://{config.bucket}/{LAYER_DEFINITIONS[source]['prefix']}/",
+                "to_prefix": f"s3://{config.bucket}/{LAYER_DEFINITIONS[target]['prefix']}/",
+                "from_object_count": source_layer.get("file_count", 0),
+                "to_object_count": target_layer.get("file_count", 0),
+                "status": "complete"
+                if source_layer.get("status") in {"ready", "empty"} and target_layer.get("status") in {"ready", "empty"}
+                else "incomplete",
+                "timestamp": utc_now_iso(),
+            }
+        )
+    return lineage
+
+
+def _storage_layers_status(manifest: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "status": "validated",
+        "bucket": manifest["bucket"],
+        "layers": {
+            layer: {
+                "status": item.get("status"),
+                "storage_status": item.get("storage_status"),
+                "object_count": item.get("file_count", 0),
+                "s3_prefix": item.get("s3_prefix"),
+                "sample_objects": [
+                    {
+                        "object_path": obj.get("object_path"),
+                        "checksum": obj.get("checksum"),
+                        "status": obj.get("status"),
+                    }
+                    for obj in item.get("files", [])[:3]
+                ],
+            }
+            for layer, item in manifest["layers"].items()
+        },
+        "manifest_status": "present",
+        "lineage_status": "complete" if all(item["status"] == "complete" for item in manifest["lineage"]) else "incomplete",
+        "generated_at": manifest["generated_at"],
+    }
+
+
+def _minio_storage_validation(manifest: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "status": manifest["upload"]["status"] if manifest["upload"]["enabled"] else "mapped",
+        "minio_status": manifest["upload"]["status"],
+        "bucket": manifest["bucket"],
+        "endpoint": manifest["minio_endpoint"],
+        "layers": list(manifest["layers"].keys()),
+        "object_count_by_layer": {layer: item.get("file_count", 0) for layer, item in manifest["layers"].items()},
+        "manifest_status": "present",
+        "lineage_status": "complete" if all(item["status"] == "complete" for item in manifest["lineage"]) else "incomplete",
+        "object_sample_by_layer": {
+            layer: [obj.get("object_path") for obj in item.get("files", [])[:3]]
+            for layer, item in manifest["layers"].items()
+        },
+        "generated_at": manifest["generated_at"],
     }
 
 
@@ -285,6 +383,8 @@ def generate_storage_manifest() -> dict[str, Any]:
     manifest = _manifest_payload(config, mapping)
     write_json(OUTPUTS_DIR / "reports" / "storage_mapping.json", mapping)
     write_json(OUTPUTS_DIR / "reports" / "storage_manifest.json", manifest)
+    write_json(OUTPUTS_DIR / "reports" / "storage_layers_status.json", _storage_layers_status(manifest))
+    write_json(OUTPUTS_DIR / "reports" / "minio_storage_validation.json", _minio_storage_validation(manifest))
     write_json(OUTPUTS_DIR / "reports" / "bab4_evidence_summary.json", _evidence_summary(manifest))
     build_system_truth_status(write_outputs=True)
     return manifest

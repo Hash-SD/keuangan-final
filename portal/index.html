@@ -1571,6 +1571,8 @@
       document.getElementById("page-lakehouse").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid grid-3">
+            ${layerCard("Staging Layer", "upload_file", "Upload sementara sebelum commit ke Raw Layer.", state.truth?.layers?.staging?.status || "missing", "#0284c7")}
+            ${layerCard("Raw Layer", "description", "File sumber committed sebelum ingestion.", state.truth?.layers?.raw?.status || "missing", "#64748b")}
             ${layerCard("Bronze Layer", "database", "Raw Ingestion - Menyimpan berkas sumber data keuangan mentah ke S3/MinIO.", state.truth?.layers?.bronze?.status || "missing", "#b45309")}
             ${layerCard("Silver Layer", "filter_alt", "Cleaned & Conformed - Data piutang dan RAB hasil pembersihan, standardisasi, serta validasi.", state.truth?.layers?.silver?.status || "missing", "#64748b")}
             ${layerCard("Gold Layer", "stars", "Analytical Data Mart - Star schema teroptimasi untuk query analitis dan visualisasi Superset.", state.truth?.layers?.gold?.status || "missing", "#ca8a04")}
@@ -1620,7 +1622,7 @@
     }
 
     function storageLayerTable(layers) {
-      const order = ["raw", "bronze", "silver", "gold", "quarantine", "metrics", "reports", "iceberg_warehouse"];
+      const order = ["staging", "raw", "bronze", "silver", "gold", "quarantine", "manifests", "metrics", "reports", "iceberg_warehouse"];
       const rows = order.filter(name => layers[name]).map(name => {
         const item = layers[name];
         const ready = ["ready", "configured"].includes(String(item.status || "").toLowerCase());

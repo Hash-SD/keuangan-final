@@ -90,12 +90,17 @@ def silver_rab_path() -> Path:
 
 def active_period_metadata() -> dict[str, str]:
     config = get_runtime_config()
+    pointer = active_dataset_pointer() or {}
+    target_prodi = pointer.get("target_prodi") or config.target_prodi
+    target_fakultas = pointer.get("target_fakultas") or config.target_fakultas
+    target_tahun_akademik = pointer.get("tahun_akademik") or config.target_tahun_akademik
+    target_tahun_anggaran = pointer.get("tahun_anggaran") or config.target_tahun_anggaran
     return {
-        "target_prodi": config.target_prodi,
-        "target_fakultas": config.target_fakultas,
-        "target_tahun_akademik": config.target_tahun_akademik,
-        "target_tahun_anggaran": config.target_tahun_anggaran,
-        "target_label": config.target_label,
-        "batch_id": config.batch_id,
+        "target_prodi": target_prodi,
+        "target_fakultas": target_fakultas,
+        "target_tahun_akademik": target_tahun_akademik,
+        "target_tahun_anggaran": target_tahun_anggaran,
+        "target_label": pointer.get("target_label") or f"{target_prodi} - Tahun Akademik {target_tahun_akademik}",
+        "batch_id": pointer.get("batch_id") or config.batch_id,
         "source_event": config.source_event_iso,
     }

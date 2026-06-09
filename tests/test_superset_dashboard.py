@@ -10,13 +10,14 @@ def test_superset_chart_definitions_are_multi_year_and_unique(monkeypatch):
     definitions = dashboard._chart_definitions(dataset_id=42)
     chart_names = [item["slice_name"] for item in definitions]
 
-    assert len(chart_names) == 7
+    assert len(chart_names) == 6
     assert len(chart_names) == len(set(chart_names))
-    assert "Total Piutang UKT Multi Tahun" in chart_names
-    assert "Jumlah Mahasiswa Penunggak Multi Tahun" in chart_names
-    assert "Piutang UKT per Tahun Akademik" in chart_names
-    assert "Tren Piutang per Periode" in chart_names
-    assert "Rincian Piutang Mahasiswa Multi Tahun" in chart_names
+    assert "Total Piutang UKT" in chart_names
+    assert "Jumlah Mahasiswa Penunggak" in chart_names
+    assert "Piutang UKT per Prodi" in chart_names
+    assert "Distribusi Kualitas Piutang" in chart_names
+    assert "Tren Piutang per Semester" in chart_names
+    assert "Rincian Piutang Mahasiswa" in chart_names
 
     query_contexts = [json.loads(item["query_context"]) for item in definitions]
     query_filters = [query.get("filters", []) for ctx in query_contexts for query in ctx["queries"]]
@@ -36,9 +37,11 @@ def test_superset_stale_period_charts_are_managed(monkeypatch):
 
 
 def test_superset_native_filters_cover_multi_year_context():
-    filters = dashboard._native_filter_configuration(dataset_id=42, default_prodi="Sains Data")
+    filters = dashboard._native_filter_configuration(dataset_id=42, defaults={"nama_prodi": ["Sains Data"]})
     columns = [item["targets"][0]["column"]["name"] for item in filters]
 
-    assert columns == ["tahun_akademik", "tahun_anggaran", "semester", "nama_prodi", "kualitas", "dataset_session_id"]
+    assert columns == ["tahun_akademik", "tahun_anggaran", "semester", "nama_prodi", "kualitas"]
     prodi_filter = next(item for item in filters if item["id"] == "native_filter_prodi")
     assert prodi_filter["defaultDataMask"]["filterState"]["value"] == ["Sains Data"]
+    assert all(item["scope"]["excluded"] == [] for item in filters)
+    assert all(item["controlValues"]["enableEmptyFilter"] is True for item in filters)

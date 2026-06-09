@@ -40,6 +40,7 @@ ALLOWED_STATUSES = {
     "inconsistent",
     "skipped",
     "created",
+    "committed",
     "configured_unreachable",
     "completed",
 }
@@ -163,6 +164,7 @@ def _layer_status(base_dir: Path) -> dict[str, Any]:
             base_dir,
         ),
         "quarantine": _artifact_status([base_dir / "data" / "quarantine" / "logs"], base_dir),
+        "manifests": _artifact_status([base_dir / "outputs" / "reports"], base_dir),
         "metrics": _artifact_status([base_dir / "outputs" / "metrics"], base_dir),
         "reports": _artifact_status([base_dir / "outputs" / "reports"], base_dir),
     }

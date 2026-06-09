@@ -16,16 +16,13 @@ export async function resetSession(page: Page) {
 }
 
 export async function openUploadPage(page: Page) {
-  await page.goto("/#/data");
+  await page.goto("/#/data", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Konteks Periode Data" })).toBeVisible();
 }
 
 export async function fillContext(page: Page) {
-  await page.locator("#ctx-target-prodi").fill("Sains Data");
-  await page.locator("#ctx-target-fakultas").fill("Fakultas Sains");
   await page.locator("#ctx-target-tahun-akademik").fill("2025/2026");
   await page.locator("#ctx-target-tahun-anggaran").fill("2026");
-  await page.locator("#ctx-source-event").fill("2026-06-08T00:00:00Z");
   await expect(page.locator("#contextAutosaveStatus")).toContainText(/Tersimpan sementara|Belum lengkap/);
 }
 

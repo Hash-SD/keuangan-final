@@ -12,7 +12,7 @@ def test_storage_manifest_outputs_required_layers(monkeypatch):
     manifest = generate_storage_manifest()
     mapping = json.loads((ROOT / "outputs" / "reports" / "storage_mapping.json").read_text(encoding="utf-8"))
 
-    expected_layers = {"staging", "raw", "bronze", "silver", "gold", "quarantine", "metrics", "reports", "iceberg_warehouse"}
+    expected_layers = {"staging", "raw", "bronze", "silver", "gold", "quarantine", "manifests", "metrics", "reports", "iceberg_warehouse"}
     assert set(mapping["layers"]) == expected_layers
     assert set(manifest["layers"]) == expected_layers
     assert mapping["storage_mode"] == "local_with_minio_mapping"
