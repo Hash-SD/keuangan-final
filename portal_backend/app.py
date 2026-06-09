@@ -320,8 +320,8 @@ def create_app() -> Flask:
 
     @app.post("/api/uat/submit")
     def uat_submit():
-        append_activity("uat_submit", "analytics", "success", "UAT dummy submission received.", "outputs/uat")
-        return jsonify({"status": "success", "message": "UAT dummy diterima untuk sesi lokal."})
+        append_activity("uat_submit", "analytics", "success", "Simulasi UAT dummy diterima; bukan hasil UAT final.", "outputs/uat")
+        return jsonify({"status": "success", "message": "Simulasi UAT dummy diterima untuk sesi lokal; bukan hasil UAT final."})
 
     return app
 

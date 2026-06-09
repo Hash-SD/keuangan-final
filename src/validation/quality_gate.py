@@ -60,9 +60,18 @@ def validate_transactions() -> dict:
     rejected_rows = []
     valid_frames = []
     total_rows = 0
+    generated_batch_id_sources = []
     for csv_path in csv_paths:
         df = pd.read_csv(csv_path, dtype="string")
         total_rows += len(df)
+        if "batch_id" not in df.columns:
+            df["batch_id"] = batch_id
+            generated_batch_id_sources.append(csv_path.name)
+        else:
+            blank_batch_id = df["batch_id"].isna() | (df["batch_id"].astype("string").str.len() == 0)
+            if blank_batch_id.any():
+                df.loc[blank_batch_id, "batch_id"] = batch_id
+                generated_batch_id_sources.append(csv_path.name)
         missing_columns = [column for column in REQUIRED_TRANSACTION_COLUMNS if column not in df.columns]
         if missing_columns:
             raise ValueError(f"Kolom transaksi tidak lengkap pada {csv_path.name}: {', '.join(missing_columns)}")
@@ -128,6 +137,8 @@ def validate_transactions() -> dict:
         "target_prodi": config.target_prodi,
         "target_tahun_akademik": config.target_tahun_akademik,
         "target_label": config.target_label,
+        "batch_id_source": "runtime_config_for_missing_values" if generated_batch_id_sources else "source_file",
+        "batch_id_generated_for_files": generated_batch_id_sources,
         "total_rows": total_rows,
         "valid_rows": len(valid),
         "rejected_rows": len(rejected_rows),

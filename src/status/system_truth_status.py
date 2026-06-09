@@ -17,6 +17,7 @@ from src.common.logging_utils import write_json
 from src.common.paths import ROOT_DIR
 from src.common.runtime_config import get_runtime_config
 from src.common.time_utils import utc_now_iso
+from src.metrics.pipeline_latency import compute_pipeline_latency
 
 
 ALLOWED_STATUSES = {
@@ -29,6 +30,7 @@ ALLOWED_STATUSES = {
     "configured",
     "mapped",
     "uploaded",
+    "running",
     "failed",
     "not_available",
     "manual_input_required",
@@ -132,6 +134,7 @@ def _source_status(base_dir: Path) -> dict[str, Any]:
 def _layer_status(base_dir: Path) -> dict[str, Any]:
     generated = base_dir / "data" / "generated"
     return {
+        "staging": _artifact_status([base_dir / "data" / "uploads" / "staging"], base_dir),
         "raw": _artifact_status([base_dir / "data" / "raw"], base_dir),
         "bronze": _artifact_status(
             [
@@ -236,6 +239,25 @@ def _metric_file_status(base_dir: Path, filename: str, keys: list[str]) -> dict[
             for key in keys
         },
         "source": source,
+    }
+
+
+def _pipeline_latency_status(base_dir: Path, write_output: bool = False) -> dict[str, Any]:
+    payload = compute_pipeline_latency(base_dir=base_dir, write_output=write_output)
+    status = "validated" if payload.get("status") == "validated" else "not_started" if payload.get("status") == "missing" else payload.get("status", "running")
+    source = _rel(base_dir / "outputs" / "metrics" / "pipeline_latency.json", base_dir)
+    return {
+        "status": status,
+        "latency_seconds": _value(payload.get("latency_seconds"), status, source, payload.get("message", "Latency dihitung realtime.")),
+        "pipeline_latency_seconds": _value(payload.get("pipeline_latency_seconds"), status, source, payload.get("message", "Latency dihitung realtime.")),
+        "elapsed_seconds": _value(payload.get("elapsed_seconds"), status, source, payload.get("message", "Latency dihitung realtime.")),
+        "source_arrival": payload.get("source_arrival"),
+        "source_basis": payload.get("source_basis"),
+        "gold_ready": payload.get("gold_ready"),
+        "computed_at": payload.get("computed_at"),
+        "upload_session_id": payload.get("upload_session_id"),
+        "source": source,
+        "message": payload.get("message"),
     }
 
 
@@ -547,7 +569,7 @@ def build_system_truth_status(base_dir: Path | str | None = None, write_outputs:
         "quality_gate": _quality_gate_status(base),
         "reconciliation": _reconcile_status(base),
         "metrics": {
-            "pipeline_latency": _metric_file_status(base, "pipeline_latency.json", ["latency_seconds", "pipeline_latency_seconds"]),
+            "pipeline_latency": _pipeline_latency_status(base, write_output=write_outputs),
             "data_freshness": _metric_file_status(base, "data_freshness.json", ["freshness_seconds", "data_freshness_status"]),
             "dropout_rate": _metric_file_status(base, "dropout_rate.json", ["dropout_rate", "total_rows", "valid_rows", "rejected_rows"]),
             "data_quality_score": _metric_file_status(base, "data_quality_score.json", ["data_quality_score", "completeness", "validity", "consistency", "accuracy"]),

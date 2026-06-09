@@ -10,6 +10,14 @@ def _unwrap(item: dict[str, Any] | None) -> Any:
     return item.get("value") if item.get("status") in {"validated", "completed"} else None
 
 
+def _latency_value(latency: dict[str, Any]) -> Any:
+    for key in ["pipeline_latency_seconds", "latency_seconds", "elapsed_seconds"]:
+        item = latency.get(key)
+        if isinstance(item, dict) and item.get("status") in {"validated", "running"}:
+            return item.get("value")
+    return None
+
+
 def _seconds_to_label(seconds: int | float | None) -> str:
     if seconds is None:
         return "-"
@@ -61,7 +69,7 @@ def metrics_payload() -> dict[str, Any]:
             "dropout_rate": _unwrap(quality_gate.get("dropout_rate")),
         },
         "data_quality_score": _unwrap(quality.get("data_quality_score")),
-        "pipeline_latency": _seconds_to_label(_unwrap(latency.get("pipeline_latency_seconds")) or _unwrap(latency.get("latency_seconds"))),
+        "pipeline_latency": _seconds_to_label(_latency_value(latency)),
         "pipeline_latency_raw": latency,
         "data_freshness": "Tersedia" if freshness.get("status") == "validated" else "Belum tersedia",
         "data_freshness_raw": freshness,

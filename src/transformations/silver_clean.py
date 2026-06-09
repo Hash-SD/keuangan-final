@@ -14,6 +14,38 @@ from src.extraction.extract_pdf_piutang import extract_dim_kualitas_piutang, ext
 from src.generators.generate_excel_rab import MONTHS
 
 
+def _session_id(pointer: dict) -> str:
+    return Path(str(pointer.get("session_id") or "dummy")).name or "dummy"
+
+
+def _write_session_and_combined(df: pd.DataFrame, filename: str, session_id: str, key: str = "dataset_session_id") -> Path:
+    layer_dir = GENERATED_DIR / "silver"
+    session_path = layer_dir / session_id / filename
+    combined_path = layer_dir / filename
+    ensure_parent(session_path)
+    ensure_parent(combined_path)
+
+    current = df.copy()
+    if key not in current.columns:
+        current[key] = session_id
+    current[key] = current[key].fillna(session_id).astype(str)
+    current.loc[current[key].str.len() == 0, key] = session_id
+    current.to_csv(session_path, index=False)
+
+    if combined_path.exists():
+        existing = pd.read_csv(combined_path)
+        if key in existing.columns:
+            existing[key] = existing[key].fillna("").astype(str)
+            existing = existing[existing[key] != session_id]
+            combined = current if existing.empty else pd.concat([existing, current], ignore_index=True, sort=False)
+        else:
+            combined = current
+    else:
+        combined = current
+    combined.to_csv(combined_path, index=False)
+    return combined_path
+
+
 def _apply_period_columns(df: pd.DataFrame, pointer: dict, metadata: dict[str, str]) -> pd.DataFrame:
     result = df.copy()
     if "dataset_session_id" not in result.columns or result["dataset_session_id"].isna().all():
@@ -33,6 +65,7 @@ def _apply_period_columns(df: pd.DataFrame, pointer: dict, metadata: dict[str, s
 
 def clean_silver() -> dict:
     pointer = active_dataset_pointer() or {}
+    session_id = _session_id(pointer)
     period_metadata = active_period_metadata()
     extract_master_control_total()
     dim_kualitas = extract_dim_kualitas_piutang()
@@ -40,15 +73,11 @@ def clean_silver() -> dict:
     piutang = _apply_period_columns(piutang, pointer, period_metadata)
     piutang["nominal_piutang_rp"] = pd.to_numeric(piutang["nominal_piutang_rp"], errors="coerce").astype("int64")
     piutang["umur_tunggakan"] = pd.to_numeric(piutang["umur_tunggakan"], errors="coerce").astype("int64")
-    piutang_path = GENERATED_DIR / "silver" / "fact_piutang_ukt_prodi.csv"
-    ensure_parent(piutang_path)
-    piutang.to_csv(piutang_path, index=False)
+    _write_session_and_combined(piutang, "fact_piutang_ukt_prodi.csv", session_id)
 
     trx = pd.read_csv(GENERATED_DIR / "bronze" / "csv_transactions_valid.csv", dtype={"nim": "string"})
     trx = _apply_period_columns(trx, pointer, period_metadata)
-    trx_path = GENERATED_DIR / "silver" / "transactions_clean.csv"
-    ensure_parent(trx_path)
-    trx.to_csv(trx_path, index=False)
+    _write_session_and_combined(trx, "transactions_clean.csv", session_id)
 
     master_ukt = pd.read_csv(GENERATED_DIR / "master_ukt_itera.csv")
     master_spi = pd.read_csv(GENERATED_DIR / "master_spi_itera.csv")
@@ -66,11 +95,14 @@ def clean_silver() -> dict:
     )
     rab_long = _apply_period_columns(rab_long, pointer, period_metadata)
     rab_path = silver_rab_path()
-    ensure_parent(rab_path)
-    rab_long.to_csv(rab_path, index=False)
+    if rab_path.parent == GENERATED_DIR / "silver":
+        _write_session_and_combined(rab_long, rab_path.name, session_id)
+    else:
+        ensure_parent(rab_path)
+        rab_long.to_csv(rab_path, index=False)
     if rab_path.name != "rab_prodi_sains_data_long.csv":
-        rab_long.to_csv(GENERATED_DIR / "silver" / "rab_prodi_sains_data_long.csv", index=False)
-    rab_long.to_csv(GENERATED_DIR / "silver" / "silver_rab.csv", index=False)
+        _write_session_and_combined(rab_long, "rab_prodi_sains_data_long.csv", session_id)
+    _write_session_and_combined(rab_long, "silver_rab.csv", session_id)
     result = {
         "piutang_rows": len(piutang),
         "kualitas_rows": len(dim_kualitas),

@@ -18,12 +18,17 @@ from src.common.runtime_config import get_runtime_config
 
 BASE_URL = os.getenv("SUPERSET_BASE_URL", "http://localhost:8089")
 PUBLIC_BASE_URL = os.getenv("SUPERSET_PUBLIC_URL", "http://localhost:8089")
-DASHBOARD_TITLE = "Dashboard Piutang UKT Prodi"
+DASHBOARD_TITLE = "Dashboard Piutang UKT Multi Tahun Prodi"
 DASHBOARD_SLUG = "dashboard-piutang-ukt-prodi"
 MANAGED_STATIC_CHART_NAMES = {
+    "Total Piutang UKT Multi Tahun",
+    "Jumlah Mahasiswa Penunggak Multi Tahun",
+    "Piutang UKT per Tahun Akademik",
+    "Tren Piutang per Periode",
     "Piutang UKT per Prodi",
     "Distribusi Kualitas Piutang",
     "Tren Piutang per Semester",
+    "Rincian Piutang Mahasiswa Multi Tahun",
     "Rincian Piutang Mahasiswa",
 }
 MANAGED_CONTEXTUAL_CHART_PREFIXES = (
@@ -193,6 +198,7 @@ def _delete_test_assets(session: requests.Session) -> None:
 
 
 def _upsert_dashboard(session: requests.Session, chart_ids: list[int]) -> int:
+    config = get_runtime_config()
     dashboards = _get_items(session, "dashboard")
     matches = [item for item in dashboards if item.get("slug") == DASHBOARD_SLUG or item.get("dashboard_title") == DASHBOARD_TITLE]
     matches.sort(key=lambda item: int(item["id"]))
@@ -211,6 +217,10 @@ def _upsert_dashboard(session: requests.Session, chart_ids: list[int]) -> int:
                 "refresh_frequency": 0,
                 "color_namespace": "superset",
                 "color_scheme": "supersetColors",
+                "native_filter_configuration": _native_filter_configuration(
+                    dataset_id=_dashboard_dataset_id(chart_ids),
+                    default_prodi=config.target_prodi,
+                ),
             }
         ),
     }
@@ -236,8 +246,56 @@ def _upsert_dashboard(session: requests.Session, chart_ids: list[int]) -> int:
     return dashboard_id
 
 
+def _dashboard_dataset_id(chart_ids: list[int]) -> int | None:
+    asset_path = OUTPUTS_DIR / "reports" / "superset_assets.json"
+    if not chart_ids or not asset_path.exists():
+        return None
+    return json.loads(asset_path.read_text(encoding="utf-8")).get("dataset_id")
+
+
+def _native_filter_configuration(dataset_id: int | None, default_prodi: str | None = None) -> list[dict[str, Any]]:
+    def native_filter(filter_id: str, name: str, column: str, default_values: list[str] | None = None) -> dict[str, Any]:
+        default_values = default_values or []
+        extra_form_data: dict[str, Any] = {}
+        if default_values:
+            extra_form_data = {
+                "adhoc_filters": [
+                    {
+                        "clause": "WHERE",
+                        "comparator": default_values,
+                        "expressionType": "SIMPLE",
+                        "operator": "IN",
+                        "subject": column,
+                    }
+                ]
+            }
+        return {
+            "id": filter_id,
+            "name": name,
+            "filterType": "filter_select",
+            "targets": [{"datasetId": dataset_id, "column": {"name": column}}],
+            "defaultDataMask": {"extraFormData": extra_form_data, "filterState": {"value": default_values}},
+            "cascadeParentIds": [],
+            "scope": {"rootPath": ["ROOT_ID"], "excluded": []},
+            "type": "NATIVE_FILTER",
+            "description": "",
+            "controlValues": {"enableEmptyFilter": True, "multiSelect": True, "searchAllOptions": True},
+        }
+
+    return [
+        native_filter("native_filter_tahun_akademik", "Tahun Akademik", "tahun_akademik"),
+        native_filter("native_filter_tahun_anggaran", "Tahun Anggaran", "tahun_anggaran"),
+        native_filter("native_filter_semester", "Semester", "semester"),
+        native_filter("native_filter_prodi", "Program Studi", "nama_prodi", [default_prodi] if default_prodi else []),
+        native_filter("native_filter_kualitas", "Kualitas Piutang", "kualitas"),
+        native_filter("native_filter_session", "Upload Session", "dataset_session_id"),
+    ]
+
+
 def _position_json(chart_ids: list[int]) -> dict[str, Any]:
-    rows = [["CHART-0", "CHART-1"], ["CHART-2", "CHART-3"], ["CHART-4"], ["CHART-5"]]
+    rows: list[list[str]] = []
+    for idx in range(0, len(chart_ids), 2):
+        rows.append([f"CHART-{child}" for child in range(idx, min(idx + 2, len(chart_ids)))])
     layout: dict[str, Any] = {
         "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["GRID_ID"], "meta": {"background": "BACKGROUND_TRANSPARENT"}},
         "GRID_ID": {
@@ -257,7 +315,7 @@ def _position_json(chart_ids: list[int]) -> dict[str, Any]:
         }
         for child in row_children:
             width = 6 if len(row_children) == 2 else 12
-            height = 44 if child != "CHART-5" else 62
+            height = 44 if chart_index < len(chart_ids) - 1 else 62
             layout[child] = {
                 "type": "CHART",
                 "id": child,
@@ -274,45 +332,61 @@ def _position_json(chart_ids: list[int]) -> dict[str, Any]:
 
 
 def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
-    config = get_runtime_config()
-    target_prodi = config.target_prodi
-    target_tahun = config.target_tahun_akademik
     total_piutang = _metric("Total Piutang", "SUM", "nominal_piutang_rp")
     jumlah_penunggak = _metric("Jumlah Penunggak", "COUNT_DISTINCT", "nim")
     count_rows = _metric("Jumlah Baris", "COUNT", "piutang_key")
 
-    target_prodi_filter = _filter("nama_prodi", "==", target_prodi)
-    target_prodi_query_filter = _query_filter("nama_prodi", "==", target_prodi)
-    target_tahun_filter = _filter("tahun_akademik", "==", target_tahun)
-    target_tahun_query_filter = _query_filter("tahun_akademik", "==", target_tahun)
-    target_filters = [target_prodi_filter, target_tahun_filter]
-    target_query_filters = [target_prodi_query_filter, target_tahun_query_filter]
     return [
         _chart_payload(
             dataset_id,
-            f"Total Piutang UKT - {target_prodi} {target_tahun}",
+            "Total Piutang UKT Multi Tahun",
             "big_number_total",
             {
                 "metric": total_piutang,
-                "adhoc_filters": target_filters,
                 "header_font_size": 0.45,
                 "subheader_font_size": 0.16,
                 "y_axis_format": ",d",
             },
-            {"metrics": [total_piutang], "columns": [], "filters": target_query_filters, "orderby": [[total_piutang, False]]},
+            {"metrics": [total_piutang], "columns": [], "orderby": [[total_piutang, False]]},
         ),
         _chart_payload(
             dataset_id,
-            f"Jumlah Mahasiswa Penunggak - {target_prodi} {target_tahun}",
+            "Jumlah Mahasiswa Penunggak Multi Tahun",
             "big_number_total",
             {
                 "metric": jumlah_penunggak,
-                "adhoc_filters": target_filters,
                 "header_font_size": 0.45,
                 "subheader_font_size": 0.16,
                 "y_axis_format": ",d",
             },
-            {"metrics": [jumlah_penunggak], "columns": [], "filters": target_query_filters, "orderby": [[jumlah_penunggak, False]]},
+            {"metrics": [jumlah_penunggak], "columns": [], "orderby": [[jumlah_penunggak, False]]},
+        ),
+        _chart_payload(
+            dataset_id,
+            "Piutang UKT per Tahun Akademik",
+            "echarts_timeseries_bar",
+            {
+                "metrics": [total_piutang],
+                "x_axis": "tahun_akademik",
+                "orientation": "vertical",
+                "show_legend": False,
+                "y_axis_format": ",d",
+                "sort_series_type": "sum",
+            },
+            {"metrics": [total_piutang], "columns": ["tahun_akademik"], "orderby": [["tahun_akademik", True]]},
+        ),
+        _chart_payload(
+            dataset_id,
+            "Tren Piutang per Periode",
+            "echarts_timeseries_line",
+            {
+                "metrics": [total_piutang],
+                "x_axis": "periode_key",
+                "groupby": ["tahun_akademik"],
+                "show_legend": True,
+                "y_axis_format": ",d",
+            },
+            {"metrics": [total_piutang], "columns": ["periode_key", "tahun_akademik"], "orderby": [["periode_key", True]]},
         ),
         _chart_payload(
             dataset_id,
@@ -343,28 +417,38 @@ def _chart_definitions(dataset_id: int) -> list[dict[str, Any]]:
         ),
         _chart_payload(
             dataset_id,
-            "Tren Piutang per Semester",
-            "echarts_timeseries_line",
-            {
-                "metrics": [total_piutang],
-                "x_axis": "semester",
-                "show_legend": False,
-                "y_axis_format": ",d",
-            },
-            {"metrics": [total_piutang], "columns": ["semester"], "orderby": [["semester", True]]},
-        ),
-        _chart_payload(
-            dataset_id,
-            "Rincian Piutang Mahasiswa",
+            "Rincian Piutang Mahasiswa Multi Tahun",
             "table",
             {
-                "all_columns": ["tahun_akademik", "tahun_anggaran", "nama_prodi", "nim", "nama_debitur", "semester", "kualitas", "nominal_piutang_rp"],
+                "all_columns": [
+                    "dataset_session_id",
+                    "tahun_akademik",
+                    "tahun_anggaran",
+                    "semester",
+                    "periode_key",
+                    "nama_prodi",
+                    "nim",
+                    "nama_debitur",
+                    "kualitas",
+                    "nominal_piutang_rp",
+                ],
                 "order_by_cols": ["[\"nominal_piutang_rp\", false]"],
                 "page_length": 25,
                 "table_timestamp_format": "smart_date",
             },
             {
-                "columns": ["tahun_akademik", "tahun_anggaran", "nama_prodi", "nim", "nama_debitur", "semester", "kualitas", "nominal_piutang_rp"],
+                "columns": [
+                    "dataset_session_id",
+                    "tahun_akademik",
+                    "tahun_anggaran",
+                    "semester",
+                    "periode_key",
+                    "nama_prodi",
+                    "nim",
+                    "nama_debitur",
+                    "kualitas",
+                    "nominal_piutang_rp",
+                ],
                 "metrics": [],
                 "orderby": [["nominal_piutang_rp", False]],
             },
@@ -390,7 +474,8 @@ def main() -> None:
         "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
         "chart_ids": chart_ids,
         "chart_count": len(chart_ids),
-        "native_filter_columns": ["tahun_akademik", "tahun_anggaran", "semester", "nama_prodi", "kualitas"],
+        "native_filter_columns": ["tahun_akademik", "tahun_anggaran", "semester", "nama_prodi", "kualitas", "dataset_session_id"],
+        "dashboard_context": "multi_year",
     }
     write_json(OUTPUTS_DIR / "reports" / "superset_dashboard.json", result)
     print(result)

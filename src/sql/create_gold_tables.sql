@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS gold.dim_waktu_tunggakan (
     waktu_tunggakan_key INTEGER,
     semester VARCHAR,
     tahun_akademik VARCHAR,
+    tahun_anggaran VARCHAR,
+    periode_key VARCHAR,
     umur_tunggakan INTEGER
 );
 
@@ -33,10 +35,14 @@ CREATE TABLE IF NOT EXISTS gold.fact_piutang_ukt_prodi (
     mahasiswa_key INTEGER,
     kualitas_piutang_key INTEGER,
     waktu_tunggakan_key INTEGER,
+    dataset_session_id VARCHAR,
+    tahun_akademik VARCHAR,
+    tahun_anggaran VARCHAR,
+    semester VARCHAR,
+    periode_key VARCHAR,
     nominal_piutang_rp BIGINT,
     jumlah_mhs_penunggak INTEGER,
     source_filename VARCHAR,
     batch_id VARCHAR,
     created_at TIMESTAMP
 );
-

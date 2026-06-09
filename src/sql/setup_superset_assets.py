@@ -92,6 +92,12 @@ def main() -> None:
             datasets = session.get(f"{BASE_URL}/api/v1/dataset/?q=(filters:!((col:table_name,opr:eq,value:vw_dashboard_piutang_ukt)))", timeout=30).json()["result"]
             dataset_id = datasets[0]["id"] if datasets else None
 
+    if dataset_id is None:
+        raise RuntimeError("Superset dataset id for vw_dashboard_piutang_ukt was not found")
+
+    refresh_response = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}/refresh", timeout=60)
+    refresh_response.raise_for_status()
+
     result = {"database_id": database_id, "dataset_id": dataset_id, "database_name": db_payload["database_name"], "table_name": "vw_dashboard_piutang_ukt"}
     write_json(OUTPUTS_DIR / "reports" / "superset_assets.json", result)
     print(result)

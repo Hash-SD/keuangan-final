@@ -23,3 +23,14 @@ def test_system_truth_source_empty_folder_is_empty(tmp_path: Path, monkeypatch):
     truth = build_system_truth_status(base_dir=tmp_path, write_outputs=False)
 
     assert truth["sources"]["pdf"]["status"] == "empty"
+
+
+def test_system_truth_includes_staging_layer(tmp_path: Path, monkeypatch):
+    staging = tmp_path / "data" / "uploads" / "staging" / "session-001"
+    staging.mkdir(parents=True)
+    (staging / "context.json").write_text("{}", encoding="utf-8")
+
+    monkeypatch.chdir(tmp_path)
+    truth = build_system_truth_status(base_dir=tmp_path, write_outputs=False)
+
+    assert truth["layers"]["staging"]["status"] == "ready"
