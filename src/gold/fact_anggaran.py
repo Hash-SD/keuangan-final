@@ -54,12 +54,14 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(columns=FACT_COLUMNS)
     rows: list[dict[str, object]] = []
     for _, item in silver_items.iterrows():
+        jumlah = pd.to_numeric(pd.Series([item.get("jumlah")]), errors="coerce").iloc[0]
+        if pd.isna(jumlah):
+            continue
         iku_values = _split_iku(item.get("iku"))
         if not iku_values:
             iku_values = [None]
         weight = 1 / len(iku_values)
         for iku in iku_values:
-            jumlah = pd.to_numeric(pd.Series([item.get("jumlah")]), errors="coerce").iloc[0]
             iku_label = iku or REVIEW_IKU_LABEL
             rows.append(
                 {

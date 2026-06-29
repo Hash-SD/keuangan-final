@@ -41,3 +41,29 @@ def test_excel_lakehouse_pipeline_writes_bronze_silver_gold_parquet(tmp_path, mo
     assert (generated / "silver" / "silver_rab_items_flexible.parquet").exists()
     assert (generated / "silver" / "silver_nomenklatur_detail.parquet").exists()
     assert (generated / "gold" / "fact_anggaran.parquet").exists()
+
+
+def test_discover_excel_sources_prefers_complete_uploaded_multiyear_bundle(tmp_path, monkeypatch):
+    raw_root = tmp_path / "data" / "raw" / "excel_lakehouse"
+    bundle = raw_root / "upload-2026-06-09-011818-37cc4d" / "67b436e8-d489-43b1-9747-0f063424e6b4"
+    bundle.mkdir(parents=True)
+    filenames = [
+        "RAB 2025 SD RAB IKU.xlsx",
+        "Nomenklatur.xlsx",
+        "Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+    ]
+    for filename in filenames:
+        (bundle / filename).write_bytes(b"placeholder")
+    monkeypatch.delenv("FINANCE_EXCEL_FILES", raising=False)
+    monkeypatch.setattr(excel_lakehouse_pipeline, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(excel_lakehouse_pipeline, "active_dataset_pointer", lambda: {"session_id": "test-session"})
+    monkeypatch.setattr(excel_lakehouse_pipeline, "active_period_metadata", lambda: {"target_tahun_anggaran": "2025", "target_prodi": "Sains Data"})
+    monkeypatch.setattr(excel_lakehouse_pipeline, "raw_rab_path", lambda: tmp_path / "missing.xlsx")
+
+    sources = excel_lakehouse_pipeline.discover_excel_sources()
+
+    assert [source.path.name for source in sources] == filenames
+    assert [str(source.tahun_input) for source in sources] == ["2025", "2025", "2024", "2023", "2023"]
+    assert [source.periode for source in sources] == [None, None, None, "Jan-Jun", "Jul-Des"]

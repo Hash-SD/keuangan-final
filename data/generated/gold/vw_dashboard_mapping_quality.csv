@@ -1,4 +1,4 @@
 run_id,mapping_status,data_quality_flag,item_count,dataset_session_id
-5664af1e-e60a-41cd-8ca8-cc1b4c2e592e,mapped_from_nomenklatur,OK,22,upload-2026-06-09-011818-37cc4d
-5664af1e-e60a-41cd-8ca8-cc1b4c2e592e,needs_review,IKU_REVIEW_REQUIRED,253,upload-2026-06-09-011818-37cc4d
-5664af1e-e60a-41cd-8ca8-cc1b4c2e592e,needs_review,MISSING_ACCOUNT;IKU_REVIEW_REQUIRED,2,upload-2026-06-09-011818-37cc4d
+0b63978c-0fba-4e54-9072-993aff88dad9,mapped_from_nomenklatur,OK,22,upload-2026-06-09-011818-37cc4d
+0b63978c-0fba-4e54-9072-993aff88dad9,needs_review,IKU_REVIEW_REQUIRED,332,upload-2026-06-09-011818-37cc4d
+0b63978c-0fba-4e54-9072-993aff88dad9,needs_review,MISSING_ACCOUNT;IKU_REVIEW_REQUIRED,64,upload-2026-06-09-011818-37cc4d

@@ -1,36 +1,74 @@
 {
-  "run_id": "5664af1e-e60a-41cd-8ca8-cc1b4c2e592e",
+  "run_id": "0b63978c-0fba-4e54-9072-993aff88dad9",
   "dataset_session_id": "upload-2026-06-09-011818-37cc4d",
   "source_files": [
-    "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\2025\\excel-20260629T090651+0000-fdf53f\\RAB_2025_SD_RAB_IKU.xlsx",
-    "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\2025\\excel-20260629T090651+0000-fdf53f\\Nomenklatur.xlsx"
+    "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB 2025 SD RAB IKU.xlsx",
+    "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\Nomenklatur.xlsx",
+    "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+    "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+    "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB_SD_Usulan KE (1)_jul-des 2023.xlsx"
   ],
   "raw_archives": [
     {
-      "source_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\2025\\excel-20260629T090651+0000-fdf53f\\RAB_2025_SD_RAB_IKU.xlsx",
-      "raw_archive_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\5664af1e-e60a-41cd-8ca8-cc1b4c2e592e\\RAB_2025_SD_RAB_IKU.xlsx",
-      "filename": "RAB_2025_SD_RAB_IKU.xlsx",
+      "source_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB 2025 SD RAB IKU.xlsx",
+      "raw_archive_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB 2025 SD RAB IKU.xlsx",
+      "archive_status": "existing_raw_upload",
+      "filename": "RAB 2025 SD RAB IKU.xlsx",
       "jenis_dataset": "rab",
       "tahun_input": "2025",
-      "periode": "sample_verification",
+      "periode": null,
       "prodi": "Sains Data",
       "size_bytes": 849126
     },
     {
-      "source_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\2025\\excel-20260629T090651+0000-fdf53f\\Nomenklatur.xlsx",
-      "raw_archive_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\5664af1e-e60a-41cd-8ca8-cc1b4c2e592e\\Nomenklatur.xlsx",
+      "source_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\Nomenklatur.xlsx",
+      "raw_archive_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\Nomenklatur.xlsx",
+      "archive_status": "existing_raw_upload",
       "filename": "Nomenklatur.xlsx",
       "jenis_dataset": "nomenklatur",
       "tahun_input": "2025",
-      "periode": "sample_verification",
+      "periode": null,
       "prodi": "Sains Data",
       "size_bytes": 91281
+    },
+    {
+      "source_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "raw_archive_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "archive_status": "existing_raw_upload",
+      "filename": "Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "jenis_dataset": "rab",
+      "tahun_input": "2024",
+      "periode": null,
+      "prodi": "Sains Data",
+      "size_bytes": 403043
+    },
+    {
+      "source_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "raw_archive_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "archive_status": "existing_raw_upload",
+      "filename": "RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "jenis_dataset": "rab",
+      "tahun_input": "2023",
+      "periode": "Jan-Jun",
+      "prodi": "Sains Data",
+      "size_bytes": 485119
+    },
+    {
+      "source_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "raw_archive_path": "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "archive_status": "existing_raw_upload",
+      "filename": "RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "jenis_dataset": "rab",
+      "tahun_input": "2023",
+      "periode": "Jul-Des",
+      "prodi": "Sains Data",
+      "size_bytes": 637754
     }
   ],
-  "bronze_cells": 49489,
-  "silver_rab_items": 277,
+  "bronze_cells": 55340,
+  "silver_rab_items": 445,
   "silver_nomenklatur_detail": 248,
-  "fact_anggaran_rows": 361,
+  "fact_anggaran_rows": 502,
   "outputs": {
     "bronze_excel_cells.csv": {
       "csv": "C:\\Users\\hm\\keuangan-final\\data\\generated\\bronze\\bronze_excel_cells.csv",

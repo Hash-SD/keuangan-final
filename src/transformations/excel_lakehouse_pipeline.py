@@ -5,6 +5,7 @@ import sys
 import uuid
 import json
 import shutil
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -23,6 +24,10 @@ from src.parser_flexible.rab_parser import parse_rab_workbook
 from src.transformations.budget_cleaning import clean_and_enrich_budget_items
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+EXCEL_EXTENSIONS = {".xlsx", ".xlsm", ".xltx", ".xltm"}
+
+
 def _session_id() -> str:
     pointer = active_dataset_pointer() or {}
     return Path(str(pointer.get("session_id") or "excel-lakehouse")).name or "excel-lakehouse"
@@ -34,9 +39,87 @@ def _split_env_paths(value: str | None) -> list[Path]:
     return [Path(item.strip()) for item in value.split(";") if item.strip()]
 
 
+def _resolve_repo_path(path: Path) -> Path:
+    return path.resolve() if path.is_absolute() else (REPO_ROOT / path).resolve()
+
+
+def _infer_year_from_filename(path: Path, default: object = None) -> str:
+    match = re.search(r"\b(20\d{2})\b", path.name)
+    if match:
+        return match.group(1)
+    if "nomenklatur" in path.name.lower():
+        return "2025"
+    return str(default or "")
+
+
+def _infer_period_from_filename(path: Path, default: object = None) -> str | None:
+    name = path.name.lower()
+    if "jan" in name or "jun" in name:
+        return "Jan-Jun"
+    if "jul" in name or "des" in name or "dec" in name:
+        return "Jul-Des"
+    return str(default) if default else None
+
+
+def _excel_source(path: Path, prodi: str, tahun_input: object = None, periode: object = None, jenis_dataset: object = None) -> ExcelSource:
+    resolved = _resolve_repo_path(path)
+    return ExcelSource(
+        path=resolved,
+        tahun_input=_infer_year_from_filename(resolved, tahun_input),
+        periode=_infer_period_from_filename(resolved, periode),
+        prodi=prodi,
+        jenis_dataset=str(jenis_dataset or _dataset_kind(resolved)),
+    )
+
+
+def _uploaded_sample_kind(path: Path) -> str | None:
+    name = path.name.lower()
+    if "nomenklatur" in name:
+        return "nomenklatur"
+    if "rencana anggaran prodi sains data tahun 2024" in name:
+        return "rab_2024"
+    if "rab 2025" in name or "rab_2025" in name or "2025 sd rab iku" in name:
+        return "rab_2025"
+    if "2023" in name and ("jan" in name or "jun" in name):
+        return "rab_2023_jan_jun"
+    if "2023" in name and ("jul" in name or "des" in name or "dec" in name):
+        return "rab_2023_jul_des"
+    return None
+
+
+def _discover_uploaded_multiyear_bundle() -> list[Path]:
+    raw_root = DATA_DIR / "raw" / "excel_lakehouse"
+    if not raw_root.exists():
+        return []
+    order = ["rab_2025", "nomenklatur", "rab_2024", "rab_2023_jan_jun", "rab_2023_jul_des"]
+    best: tuple[int, float, dict[str, Path]] | None = None
+    for directory in raw_root.rglob("*"):
+        if not directory.is_dir():
+            continue
+        if any(part.lower() in {"test-session", "dummy-session"} for part in directory.parts):
+            continue
+        files_by_kind: dict[str, Path] = {}
+        for path in sorted(directory.iterdir()):
+            if path.suffix.lower() not in EXCEL_EXTENSIONS or not path.is_file():
+                continue
+            kind = _uploaded_sample_kind(path)
+            if kind and kind not in files_by_kind:
+                files_by_kind[kind] = path
+        if not {"nomenklatur", "rab_2025"}.issubset(files_by_kind):
+            continue
+        years_covered = sum(1 for kind in ("rab_2023_jan_jun", "rab_2023_jul_des", "rab_2024", "rab_2025") if kind in files_by_kind)
+        score = len(files_by_kind) * 10 + years_covered
+        newest = max(path.stat().st_mtime for path in files_by_kind.values())
+        if best is None or (score, newest) > (best[0], best[1]):
+            best = (score, newest, files_by_kind)
+    if best is None:
+        return []
+    return [best[2][kind] for kind in order if kind in best[2]]
+
+
 def discover_excel_sources() -> list[ExcelSource]:
     pointer = active_dataset_pointer() or {}
-    excel_pointer_path = Path(__file__).resolve().parents[2] / "outputs" / "reports" / "active_excel_lakehouse_dataset.json"
+    excel_pointer_path = REPO_ROOT / "outputs" / "reports" / "active_excel_lakehouse_dataset.json"
     excel_pointer = {}
     if excel_pointer_path.exists():
         try:
@@ -49,27 +132,29 @@ def discover_excel_sources() -> list[ExcelSource]:
     paths: list[Path] = []
     env_paths = _split_env_paths(os.getenv("FINANCE_EXCEL_FILES"))
     paths.extend(env_paths)
-    if not env_paths and isinstance(excel_pointer.get("files"), list):
-        paths.extend(Path(str(item.get("path") or item)) for item in excel_pointer["files"])
-        pointer_paths = [path if path.is_absolute() else Path(__file__).resolve().parents[2] / path for path in paths]
-        if pointer_paths:
-            return [
-                ExcelSource(
-                    path=path.resolve(),
-                    tahun_input=tahun_input,
-                    periode=excel_pointer.get("periode"),
-                    prodi=prodi,
-                    jenis_dataset=str(item.get("jenis_dataset") or _dataset_kind(path)) if isinstance(item, dict) else _dataset_kind(path),
-                )
-                for path, item in zip(pointer_paths, excel_pointer["files"], strict=False)
-                if path.exists()
-            ]
     if env_paths:
-        return [
-            ExcelSource(path=path.resolve() if path.is_absolute() else (Path(__file__).resolve().parents[2] / path).resolve(), tahun_input=tahun_input, prodi=prodi, jenis_dataset=_dataset_kind(path))
-            for path in paths
-            if (path if path.is_absolute() else Path(__file__).resolve().parents[2] / path).exists()
+        return [_excel_source(path, prodi, tahun_input=tahun_input) for path in paths if _resolve_repo_path(path).exists()]
+
+    uploaded_bundle = _discover_uploaded_multiyear_bundle()
+    if uploaded_bundle:
+        return [_excel_source(path, prodi, tahun_input=tahun_input) for path in uploaded_bundle]
+
+    if isinstance(excel_pointer.get("files"), list):
+        paths.extend(Path(str(item.get("path") or item)) for item in excel_pointer["files"])
+        pointer_paths = [_resolve_repo_path(path) for path in paths]
+        pointer_sources = [
+            ExcelSource(
+                path=path,
+                tahun_input=_infer_year_from_filename(path, tahun_input),
+                periode=_infer_period_from_filename(path, excel_pointer.get("periode")),
+                prodi=prodi,
+                jenis_dataset=str(item.get("jenis_dataset") or _dataset_kind(path)) if isinstance(item, dict) else _dataset_kind(path),
+            )
+            for path, item in zip(pointer_paths, excel_pointer["files"], strict=False)
+            if path.exists()
         ]
+        if pointer_sources:
+            return pointer_sources
     active_excel = pointer.get("active_excel")
     if active_excel:
         paths.append(Path(active_excel))
@@ -82,13 +167,13 @@ def discover_excel_sources() -> list[ExcelSource]:
     seen = set()
     for path in paths:
         if not path.is_absolute():
-            path = Path(__file__).resolve().parents[2] / path
-        if path.exists() and path.suffix.lower() in {".xlsx", ".xlsm", ".xltx", ".xltm"}:
+            path = REPO_ROOT / path
+        if path.exists() and path.suffix.lower() in EXCEL_EXTENSIONS:
             resolved = path.resolve()
             if resolved not in seen:
                 unique.append(resolved)
                 seen.add(resolved)
-    return [ExcelSource(path=path, tahun_input=tahun_input, prodi=prodi, jenis_dataset=_dataset_kind(path)) for path in unique]
+    return [_excel_source(path, prodi, tahun_input=tahun_input) for path in unique]
 
 
 def _dataset_kind(path: Path) -> str:
@@ -122,7 +207,7 @@ def _write_session_and_combined(df: pd.DataFrame, layer: str, filename: str, ses
         current["dataset_session_id"] = session_id
     current.to_csv(session_path, index=False)
     if combined_path.exists():
-        existing = pd.read_csv(combined_path)
+        existing = pd.read_csv(combined_path, low_memory=False)
         if "dataset_session_id" in existing.columns:
             existing = existing[existing["dataset_session_id"].fillna("").astype(str) != session_id]
             current = pd.concat([existing, current], ignore_index=True, sort=False)
@@ -137,16 +222,23 @@ def _write_session_and_combined(df: pd.DataFrame, layer: str, filename: str, ses
 
 def _archive_raw_sources(sources: list[ExcelSource], run_id: str, session_id: str) -> list[dict[str, object]]:
     archive_dir = DATA_DIR / "raw" / "excel_lakehouse" / session_id / run_id
-    archive_dir.mkdir(parents=True, exist_ok=True)
+    raw_root = (DATA_DIR / "raw" / "excel_lakehouse").resolve()
     archived = []
     for source in sources:
-        target = archive_dir / source.path.name
-        if source.path.resolve() != target.resolve():
+        source_path = source.path.resolve()
+        if source_path.is_relative_to(raw_root):
+            target = source_path
+            archive_status = "existing_raw_upload"
+        else:
+            archive_dir.mkdir(parents=True, exist_ok=True)
+            target = archive_dir / source.path.name
+            archive_status = "copied_to_raw_archive"
             shutil.copy2(source.path, target)
         archived.append(
             {
                 "source_path": str(source.path),
                 "raw_archive_path": str(target),
+                "archive_status": archive_status,
                 "filename": target.name,
                 "jenis_dataset": source.jenis_dataset,
                 "tahun_input": source.tahun_input,
