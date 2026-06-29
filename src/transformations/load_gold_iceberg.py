@@ -44,9 +44,17 @@ def main() -> None:
         "dim_waktu_tunggakan",
         "fact_piutang_ukt_prodi",
         "vw_dashboard_piutang_ukt",
+        "fact_anggaran",
+        "vw_dashboard_iku_anggaran",
+        "vw_dashboard_mapping_quality",
+        "vw_dashboard_reconciliation",
+        "vw_dashboard_detail_item",
     ]
     for table_name in table_names:
         path = GOLD_DIR / f"{table_name}.csv"
+        if not path.exists():
+            print(f"skip iceberg.gold.{table_name}: {path} not found")
+            continue
         df = spark.read.option("header", "true").option("inferSchema", "true").csv(str(path))
         df.writeTo(f"iceberg.gold.{table_name}").using("iceberg").createOrReplace()
         print(f"wrote iceberg.gold.{table_name}: {df.count()} rows")

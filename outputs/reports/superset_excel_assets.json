@@ -1,0 +1,25 @@
+{
+  "status": "validated",
+  "superset_api_status": "ready",
+  "database_id": 3,
+  "dataset_id": 2,
+  "table_name": "fact_anggaran",
+  "dashboard_id": 2,
+  "dashboard_title": "SILARAS SD - Dashboard Anggaran IKU",
+  "dashboard_url": "http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/",
+  "chart_ids": [
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+  ],
+  "chart_count": 12
+}

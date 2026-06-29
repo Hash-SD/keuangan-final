@@ -88,6 +88,89 @@ TABLES = {
         ("periode_key_dim", "text"),
         ("umur_tunggakan", "integer"),
     ],
+    "fact_anggaran": [
+        ("item_id", "text"),
+        ("run_id", "text"),
+        ("tahun", "text"),
+        ("periode", "text"),
+        ("prodi", "text"),
+        ("fakultas", "text"),
+        ("kegiatan", "text"),
+        ("cluster_kegiatan", "text"),
+        ("akun", "text"),
+        ("kode_akun", "text"),
+        ("nama_akun", "text"),
+        ("iku", "text"),
+        ("kode_iku", "text"),
+        ("nama_iku", "text"),
+        ("nomenklatur_path", "text"),
+        ("uraian_detail", "text"),
+        ("qty", "double precision"),
+        ("satuan", "text"),
+        ("harga_satuan", "double precision"),
+        ("jumlah", "double precision"),
+        ("jumlah_weighted_iku", "double precision"),
+        ("allocation_weight", "double precision"),
+        ("mapping_status", "text"),
+        ("data_quality_flag", "text"),
+        ("source_file", "text"),
+        ("source_sheet", "text"),
+        ("source_row", "integer"),
+        ("created_at", "timestamptz"),
+    ],
+    "vw_dashboard_iku_anggaran": [
+        ("run_id", "text"),
+        ("tahun", "text"),
+        ("periode", "text"),
+        ("prodi", "text"),
+        ("fakultas", "text"),
+        ("iku", "text"),
+        ("jumlah_weighted_iku", "double precision"),
+    ],
+    "vw_dashboard_mapping_quality": [
+        ("run_id", "text"),
+        ("mapping_status", "text"),
+        ("data_quality_flag", "text"),
+        ("item_count", "bigint"),
+    ],
+    "vw_dashboard_reconciliation": [
+        ("source_file", "text"),
+        ("total_detail", "double precision"),
+        ("total_rekap", "double precision"),
+        ("selisih", "double precision"),
+        ("validation_status", "text"),
+        ("dataset_session_id", "text"),
+    ],
+    "vw_dashboard_detail_item": [
+        ("item_id", "text"),
+        ("run_id", "text"),
+        ("tahun", "text"),
+        ("periode", "text"),
+        ("prodi", "text"),
+        ("fakultas", "text"),
+        ("kegiatan", "text"),
+        ("cluster_kegiatan", "text"),
+        ("akun", "text"),
+        ("kode_akun", "text"),
+        ("nama_akun", "text"),
+        ("iku", "text"),
+        ("kode_iku", "text"),
+        ("nama_iku", "text"),
+        ("nomenklatur_path", "text"),
+        ("uraian_detail", "text"),
+        ("qty", "double precision"),
+        ("satuan", "text"),
+        ("harga_satuan", "double precision"),
+        ("jumlah", "double precision"),
+        ("jumlah_weighted_iku", "double precision"),
+        ("allocation_weight", "double precision"),
+        ("mapping_status", "text"),
+        ("data_quality_flag", "text"),
+        ("source_file", "text"),
+        ("source_sheet", "text"),
+        ("source_row", "integer"),
+        ("created_at", "timestamptz"),
+    ],
 }
 
 
@@ -103,10 +186,13 @@ def main() -> None:
     with conn.cursor() as cur:
         cur.execute("CREATE SCHEMA IF NOT EXISTS gold")
         for table, columns in TABLES.items():
+            csv_path = GENERATED_DIR / "gold" / f"{table}.csv"
+            if not csv_path.exists():
+                print(f"skip gold.{table}: {csv_path} not found")
+                continue
             cur.execute(f"DROP TABLE IF EXISTS gold.{table}")
             ddl = ", ".join(f"{name} {typ}" for name, typ in columns)
             cur.execute(f"CREATE TABLE gold.{table} ({ddl})")
-            csv_path = GENERATED_DIR / "gold" / f"{table}.csv"
             ordered = [name for name, _ in columns]
             buffer = io.StringIO()
             writer = csv.writer(buffer, lineterminator="\n")

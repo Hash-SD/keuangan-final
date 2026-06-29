@@ -6,6 +6,8 @@ from flask_cors import CORS
 
 from .services.activity import append_activity, read_activities
 from .services.files import csv_preview, read_json, relative_path, resolve_preview_file
+from .services.excel_lakehouse import excel_lakehouse_status
+from .services.excel_upload import commit_excel_lakehouse_dataset
 from .services.lakehouse import lakehouse_summary
 from .services.metrics import metrics_payload
 from .services.paths import OUTPUTS_DIR, PORTAL_DIR
@@ -37,7 +39,7 @@ def create_app() -> Flask:
 
     @app.get("/api/health")
     def health():
-        return jsonify({"status": "ok", "service": "portal-backend", "mode": "local-on-premise", "basis": "main.pdf"})
+        return jsonify({"status": "ok", "service": "portal-backend", "mode": "local-on-premise", "basis": "excel_lakehouse_fact_anggaran"})
 
     @app.get("/api/readiness")
     def readiness():
@@ -232,6 +234,10 @@ def create_app() -> Flask:
     def lakehouse():
         return jsonify(lakehouse_summary())
 
+    @app.get("/api/excel-lakehouse/status")
+    def excel_lakehouse_status_endpoint():
+        return jsonify(excel_lakehouse_status())
+
     @app.get("/api/storage/manifest")
     def storage_manifest():
         payload = read_json(OUTPUTS_DIR / "reports" / "storage_manifest.json")
@@ -291,6 +297,58 @@ def create_app() -> Flask:
     def upload_excel():
         return _upload("excel", {".xlsx"})
 
+    @app.post("/api/upload/excel-lakehouse")
+    def upload_excel_lakehouse():
+        try:
+            result = commit_excel_lakehouse_dataset(request.form, request.files)
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
+        append_activity(
+            action="upload_excel_lakehouse",
+            source="upload",
+            status="success",
+            target=result.get("dataset_id", ""),
+            message="Dataset Excel-only berhasil di-commit ke raw Excel lakehouse.",
+        )
+        return jsonify(result)
+
+    @app.post("/api/upload/excel-dataset")
+    def upload_excel_dataset():
+        return upload_excel_lakehouse()
+
+    @app.get("/api/datasets")
+    def datasets():
+        payload = read_json(OUTPUTS_DIR / "reports" / "excel_dataset_registry.json")
+        return jsonify(payload or {"active_dataset_id": None, "datasets": []})
+
+    @app.get("/api/pipeline/status/<run_id>")
+    def pipeline_status_run(run_id: str):
+        status = excel_lakehouse_status()
+        summary = read_json(OUTPUTS_DIR / "reports" / "pipeline_run_summary.json") or {}
+        return jsonify({"run_id": run_id, "status": status.get("status"), "summary": summary, "artifacts": status.get("artifacts")})
+
+    @app.post("/api/pipeline/run/<run_id>")
+    def pipeline_run_id(run_id: str):
+        result = run_command_group("excel-lakehouse")
+        count_result = run_command_group("excel-count-validation") if result.get("status") == "success" else None
+        storage_result = run_command_group("excel-storage-manifest") if result.get("status") == "success" else None
+        return jsonify({"run_id": run_id, "pipeline": result, "count_validation": count_result, "storage_manifest": storage_result}), 200 if result.get("status") == "success" else 500
+
+    @app.get("/api/storage/manifest/<run_id>")
+    def storage_manifest_run(run_id: str):
+        payload = read_json(OUTPUTS_DIR / "reports" / "storage_manifest.json")
+        return jsonify(payload or {"run_id": run_id, "status": "missing", "entries": []})
+
+    @app.get("/api/data-quality/<run_id>")
+    def data_quality_run(run_id: str):
+        payload = read_json(OUTPUTS_DIR / "reports" / "pipeline_count_validation.json")
+        return jsonify(payload or {"run_id": run_id, "status": "missing"})
+
+    @app.get("/api/dashboard/links/<run_id>")
+    def dashboard_links_run(run_id: str):
+        payload = read_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json") or read_json(OUTPUTS_DIR / "reports" / "superset_excel_assets.json")
+        return jsonify(payload or {"run_id": run_id, "status": "missing", "dashboard_url": None})
+
     @app.post("/api/pipeline/<name>")
     def pipeline(name: str):
         if name == "full-run-basic":
@@ -304,8 +362,12 @@ def create_app() -> Flask:
             "bronze": "bronze",
             "silver": "silver",
             "gold": "gold",
+            "excel-lakehouse": "excel-lakehouse",
+            "superset-excel": "superset-excel",
             "metrics": "metrics",
             "storage-manifest": "storage-manifest",
+            "excel-storage-manifest": "excel-storage-manifest",
+            "excel-count-validation": "excel-count-validation",
             "validate-gold": "validate-gold",
         }
         command = mapping.get(name)

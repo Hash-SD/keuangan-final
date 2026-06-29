@@ -33,6 +33,7 @@ with DAG(
     quality_gate_process = BashOperator(task_id="quality_gate_process", bash_command=f"{PY} /opt/airflow/src/validation/quality_gate.py")
     extract_bronze = BashOperator(task_id="extract_bronze", bash_command=f"{PY} /opt/airflow/src/transformations/bronze_ingest.py")
     clean_silver = BashOperator(task_id="clean_silver", bash_command=f"{PY} /opt/airflow/src/transformations/silver_clean.py")
+    excel_lakehouse = BashOperator(task_id="excel_lakehouse", bash_command=f"{PY} /opt/airflow/src/transformations/excel_lakehouse_pipeline.py")
     load_gold_schema = BashOperator(task_id="load_gold_schema", bash_command=f"{PY} /opt/airflow/src/transformations/gold_star_schema.py")
     validate_mart = BashOperator(task_id="validate_mart", bash_command=f"{PY} /opt/airflow/src/metrics/reconcile_control_total.py")
     calculate_metrics = BashOperator(
@@ -89,4 +90,4 @@ with DAG(
     )
     end = EmptyOperator(task_id="end")
 
-    start >> generate_dummy_data >> quality_gate_process >> extract_bronze >> clean_silver >> load_gold_schema >> validate_mart >> calculate_metrics >> generate_storage_manifest >> load_gold_postgres_fallback >> refresh_superset_dataset >> refresh_superset_dashboard >> end
+    start >> generate_dummy_data >> quality_gate_process >> extract_bronze >> clean_silver >> excel_lakehouse >> load_gold_schema >> validate_mart >> calculate_metrics >> generate_storage_manifest >> load_gold_postgres_fallback >> refresh_superset_dataset >> refresh_superset_dashboard >> end

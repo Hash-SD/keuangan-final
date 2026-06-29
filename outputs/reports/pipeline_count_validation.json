@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-06-29T07:56:38+00:00",
+  "definitions": {
+    "bronze_cells": "Rows in bronze_excel_cells; includes cells with value, formula, fill color, or merged-range lineage.",
+    "silver_rab_candidate_rows": "Parsed RAB-like rows before downstream mapping curation.",
+    "silver_rab_items_flexible": "Current fact-ready Silver item rows after parser excludes headers, totals, and empty rows.",
+    "silver_nomenklatur_detail": "Nomenklatur rows where one row equals one detail kegiatan with inherited hierarchy.",
+    "fact_anggaran_rows": "Gold rows at item x IKU allocation grain. With one IKU or unmapped IKU this equals item rows; multi-IKU expands rows with allocation_weight."
+  },
+  "counts": {
+    "bronze_cells": 55340,
+    "silver_rab_candidate_rows": 445,
+    "silver_rab_items_flexible": 445,
+    "silver_nomenklatur_detail": 248,
+    "fact_anggaran_rows": 445,
+    "fact_unique_item_ids": 445,
+    "fact_unique_item_iku_rows": 445
+  },
+  "quality_checks": {
+    "duplicate_fact_rows": 0,
+    "fact_contains_total_like_rows": 0,
+    "fact_contains_header_like_rows": 0,
+    "weighted_amount_formula_ok": true,
+    "fact_row_grain": "item_x_iku_allocation",
+    "rab_main_and_detail_duplication_policy": "Parser excludes total/subtotal rows; duplicate check uses item_id + IKU/source lineage. Sheet-level source lineage remains available for audit."
+  },
+  "status": "validated"
+}

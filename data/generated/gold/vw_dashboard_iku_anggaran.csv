@@ -1,0 +1,5 @@
+run_id,tahun,periode,prodi,fakultas,iku,jumlah_weighted_iku,dataset_session_id
+67b436e8-d489-43b1-9747-0f063424e6b4,2023,Jan-Jun,Sains Data,Fakultas Sains,UNMAPPED_IKU,34530000.0,upload-2026-06-09-011818-37cc4d
+67b436e8-d489-43b1-9747-0f063424e6b4,2023,Jul-Des,Sains Data,Fakultas Sains,UNMAPPED_IKU,86875000.0,upload-2026-06-09-011818-37cc4d
+67b436e8-d489-43b1-9747-0f063424e6b4,2024,,Sains Data,Fakultas Sains,UNMAPPED_IKU,94675950.0,upload-2026-06-09-011818-37cc4d
+67b436e8-d489-43b1-9747-0f063424e6b4,2025,,Sains Data,Fakultas Sains,UNMAPPED_IKU,935795331.0,upload-2026-06-09-011818-37cc4d

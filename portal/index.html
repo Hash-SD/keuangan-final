@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Portal terpusat untuk memantau pipeline data keuangan UKT, SPI, dan RAB menggunakan arsitektur Medallion Lakehouse. Observabilitas end-to-end dari ingestion hingga visualisasi Superset.">
+  <meta name="description" content="SILARAS SD - Sistem Lakehouse Anggaran RAB dan IKU Sains Data untuk pipeline RAB, RPD/IKU, dan Nomenklatur berbasis Bronze, Silver, Gold, dan Superset.">
   <meta name="theme-color" content="#004e9f">
   <meta name="robots" content="noindex, nofollow">
   <title>Portal Ekosistem Data Lakehouse Keuangan</title>
@@ -958,14 +958,14 @@
     const CONTROL = {
       targetProdi: "Sains Data",
       targetTahunAkademik: "2023/2024",
-      dashboardUrl: "http://localhost:8089/superset/dashboard/dashboard-piutang-ukt-prodi/"
+      dashboardUrl: "http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/"
     };
     const API_BASE_URL = window.location.port === "8090" ? "http://localhost:8091" : window.location.origin;
 
     let pages = [
-      ["beranda", "Portal Ekosistem Data Lakehouse Keuangan", "home", "Memantau semua proses data keuangan (UKT, SPI, RAB) dari file mentah sampai siap dianalisis."],
+      ["beranda", "SILARAS SD", "home", "Sistem Lakehouse Anggaran RAB dan IKU Sains Data dari upload Excel sampai dashboard Superset."],
       ["system", "System Infrastructure Console", "settings", "Mengecek status server, database, dan mesin di balik layar supaya semua berjalan lancar."],
-      ["data", "Data Ingestion Control Center", "database", "Mengunggah dan mengecek file mentah (PDF, Excel, CSV) sebelum diproses lebih lanjut oleh sistem."],
+      ["data", "Upload Dataset Excel", "database", "Mengunggah banyak file Excel RAB/RPD/IKU/Nomenklatur tanpa dependensi PDF atau CSV."],
       ["orkestrasi", "Orkestrasi", "sync_alt", "Menjalankan sistem otomatis (Airflow) untuk mengubah data mentah menjadi data rapi."],
       ["lakehouse", "Lakehouse", "waves", "Memantau status file kamu di tiap tahap penyimpanan (Bronze, Silver, Gold)."],
       ["dashboard", "Dashboard", "dashboard", "Melihat metrik kecepatan sistem dan kualitas data yang sudah diproses."],
@@ -985,6 +985,7 @@
       runtimeConfig: null,
       scenarios: [],
       uploadSession: null,
+      excelLakehouse: null,
       contextSaveStatus: "idle",
       lakehouse: null,
       storageManifest: null,
@@ -1216,8 +1217,8 @@
       document.getElementById("page-beranda").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="section-grid home-metrics-grid">
-            ${tailwindCard("Total Piutang UKT", has(rec.total_piutang) ? rupiah(rec.total_piutang) : "-", `Kontrol ${targetLabel()}`, "account_balance_wallet", "#3b82f6", "#eff6ff")}
-            ${tailwindCard("Mahasiswa Penunggak", has(rec.jumlah_penunggak) ? n(rec.jumlah_penunggak) : "-", "Dari hasil rekonsiliasi terakhir", "person", "#ea580c", "#ffedd5")}
+            ${tailwindCard("Total Anggaran", has(state.excelLakehouse?.fact_anggaran?.total_jumlah) ? rupiah(state.excelLakehouse.fact_anggaran.total_jumlah) : "-", "Dari fact_anggaran terakhir", "account_balance_wallet", "#3b82f6", "#eff6ff")}
+            ${tailwindCard("Item Anggaran", has(state.excelLakehouse?.counts?.fact_anggaran_rows) ? n(state.excelLakehouse.counts.fact_anggaran_rows) : "-", "Baris final Gold fact_anggaran", "format_list_numbered", "#ea580c", "#ffedd5")}
             ${tailwindCard("Data Quality Score", qualityValue, has(quality.data_quality_score) ? "Dari metrik Quality Gate terakhir" : "Belum ada metrik Quality Gate", "verified", "#6366f1", "#e0e7ff")}
             ${tailwindCard("Pipeline Status", pipelineValue, pipelineNote, "account_tree", lp?.status === "success" ? "#10b981" : "#64748b", lp?.status === "success" ? "#d1fae5" : "#f8fafc", lp?.status === "success" ? "#16a34a" : "#475569")}
           </section>
@@ -1240,6 +1241,7 @@
       const qualityRate = q.totalRows ? `${((q.validRows / q.totalRows) * 100).toFixed(1)}%` : "-";
       document.getElementById("page-data").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
+          ${excelLakehousePanel()}
           <section class="section-grid grid-4 w-full">
             ${[
               {
@@ -1291,9 +1293,9 @@
           </section>
 
           <section class="section-grid grid-3">
-            ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "1 dokumen PDF digital, ekstraksi teks programmatic")}
-            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", `2 file transaksi, target ${n(source.csv?.target_rows ?? target.dummy_transaction_rows ?? 0)} rows`)}
-            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `RAB ${targetLabel()}, target pagu ${rupiah(target.target_total_pagu_rab ?? CONTROL.paguRab)}`)}
+            ${sourceStatusCard("Raw Excel", source.excel, "table_chart", `RAB/RPD/IKU/Nomenklatur ${targetLabel()}`)}
+            ${sourceStatusCard("Bronze Cells", state.excelLakehouse?.artifacts?.bronze_excel_cells, "dataset", "Cell-level value, formula, warna, merge")}
+            ${sourceStatusCard("Gold fact_anggaran", state.excelLakehouse?.artifacts?.fact_anggaran, "stars", "Single fact table untuk dashboard IKU")}
           </section>
 
           ${runtimeContextPanel()}
@@ -1551,8 +1553,8 @@
                 <h3 class="section-title">Superset Service Integration ${tooltip("Status koneksi live antara Data Lakehouse dan BI Superset.")}</h3>
                 <dl class="kv">
                   <dt>Status Service</dt><dd>${badge(state.truth?.services?.superset?.status || "unreachable", statusType(state.truth?.services?.superset?.status || "unreachable"))}</dd>
-                  <dt>Dashboard Name</dt><dd>Dashboard Piutang UKT Prodi</dd>
-                  <dt>View Dataset</dt><dd>vw_dashboard_piutang_ukt</dd>
+                <dt>Dashboard Name</dt><dd>SILARAS SD - Dashboard Anggaran IKU</dd>
+                <dt>View Dataset</dt><dd>fact_anggaran</dd>
                   <dt>Last Refresh</dt><dd>${latestPipelineActivity() ? formatLastRun(latestPipelineActivity().time) : "-"}</dd>
                   <dt>Status Dashboard</dt><dd>${badge(dashStatus, dashType)}</dd>
                 </dl>
@@ -1574,8 +1576,8 @@
             ${layerCard("Staging Layer", "upload_file", "Upload sementara sebelum commit ke Raw Layer.", state.truth?.layers?.staging?.status || "missing", "#0284c7")}
             ${layerCard("Raw Layer", "description", "File sumber committed sebelum ingestion.", state.truth?.layers?.raw?.status || "missing", "#64748b")}
             ${layerCard("Bronze Layer", "database", "Raw Ingestion - Menyimpan berkas sumber data keuangan mentah ke S3/MinIO.", state.truth?.layers?.bronze?.status || "missing", "#b45309")}
-            ${layerCard("Silver Layer", "filter_alt", "Cleaned & Conformed - Data piutang dan RAB hasil pembersihan, standardisasi, serta validasi.", state.truth?.layers?.silver?.status || "missing", "#64748b")}
-            ${layerCard("Gold Layer", "stars", "Analytical Data Mart - Star schema teroptimasi untuk query analitis dan visualisasi Superset.", state.truth?.layers?.gold?.status || "missing", "#ca8a04")}
+            ${layerCard("Silver Layer", "filter_alt", "Flexible Normalization - Item RAB, nomenklatur, mapping, dan validasi Excel disatukan tanpa bergantung nama file.", state.truth?.layers?.silver?.status || "missing", "#64748b")}
+            ${layerCard("Gold Layer", "stars", "Single Fact Mart - fact_anggaran menjadi sumber utama dashboard IKU.", state.truth?.layers?.gold?.status || "missing", "#ca8a04")}
           </section>
           <section class="glass-panel w-full">
             <h3 class="section-title">Data Lakehouse Lineage Diagram ${tooltip("Alur pergerakan data dari file mentah hingga menjadi visualisasi analitik.")}</h3>
@@ -1588,24 +1590,24 @@
           </section>
           
           <section class="glass-panel w-full">
-            <h3 class="section-title">Validate Gold Data Mart ${tooltip("Hasil perbandingan perhitungan saldo akhir dan penunggak antara data asli vs hasil pemrosesan Gold layer.")}</h3>
+            <h3 class="section-title">Validate Gold Data Mart ${tooltip("Validasi count, duplikasi, total/subtotal exclusion, dan allocation_weight fact_anggaran.")}</h3>
             ${validationAvailable ? `
               <div style="display:flex; flex-wrap:wrap; gap:1.25rem;">
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
-                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Expected total piutang</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.target_total_piutang) ? rupiah(rec.target_total_piutang) : "-"}</dd>
+                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Bronze Cells</dt>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(state.excelLakehouse?.counts?.bronze_cells) ? n(state.excelLakehouse.counts.bronze_cells) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
-                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Actual total piutang</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.total_piutang) ? rupiah(rec.total_piutang) : "-"}</dd>
+                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Silver Items</dt>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(state.excelLakehouse?.counts?.silver_rab_items) ? n(state.excelLakehouse.counts.silver_rab_items) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
-                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Expected penunggak</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.target_jumlah_penunggak) ? n(rec.target_jumlah_penunggak) : "-"}</dd>
+                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Nomenklatur Detail</dt>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(state.excelLakehouse?.counts?.nomenklatur_detail) ? n(state.excelLakehouse.counts.nomenklatur_detail) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
-                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Actual penunggak</dt>
-                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(rec.jumlah_penunggak) ? n(rec.jumlah_penunggak) : "-"}</dd>
+                  <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Fact Rows</dt>
+                  <dd style="margin:0; font-size:clamp(1.35rem, 1.6vw, 1.65rem); font-weight:700; color:#0f172a;">${has(state.excelLakehouse?.counts?.fact_anggaran_rows) ? n(state.excelLakehouse.counts.fact_anggaran_rows) : "-"}</dd>
                 </div>
                 <div style="flex:1 1 180px; padding:1.5rem 1.25rem; background:var(--surface-low); border-radius:.75rem; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 4px rgba(0,0,0,0.01);">
                   <dt class="muted" style="margin-bottom:.5rem; font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Status Quality Gate</dt>
@@ -1619,6 +1621,50 @@
             ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada riwayat sinkronisasi layer.", "Jalankan Bronze, Silver, atau Gold untuk menampilkan log realtime.")}
           </section>
         </div>`;
+    }
+
+    function excelLakehousePanel() {
+      const status = state.excelLakehouse || {};
+      const summary = status.pipeline_summary || status.metadata || {};
+      const artifacts = status.artifacts || {};
+      const dashboard = state.truth?.dashboard || {};
+      return `<section class="glass-panel w-full">
+        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;">
+          <div>
+            <h3 class="section-title" style="margin:0;display:flex;align-items:center;gap:.5rem;">
+              <span class="material-symbols-outlined" style="color:var(--primary);">upload_file</span>
+              SILARAS SD Control Center
+            </h3>
+            <p class="small muted" style="margin:.35rem 0 0;">Upload Excel RAB/RPD/IKU/Nomenklatur multi-file. PDF dan CSV tidak diperlukan untuk pipeline baru.</p>
+          </div>
+          ${badge(status.status || "missing", status.status === "ready" ? "ok" : "info")}
+        </div>
+        <form id="excelDatasetForm" class="section-grid grid-3" enctype="multipart/form-data">
+          <label class="field-label">Tahun Input<input class="input" name="tahun_input" value="2025" placeholder="2025"></label>
+          <label class="field-label">Periode<input class="input" name="periode" value="Tahunan" placeholder="Jan-Jun / Jul-Des / Tahunan"></label>
+          <label class="field-label">Jenis Dataset<select class="input" name="jenis_dataset"><option value="mixed_excel">MIXED_EXCEL</option><option value="rab">RAB</option><option value="rpd_iku">RPD_IKU</option><option value="nomenklatur">NOMENKLATUR</option></select></label>
+          <label class="field-label">Prodi<input class="input" name="prodi" value="Sains Data"></label>
+          <label class="field-label">Fakultas<input class="input" name="fakultas" value="Fakultas Sains"></label>
+          <label class="field-label">Catatan<input class="input" name="catatan" placeholder="Catatan upload"></label>
+          <label class="field-label" style="grid-column:1/-1;">File Excel<input class="input" type="file" name="file_excel[]" accept=".xlsx,.xlsm,.xltx,.xltm" multiple></label>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;grid-column:1/-1;">
+            <button class="primary-button" type="submit"><span class="material-symbols-outlined" style="font-size:18px;">cloud_upload</span>Upload Dataset Excel</button>
+            <button class="secondary-button" type="button" id="runExcelLakehouse"><span class="material-symbols-outlined" style="font-size:18px;">play_arrow</span>Run Pipeline Excel</button>
+            <a class="secondary-button" href="${safe(dashboard.dashboard_url || CONTROL.dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Superset Dashboard</a>
+          </div>
+        </form>
+        <div class="section-grid grid-4" style="margin-top:1rem;">
+          ${tailwindCard("Run ID", safe(summary.run_id), "Pipeline run terakhir", "tag", "#0b57d0", "#eff6ff")}
+          ${tailwindCard("Bronze Cells", n(summary.bronze_cells || 0), "Value + formula + warna + merge", "dataset", "#92400e", "#fffbeb")}
+          ${tailwindCard("Silver Items", n(summary.silver_rab_items || 0), "Item RAB fact-ready", "filter_alt", "#475569", "#f8fafc")}
+          ${tailwindCard("fact_anggaran", n(summary.fact_anggaran_rows || 0), "Gold single fact table", "stars", "#166534", "#f0fdf4")}
+        </div>
+        <div class="section-grid grid-3" style="margin-top:1rem;">
+          ${sourceStatusCard("Bronze Parquet", artifacts.bronze_excel_cells, "database", "data/generated/bronze")}
+          ${sourceStatusCard("Silver Parquet", artifacts.silver_rab_items_flexible, "table_view", "data/generated/silver")}
+          ${sourceStatusCard("Gold Parquet", artifacts.fact_anggaran, "workspace_premium", "data/generated/gold")}
+        </div>
+      </section>`;
     }
 
     function storageLayerTable(layers) {
@@ -1864,7 +1910,7 @@
               <h3 class="section-title" style="color:#0f172a; margin:0;">Superset Integration Status</h3>
               ${badge(state.truth?.services?.superset?.status || "unreachable", statusType(state.truth?.services?.superset?.status || "unreachable"))}
             </div>
-            <p class="muted" style="font-size:0.9rem; line-height:1.5; margin-top:0.5rem;">Dashboard analitik piutang UKT Prodi hanya dinyatakan tersedia jika artefak dashboard dan layanan Superset tervalidasi.</p>
+            <p class="muted" style="font-size:0.9rem; line-height:1.5; margin-top:0.5rem;">Dashboard analitik anggaran IKU Prodi dinyatakan tersedia jika dataset fact_anggaran, chart, dashboard, dan layanan Superset tervalidasi.</p>
             <div class="divider"></div>
             <a class="primary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span> Buka Superset Dashboard</a>
           </div>
@@ -1904,11 +1950,11 @@
               <div style="display:flex; flex-direction:column; gap:1.75rem; margin-bottom: 2rem;">
                 <h4 class="form-label" style="font-size:1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.75rem; margin-bottom:-0.5rem; color:#0f172a;">Evaluasi Kriteria</h4>
                 ${[
-                  ["Navigation Facility", "Apakah filter prodi, semester, dan status piutang mudah digunakan?"],
+                  ["Navigation Facility", "Apakah filter tahun, periode, prodi, IKU, kegiatan, dan akun mudah digunakan?"],
                   ["Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Pie Chart, Line Chart, dan Table mudah dibaca?"],
-                  ["Data Relevance", "Apakah informasi piutang sesuai dengan kebutuhan pemantauan prodi?"],
-                  ["Data Consistency", "Apakah rincian mahasiswa, status kualitas, dan nominal piutang tampil konsisten tanpa duplikasi?"],
-                  ["Usefulness in Decision", "Apakah informasi piutang macet membantu prioritas tindak lanjut oleh Kaprodi atau dosen wali?"]
+                  ["Data Relevance", "Apakah informasi anggaran IKU sesuai dengan kebutuhan pemantauan prodi?"],
+                  ["Data Consistency", "Apakah item anggaran, mapping IKU, dan nominal tampil konsisten tanpa duplikasi?"],
+                  ["Usefulness in Decision", "Apakah informasi anggaran per IKU membantu prioritas tindak lanjut oleh Kaprodi?"]
                 ].map(([title, question], i) => `
                   <div style="display:flex; flex-direction:column; gap:0.75rem;">
                     <div>
@@ -2067,16 +2113,16 @@
           </section>
 
           <section class="section-grid grid-3 w-full">
-            ${sourceStatusCard("PDF Audited", source.pdf || state.pdfStatus, "picture_as_pdf", "Status dokumen PDF aktif")}
-            ${sourceStatusCard("CSV Transaksi", source.csv, "csv", "Status dua file transaksi aktif")}
-            ${sourceStatusCard("Excel RAB", source.excel, "table_chart", `Status file RAB ${targetLabel()}`)}
+            ${sourceStatusCard("SILARAS SD", source.excel_lakehouse, "table_chart", "Status raw Excel RAB/RPD/IKU/Nomenklatur")}
+            ${sourceStatusCard("Legacy PDF/CSV", source.legacy_pdf_csv, "inventory_2", "Artefak lama, bukan default pipeline")}
+            ${sourceStatusCard("Superset Dashboard", state.truth?.dashboard, "dashboard", "Status dashboard fact_anggaran")}
           </section>
 
           <section class="section-grid grid-4 w-full">
-            ${metric("PDF Sample", ref.pdf_sample?.available ? "Available" : "Missing", runtimeTarget().paths?.sample_pdf || "data/samples/ITERA_LKTA2024Audited.pdf", "picture_as_pdf")}
-            ${metric("Master UKT CSV", ref.ukt?.available ? "Available" : "Missing", `${ref.ukt?.rows || 0} rows`, "school")}
-            ${metric("Master SPI CSV", ref.spi?.available ? "Available" : "Missing", `${ref.spi?.rows || 0} rows`, "payments")}
-            ${metric("Master Biaya Excel", ref.excel?.master_biaya_available ? "Available" : "Missing", "data/raw/excel/master_biaya_itera.xlsx", "table_chart")}
+            ${metric("Bronze Cells", state.excelLakehouse?.counts?.bronze_cells ? n(state.excelLakehouse.counts.bronze_cells) : "-", "Cell-level extraction", "database")}
+            ${metric("Silver Items", state.excelLakehouse?.counts?.silver_rab_items ? n(state.excelLakehouse.counts.silver_rab_items) : "-", "Flexible normalization", "filter_alt")}
+            ${metric("Nomenklatur", state.excelLakehouse?.counts?.nomenklatur_detail ? n(state.excelLakehouse.counts.nomenklatur_detail) : "-", "Master IKU/kegiatan", "account_tree")}
+            ${metric("fact_anggaran", state.excelLakehouse?.counts?.fact_anggaran_rows ? n(state.excelLakehouse.counts.fact_anggaran_rows) : "-", "Gold single fact", "stars")}
           </section>
 
           <section class="glass-panel w-full">
@@ -2193,6 +2239,7 @@
       bindCopyButtons();
       bindRuntimeContextControls();
       bindUploadButtons();
+      bindExcelLakehouseControls();
       bindUploadSessionControls();
       bindPipelineButtons();
       bindUatSubmit();
@@ -2214,6 +2261,7 @@
       renderFooterStatus();
       bindRuntimeContextControls();
       bindUploadButtons();
+      bindExcelLakehouseControls();
       bindUploadSessionControls();
       bindPipelineButtons();
     }
@@ -2329,6 +2377,44 @@
       if (value("ctx-target-tahun-akademik")) payload.target_tahun_akademik = value("ctx-target-tahun-akademik");
       if (value("ctx-target-tahun-anggaran")) payload.target_tahun_anggaran = value("ctx-target-tahun-anggaran");
       return payload;
+    }
+
+    function bindExcelLakehouseControls() {
+      const form = document.getElementById("excelDatasetForm");
+      if (form && !form.dataset.bound) {
+        form.dataset.bound = "true";
+        form.addEventListener("submit", async event => {
+          event.preventDefault();
+          const formData = new FormData(form);
+          try {
+            const result = await apiPost("/api/upload/excel-dataset", formData);
+            showToast(`Dataset Excel tersimpan: ${result.dataset_id}`);
+            await refreshData({ silent: true });
+          } catch (error) {
+            showToast(error.message || "Upload Excel gagal");
+          }
+        });
+      }
+      const run = document.getElementById("runExcelLakehouse");
+      if (run && !run.dataset.bound) {
+        run.dataset.bound = "true";
+        run.addEventListener("click", async () => {
+          run.disabled = true;
+          const old = run.innerHTML;
+          run.textContent = "Running...";
+          try {
+            const runId = state.excelLakehouse?.metadata?.run_id || state.excelLakehouse?.pipeline_summary?.run_id || "latest";
+            const result = await apiPost(`/api/pipeline/run/${runId}`, {});
+            showToast(result.pipeline?.status === "success" ? "Pipeline Excel selesai." : "Pipeline Excel perlu dicek.");
+            await refreshData({ silent: true });
+          } catch (error) {
+            showToast(error.message || "Pipeline Excel gagal");
+          } finally {
+            run.disabled = false;
+            run.innerHTML = old;
+          }
+        });
+      }
     }
 
     async function apiDelete(path, body) {
@@ -2600,7 +2686,7 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary, runtimeConfig, scenarios, truth, uploadSession] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, pdfStatus, referenceSummary, runtimeConfig, scenarios, truth, uploadSession, excelLakehouse] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -2614,7 +2700,8 @@
           apiGet("/api/runtime-config").catch(() => null),
           apiGet("/api/upload/scenarios").catch(() => null),
           apiGet("/api/system-truth/status").catch(() => null),
-          apiGet("/api/upload/session/status").catch(() => null)
+          apiGet("/api/upload/session/status").catch(() => null),
+          apiGet("/api/excel-lakehouse/status").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
         state.truth = truth || metrics.raw?.truth || lakehouse.truth || null;
@@ -2654,6 +2741,7 @@
         state.runtimeConfig = runtimeConfig || metrics.runtime_config || null;
         state.scenarios = scenarios?.scenarios || [];
         state.uploadSession = uploadSession;
+        state.excelLakehouse = excelLakehouse;
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });
@@ -2676,11 +2764,12 @@
       if (routeAbortController) routeAbortController.abort();
       routeAbortController = new AbortController();
       const { signal } = routeAbortController;
-      const [activity, runtimeConfig, truth, uploadSession] = await Promise.all([
+      const [activity, runtimeConfig, truth, uploadSession, excelLakehouse] = await Promise.all([
         apiGet("/api/activity", { signal }).catch(() => null),
         apiGet("/api/runtime-config", { signal }).catch(() => null),
         apiGet("/api/system-truth/status", { signal }).catch(() => null),
-        apiGet("/api/upload/session/status", { signal }).catch(() => null)
+        apiGet("/api/upload/session/status", { signal }).catch(() => null),
+        apiGet("/api/excel-lakehouse/status", { signal }).catch(() => null)
       ]);
       if (signal.aborted) return;
       if (activity) state.activities = activity.activities || [];
@@ -2702,6 +2791,7 @@
         };
       }
       if (uploadSession) state.uploadSession = uploadSession;
+      if (excelLakehouse) state.excelLakehouse = excelLakehouse;
       renderDataOnly();
       setRoute({ scroll: false });
     }

@@ -114,27 +114,33 @@ def _configured_value(value: Any, source: str = "runtime_config") -> dict[str, A
 
 def _source_status(base_dir: Path) -> dict[str, Any]:
     raw_dir = base_dir / "data" / "raw"
-    layers = {
-        "pdf": list((raw_dir / "pdf").rglob("*.pdf")),
-        "csv": list((raw_dir / "csv").rglob("*.csv")),
-        "excel": list((raw_dir / "excel").rglob("*.xlsx")),
+    excel_lakehouse_files = list((raw_dir / "excel_lakehouse").rglob("*.xlsx"))
+    excel_legacy_files = list((raw_dir / "excel").rglob("*.xlsx"))
+    pdf_legacy_files = list((raw_dir / "pdf").rglob("*.pdf"))
+    csv_legacy_files = list((raw_dir / "csv").rglob("*.csv"))
+    excel_files = sorted(excel_lakehouse_files or excel_legacy_files)
+    excel_dir = raw_dir / ("excel_lakehouse" if excel_lakehouse_files else "excel")
+    return {
+        "excel_lakehouse": {
+            "status": "ready" if excel_files else "empty" if excel_dir.exists() else "missing",
+            "file_count": len(excel_files),
+            "files": [_rel(path, base_dir) for path in excel_files],
+            "message": "Raw SILARAS SD tersedia dan menjadi sumber default."
+            if excel_files
+            else "Raw SILARAS SD belum tersedia.",
+        },
+        "legacy_pdf_csv": {
+            "status": "skipped" if pdf_legacy_files or csv_legacy_files else "not_available",
+            "file_count": len(pdf_legacy_files) + len(csv_legacy_files),
+            "files": [],
+            "message": "PDF/CSV lama hanya dipertahankan sebagai artefak legacy; bukan default pipeline.",
+        },
     }
-    result = {}
-    for source_type, files in layers.items():
-        source_dir = raw_dir / source_type
-        status = "ready" if files else "empty" if source_dir.exists() else "missing"
-        result[source_type] = {
-            "status": status,
-            "file_count": len(files),
-            "files": [_rel(path, base_dir) for path in sorted(files)],
-            "message": "Artefak sumber tersedia." if files else "Artefak sumber belum tersedia.",
-        }
-    return result
 
 
 def _layer_status(base_dir: Path) -> dict[str, Any]:
     generated = base_dir / "data" / "generated"
-    return {
+    result = {
         "staging": _artifact_status([base_dir / "data" / "uploads" / "staging"], base_dir),
         "raw": _artifact_status([base_dir / "data" / "raw"], base_dir),
         "bronze": _artifact_status(
@@ -168,6 +174,30 @@ def _layer_status(base_dir: Path) -> dict[str, Any]:
         "metrics": _artifact_status([base_dir / "outputs" / "metrics"], base_dir),
         "reports": _artifact_status([base_dir / "outputs" / "reports"], base_dir),
     }
+    result["excel_lakehouse"] = _artifact_status(
+        [
+            generated / "bronze" / "bronze_excel_cells.parquet",
+            generated / "silver" / "silver_rab_items_flexible.parquet",
+            generated / "silver" / "silver_nomenklatur_detail.parquet",
+            generated / "silver" / "silver_mapping.parquet",
+            generated / "silver" / "silver_validation.parquet",
+            generated / "gold" / "fact_anggaran.parquet",
+        ],
+        base_dir,
+    )
+    if result["excel_lakehouse"]["status"] == "ready":
+        result["bronze"] = _artifact_status([generated / "bronze" / "bronze_excel_cells.parquet"], base_dir)
+        result["silver"] = _artifact_status(
+            [
+                generated / "silver" / "silver_rab_items_flexible.parquet",
+                generated / "silver" / "silver_nomenklatur_detail.parquet",
+                generated / "silver" / "silver_mapping.parquet",
+                generated / "silver" / "silver_validation.parquet",
+            ],
+            base_dir,
+        )
+        result["gold"] = _artifact_status([generated / "gold" / "fact_anggaran.parquet"], base_dir)
+    return result
 
 
 def _quality_gate_status(base_dir: Path) -> dict[str, Any]:
@@ -396,16 +426,17 @@ def _storage_status(base_dir: Path, services: dict[str, Any]) -> dict[str, Any]:
     manifest = _read_json(manifest_path)
     minio_service = services.get("minioApi", {})
     upload = (manifest or {}).get("upload", {})
+    manifest_status = (manifest or {}).get("status")
     if not mapping and not manifest:
         status = "not_started"
         message = "Storage manifest belum dibuat."
     elif minio_service.get("status") == "unreachable":
         status = "configured_unreachable"
         message = "Mapping storage tersedia, tetapi endpoint MinIO tidak dapat dijangkau."
-    elif upload.get("status") == "uploaded":
+    elif upload.get("status") == "uploaded" or manifest_status == "uploaded":
         status = "uploaded"
         message = "Upload MinIO dilaporkan berhasil oleh manifest."
-    elif upload.get("status") == "skipped":
+    elif upload.get("status") == "skipped" or manifest_status == "mapped_not_uploaded":
         status = "skipped"
         message = "Upload MinIO tidak dijalankan; layer hanya mapped."
     else:
@@ -422,16 +453,16 @@ def _storage_status(base_dir: Path, services: dict[str, Any]) -> dict[str, Any]:
 
 
 def _superset_dashboard_status(base_dir: Path, services: dict[str, Any]) -> dict[str, Any]:
-    assets_path = base_dir / "outputs" / "reports" / "superset_assets.json"
-    dashboard_path = base_dir / "outputs" / "reports" / "superset_dashboard.json"
+    assets_path = base_dir / "outputs" / "reports" / "superset_excel_assets.json"
+    dashboard_path = base_dir / "outputs" / "reports" / "superset_excel_dashboard.json"
     dashboard = _read_json(dashboard_path)
     assets = _read_json(assets_path)
     service_status = services.get("superset", {}).get("status")
-    if service_status == "unreachable":
+    if service_status == "unreachable" or (dashboard or {}).get("status") == "unreachable":
         return {
             "status": "unreachable",
             "source": _rel(dashboard_path, base_dir) if dashboard_path.exists() else None,
-            "message": "Superset live validation belum dapat dijalankan karena layanan tidak aktif.",
+            "message": (dashboard or {}).get("message") or "Superset live validation belum dapat dijalankan karena layanan tidak aktif.",
             "dashboard_url": (dashboard or {}).get("dashboard_url"),
         }
     if dashboard and assets:
@@ -497,6 +528,8 @@ def _not_started_artifact(name: str, message: str) -> dict[str, Any]:
 
 
 def _apply_uploaded_session_freshness(truth: dict[str, Any], base_dir: Path) -> None:
+    if truth.get("layers", {}).get("excel_lakehouse", {}).get("status") == "ready":
+        return
     pointer = _active_upload_pointer(base_dir)
     if not pointer:
         return

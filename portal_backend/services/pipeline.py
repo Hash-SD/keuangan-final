@@ -18,6 +18,8 @@ COMMANDS: dict[str, list[list[str]]] = {
     "bronze": [[sys.executable, "src/transformations/bronze_ingest.py"]],
     "silver": [[sys.executable, "src/transformations/silver_clean.py"]],
     "gold": [[sys.executable, "src/transformations/gold_star_schema.py"]],
+    "excel-lakehouse": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
+    "superset-excel": [[sys.executable, "src/sql/setup_superset_excel_assets.py"]],
     "metrics": [
         [sys.executable, "src/metrics/reconcile_control_total.py"],
         [sys.executable, "src/metrics/pipeline_latency.py"],
@@ -29,20 +31,26 @@ COMMANDS: dict[str, list[list[str]]] = {
         [sys.executable, "src/status/system_truth_status.py"],
     ],
     "storage-manifest": [[sys.executable, "src/storage/storage_manifest.py"]],
+    "excel-storage-manifest": [[sys.executable, "src/storage/excel_storage_manifest.py"]],
+    "excel-count-validation": [[sys.executable, "src/metrics/validate_excel_lakehouse_counts.py"]],
     "truth-status": [[sys.executable, "src/status/system_truth_status.py"]],
     "validate-gold": [[sys.executable, "src/metrics/reconcile_control_total.py"]],
 }
 
-FULL_RUN_BASIC = ["generate-data", "quality-gate", "bronze", "silver", "gold", "metrics"]
-FULL_RUN_UPLOADED_SOURCES = ["quality-gate", "bronze", "silver", "gold", "metrics"]
+FULL_RUN_BASIC = ["excel-lakehouse", "excel-count-validation", "excel-storage-manifest", "superset-excel", "truth-status"]
+FULL_RUN_UPLOADED_SOURCES = FULL_RUN_BASIC
 ACTIVITY_ACTIONS = {
     "generate-data": ("generate_data", "raw"),
     "quality-gate": ("quality_gate_process", "quality_gate"),
     "bronze": ("extract_bronze", "bronze"),
     "silver": ("clean_silver", "silver"),
     "gold": ("load_gold_schema", "gold"),
+    "excel-lakehouse": ("excel_lakehouse", "gold/fact_anggaran"),
+    "superset-excel": ("superset_excel_dashboard", "superset"),
     "metrics": ("metrics", "outputs/metrics"),
     "storage-manifest": ("storage_manifest", "outputs/reports"),
+    "excel-storage-manifest": ("excel_storage_manifest", "outputs/reports"),
+    "excel-count-validation": ("excel_count_validation", "outputs/reports"),
     "truth-status": ("system_truth_status", "outputs/reports"),
     "validate-gold": ("validate_mart", "gold"),
 }

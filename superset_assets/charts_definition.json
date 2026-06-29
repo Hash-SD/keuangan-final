@@ -1,0 +1,17 @@
+{
+  "dashboard_title": "SILARAS SD - Dashboard Anggaran IKU",
+  "charts": [
+    {"name": "KPI Total Anggaran", "viz_type": "big_number_total", "metric": "SUM(jumlah)"},
+    {"name": "KPI Total Anggaran Weighted IKU", "viz_type": "big_number_total", "metric": "SUM(jumlah_weighted_iku)"},
+    {"name": "KPI Jumlah IKU", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kode_iku)"},
+    {"name": "KPI Jumlah Kegiatan", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kegiatan)"},
+    {"name": "KPI Jumlah Item", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT item_id)"},
+    {"name": "KPI Mapping OK %", "viz_type": "big_number_total", "metric": "100 * SUM(CASE WHEN mapping_status IN ('exact_match','parsed','source_table') THEN 1 ELSE 0 END) / COUNT(*)"},
+    {"name": "Anggaran per IKU", "viz_type": "echarts_timeseries_bar", "groupby": ["iku"], "metric": "SUM(jumlah_weighted_iku)"},
+    {"name": "Treemap IKU to Cluster Kegiatan", "viz_type": "treemap_v2", "groupby": ["iku", "cluster_kegiatan"], "metric": "SUM(jumlah_weighted_iku)"},
+    {"name": "Anggaran per Akun", "viz_type": "echarts_timeseries_bar", "groupby": ["akun"], "metric": "SUM(jumlah)"},
+    {"name": "Detail Item Biaya", "viz_type": "table", "columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "jumlah", "source_file", "source_sheet", "source_row"]},
+    {"name": "Mapping Quality", "viz_type": "table", "columns": ["mapping_status", "data_quality_flag"], "metric": "COUNT(DISTINCT item_id)"},
+    {"name": "Validation Reconciliation", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation"}
+  ]
+}

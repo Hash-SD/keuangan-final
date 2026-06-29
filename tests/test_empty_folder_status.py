@@ -22,7 +22,8 @@ def test_system_truth_source_empty_folder_is_empty(tmp_path: Path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     truth = build_system_truth_status(base_dir=tmp_path, write_outputs=False)
 
-    assert truth["sources"]["pdf"]["status"] == "empty"
+    assert truth["sources"]["excel_lakehouse"]["status"] == "empty"
+    assert truth["sources"]["legacy_pdf_csv"]["status"] == "not_available"
 
 
 def test_system_truth_includes_staging_layer(tmp_path: Path, monkeypatch):

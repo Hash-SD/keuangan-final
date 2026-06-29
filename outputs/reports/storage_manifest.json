@@ -1,0 +1,4625 @@
+{
+  "generated_at": "2026-06-29T08:15:39+00:00",
+  "bucket": "lakehouse",
+  "upload_enabled": false,
+  "required_prefixes": [
+    "s3://lakehouse/raw/",
+    "s3://lakehouse/bronze/",
+    "s3://lakehouse/silver/",
+    "s3://lakehouse/gold/",
+    "s3://lakehouse/reports/",
+    "s3://lakehouse/logs/"
+  ],
+  "local_mapping": {
+    "raw": "data/raw",
+    "bronze": "data/generated/bronze",
+    "silver": "data/generated/silver",
+    "gold": "data/generated/gold",
+    "reports": "outputs/reports",
+    "logs": "outputs/logs"
+  },
+  "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4",
+  "status": "mapped_not_uploaded",
+  "entries": [
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76389,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 75962,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76389,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 75962,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76827,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76352,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76827,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76352,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-124259-e3b06e_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-124259-e3b06e_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-124259-e3b06e_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-124259-e3b06e_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-124330-e675d1_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-124330-e675d1_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-124330-e675d1_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-124330-e675d1_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-124902-e16149_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-124902-e16149_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-124902-e16149_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-124902-e16149_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-125733-401ba5_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-125733-401ba5_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-125733-401ba5_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-125733-401ba5_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-130646-c31933_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-130646-c31933_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-130646-c31933_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-130646-c31933_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-130851-519fb1_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-130851-519fb1_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-130851-519fb1_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-130851-519fb1_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-131119-658d87_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-131119-658d87_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-131119-658d87_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-131119-658d87_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-131621-475244_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-131621-475244_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-131621-475244_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-131621-475244_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-132747-2033ee_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-132747-2033ee_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-132747-2033ee_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-132747-2033ee_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-133535-9af651_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-133535-9af651_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-133535-9af651_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-133535-9af651_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-133536-2fa739_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-133536-2fa739_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-133536-2fa739_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-133536-2fa739_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-134138-0c3145_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-134138-0c3145_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-134138-0c3145_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-134138-0c3145_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-134843-530241_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-134843-530241_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-134843-530241_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-134843-530241_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-135345-cfee2b_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-135345-cfee2b_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-135345-cfee2b_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-135345-cfee2b_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-135731-29ece2_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-135731-29ece2_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-135731-29ece2_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-135731-29ece2_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-135954-8730c7_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-135954-8730c7_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-135954-8730c7_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-135954-8730c7_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-140346-90d0b2_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-140346-90d0b2_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-140346-90d0b2_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-140346-90d0b2_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-140708-a75f9a_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-140708-a75f9a_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-140708-a75f9a_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-140708-a75f9a_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141002-83085f_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141002-83085f_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141002-83085f_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141002-83085f_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141217-312bab_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141217-312bab_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141217-312bab_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141217-312bab_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141620-e2f041_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141620-e2f041_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141620-e2f041_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141620-e2f041_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141621-2c7519_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141621-2c7519_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141621-2c7519_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141621-2c7519_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141837-b6b880_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141837-b6b880_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141837-b6b880_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141837-b6b880_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141838-cf84e3_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141838-cf84e3_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-141838-cf84e3_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-141838-cf84e3_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-142420-015f96_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-142420-015f96_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-142420-015f96_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-142420-015f96_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-142828-bab4b4_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-142828-bab4b4_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80402,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-142828-bab4b4_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-142828-bab4b4_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80440,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-142830-d616c9_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-142830-d616c9_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-142830-d616c9_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-142830-d616c9_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76755,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76303,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76755,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76303,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182827-7e4e5b_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182827-7e4e5b_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182827-7e4e5b_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182827-7e4e5b_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182829-a0d876_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182829-a0d876_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182829-a0d876_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182829-a0d876_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182835-a0ac16_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182835-a0ac16_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182835-a0ac16_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182835-a0ac16_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 450,
+      "file_size": 95955,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 450,
+      "file_size": 95696,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-183020-b955fc_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-183020-b955fc_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-183020-b955fc_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-183020-b955fc_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-183022-ff6c72_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-183022-ff6c72_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-08-183022-ff6c72_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-08-183022-ff6c72_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-005629-f61207_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-005629-f61207_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-005629-f61207_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-005629-f61207_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-005630-b8438d_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-005630-b8438d_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-005630-b8438d_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-005630-b8438d_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-010731-a71549_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-010731-a71549_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-010731-a71549_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-010731-a71549_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-010947-a091a4_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-010947-a091a4_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-010947-a091a4_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-010947-a091a4_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011259-55a189_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011259-55a189_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011259-55a189_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011259-55a189_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011447-7d72bc_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011447-7d72bc_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011447-7d72bc_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011447-7d72bc_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011448-ff6fa9_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011448-ff6fa9_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011448-ff6fa9_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011448-ff6fa9_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011818-37cc4d_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011818-37cc4d_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-011818-37cc4d_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-011818-37cc4d_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-012016-99d005_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-012016-99d005_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-012016-99d005_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-012016-99d005_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-012017-d52c37_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-012017-d52c37_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-09-012017-d52c37_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-09-012017-d52c37_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075119-4f7fec_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075119-4f7fec_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075119-4f7fec_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075119-4f7fec_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075120-041eef_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075120-041eef_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075120-041eef_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075120-041eef_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075409-404954_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075409-404954_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075409-404954_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075409-404954_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075410-671a61_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075410-671a61_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-075410-671a61_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-075410-671a61_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080006-3c7f64_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080006-3c7f64_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080006-3c7f64_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080006-3c7f64_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080007-3d4d59_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080007-3d4d59_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080007-3d4d59_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080007-3d4d59_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080609-45e11b_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080609-45e11b_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080609-45e11b_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080609-45e11b_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080610-536df5_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080610-536df5_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080610-536df5_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080610-536df5_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080832-19b69e_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080832-19b69e_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080832-19b69e_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080832-19b69e_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080833-f7809b_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080833-f7809b_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-080833-f7809b_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-080833-f7809b_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-081402-308d55_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-081402-308d55_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-081402-308d55_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-081402-308d55_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-081403-eaa46c_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-081403-eaa46c_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 77010,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/2025-2026/upload-2026-06-29-081403-eaa46c_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/2025-2026/upload-2026-06-29-081403-eaa46c_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76972,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/dummy_upload.csv",
+      "s3_path": "s3://lakehouse/raw/csv/dummy_upload.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 1,
+      "file_size": 78,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/raw/csv/transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/csv/transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/raw/csv/transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2024/upload-2026-06-08-182627-bd63d6_rab_2024.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2024/upload-2026-06-08-182627-bd63d6_rab_2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2024/upload-2026-06-08-182717-6d4144_rab_2024.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2024/upload-2026-06-08-182717-6d4144_rab_2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2025/upload-2026-06-08-182634-e4c5ec_rab_2025.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2025/upload-2026-06-08-182634-e4c5ec_rab_2025.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2025/upload-2026-06-08-182727-9d6853_rab_2025.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2025/upload-2026-06-08-182727-9d6853_rab_2025.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-124259-e3b06e_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-124259-e3b06e_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-124330-e675d1_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-124330-e675d1_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-124902-e16149_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-124902-e16149_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-125733-401ba5_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-125733-401ba5_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-130646-c31933_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-130646-c31933_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-130851-519fb1_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-130851-519fb1_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-131119-658d87_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-131119-658d87_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-131621-475244_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-131621-475244_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-132747-2033ee_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-132747-2033ee_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-133535-9af651_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-133535-9af651_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-133536-2fa739_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-133536-2fa739_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-134138-0c3145_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-134138-0c3145_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-134843-530241_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-134843-530241_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-135345-cfee2b_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-135345-cfee2b_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-135731-29ece2_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-135731-29ece2_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-135954-8730c7_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-135954-8730c7_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-140346-90d0b2_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-140346-90d0b2_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-140708-a75f9a_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-140708-a75f9a_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-141002-83085f_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-141002-83085f_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-141217-312bab_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-141217-312bab_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-141620-e2f041_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-141620-e2f041_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-141621-2c7519_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-141621-2c7519_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-141837-b6b880_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-141837-b6b880_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-141838-cf84e3_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-141838-cf84e3_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-142420-015f96_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-142420-015f96_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-142828-bab4b4_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-142828-bab4b4_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-142830-d616c9_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-142830-d616c9_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-182640-884019_rab_2026.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-182640-884019_rab_2026.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-182736-b2825d_rab_2026.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-182736-b2825d_rab_2026.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-182827-7e4e5b_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-182827-7e4e5b_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-182829-a0d876_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-182829-a0d876_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-182835-a0ac16_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-182835-a0ac16_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-182857-838a97_rab_prodi_sains_data_2025_2026.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-182857-838a97_rab_prodi_sains_data_2025_2026.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-183020-b955fc_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-183020-b955fc_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-08-183022-ff6c72_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-08-183022-ff6c72_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-005629-f61207_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-005629-f61207_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-005630-b8438d_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-005630-b8438d_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-010731-a71549_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-010731-a71549_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-010947-a091a4_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-010947-a091a4_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-011259-55a189_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-011259-55a189_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-011447-7d72bc_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-011447-7d72bc_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-011448-ff6fa9_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-011448-ff6fa9_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-011818-37cc4d_rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-011818-37cc4d_rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-012016-99d005_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-012016-99d005_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-09-012017-d52c37_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-09-012017-d52c37_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-075119-4f7fec_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-075119-4f7fec_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-075120-041eef_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-075120-041eef_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-075409-404954_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-075409-404954_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-075410-671a61_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-075410-671a61_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-080006-3c7f64_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-080006-3c7f64_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-080007-3d4d59_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-080007-3d4d59_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-080609-45e11b_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-080609-45e11b_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-080610-536df5_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-080610-536df5_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-080832-19b69e_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-080832-19b69e_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-080833-f7809b_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-080833-f7809b_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-081402-308d55_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-081402-308d55_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/2026/upload-2026-06-29-081403-eaa46c_rab.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/2026/upload-2026-06-29-081403-eaa46c_rab.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/dummy_upload.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/dummy_upload.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 4888,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/master_biaya_itera.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/master_biaya_itera.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 16418,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel/rab_prodi_sains_data_2024_2025.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel/rab_prodi_sains_data_2024_2025.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6061,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/Nomenklatur.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/Nomenklatur.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 91281,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/RAB 2025 SD RAB IKU.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/RAB 2025 SD RAB IKU.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 849126,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 485119,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 637754,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/7d302e19-ef56-4409-9713-ed690b521f7b/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 403043,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/Nomenklatur.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/Nomenklatur.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 91281,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/RAB 2025 SD RAB IKU.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/RAB 2025 SD RAB IKU.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 849126,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 485119,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 637754,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/89bc845d-2201-42e7-8ce2-c57ce7741b16/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 403043,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/Nomenklatur.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/Nomenklatur.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 91281,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/RAB 2025 SD RAB IKU.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/RAB 2025 SD RAB IKU.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 849126,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 485119,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 637754,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/cea12d18-cabb-4a41-bcb3-f708a8bf05e7/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 403043,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/Nomenklatur.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/Nomenklatur.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 91281,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/RAB 2025 SD RAB IKU.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/RAB 2025 SD RAB IKU.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 849126,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 485119,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 637754,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/d8485e85-73d2-4c14-9ab1-c3e80450430b/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 403043,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/Nomenklatur.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/Nomenklatur.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 91281,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB 2025 SD RAB IKU.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB 2025 SD RAB IKU.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 849126,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 485119,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 637754,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "s3_path": "s3://lakehouse/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 403043,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2024/upload-2026-06-08-182627-bd63d6_laporan_audited_2024.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2024/upload-2026-06-08-182627-bd63d6_laporan_audited_2024.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88737,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2024/upload-2026-06-08-182717-6d4144_laporan_audited_2024.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2024/upload-2026-06-08-182717-6d4144_laporan_audited_2024.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88737,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2025/upload-2026-06-08-182634-e4c5ec_laporan_audited_2025.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2025/upload-2026-06-08-182634-e4c5ec_laporan_audited_2025.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88661,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2025/upload-2026-06-08-182727-9d6853_laporan_audited_2025.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2025/upload-2026-06-08-182727-9d6853_laporan_audited_2025.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88661,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-124259-e3b06e_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-124259-e3b06e_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-124330-e675d1_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-124330-e675d1_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-124902-e16149_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-124902-e16149_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-125733-401ba5_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-125733-401ba5_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-130646-c31933_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-130646-c31933_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-130851-519fb1_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-130851-519fb1_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-131119-658d87_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-131119-658d87_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-131621-475244_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-131621-475244_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-132747-2033ee_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-132747-2033ee_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-133535-9af651_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-133535-9af651_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-133536-2fa739_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-133536-2fa739_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-134138-0c3145_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-134138-0c3145_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-134843-530241_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-134843-530241_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-135345-cfee2b_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-135345-cfee2b_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-135731-29ece2_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-135731-29ece2_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-135954-8730c7_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-135954-8730c7_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-140346-90d0b2_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-140346-90d0b2_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-140708-a75f9a_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-140708-a75f9a_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-141002-83085f_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-141002-83085f_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-141217-312bab_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-141217-312bab_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-141620-e2f041_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-141620-e2f041_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-141621-2c7519_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-141621-2c7519_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-141837-b6b880_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-141837-b6b880_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-141838-cf84e3_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-141838-cf84e3_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-142420-015f96_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-142420-015f96_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-142828-bab4b4_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-142828-bab4b4_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-142830-d616c9_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-142830-d616c9_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-182640-884019_laporan_audited_2026.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-182640-884019_laporan_audited_2026.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88820,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-182736-b2825d_laporan_audited_2026.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-182736-b2825d_laporan_audited_2026.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88820,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-182827-7e4e5b_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-182827-7e4e5b_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-182829-a0d876_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-182829-a0d876_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-182835-a0ac16_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-182835-a0ac16_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-182857-838a97_ITERA_LKTA2026_Audited_Sains_Data_2025_2026.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-182857-838a97_ITERA_LKTA2026_Audited_Sains_Data_2025_2026.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88690,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-183020-b955fc_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-183020-b955fc_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-08-183022-ff6c72_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-08-183022-ff6c72_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-005629-f61207_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-005629-f61207_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-005630-b8438d_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-005630-b8438d_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-010731-a71549_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-010731-a71549_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-010947-a091a4_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-010947-a091a4_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-011259-55a189_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-011259-55a189_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-011447-7d72bc_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-011447-7d72bc_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-011448-ff6fa9_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-011448-ff6fa9_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-011818-37cc4d_ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-011818-37cc4d_ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-012016-99d005_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-012016-99d005_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-09-012017-d52c37_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-09-012017-d52c37_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-075119-4f7fec_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-075119-4f7fec_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-075120-041eef_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-075120-041eef_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-075409-404954_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-075409-404954_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-075410-671a61_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-075410-671a61_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-080006-3c7f64_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-080006-3c7f64_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-080007-3d4d59_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-080007-3d4d59_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-080609-45e11b_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-080609-45e11b_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-080610-536df5_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-080610-536df5_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-080832-19b69e_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-080832-19b69e_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-080833-f7809b_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-080833-f7809b_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-081402-308d55_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-081402-308d55_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/2026/upload-2026-06-29-081403-eaa46c_laporan.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/2026/upload-2026-06-29-081403-eaa46c_laporan.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88809,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/dummy_upload.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/dummy_upload.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 1390,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/ITERA_LKTA2023_Audited_Sains_Data_2022_2023.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/ITERA_LKTA2023_Audited_Sains_Data_2022_2023.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88445,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "raw",
+      "local_path": "data/raw/pdf/ITERA_LKTA2025_Audited_Sains_Data_2024_2025.pdf",
+      "s3_path": "s3://lakehouse/raw/pdf/ITERA_LKTA2025_Audited_Sains_Data_2024_2025.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88348,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/bronze_excel_cells.csv",
+      "s3_path": "s3://lakehouse/bronze/bronze_excel_cells.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 55449,
+      "file_size": 14218844,
+      "created_at": "2026-06-29T08:15:38+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/bronze_excel_cells.parquet",
+      "s3_path": "s3://lakehouse/bronze/bronze_excel_cells.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 354221,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76389,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2023-2024/upload-2026-06-08-182627-bd63d6_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 75962,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76389,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2023-2024/upload-2026-06-08-182717-6d4144_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 75962,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76827,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2024-2025/upload-2026-06-08-182634-e4c5ec_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76352,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76827,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2024-2025/upload-2026-06-08-182727-9d6853_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76352,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76755,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2025-2026/upload-2026-06-08-182640-884019_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76303,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76755,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2025-2026/upload-2026-06-08-182736-b2825d_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 76303,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 450,
+      "file_size": 95955,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/2025-2026/upload-2026-06-08-182857-838a97_transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 450,
+      "file_size": 95696,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/dummy_upload.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/dummy_upload.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 1,
+      "file_size": 78,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/transaksi_ganjil.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/transaksi_ganjil.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80401,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv/transaksi_genap.csv",
+      "s3_path": "s3://lakehouse/bronze/csv/transaksi_genap.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 400,
+      "file_size": 80439,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/csv_transactions_valid.csv",
+      "s3_path": "s3://lakehouse/bronze/csv_transactions_valid.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 880,
+      "file_size": 232753,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/2024/upload-2026-06-08-182627-bd63d6_rab_2024.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/2024/upload-2026-06-08-182627-bd63d6_rab_2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/2024/upload-2026-06-08-182717-6d4144_rab_2024.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/2024/upload-2026-06-08-182717-6d4144_rab_2024.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/2025/upload-2026-06-08-182634-e4c5ec_rab_2025.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/2025/upload-2026-06-08-182634-e4c5ec_rab_2025.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/2025/upload-2026-06-08-182727-9d6853_rab_2025.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/2025/upload-2026-06-08-182727-9d6853_rab_2025.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/2026/upload-2026-06-08-182640-884019_rab_2026.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/2026/upload-2026-06-08-182640-884019_rab_2026.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/2026/upload-2026-06-08-182736-b2825d_rab_2026.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/2026/upload-2026-06-08-182736-b2825d_rab_2026.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6059,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/2026/upload-2026-06-08-182857-838a97_rab_prodi_sains_data_2025_2026.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/2026/upload-2026-06-08-182857-838a97_rab_prodi_sains_data_2025_2026.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6058,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/dummy_upload.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/dummy_upload.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 4888,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/master_biaya_itera.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/master_biaya_itera.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 16395,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/rab_prodi_sains_data.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/rab_prodi_sains_data.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5968,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/excel/rab_prodi_sains_data_2024_2025.xlsx",
+      "s3_path": "s3://lakehouse/bronze/excel/rab_prodi_sains_data_2024_2025.xlsx",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 6061,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/ingestion_metadata.json",
+      "s3_path": "s3://lakehouse/bronze/ingestion_metadata.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 2053,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/2024/upload-2026-06-08-182627-bd63d6_laporan_audited_2024.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/2024/upload-2026-06-08-182627-bd63d6_laporan_audited_2024.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88737,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/2024/upload-2026-06-08-182717-6d4144_laporan_audited_2024.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/2024/upload-2026-06-08-182717-6d4144_laporan_audited_2024.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88737,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/2025/upload-2026-06-08-182634-e4c5ec_laporan_audited_2025.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/2025/upload-2026-06-08-182634-e4c5ec_laporan_audited_2025.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88661,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/2025/upload-2026-06-08-182727-9d6853_laporan_audited_2025.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/2025/upload-2026-06-08-182727-9d6853_laporan_audited_2025.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88661,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/2026/upload-2026-06-08-182640-884019_laporan_audited_2026.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/2026/upload-2026-06-08-182640-884019_laporan_audited_2026.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88820,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/2026/upload-2026-06-08-182736-b2825d_laporan_audited_2026.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/2026/upload-2026-06-08-182736-b2825d_laporan_audited_2026.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88820,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/2026/upload-2026-06-08-182857-838a97_ITERA_LKTA2026_Audited_Sains_Data_2025_2026.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/2026/upload-2026-06-08-182857-838a97_ITERA_LKTA2026_Audited_Sains_Data_2025_2026.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88690,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/dummy_upload.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/dummy_upload.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 1390,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/ITERA_LKTA2023_Audited_Sains_Data_2022_2023.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/ITERA_LKTA2023_Audited_Sains_Data_2022_2023.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88445,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/ITERA_LKTA2024Audited.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/ITERA_LKTA2024Audited.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88669,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/pdf/ITERA_LKTA2025_Audited_Sains_Data_2024_2025.pdf",
+      "s3_path": "s3://lakehouse/bronze/pdf/ITERA_LKTA2025_Audited_Sains_Data_2024_2025.pdf",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 88348,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/upload-2026-06-09-011818-37cc4d/bronze_excel_cells.csv",
+      "s3_path": "s3://lakehouse/bronze/upload-2026-06-09-011818-37cc4d/bronze_excel_cells.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 55449,
+      "file_size": 14218844,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "bronze",
+      "local_path": "data/generated/bronze/upload-2026-06-09-011818-37cc4d/bronze_excel_cells.parquet",
+      "s3_path": "s3://lakehouse/bronze/upload-2026-06-09-011818-37cc4d/bronze_excel_cells.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 354221,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/dim_kualitas_piutang.csv",
+      "s3_path": "s3://lakehouse/silver/dim_kualitas_piutang.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 271,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/fact_piutang_ukt_prodi.csv",
+      "s3_path": "s3://lakehouse/silver/fact_piutang_ukt_prodi.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 803,
+      "file_size": 312653,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/rab_prodi_sains_data_long.csv",
+      "s3_path": "s3://lakehouse/silver/rab_prodi_sains_data_long.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 60,
+      "file_size": 9875,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_bridge_detail_iku.csv",
+      "s3_path": "s3://lakehouse/silver/silver_bridge_detail_iku.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 975,
+      "file_size": 131922,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_bridge_detail_iku.parquet",
+      "s3_path": "s3://lakehouse/silver/silver_bridge_detail_iku.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 16956,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_mahasiswa.csv",
+      "s3_path": "s3://lakehouse/silver/silver_mahasiswa.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 410,
+      "file_size": 49190,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_mapping.csv",
+      "s3_path": "s3://lakehouse/silver/silver_mapping.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 363,
+      "file_size": 79346,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_mapping.parquet",
+      "s3_path": "s3://lakehouse/silver/silver_mapping.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 19748,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_master_spi.csv",
+      "s3_path": "s3://lakehouse/silver/silver_master_spi.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 41,
+      "file_size": 2413,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_master_ukt.csv",
+      "s3_path": "s3://lakehouse/silver/silver_master_ukt.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 328,
+      "file_size": 21048,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_metadata.json",
+      "s3_path": "s3://lakehouse/silver/silver_metadata.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 240,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_nomenklatur_detail.csv",
+      "s3_path": "s3://lakehouse/silver/silver_nomenklatur_detail.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 248,
+      "file_size": 269105,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_nomenklatur_detail.parquet",
+      "s3_path": "s3://lakehouse/silver/silver_nomenklatur_detail.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 55146,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_nomenklatur_warnings.csv",
+      "s3_path": "s3://lakehouse/silver/silver_nomenklatur_warnings.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 844,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_nomenklatur_warnings.parquet",
+      "s3_path": "s3://lakehouse/silver/silver_nomenklatur_warnings.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 5858,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_rab.csv",
+      "s3_path": "s3://lakehouse/silver/silver_rab.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 60,
+      "file_size": 9875,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_rab_hierarchy.csv",
+      "s3_path": "s3://lakehouse/silver/silver_rab_hierarchy.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 86,
+      "file_size": 15064,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_rab_hierarchy.parquet",
+      "s3_path": "s3://lakehouse/silver/silver_rab_hierarchy.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 9260,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_rab_items_flexible.csv",
+      "s3_path": "s3://lakehouse/silver/silver_rab_items_flexible.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 445,
+      "file_size": 343373,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_rab_items_flexible.parquet",
+      "s3_path": "s3://lakehouse/silver/silver_rab_items_flexible.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 83835,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_validation.csv",
+      "s3_path": "s3://lakehouse/silver/silver_validation.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 537,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/silver_validation.parquet",
+      "s3_path": "s3://lakehouse/silver/silver_validation.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 4522,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/transactions_clean.csv",
+      "s3_path": "s3://lakehouse/silver/transactions_clean.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 880,
+      "file_size": 335323,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-08-182857-838a97/fact_piutang_ukt_prodi.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-08-182857-838a97/fact_piutang_ukt_prodi.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 803,
+      "file_size": 312653,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-08-182857-838a97/rab_prodi_sains_data_long.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-08-182857-838a97/rab_prodi_sains_data_long.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 60,
+      "file_size": 9875,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-08-182857-838a97/silver_rab.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-08-182857-838a97/silver_rab.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 60,
+      "file_size": 9875,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-08-182857-838a97/transactions_clean.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-08-182857-838a97/transactions_clean.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 880,
+      "file_size": 335323,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_bridge_detail_iku.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_bridge_detail_iku.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 975,
+      "file_size": 131922,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_bridge_detail_iku.parquet",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_bridge_detail_iku.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 16956,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_mapping.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_mapping.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 363,
+      "file_size": 79346,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_mapping.parquet",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_mapping.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 19748,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_detail.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_detail.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 248,
+      "file_size": 269105,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_detail.parquet",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_detail.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 55146,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_warnings.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_warnings.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 844,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_warnings.parquet",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_warnings.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 5858,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_rab_hierarchy.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_rab_hierarchy.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 86,
+      "file_size": 15064,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_rab_hierarchy.parquet",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_rab_hierarchy.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 9260,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 445,
+      "file_size": 342912,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.parquet",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 83298,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_validation.csv",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_validation.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 537,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "silver",
+      "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_validation.parquet",
+      "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_validation.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 4522,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/dim_biaya_spi.csv",
+      "s3_path": "s3://lakehouse/gold/dim_biaya_spi.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 41,
+      "file_size": 2413,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/dim_biaya_ukt.csv",
+      "s3_path": "s3://lakehouse/gold/dim_biaya_ukt.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 328,
+      "file_size": 21048,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/dim_kualitas_piutang.csv",
+      "s3_path": "s3://lakehouse/gold/dim_kualitas_piutang.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 271,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/dim_mahasiswa.csv",
+      "s3_path": "s3://lakehouse/gold/dim_mahasiswa.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 803,
+      "file_size": 29002,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/dim_organisasi.csv",
+      "s3_path": "s3://lakehouse/gold/dim_organisasi.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 41,
+      "file_size": 2916,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/dim_waktu_tunggakan.csv",
+      "s3_path": "s3://lakehouse/gold/dim_waktu_tunggakan.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 32,
+      "file_size": 1486,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/fact_anggaran.csv",
+      "s3_path": "s3://lakehouse/gold/fact_anggaran.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 445,
+      "file_size": 297096,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/fact_anggaran.parquet",
+      "s3_path": "s3://lakehouse/gold/fact_anggaran.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 70902,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/fact_piutang_ukt_prodi.csv",
+      "s3_path": "s3://lakehouse/gold/fact_piutang_ukt_prodi.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 803,
+      "file_size": 179229,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/gold_metadata.json",
+      "s3_path": "s3://lakehouse/gold/gold_metadata.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 203,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-08-182857-838a97/fact_piutang_ukt_prodi.csv",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-08-182857-838a97/fact_piutang_ukt_prodi.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 803,
+      "file_size": 179229,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-08-182857-838a97/vw_dashboard_piutang_ukt.csv",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-08-182857-838a97/vw_dashboard_piutang_ukt.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 803,
+      "file_size": 327112,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.csv",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 445,
+      "file_size": 297096,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.parquet",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 70902,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.csv",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 445,
+      "file_size": 297096,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.parquet",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 70902,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.csv",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 599,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.parquet",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 5257,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.csv",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 5,
+      "file_size": 581,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.parquet",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 3842,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.csv",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 537,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.parquet",
+      "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 4522,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_detail_item.csv",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_detail_item.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 445,
+      "file_size": 297096,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_detail_item.parquet",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_detail_item.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 70902,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_iku_anggaran.csv",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_iku_anggaran.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 599,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_iku_anggaran.parquet",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_iku_anggaran.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 5257,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_mapping_quality.csv",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_mapping_quality.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 5,
+      "file_size": 581,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_mapping_quality.parquet",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_mapping_quality.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 3842,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_piutang_ukt.csv",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_piutang_ukt.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 803,
+      "file_size": 327112,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_reconciliation.csv",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_reconciliation.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 4,
+      "file_size": 537,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "gold",
+      "local_path": "data/generated/gold/vw_dashboard_reconciliation.parquet",
+      "s3_path": "s3://lakehouse/gold/vw_dashboard_reconciliation.parquet",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 0,
+      "file_size": 4522,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/active_dataset_pointer.json",
+      "s3_path": "s3://lakehouse/reports/active_dataset_pointer.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 769,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/active_runtime_context.json",
+      "s3_path": "s3://lakehouse/reports/active_runtime_context.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 511,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/active_upload_session.json",
+      "s3_path": "s3://lakehouse/reports/active_upload_session.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1435,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/activity_log.json",
+      "s3_path": "s3://lakehouse/reports/activity_log.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 29787,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/agent_work_notes.md",
+      "s3_path": "s3://lakehouse/reports/agent_work_notes.md",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 2536,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/available_periods.json",
+      "s3_path": "s3://lakehouse/reports/available_periods.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 963,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/bab4_evidence_summary.json",
+      "s3_path": "s3://lakehouse/reports/bab4_evidence_summary.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 607,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/context7_docs_used.json",
+      "s3_path": "s3://lakehouse/reports/context7_docs_used.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1364,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/data_generation_dummy-2024.json",
+      "s3_path": "s3://lakehouse/reports/data_generation_dummy-2024.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 934,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/data_generation_dummy-2025.json",
+      "s3_path": "s3://lakehouse/reports/data_generation_dummy-2025.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 934,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/data_generation_dummy-2026.json",
+      "s3_path": "s3://lakehouse/reports/data_generation_dummy-2026.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 934,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/data_generation_multiyear_summary.csv",
+      "s3_path": "s3://lakehouse/reports/data_generation_multiyear_summary.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 3,
+      "file_size": 1778,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/data_generation_multiyear_summary.json",
+      "s3_path": "s3://lakehouse/reports/data_generation_multiyear_summary.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 3256,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/dataset_profile_2023.json",
+      "s3_path": "s3://lakehouse/reports/dataset_profile_2023.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 8286,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/dataset_profile_2024.json",
+      "s3_path": "s3://lakehouse/reports/dataset_profile_2024.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 9008,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/dataset_profile_2025.json",
+      "s3_path": "s3://lakehouse/reports/dataset_profile_2025.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 10640,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/dataset_profile_nomenklatur.json",
+      "s3_path": "s3://lakehouse/reports/dataset_profile_nomenklatur.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1377,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/dataset_registry.json",
+      "s3_path": "s3://lakehouse/reports/dataset_registry.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 24395,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/e2e_multiyear_test_report.json",
+      "s3_path": "s3://lakehouse/reports/e2e_multiyear_test_report.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 315896,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/e2e_multiyear_test_report.md",
+      "s3_path": "s3://lakehouse/reports/e2e_multiyear_test_report.md",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 883,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/e2e_pipeline_by_year.csv",
+      "s3_path": "s3://lakehouse/reports/e2e_pipeline_by_year.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 3,
+      "file_size": 162,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/e2e_pipeline_by_year.json",
+      "s3_path": "s3://lakehouse/reports/e2e_pipeline_by_year.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 31712,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/e2e_upload_sessions.json",
+      "s3_path": "s3://lakehouse/reports/e2e_upload_sessions.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 50248,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/latest_upload_metadata.json",
+      "s3_path": "s3://lakehouse/reports/latest_upload_metadata.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 5970,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/minio_layer_mapping_by_year.csv",
+      "s3_path": "s3://lakehouse/reports/minio_layer_mapping_by_year.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 3,
+      "file_size": 6876,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/minio_layer_mapping_by_year.json",
+      "s3_path": "s3://lakehouse/reports/minio_layer_mapping_by_year.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 9431,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/minio_storage_validation.json",
+      "s3_path": "s3://lakehouse/reports/minio_storage_validation.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 2287,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/pipeline_count_validation.json",
+      "s3_path": "s3://lakehouse/reports/pipeline_count_validation.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1436,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/pipeline_run_summary.json",
+      "s3_path": "s3://lakehouse/reports/pipeline_run_summary.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 10023,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/production_readiness_report.json",
+      "s3_path": "s3://lakehouse/reports/production_readiness_report.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 4373,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/production_readiness_report.md",
+      "s3_path": "s3://lakehouse/reports/production_readiness_report.md",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 4310,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/skill_discovery_summary.json",
+      "s3_path": "s3://lakehouse/reports/skill_discovery_summary.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1068,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/storage_layers_status.json",
+      "s3_path": "s3://lakehouse/reports/storage_layers_status.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 7734,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/storage_manifest.json",
+      "s3_path": "s3://lakehouse/reports/storage_manifest.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1672077,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/storage_mapping.json",
+      "s3_path": "s3://lakehouse/reports/storage_mapping.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1615,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/superset_assets.json",
+      "s3_path": "s3://lakehouse/reports/superset_assets.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 140,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/superset_charts_by_year.json",
+      "s3_path": "s3://lakehouse/reports/superset_charts_by_year.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1982,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/superset_dashboard.json",
+      "s3_path": "s3://lakehouse/reports/superset_dashboard.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 868,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/superset_dashboard_status.json",
+      "s3_path": "s3://lakehouse/reports/superset_dashboard_status.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 868,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/superset_excel_assets.json",
+      "s3_path": "s3://lakehouse/reports/superset_excel_assets.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 469,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/superset_excel_dashboard.json",
+      "s3_path": "s3://lakehouse/reports/superset_excel_dashboard.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 469,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/superset_filters_validation.json",
+      "s3_path": "s3://lakehouse/reports/superset_filters_validation.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 2361,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/system_truth_status.csv",
+      "s3_path": "s3://lakehouse/reports/system_truth_status.csv",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": 26,
+      "file_size": 2252,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/system_truth_status.json",
+      "s3_path": "s3://lakehouse/reports/system_truth_status.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1831880,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/upload_registry.json",
+      "s3_path": "s3://lakehouse/reports/upload_registry.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 132141,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "reports",
+      "local_path": "outputs/reports/validation_command_results.json",
+      "s3_path": "s3://lakehouse/reports/validation_command_results.json",
+      "upload_status": "mapped_not_uploaded",
+      "row_count": null,
+      "file_size": 1619,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/dummy-2024-pipeline.log",
+      "s3_path": "s3://lakehouse/logs/e2e/dummy-2024-pipeline.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 16654,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/dummy-2024-upload.log",
+      "s3_path": "s3://lakehouse/logs/e2e/dummy-2024-upload.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 21966,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/dummy-2025-pipeline.log",
+      "s3_path": "s3://lakehouse/logs/e2e/dummy-2025-pipeline.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 16652,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/dummy-2025-upload.log",
+      "s3_path": "s3://lakehouse/logs/e2e/dummy-2025-upload.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 21966,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/dummy-2026-pipeline.log",
+      "s3_path": "s3://lakehouse/logs/e2e/dummy-2026-pipeline.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 16654,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/dummy-2026-upload.log",
+      "s3_path": "s3://lakehouse/logs/e2e/dummy-2026-upload.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 21966,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_bronze.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_bronze.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 14052,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_generate_dummy.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_generate_dummy.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 14418,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_gold.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_gold.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 3497,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_master.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_master.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 94362,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_metrics.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_metrics.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 17773,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_minio.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_minio.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 2283,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_pipeline.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_pipeline.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 1794,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_quality_gate.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_quality_gate.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 6548,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_silver.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_silver.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 4013,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_superset.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_superset.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 1536,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    },
+    {
+      "layer": "logs",
+      "local_path": "outputs/logs/e2e/e2e_upload_session.log",
+      "s3_path": "s3://lakehouse/logs/e2e/e2e_upload_session.log",
+      "upload_status": "skipped",
+      "row_count": null,
+      "file_size": 59922,
+      "created_at": "2026-06-29T08:15:39+00:00",
+      "run_id": "67b436e8-d489-43b1-9747-0f063424e6b4"
+    }
+  ]
+}

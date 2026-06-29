@@ -35,5 +35,5 @@ PREVIEW_LAYER_DIRS = {
 
 DEFAULT_PREVIEW_FILES = {
     "silver": "fact_piutang_ukt_prodi.csv",
-    "gold": "vw_dashboard_piutang_ukt.csv",
+    "gold": "fact_anggaran.csv",
 }
