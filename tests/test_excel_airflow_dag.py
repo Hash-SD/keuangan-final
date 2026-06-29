@@ -19,6 +19,6 @@ def test_excel_lakehouse_dag_imports_and_has_final_tasks():
     assert "extract_excel_to_bronze" in task_ids
     assert "write_minio_storage" in task_ids
     assert "load_gold_to_postgres" in task_ids
-    assert "load_gold_to_iceberg" in task_ids
+    assert "validate_trino_postgres_catalog" in task_ids
     assert "refresh_superset_dashboard" in task_ids
     assert "generate_system_status" in task_ids

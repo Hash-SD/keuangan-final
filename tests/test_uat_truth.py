@@ -15,15 +15,24 @@ def _write_csv(path, rows):
     path.write_text("\n".join(rows), encoding="utf-8")
 
 
-def test_uat_dummy_response_is_not_final(tmp_path, monkeypatch):
+def test_uat_requires_real_local_response_file(tmp_path, monkeypatch):
     monkeypatch.setenv("SUPERSET_PORT", "65531")
     _write_csv(tmp_path / "outputs/uat/uat_template.csv", ["indikator", "Navigation"])
-    _write_csv(tmp_path / "outputs/uat/uat_dummy_response.csv", ["responden,skor", "A,5"])
-    _write_json(tmp_path / "outputs/uat/uat_score_summary.json", {"average_score": 4.84, "percentage": 96.8, "category": "Sangat baik", "respondent_count": 1})
-    _write_json(tmp_path / "outputs/uat/uat_matrix_summary.json", {"items": []})
 
     truth = build_system_truth_status(tmp_path)
 
     assert truth["uat"]["status"] == "manual_input_required"
     assert truth["uat"]["average_score"] is None
-    assert truth["uat"]["dummy_responses_available"] is True
+
+
+def test_uat_completed_from_local_response_file(tmp_path, monkeypatch):
+    monkeypatch.setenv("SUPERSET_PORT", "65531")
+    _write_csv(tmp_path / "outputs/uat/uat_template.csv", ["indikator", "Navigation"])
+    _write_csv(tmp_path / "outputs/uat/uat_response.csv", ["responden,skor", "A,5"])
+    _write_json(tmp_path / "outputs/uat/uat_score_summary.json", {"average_score": 5, "percentage": 100, "category": "Sangat baik", "respondent_count": 1})
+    _write_json(tmp_path / "outputs/uat/uat_matrix_summary.json", {"items": []})
+
+    truth = build_system_truth_status(tmp_path)
+
+    assert truth["uat"]["status"] == "completed"
+    assert truth["uat"]["average_score"] == 5

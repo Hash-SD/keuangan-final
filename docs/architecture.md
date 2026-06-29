@@ -1,16 +1,30 @@
-# Architecture
+# SILARAS SD Excel Lakehouse Architecture
 
-Sistem memakai Medallion Architecture:
+SILARAS SD memakai workflow Excel-only untuk RAB, RPD/IKU, dan Nomenklatur.
 
-- Bronze: data mentah PDF/CSV/Excel disimpan dengan metadata lineage.
-- Silver: data dibersihkan, tipe distandarkan, dan data invalid dipisahkan ke quarantine.
-- Gold: star schema untuk analisis piutang UKT Prodi Sains Data lintas tahun akademik dengan format data yang sama.
+## Data Flow
 
-Komponen target:
+1. Portal backend menerima workbook Excel melalui `/api/upload/excel-dataset`.
+2. File disimpan di `data/raw/excel_lakehouse/`.
+3. Pipeline `src/transformations/excel_lakehouse_pipeline.py` membentuk Bronze cell-level, Silver normalization, dan Gold `fact_anggaran`.
+4. `src/storage/excel_storage_manifest.py` memetakan artefak ke layer raw, bronze, silver, gold, reports, dan logs.
+5. `src/sql/load_gold_to_postgres.py` memuat Gold ke schema `gold`.
+6. `src/sql/setup_superset_excel_assets.py` membuat dataset dan dashboard dari `fact_anggaran`.
 
-- MinIO sebagai object storage S3-compatible.
-- Spark untuk transformasi Bronze, Silver, dan Gold.
-- Iceberg sebagai format tabel lakehouse.
-- Trino untuk query SQL atas Gold layer.
-- Superset untuk dashboard.
-- Airflow untuk orkestrasi DAG end-to-end.
+## Active Gold Tables
+
+- `gold.fact_anggaran`
+- `gold.vw_dashboard_iku_anggaran`
+- `gold.vw_dashboard_mapping_quality`
+- `gold.vw_dashboard_reconciliation`
+- `gold.vw_dashboard_detail_item`
+
+## Default Commands
+
+```powershell
+python src/transformations/excel_lakehouse_pipeline.py
+python src/validation/excel_count_validation.py
+python src/storage/excel_storage_manifest.py
+python src/sql/load_gold_to_postgres.py
+python src/status/system_truth_status.py
+```

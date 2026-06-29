@@ -34,33 +34,18 @@ def metrics_payload() -> dict[str, Any]:
     reconcile = truth["reconciliation"]
     latency = truth["metrics"]["pipeline_latency"]
     freshness = truth["metrics"]["data_freshness"]
-    quality = truth["metrics"]["data_quality_score"]
     uat = truth["uat"]
 
     available = any(
         item.get("status") in {"validated", "completed"}
-        for item in [quality_gate, reconcile, latency, freshness, quality, uat]
+        for item in [quality_gate, reconcile, latency, freshness, uat]
     )
     return {
         "available": available,
         "message": "Hasil proses tersedia." if available else "Belum ada hasil proses yang tervalidasi.",
         "runtime_config": truth["runtime_config"],
-        "control_total": {
-            "status": reconcile["raw_status"] if reconcile.get("status") == "validated" else reconcile.get("status"),
-            "total_piutang": _unwrap(reconcile.get("total_piutang")),
-            "jumlah_penunggak": _unwrap(reconcile.get("jumlah_penunggak")),
-            "target_total_piutang": _unwrap(reconcile.get("target_total_piutang")),
-            "target_jumlah_penunggak": _unwrap(reconcile.get("target_jumlah_penunggak")),
-            "source": reconcile.get("source"),
-        } if reconcile.get("status") == "validated" else None,
-        "control_total_proposal": {
-            "expected_total_piutang": _unwrap(reconcile.get("target_total_piutang")),
-            "actual_total_piutang": _unwrap(reconcile.get("total_piutang")),
-            "expected_penunggak": _unwrap(reconcile.get("target_jumlah_penunggak")),
-            "actual_penunggak": _unwrap(reconcile.get("jumlah_penunggak")),
-            "status": reconcile.get("status"),
-            "source": reconcile.get("source"),
-        },
+        "control_total": reconcile if reconcile.get("status") == "validated" else None,
+        "control_total_proposal": reconcile,
         "quality_gate": {
             "status": quality_gate.get("status"),
             "total_rows": _unwrap(quality_gate.get("total_rows")),
@@ -68,7 +53,7 @@ def metrics_payload() -> dict[str, Any]:
             "rejected_rows": _unwrap(quality_gate.get("rejected_rows")),
             "dropout_rate": _unwrap(quality_gate.get("dropout_rate")),
         },
-        "data_quality_score": _unwrap(quality.get("data_quality_score")),
+        "data_quality_score": _unwrap(quality_gate.get("quality_score")),
         "pipeline_latency": _seconds_to_label(_latency_value(latency)),
         "pipeline_latency_raw": latency,
         "data_freshness": "Tersedia" if freshness.get("status") == "validated" else "Belum tersedia",
@@ -79,8 +64,8 @@ def metrics_payload() -> dict[str, Any]:
             "reconcile": reconcile,
             "latency": latency,
             "freshness": freshness,
-            "dropout": truth["metrics"]["dropout_rate"],
-            "quality": quality,
+            "dropout": truth["metrics"].get("dropout_rate", {"status": "not_available"}),
+            "quality": {"status": quality_gate.get("status"), "data_quality_score": quality_gate.get("quality_score")},
             "uat": uat,
             "uatMatrix": uat.get("matrix"),
             "storageManifest": (truth["storage"].get("manifest") or {}),

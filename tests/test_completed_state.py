@@ -1,5 +1,7 @@
 import json
 
+import pandas as pd
+
 from src.status.system_truth_status import build_system_truth_status
 
 
@@ -19,14 +21,20 @@ def test_completed_state_uses_available_artifact_values(tmp_path, monkeypatch):
     _write_json(tmp_path / "outputs/uat/uat_matrix_summary.json", {"items": []})
     _write_csv(tmp_path / "outputs/uat/uat_template.csv", ["indikator", "Navigation"])
     _write_csv(tmp_path / "outputs/uat/uat_response.csv", ["responden,skor", "A,5"])
-    _write_json(tmp_path / "outputs/metrics/reconcile_control_total.json", {"status": "pass", "total_piutang": 31250000, "jumlah_penunggak": 15, "target_total_piutang": 31250000, "target_jumlah_penunggak": 15})
-    _write_json(tmp_path / "data/quarantine/logs/quality_gate_summary.json", {"total_rows": 800, "valid_rows": 784, "rejected_rows": 16, "dropout_rate": 2.0})
-    _write_csv(tmp_path / "data/quarantine/logs/rejected_rows.csv", ["id"] + [str(i) for i in range(16)])
+    fact_path = tmp_path / "data/generated/gold/fact_anggaran.parquet"
+    fact_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        [
+            {"item_id": "A", "jumlah": 10_000_000, "jumlah_weighted_iku": 5_000_000},
+            {"item_id": "B", "jumlah": 21_250_000, "jumlah_weighted_iku": 26_250_000},
+        ]
+    ).to_parquet(fact_path)
+    _write_json(tmp_path / "outputs/reports/pipeline_count_validation.json", {"fact_anggaran_rows": 2})
 
     truth = build_system_truth_status(tmp_path)
 
     assert truth["uat"]["status"] == "completed"
     assert truth["uat"]["average_score"] == 4.84
     assert truth["quality_gate"]["status"] == "validated"
-    assert truth["quality_gate"]["valid_rows"]["value"] == 784
-    assert truth["reconciliation"]["total_piutang"]["value"] == 31250000
+    assert truth["quality_gate"]["valid_rows"]["value"] == 2
+    assert truth["reconciliation"]["total_anggaran"]["value"] == 31_250_000

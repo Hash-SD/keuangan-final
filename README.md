@@ -2,7 +2,7 @@
 
 Sistem Lakehouse Anggaran RAB dan IKU Sains Data
 
-SILARAS SD adalah Sistem Lakehouse Anggaran RAB dan IKU Sains Data berbasis Excel untuk RAB, RPD/IKU, dan Nomenklatur. Branch final ini mengganti domain lama PDF/CSV/piutang UKT sebagai default pipeline menjadi workflow Excel-only dengan Medallion Architecture.
+SILARAS SD adalah Sistem Lakehouse Anggaran RAB dan IKU Sains Data berbasis Excel untuk RAB, RPD/IKU, dan Nomenklatur. Branch final ini berfokus pada workflow Excel-only dengan Medallion Architecture.
 
 ## Arsitektur
 
@@ -38,7 +38,7 @@ Sumber data utama:
 - Excel Nomenklatur
 - Multi-file per tahun
 
-Sistem tidak lagi mewajibkan PDF atau CSV untuk pipeline utama.
+Sistem hanya membutuhkan workbook Excel untuk pipeline utama.
 
 ## Output Utama
 
@@ -264,7 +264,7 @@ Test Excel utama:
 
 - Bronze extraction
 - 2023 multi-file parsing
-- 2024 legacy parsing
+- 2024 parser compatibility
 - 2025-like parsing
 - Nomenklatur parsing
 - Multi-file merge
@@ -273,10 +273,6 @@ Test Excel utama:
 - Excel-only upload API
 - Pipeline sample integration
 
-## Legacy
+## Repository Scope
 
-Domain lama piutang UKT dipindahkan menjadi legacy compatibility, bukan default pipeline. Catatan historis ada di:
-
-```text
-docs/legacy/README_PIUTANG_LAMA.md
-```
+Kode, data, test, dan dokumentasi pada branch ini diarahkan ke workflow Excel Lakehouse RAB/IKU/Nomenklatur.

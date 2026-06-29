@@ -12,7 +12,7 @@ RAB_2024 = Path(r"D:\Downloads\Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx
 
 
 @pytest.mark.skipif(not RAB_2024.exists(), reason="sample workbook not available")
-def test_parse_2024_legacy_detail_sheets_keep_lineage():
+def test_parse_2024_detail_sheets_keep_lineage():
     items, _, validation = parse_rab_workbook(ExcelSource(path=RAB_2024, tahun_input=2024, prodi="Sains Data", jenis_dataset="rab"))
 
     assert len(items) > 0

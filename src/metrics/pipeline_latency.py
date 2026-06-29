@@ -117,7 +117,7 @@ def compute_pipeline_latency(base_dir: Path | str | None = None, write_output: b
         "target_label": config.target_label,
         "source_arrival": source_ready.isoformat(),
         "source_basis": source_basis,
-        "upload_session_id": session_id,
+        "dataset_session_id": session_id,
         "gold_ready": gold_ready.isoformat() if gold_ready else None,
         "computed_at": computed_at.isoformat(),
         "latency_seconds": seconds,

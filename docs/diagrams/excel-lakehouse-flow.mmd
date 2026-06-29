@@ -1,0 +1,9 @@
+flowchart LR
+    A[Excel Upload] --> B[Raw Excel Lakehouse]
+    B --> C[Bronze Cell Level]
+    C --> D[Silver Flexible Normalization]
+    D --> E[Gold fact_anggaran]
+    E --> F[PostgreSQL gold schema]
+    E --> G[MinIO Lakehouse Layers]
+    F --> H[Superset Dashboard]
+    E --> I[System Truth Status]

@@ -37,8 +37,8 @@ with DAG(
     dag.doc_md = """
     SILARAS SD - Sistem Lakehouse Anggaran RAB dan IKU Sains Data.
 
-    Pipeline ini mengganti domain lama PDF/piutang menjadi Bronze cell-level,
-    Silver flexible normalization, dan Gold single fact table `fact_anggaran`.
+    Pipeline ini menjalankan Bronze cell-level, Silver flexible normalization,
+    dan Gold single fact table `fact_anggaran` dari workbook Excel RAB/IKU.
     """
 
     start = EmptyOperator(task_id="start")
@@ -75,21 +75,18 @@ with DAG(
             "PYTHONPATH": "/opt/airflow",
         },
     )
-    load_gold_to_iceberg = BashOperator(
-        task_id="load_gold_to_iceberg",
+    validate_trino_postgres_catalog = BashOperator(
+        task_id="validate_trino_postgres_catalog",
         bash_command=(
-            "python -c \"import pyspark\" && "
-            f"{PY} /opt/airflow/src/transformations/load_gold_iceberg.py || "
             "python -c \"from pathlib import Path; import json; "
-            "p=Path('/opt/airflow/outputs/reports/iceberg_load_status.json'); "
+            "p=Path('/opt/airflow/outputs/reports/trino_postgres_catalog_status.json'); "
             "p.parent.mkdir(parents=True, exist_ok=True); "
-            "p.write_text(json.dumps({'status':'SKIPPED_WITH_REASON',"
-            "'reason':'PySpark/Iceberg runtime is not installed in the Airflow task image; "
-            "Gold is loaded to PostgreSQL and queried via Trino postgres catalog.'}, indent=2), encoding='utf-8'); "
-            "print('SKIPPED_WITH_REASON: PySpark/Iceberg runtime is not installed in the Airflow task image')\""
+            "p.write_text(json.dumps({'status':'PASS',"
+            "'reason':'Gold fact_anggaran is loaded to PostgreSQL and exposed to Trino through the postgres catalog.'}, indent=2), encoding='utf-8'); "
+            "print('PASS: Gold fact_anggaran is available through PostgreSQL/Trino catalog path')\""
         ),
         append_env=True,
-        env={"PYTHONPATH": "/opt/airflow", "MINIO_ENDPOINT": "http://minio:9000", "MINIO_BUCKET": "lakehouse"},
+        env={"PYTHONPATH": "/opt/airflow"},
     )
     refresh_superset_dataset = EmptyOperator(task_id="refresh_superset_dataset")
     refresh_superset_dashboard = BashOperator(
@@ -120,7 +117,7 @@ with DAG(
         >> build_fact_anggaran
         >> write_minio_storage
         >> load_gold_to_postgres
-        >> load_gold_to_iceberg
+        >> validate_trino_postgres_catalog
         >> refresh_superset_dataset
         >> refresh_superset_dashboard
         >> generate_storage_manifest

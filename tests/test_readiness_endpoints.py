@@ -13,6 +13,6 @@ def test_readiness_and_superset_status_endpoints(monkeypatch):
     superset = client.get("/api/superset/status")
 
     assert readiness.status_code == 200
-    assert "upload_session" in readiness.get_json()["checks"]
+    assert "raw_excel_lakehouse" in readiness.get_json()["checks"]
     assert superset.status_code == 200
     assert superset.get_json()["service"]["status"] == "unreachable"

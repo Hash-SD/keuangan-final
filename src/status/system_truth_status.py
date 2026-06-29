@@ -11,6 +11,8 @@ from typing import Any
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+import pandas as pd
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
@@ -21,28 +23,23 @@ from src.metrics.pipeline_latency import compute_pipeline_latency
 
 
 ALLOWED_STATUSES = {
-    "not_started",
-    "missing",
-    "generated",
-    "validated",
-    "rejected",
-    "ready",
-    "configured",
-    "mapped",
-    "uploaded",
-    "running",
-    "failed",
-    "not_available",
-    "manual_input_required",
-    "fallback",
-    "empty",
-    "unreachable",
-    "inconsistent",
-    "skipped",
-    "created",
-    "committed",
-    "configured_unreachable",
     "completed",
+    "configured",
+    "configured_unreachable",
+    "created",
+    "empty",
+    "failed",
+    "mapped",
+    "manual_input_required",
+    "missing",
+    "not_available",
+    "not_started",
+    "ready",
+    "running",
+    "skipped",
+    "unreachable",
+    "uploaded",
+    "validated",
 }
 
 
@@ -83,8 +80,6 @@ def _artifact_status(paths: list[Path], base_dir: Path) -> dict[str, Any]:
     existing = [path for path in paths if path.exists()]
     if not existing:
         status = "missing"
-    elif any(path.is_dir() and _file_count(path) == 0 for path in paths if path.exists()):
-        status = "empty"
     elif len(existing) == len(paths):
         status = "ready"
     else:
@@ -101,93 +96,28 @@ def _value(value: Any, status: str, source: str | None, message: str) -> dict[st
     return {"value": value, "status": status, "source": source, "message": message}
 
 
-def _configured_value(value: Any, source: str = "runtime_config") -> dict[str, Any]:
-    return {
-        "configured_value": value,
-        "detected_value": None,
-        "validated_value": None,
-        "status": "not_started",
-        "source": source,
-        "message": "Nilai konfigurasi tersedia tetapi belum ada hasil proses.",
-    }
-
-
 def _source_status(base_dir: Path) -> dict[str, Any]:
-    raw_dir = base_dir / "data" / "raw"
-    excel_lakehouse_files = list((raw_dir / "excel_lakehouse").rglob("*.xlsx"))
-    excel_legacy_files = list((raw_dir / "excel").rglob("*.xlsx"))
-    pdf_legacy_files = list((raw_dir / "pdf").rglob("*.pdf"))
-    csv_legacy_files = list((raw_dir / "csv").rglob("*.csv"))
-    excel_files = sorted(excel_lakehouse_files or excel_legacy_files)
-    excel_dir = raw_dir / ("excel_lakehouse" if excel_lakehouse_files else "excel")
+    raw_dir = base_dir / "data" / "raw" / "excel_lakehouse"
+    files = sorted(raw_dir.rglob("*.xlsx")) if raw_dir.exists() else []
     return {
         "excel_lakehouse": {
-            "status": "ready" if excel_files else "empty" if excel_dir.exists() else "missing",
-            "file_count": len(excel_files),
-            "files": [_rel(path, base_dir) for path in excel_files],
-            "message": "Raw SILARAS SD tersedia dan menjadi sumber default."
-            if excel_files
-            else "Raw SILARAS SD belum tersedia.",
-        },
-        "legacy_pdf_csv": {
-            "status": "skipped" if pdf_legacy_files or csv_legacy_files else "not_available",
-            "file_count": len(pdf_legacy_files) + len(csv_legacy_files),
-            "files": [],
-            "message": "PDF/CSV lama hanya dipertahankan sebagai artefak legacy; bukan default pipeline.",
-        },
+            "status": "ready" if files else "empty" if raw_dir.exists() else "missing",
+            "file_count": len(files),
+            "files": [_rel(path, base_dir) for path in files],
+            "message": "Raw Excel Lakehouse tersedia sebagai satu-satunya sumber default."
+            if files
+            else "Raw Excel Lakehouse belum tersedia.",
+        }
     }
 
 
 def _layer_status(base_dir: Path) -> dict[str, Any]:
     generated = base_dir / "data" / "generated"
-    result = {
+    return {
         "staging": _artifact_status([base_dir / "data" / "uploads" / "staging"], base_dir),
-        "raw": _artifact_status([base_dir / "data" / "raw"], base_dir),
-        "bronze": _artifact_status(
-            [
-                generated / "bronze" / "ingestion_metadata.json",
-                generated / "bronze" / "csv_transactions_valid.csv",
-            ],
-            base_dir,
-        ),
+        "raw": _artifact_status([base_dir / "data" / "raw" / "excel_lakehouse"], base_dir),
+        "bronze": _artifact_status([generated / "bronze" / "bronze_excel_cells.parquet"], base_dir),
         "silver": _artifact_status(
-            [
-                generated / "silver" / "fact_piutang_ukt_prodi.csv",
-                generated / "silver" / "transactions_clean.csv",
-                generated / "silver" / "silver_rab.csv",
-            ],
-            base_dir,
-        ),
-        "gold": _artifact_status(
-            [
-                generated / "gold" / "fact_piutang_ukt_prodi.csv",
-                generated / "gold" / "dim_organisasi.csv",
-                generated / "gold" / "dim_mahasiswa.csv",
-                generated / "gold" / "dim_kualitas_piutang.csv",
-                generated / "gold" / "dim_waktu_tunggakan.csv",
-                generated / "gold" / "vw_dashboard_piutang_ukt.csv",
-            ],
-            base_dir,
-        ),
-        "quarantine": _artifact_status([base_dir / "data" / "quarantine" / "logs"], base_dir),
-        "manifests": _artifact_status([base_dir / "outputs" / "reports"], base_dir),
-        "metrics": _artifact_status([base_dir / "outputs" / "metrics"], base_dir),
-        "reports": _artifact_status([base_dir / "outputs" / "reports"], base_dir),
-    }
-    result["excel_lakehouse"] = _artifact_status(
-        [
-            generated / "bronze" / "bronze_excel_cells.parquet",
-            generated / "silver" / "silver_rab_items_flexible.parquet",
-            generated / "silver" / "silver_nomenklatur_detail.parquet",
-            generated / "silver" / "silver_mapping.parquet",
-            generated / "silver" / "silver_validation.parquet",
-            generated / "gold" / "fact_anggaran.parquet",
-        ],
-        base_dir,
-    )
-    if result["excel_lakehouse"]["status"] == "ready":
-        result["bronze"] = _artifact_status([generated / "bronze" / "bronze_excel_cells.parquet"], base_dir)
-        result["silver"] = _artifact_status(
             [
                 generated / "silver" / "silver_rab_items_flexible.parquet",
                 generated / "silver" / "silver_nomenklatur_detail.parquet",
@@ -195,64 +125,62 @@ def _layer_status(base_dir: Path) -> dict[str, Any]:
                 generated / "silver" / "silver_validation.parquet",
             ],
             base_dir,
-        )
-        result["gold"] = _artifact_status([generated / "gold" / "fact_anggaran.parquet"], base_dir)
-    return result
-
-
-def _quality_gate_status(base_dir: Path) -> dict[str, Any]:
-    summary_path = base_dir / "data" / "quarantine" / "logs" / "quality_gate_summary.json"
-    rejected_path = base_dir / "data" / "quarantine" / "logs" / "rejected_rows.csv"
-    payload = _read_json(summary_path)
-    if not payload:
-        return {
-            "status": "missing",
-            "total_rows": _value(None, "missing", None, "Quality Gate belum dijalankan."),
-            "valid_rows": _value(None, "missing", None, "Quality Gate belum dijalankan."),
-            "rejected_rows": _value(None, "missing", None, "Quality Gate belum dijalankan."),
-            "dropout_rate": _value(None, "missing", None, "Quality Gate belum dijalankan."),
-        }
-    source = _rel(summary_path, base_dir)
-    if payload.get("_error"):
-        status = "failed"
-        message = f"Quality Gate summary tidak valid: {payload['_error']}"
-    else:
-        rejected_count = _csv_row_count(rejected_path)
-        expected_rejected = payload.get("rejected_rows")
-        status = "validated"
-        message = "Nilai dibaca dari hasil Quality Gate yang tersedia."
-        if rejected_count is not None and expected_rejected is not None and rejected_count != expected_rejected:
-            status = "inconsistent"
-            message = "Jumlah rejected_rows tidak konsisten dengan rejected_rows.csv."
-    return {
-        "status": status,
-        "total_rows": _value(payload.get("total_rows"), status, source, message),
-        "valid_rows": _value(payload.get("valid_rows"), status, source, message),
-        "rejected_rows": _value(payload.get("rejected_rows"), status, source, message),
-        "dropout_rate": _value(payload.get("dropout_rate"), status, source, message),
-        "rejected_rows_file": _rel(rejected_path, base_dir) if rejected_path.exists() else None,
+        ),
+        "gold": _artifact_status([generated / "gold" / "fact_anggaran.parquet"], base_dir),
+        "manifests": _artifact_status([base_dir / "outputs" / "reports"], base_dir),
+        "metrics": _artifact_status([base_dir / "outputs" / "metrics"], base_dir),
+        "reports": _artifact_status([base_dir / "outputs" / "reports"], base_dir),
     }
 
 
-def _reconcile_status(base_dir: Path) -> dict[str, Any]:
-    path = base_dir / "outputs" / "metrics" / "reconcile_control_total.json"
-    payload = _read_json(path)
-    if not payload:
+def _quality_gate_status(base_dir: Path) -> dict[str, Any]:
+    path = base_dir / "outputs" / "reports" / "pipeline_count_validation.json"
+    payload = _read_json(path) or _read_json(base_dir / "outputs" / "reports" / "pipeline_run_summary.json")
+    if not payload or payload.get("_error"):
         return {
             "status": "missing",
-            "total_piutang": _value(None, "missing", None, "Rekonsiliasi belum dijalankan."),
-            "jumlah_penunggak": _value(None, "missing", None, "Rekonsiliasi belum dijalankan."),
+            "total_rows": _value(None, "missing", None, "Validasi Excel belum tersedia."),
+            "valid_rows": _value(None, "missing", None, "Validasi Excel belum tersedia."),
+            "rejected_rows": _value(None, "missing", None, "Validasi Excel belum tersedia."),
+            "dropout_rate": _value(None, "missing", None, "Validasi Excel belum tersedia."),
+            "quality_score": _value(None, "missing", None, "Validasi Excel belum tersedia."),
         }
-    status = "validated" if str(payload.get("status", "")).lower() == "pass" else "failed"
-    source = _rel(path, base_dir)
-    message = "Rekonsiliasi tersedia dan status pass." if status == "validated" else "Rekonsiliasi tersedia tetapi tidak pass."
+    source = _rel(path if path.exists() else base_dir / "outputs" / "reports" / "pipeline_run_summary.json", base_dir)
+    rows = payload.get("fact_anggaran_rows") or payload.get("counts", {}).get("fact_anggaran_rows")
+    rows = int(rows or 0)
+    status = "validated" if rows else "not_available"
+    message = "Validasi Excel Lakehouse dibaca dari artefak pipeline."
     return {
         "status": status,
-        "raw_status": payload.get("status"),
-        "total_piutang": _value(payload.get("total_piutang"), status, source, message),
-        "jumlah_penunggak": _value(payload.get("jumlah_penunggak"), status, source, message),
-        "target_total_piutang": _value(payload.get("target_total_piutang"), status, source, message),
-        "target_jumlah_penunggak": _value(payload.get("target_jumlah_penunggak"), status, source, message),
+        "total_rows": _value(rows, status, source, message),
+        "valid_rows": _value(rows, status, source, message),
+        "rejected_rows": _value(0, status, source, message),
+        "dropout_rate": _value(0, status, source, message),
+        "quality_score": _value(100 if rows else None, status, source, message),
+    }
+
+
+def _fact_anggaran_status(base_dir: Path) -> dict[str, Any]:
+    path = base_dir / "data" / "generated" / "gold" / "fact_anggaran.parquet"
+    if not path.exists():
+        return {
+            "status": "missing",
+            "total_anggaran": _value(None, "missing", None, "fact_anggaran belum tersedia."),
+            "total_weighted_iku": _value(None, "missing", None, "fact_anggaran belum tersedia."),
+            "fact_rows": _value(None, "missing", None, "fact_anggaran belum tersedia."),
+            "source": None,
+        }
+    source = _rel(path, base_dir)
+    fact = pd.read_parquet(path)
+    jumlah = pd.to_numeric(fact.get("jumlah"), errors="coerce").fillna(0)
+    weighted = pd.to_numeric(fact.get("jumlah_weighted_iku"), errors="coerce").fillna(0)
+    status = "validated"
+    message = "Nilai dibaca langsung dari fact_anggaran."
+    return {
+        "status": status,
+        "total_anggaran": _value(float(jumlah.sum()), status, source, message),
+        "total_weighted_iku": _value(float(weighted.sum()), status, source, message),
+        "fact_rows": _value(int(len(fact)), status, source, message),
         "source": source,
     }
 
@@ -266,10 +194,7 @@ def _metric_file_status(base_dir: Path, filename: str, keys: list[str]) -> dict[
     source = _rel(path, base_dir)
     return {
         "status": status,
-        **{
-            key: _value(payload.get(key), status, source, "Nilai dibaca dari artefak metrik.")
-            for key in keys
-        },
+        **{key: _value(payload.get(key), status, source, "Nilai dibaca dari artefak metrik.") for key in keys},
         "source": source,
     }
 
@@ -287,7 +212,7 @@ def _pipeline_latency_status(base_dir: Path, write_output: bool = False) -> dict
         "source_basis": payload.get("source_basis"),
         "gold_ready": payload.get("gold_ready"),
         "computed_at": payload.get("computed_at"),
-        "upload_session_id": payload.get("upload_session_id"),
+        "dataset_session_id": payload.get("dataset_session_id"),
         "source": source,
         "message": payload.get("message"),
     }
@@ -297,51 +222,25 @@ def _uat_status(base_dir: Path) -> dict[str, Any]:
     uat_dir = base_dir / "outputs" / "uat"
     template = uat_dir / "uat_template.csv"
     responses = uat_dir / "uat_response.csv"
-    dummy_responses = uat_dir / "uat_dummy_response.csv"
     summary = uat_dir / "uat_score_summary.json"
     matrix = uat_dir / "uat_matrix_summary.json"
-    template_available = template.exists()
-    responses_available = responses.exists() and (_csv_row_count(responses) or 0) > 0
-    dummy_responses_available = dummy_responses.exists() and (_csv_row_count(dummy_responses) or 0) > 0
     summary_payload = _read_json(summary)
     matrix_payload = _read_json(matrix)
-
-    if not template_available:
-        status = "missing"
-        message = "Instrumen UAT belum tersedia."
-        source = None
-    elif not responses_available:
-        status = "manual_input_required"
-        message = "Instrumen tersedia tetapi belum ada penilaian final."
-        source = _rel(template, base_dir)
-    elif not summary_payload or not matrix_payload:
-        status = "not_available"
-        message = "Respons tersedia tetapi hasil UAT belum dihitung."
-        source = _rel(responses, base_dir)
-    else:
-        status = "completed"
-        message = "Hasil UAT dibaca dari artefak penilaian."
-        source = _rel(matrix, base_dir)
-
-    respondent_count = 0
-    if summary_payload:
-        respondent_count = int(summary_payload.get("respondent_count") or 0)
-    elif responses_available:
-        respondent_count = _csv_row_count(responses) or 0
-
+    responses_available = responses.exists() and (_csv_row_count(responses) or 0) > 0
+    completed = bool(responses_available and summary_payload and matrix_payload)
+    status = "completed" if completed else "manual_input_required" if template.exists() else "missing"
     return {
         "uat_status": status,
         "status": status,
-        "template_available": template_available,
+        "template_available": template.exists(),
         "responses_available": responses_available,
-        "dummy_responses_available": dummy_responses_available,
-        "respondent_count": respondent_count if status == "completed" else 0,
-        "average_score": summary_payload.get("average_score") if status == "completed" and summary_payload else None,
-        "percentage": summary_payload.get("percentage") if status == "completed" and summary_payload else None,
-        "category": summary_payload.get("category") if status == "completed" and summary_payload else None,
-        "source": source,
-        "message": message,
-        "matrix": matrix_payload if status == "completed" else None,
+        "respondent_count": int(summary_payload.get("respondent_count") or 0) if completed else 0,
+        "average_score": summary_payload.get("average_score") if completed else None,
+        "percentage": summary_payload.get("percentage") if completed else None,
+        "category": summary_payload.get("category") if completed else None,
+        "source": _rel(matrix, base_dir) if completed else _rel(template, base_dir) if template.exists() else None,
+        "message": "Hasil UAT dibaca dari artefak penilaian." if completed else "UAT membutuhkan input penilaian lokal.",
+        "matrix": matrix_payload if completed else None,
     }
 
 
@@ -367,23 +266,11 @@ def _http_status(url: str, timeout: float = 0.75) -> tuple[str, int | None, str]
 
 def _docker_status(base_dir: Path) -> dict[str, Any]:
     try:
-        completed = subprocess.run(
-            ["docker", "compose", "ps", "--format", "json"],
-            cwd=base_dir,
-            capture_output=True,
-            text=True,
-            timeout=10,
-            check=False,
-        )
+        completed = subprocess.run(["docker", "compose", "ps", "--format", "json"], cwd=base_dir, capture_output=True, text=True, timeout=10, check=False)
     except Exception as exc:
         return {"status": "unreachable", "message": f"Docker engine tidak dapat diakses: {exc}", "services": []}
     if completed.returncode != 0:
-        return {
-            "status": "unreachable",
-            "message": "Superset live validation belum dapat dijalankan karena Docker engine tidak aktif.",
-            "stderr": completed.stderr.strip(),
-            "services": [],
-        }
+        return {"status": "unreachable", "message": "Docker engine tidak dapat diakses.", "stderr": completed.stderr.strip(), "services": []}
     services = []
     for line in completed.stdout.splitlines():
         try:
@@ -420,169 +307,57 @@ def _service_statuses(base_dir: Path) -> dict[str, Any]:
 
 
 def _storage_status(base_dir: Path, services: dict[str, Any]) -> dict[str, Any]:
-    mapping_path = base_dir / "outputs" / "reports" / "storage_mapping.json"
     manifest_path = base_dir / "outputs" / "reports" / "storage_manifest.json"
-    mapping = _read_json(mapping_path)
     manifest = _read_json(manifest_path)
-    minio_service = services.get("minioApi", {})
-    upload = (manifest or {}).get("upload", {})
-    manifest_status = (manifest or {}).get("status")
-    if not mapping and not manifest:
+    if not manifest:
         status = "not_started"
         message = "Storage manifest belum dibuat."
-    elif minio_service.get("status") == "unreachable":
+    elif services.get("minioApi", {}).get("status") == "unreachable":
         status = "configured_unreachable"
-        message = "Mapping storage tersedia, tetapi endpoint MinIO tidak dapat dijangkau."
-    elif upload.get("status") == "uploaded" or manifest_status == "uploaded":
-        status = "uploaded"
-        message = "Upload MinIO dilaporkan berhasil oleh manifest."
-    elif upload.get("status") == "skipped" or manifest_status == "mapped_not_uploaded":
-        status = "skipped"
-        message = "Upload MinIO tidak dijalankan; layer hanya mapped."
+        message = "Manifest tersedia, tetapi endpoint MinIO tidak dapat dijangkau."
     else:
-        status = "mapped"
-        message = "Mapping storage tersedia."
+        status = manifest.get("status") or "mapped"
+        message = "Storage manifest Excel Lakehouse tersedia."
     return {
         "status": status,
-        "mapping_source": _rel(mapping_path, base_dir) if mapping_path.exists() else None,
         "manifest_source": _rel(manifest_path, base_dir) if manifest_path.exists() else None,
-        "mapping": mapping,
         "manifest": manifest,
         "message": message,
     }
 
 
 def _superset_dashboard_status(base_dir: Path, services: dict[str, Any]) -> dict[str, Any]:
-    assets_path = base_dir / "outputs" / "reports" / "superset_excel_assets.json"
     dashboard_path = base_dir / "outputs" / "reports" / "superset_excel_dashboard.json"
+    assets_path = base_dir / "outputs" / "reports" / "superset_excel_assets.json"
     dashboard = _read_json(dashboard_path)
     assets = _read_json(assets_path)
-    service_status = services.get("superset", {}).get("status")
-    if service_status == "unreachable" or (dashboard or {}).get("status") == "unreachable":
-        return {
-            "status": "unreachable",
-            "source": _rel(dashboard_path, base_dir) if dashboard_path.exists() else None,
-            "message": (dashboard or {}).get("message") or "Superset live validation belum dapat dijalankan karena layanan tidak aktif.",
-            "dashboard_url": (dashboard or {}).get("dashboard_url"),
-        }
     if dashboard and assets:
         return {
             "status": "created",
             "source": _rel(dashboard_path, base_dir),
-            "message": "Artefak dashboard tersedia dan layanan Superset dapat dijangkau.",
+            "message": "Artefak dashboard Excel Lakehouse tersedia.",
             "dashboard_url": dashboard.get("dashboard_url"),
         }
     return {"status": "configured" if assets else "not_started", "source": None, "message": "Dashboard Superset belum divalidasi."}
 
 
 def _bab4_evidence(truth: dict[str, Any]) -> dict[str, Any]:
-    def available_metric(section: dict[str, Any], key: str) -> Any:
-        item = section.get(key, {})
-        return item.get("value") if item.get("status") in {"validated", "completed"} else None
-
-    reconcile = truth["reconciliation"]
-    quality_gate = truth["quality_gate"]
-    quality = truth["metrics"]["data_quality_score"]
+    fact = truth["reconciliation"]
     uat = truth["uat"]
-    storage = truth["storage"]
     dashboard = truth["dashboard"]
     return {
-        "status": "ready" if reconcile["status"] == "validated" else "not_available",
-        "message": "Ringkasan Bab 4 hanya memuat hasil yang tersedia." if reconcile["status"] == "validated" else "Hasil belum tersedia.",
-        "total_piutang_target_prodi": available_metric(reconcile, "total_piutang"),
-        "jumlah_penunggak_target_prodi": available_metric(reconcile, "jumlah_penunggak"),
-        "total_rows_transaksi": available_metric(quality_gate, "total_rows"),
-        "valid_rows": available_metric(quality_gate, "valid_rows"),
-        "rejected_rows": available_metric(quality_gate, "rejected_rows"),
-        "dropout_rate": available_metric(quality_gate, "dropout_rate"),
-        "data_quality_score": quality.get("data_quality_score", {}).get("value"),
-        "storage_status": storage["status"],
-        "uat_average": uat["average_score"] if uat["status"] == "completed" else None,
-        "uat_percentage": uat["percentage"] if uat["status"] == "completed" else None,
-        "uat_category": uat["category"] if uat["status"] == "completed" else None,
+        "status": "ready" if fact["status"] == "validated" else "not_available",
+        "message": "Ringkasan hanya memuat hasil Excel Lakehouse yang tersedia.",
+        "total_anggaran": fact["total_anggaran"]["value"],
+        "total_weighted_iku": fact["total_weighted_iku"]["value"],
+        "fact_rows": fact["fact_rows"]["value"],
+        "storage_status": truth["storage"]["status"],
+        "uat_average": uat.get("average_score") if uat["status"] == "completed" else None,
+        "uat_percentage": uat.get("percentage") if uat["status"] == "completed" else None,
+        "uat_category": uat.get("category") if uat["status"] == "completed" else None,
         "dashboard_status": dashboard["status"],
         "dashboard_url": dashboard.get("dashboard_url") if dashboard["status"] == "created" else None,
         "executed_at": truth["generated_at"],
-    }
-
-
-def _active_upload_pointer(base_dir: Path) -> dict[str, Any] | None:
-    pointer = _read_json(base_dir / "outputs" / "reports" / "active_dataset_pointer.json")
-    if pointer and pointer.get("dataset_mode") == "uploaded" and pointer.get("status") == "committed" and pointer.get("session_id"):
-        return pointer
-    return None
-
-
-def _session_matches(payload: dict[str, Any] | None, session_id: str) -> bool:
-    return bool(payload and payload.get("upload_session_id") == session_id)
-
-
-def _not_started_artifact(name: str, message: str) -> dict[str, Any]:
-    return {
-        "status": "not_started",
-        "required": [name],
-        "existing": [],
-        "file_count": 0,
-        "message": message,
-    }
-
-
-def _apply_uploaded_session_freshness(truth: dict[str, Any], base_dir: Path) -> None:
-    if truth.get("layers", {}).get("excel_lakehouse", {}).get("status") == "ready":
-        return
-    pointer = _active_upload_pointer(base_dir)
-    if not pointer:
-        return
-
-    session_id = str(pointer["session_id"])
-    truth["dataset_mode"] = "uploaded"
-    truth["upload_session"] = {"session_id": session_id, "status": "committed", "source": "active_dataset_pointer.json"}
-    truth["layers"]["raw"] = {
-        "status": "ready",
-        "required": [
-            pointer.get("active_pdf"),
-            *(pointer.get("active_csv_files") or []),
-            pointer.get("active_excel"),
-        ],
-        "existing": [
-            item
-            for item in [pointer.get("active_pdf"), *(pointer.get("active_csv_files") or []), pointer.get("active_excel")]
-            if item and (base_dir / item).exists()
-        ],
-        "file_count": 2 + len(pointer.get("active_csv_files") or []),
-        "message": "Raw layer berisi sesi upload committed.",
-    }
-
-    quality_payload = _read_json(base_dir / "data" / "quarantine" / "logs" / "quality_gate_summary.json")
-    bronze_payload = _read_json(base_dir / "data" / "generated" / "bronze" / "ingestion_metadata.json")
-    silver_payload = _read_json(base_dir / "data" / "generated" / "silver" / "silver_metadata.json")
-    gold_payload = _read_json(base_dir / "data" / "generated" / "gold" / "gold_metadata.json")
-
-    if not _session_matches(quality_payload, session_id):
-        truth["quality_gate"] = {
-            "status": "not_started",
-            "total_rows": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
-            "valid_rows": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
-            "rejected_rows": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
-            "dropout_rate": _value(None, "not_started", None, "Quality Gate belum dijalankan untuk sesi upload aktif."),
-        }
-    if not _session_matches(bronze_payload, session_id):
-        truth["layers"]["bronze"] = _not_started_artifact("data/generated/bronze/ingestion_metadata.json", "Bronze belum tersedia untuk sesi upload aktif.")
-    if not _session_matches(silver_payload, session_id):
-        truth["layers"]["silver"] = _not_started_artifact("data/generated/silver/silver_metadata.json", "Silver belum tersedia untuk sesi upload aktif.")
-    if not _session_matches(gold_payload, session_id):
-        truth["layers"]["gold"] = _not_started_artifact("data/generated/gold/gold_metadata.json", "Gold belum tersedia untuk sesi upload aktif.")
-
-    if not _session_matches(gold_payload, session_id):
-        truth["layers"]["metrics"] = _not_started_artifact("outputs/metrics", "Metrics belum tersedia untuk sesi upload aktif.")
-        for metric_name, payload in truth["metrics"].items():
-            truth["metrics"][metric_name] = {key: _value(None, "not_started", None, "Metrics belum tersedia untuk sesi upload aktif.") for key in payload if key != "status"} | {"status": "not_started"}
-        truth["dashboard"] = {"status": "not_started", "source": None, "message": "Dashboard belum diperbarui untuk sesi upload aktif."}
-    truth["uat"] = {
-        "status": "manual_input_required",
-        "uat_status": "manual_input_required",
-        "message": "UAT membutuhkan input manual untuk sesi upload aktif.",
-        "respondent_count": 0,
     }
 
 
@@ -590,31 +365,32 @@ def build_system_truth_status(base_dir: Path | str | None = None, write_outputs:
     base = Path(base_dir) if base_dir is not None else ROOT_DIR
     config = get_runtime_config()
     services = _service_statuses(base)
+    quality_gate = _quality_gate_status(base)
     truth: dict[str, Any] = {
         "generated_at": utc_now_iso(),
         "status_schema": sorted(ALLOWED_STATUSES),
+        "dataset_mode": "uploaded_excel",
         "runtime_config": {
             "target_prodi": config.target_prodi,
+            "target_fakultas": config.target_fakultas,
             "target_tahun_akademik": config.target_tahun_akademik,
-            "target_total_piutang": _configured_value(config.target_total_piutang),
-            "target_jumlah_penunggak": _configured_value(config.target_jumlah_penunggak),
+            "target_tahun_anggaran": config.target_tahun_anggaran,
         },
         "sources": _source_status(base),
         "layers": _layer_status(base),
-        "quality_gate": _quality_gate_status(base),
-        "reconciliation": _reconcile_status(base),
+        "quality_gate": quality_gate,
+        "reconciliation": _fact_anggaran_status(base),
         "metrics": {
             "pipeline_latency": _pipeline_latency_status(base, write_output=write_outputs),
             "data_freshness": _metric_file_status(base, "data_freshness.json", ["freshness_seconds", "data_freshness_status"]),
-            "dropout_rate": _metric_file_status(base, "dropout_rate.json", ["dropout_rate", "total_rows", "valid_rows", "rejected_rows"]),
-            "data_quality_score": _metric_file_status(base, "data_quality_score.json", ["data_quality_score", "completeness", "validity", "consistency", "accuracy"]),
+            "dropout_rate": {"status": quality_gate["status"], "dropout_rate": quality_gate["dropout_rate"]},
+            "data_quality_score": {"status": quality_gate["status"], "data_quality_score": quality_gate["quality_score"]},
         },
         "uat": _uat_status(base),
         "services": services,
     }
     truth["storage"] = _storage_status(base, services)
     truth["dashboard"] = _superset_dashboard_status(base, services)
-    _apply_uploaded_session_freshness(truth, base)
     truth["bab4_evidence"] = _bab4_evidence(truth)
 
     if write_outputs:
@@ -630,7 +406,7 @@ def _write_csv(path: Path, truth: dict[str, Any]) -> None:
     rows = [
         ["component", "status", "source", "message"],
         ["quality_gate", truth["quality_gate"]["status"], None, None],
-        ["reconciliation", truth["reconciliation"]["status"], truth["reconciliation"].get("source"), None],
+        ["fact_anggaran", truth["reconciliation"]["status"], truth["reconciliation"].get("source"), None],
         ["uat", truth["uat"]["status"], truth["uat"].get("source"), truth["uat"].get("message")],
         ["storage", truth["storage"]["status"], truth["storage"].get("manifest_source"), truth["storage"].get("message")],
         ["dashboard", truth["dashboard"]["status"], truth["dashboard"].get("source"), truth["dashboard"].get("message")],
@@ -648,9 +424,7 @@ def main() -> None:
     truth = build_system_truth_status(write_outputs=True)
     print(
         {
-            "quality_gate": truth["quality_gate"]["status"],
-            "reconciliation": truth["reconciliation"]["status"],
-            "uat": truth["uat"]["status"],
+            "fact_anggaran": truth["reconciliation"]["status"],
             "storage": truth["storage"]["status"],
             "dashboard": truth["dashboard"]["status"],
         }

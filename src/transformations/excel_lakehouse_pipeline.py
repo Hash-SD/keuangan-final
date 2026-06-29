@@ -25,7 +25,7 @@ from src.transformations.budget_cleaning import clean_and_enrich_budget_items
 
 def _session_id() -> str:
     pointer = active_dataset_pointer() or {}
-    return Path(str(pointer.get("session_id") or "dummy")).name or "dummy"
+    return Path(str(pointer.get("session_id") or "excel-lakehouse")).name or "excel-lakehouse"
 
 
 def _split_env_paths(value: str | None) -> list[Path]:

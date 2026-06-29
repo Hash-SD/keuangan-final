@@ -9,11 +9,6 @@ from src.metrics.pipeline_latency import compute_pipeline_latency
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_data_quality_score_perfect_for_controlled_dummy_data():
-    score = json.loads((ROOT / "outputs" / "metrics" / "data_quality_score.json").read_text(encoding="utf-8"))
-    assert score["data_quality_score"] == 100.0
-
-
 def test_pipeline_latency_uses_active_source_and_gold_artifacts(tmp_path, monkeypatch):
     source_time = datetime(2026, 6, 9, 1, 0, tzinfo=timezone.utc).timestamp()
     gold_time = datetime(2026, 6, 9, 1, 7, 30, tzinfo=timezone.utc).timestamp()

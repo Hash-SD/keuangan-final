@@ -10,8 +10,7 @@ def test_empty_state_has_no_final_numbers(tmp_path, monkeypatch):
 
     assert truth["quality_gate"]["total_rows"]["value"] is None
     assert truth["quality_gate"]["status"] == "missing"
-    assert truth["reconciliation"]["total_piutang"]["value"] is None
+    assert truth["reconciliation"]["total_anggaran"]["value"] is None
     assert truth["uat"]["average_score"] is None
     assert truth["dashboard"]["status"] in {"not_started", "unreachable"}
     assert truth["services"]["superset"]["status"] == "unreachable"
-

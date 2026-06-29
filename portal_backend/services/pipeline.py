@@ -8,47 +8,39 @@ from typing import Any
 from .activity import append_activity
 from .metrics import metrics_payload
 from .paths import ROOT_DIR
-from .runtime_context import context_env, read_active_context
-from src.common.runtime_paths import active_dataset_pointer, dataset_mode
+from src.common.runtime_paths import active_dataset_pointer
 
 
 COMMANDS: dict[str, list[list[str]]] = {
-    "generate-data": [[sys.executable, "src/generators/generate_all.py"]],
-    "quality-gate": [[sys.executable, "src/validation/quality_gate.py"]],
-    "bronze": [[sys.executable, "src/transformations/bronze_ingest.py"]],
-    "silver": [[sys.executable, "src/transformations/silver_clean.py"]],
-    "gold": [[sys.executable, "src/transformations/gold_star_schema.py"]],
     "excel-lakehouse": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
+    "bronze": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
+    "silver": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
+    "gold": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
     "superset-excel": [[sys.executable, "src/sql/setup_superset_excel_assets.py"]],
     "metrics": [
-        [sys.executable, "src/metrics/reconcile_control_total.py"],
         [sys.executable, "src/metrics/pipeline_latency.py"],
         [sys.executable, "src/metrics/data_freshness.py"],
-        [sys.executable, "src/metrics/dropout_rate.py"],
-        [sys.executable, "src/metrics/data_quality_score.py"],
         [sys.executable, "src/metrics/generate_uat.py"],
-        [sys.executable, "src/storage/storage_manifest.py"],
+        [sys.executable, "src/storage/excel_storage_manifest.py"],
         [sys.executable, "src/status/system_truth_status.py"],
     ],
-    "storage-manifest": [[sys.executable, "src/storage/storage_manifest.py"]],
     "excel-storage-manifest": [[sys.executable, "src/storage/excel_storage_manifest.py"]],
     "excel-count-validation": [[sys.executable, "src/metrics/validate_excel_lakehouse_counts.py"]],
+    "quality-gate": [[sys.executable, "src/metrics/validate_excel_lakehouse_counts.py"]],
     "truth-status": [[sys.executable, "src/status/system_truth_status.py"]],
-    "validate-gold": [[sys.executable, "src/metrics/reconcile_control_total.py"]],
+    "validate-gold": [[sys.executable, "src/metrics/validate_excel_lakehouse_counts.py"]],
 }
 
 FULL_RUN_BASIC = ["excel-lakehouse", "excel-count-validation", "excel-storage-manifest", "superset-excel", "truth-status"]
 FULL_RUN_UPLOADED_SOURCES = FULL_RUN_BASIC
 ACTIVITY_ACTIONS = {
-    "generate-data": ("generate_data", "raw"),
-    "quality-gate": ("quality_gate_process", "quality_gate"),
-    "bronze": ("extract_bronze", "bronze"),
-    "silver": ("clean_silver", "silver"),
-    "gold": ("load_gold_schema", "gold"),
+    "quality-gate": ("excel_count_validation", "outputs/reports"),
+    "bronze": ("excel_lakehouse", "bronze"),
+    "silver": ("excel_lakehouse", "silver"),
+    "gold": ("excel_lakehouse", "gold"),
     "excel-lakehouse": ("excel_lakehouse", "gold/fact_anggaran"),
     "superset-excel": ("superset_excel_dashboard", "superset"),
     "metrics": ("metrics", "outputs/metrics"),
-    "storage-manifest": ("storage_manifest", "outputs/reports"),
     "excel-storage-manifest": ("excel_storage_manifest", "outputs/reports"),
     "excel-count-validation": ("excel_count_validation", "outputs/reports"),
     "truth-status": ("system_truth_status", "outputs/reports"),
@@ -64,15 +56,10 @@ def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
     commands = COMMANDS.get(name)
     if commands is None:
         return {"status": "failed", "message": f"Command tidak dikenal: {name}", "steps": []}
-    if name == "generate-data" and dataset_mode() == "uploaded":
-        message = "Generate dummy data dilewati karena DATASET_MODE=uploaded dan active_dataset_pointer committed tersedia."
-        append_activity("generate_data", "raw", "skipped", message, "active_dataset_pointer")
-        return {"status": "success", "command": name, "skipped": True, "message": message, "steps": [], "context": read_active_context()}
 
     steps = []
     status = "success"
-    active_context = read_active_context()
-    env = {**os.environ, **context_env(active_context)}
+    env = {**os.environ, "DATASET_MODE": "uploaded_excel"}
     for args in commands:
         try:
             completed = subprocess.run(
@@ -113,7 +100,7 @@ def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
         target="local scripts",
         message=f"Pipeline step {name} {status}.",
     )
-    response = {"status": status, "command": name, "steps": steps, "context": active_context}
+    response = {"status": status, "command": name, "steps": steps}
     if name in {"quality-gate", "metrics", "validate-gold"}:
         response["metrics"] = metrics_payload()
     return response
@@ -124,9 +111,7 @@ def _has_active_uploaded_sources() -> bool:
 
 
 def _full_run_steps() -> list[str]:
-    if _has_active_uploaded_sources():
-        return FULL_RUN_UPLOADED_SOURCES
-    return FULL_RUN_BASIC
+    return FULL_RUN_UPLOADED_SOURCES
 
 
 def run_full(mode: str = "local-basic") -> dict[str, Any]:
@@ -147,7 +132,7 @@ def run_full(mode: str = "local-basic") -> dict[str, Any]:
     return {
         "status": status,
         "mode": mode,
-        "source_mode": "uploaded_sources" if steps == FULL_RUN_UPLOADED_SOURCES else "generated_dummy",
+        "source_mode": "uploaded_excel",
         "steps": results,
         "metrics": metrics_payload(),
     }

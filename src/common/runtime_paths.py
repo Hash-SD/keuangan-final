@@ -4,7 +4,7 @@ import os
 import json
 from pathlib import Path
 
-from src.common.paths import DATA_DIR, GENERATED_DIR, RAW_DIR
+from src.common.paths import RAW_DIR
 from src.common.runtime_config import get_runtime_config
 
 ACTIVE_DATASET_POINTER = Path(__file__).resolve().parents[2] / "outputs" / "reports" / "active_dataset_pointer.json"
@@ -17,8 +17,6 @@ def _env_filename(name: str, default: str) -> str:
 
 
 def active_dataset_pointer() -> dict | None:
-    if os.getenv("DATASET_MODE", "").strip().lower() == "dummy":
-        return None
     if not ACTIVE_DATASET_POINTER.exists():
         return None
     try:
@@ -27,16 +25,11 @@ def active_dataset_pointer() -> dict | None:
         return None
     if not isinstance(payload, dict) or payload.get("status") != "committed":
         return None
-    if os.getenv("DATASET_MODE", "").strip().lower() in {"uploaded", "mixed", ""}:
-        return payload
-    return None
+    return payload
 
 
 def dataset_mode() -> str:
-    env_mode = os.getenv("DATASET_MODE", "").strip().lower()
-    if env_mode:
-        return env_mode
-    return "uploaded" if active_dataset_pointer() else "dummy"
+    return "uploaded_excel"
 
 
 def _pointer_path(key: str) -> Path | None:
@@ -50,42 +43,11 @@ def _pointer_path(key: str) -> Path | None:
     return path if path.exists() else None
 
 
-def active_csv_paths() -> list[Path]:
-    pointer = active_dataset_pointer()
-    values = pointer.get("active_csv_files") if pointer else None
-    paths: list[Path] = []
-    if isinstance(values, list):
-        for value in values:
-            path = Path(str(value))
-            if not path.is_absolute():
-                path = Path(__file__).resolve().parents[2] / path
-            if path.exists():
-                paths.append(path)
-    if paths:
-        return paths
-    return sorted((RAW_DIR / "csv").rglob("transaksi_*.csv"))
-
-
-def raw_pdf_path() -> Path:
-    active = _pointer_path("active_pdf")
-    if active is not None:
-        return active
-    return RAW_DIR / "pdf" / _env_filename("PORTAL_RAW_PDF_FILENAME", "ITERA_LKTA2024Audited.pdf")
-
-
-def sample_pdf_path() -> Path:
-    return DATA_DIR / "samples" / _env_filename("PORTAL_SAMPLE_PDF_FILENAME", raw_pdf_path().name)
-
-
 def raw_rab_path() -> Path:
     active = _pointer_path("active_excel")
     if active is not None:
         return active
     return RAW_DIR / "excel" / _env_filename("PORTAL_RAB_FILENAME", "rab_prodi_sains_data.xlsx")
-
-
-def silver_rab_path() -> Path:
-    return GENERATED_DIR / "silver" / _env_filename("PORTAL_SILVER_RAB_FILENAME", "rab_prodi_sains_data_long.csv")
 
 
 def active_period_metadata() -> dict[str, str]:

@@ -329,6 +329,201 @@
     .status-error { color: #991b1b; background: #fef2f2; border-color: #fee2e2; }
     .status-info { color: #475569; background: #f4f6f8; border-color: #e2e8f0; }
     .status-info { color: #1e3a8a; background: #eff6ff; border-color: #dbeafe; }
+    .guide-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+    .guide-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: .75rem;
+      padding: 1.25rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+      min-width: 0;
+    }
+    .guide-title {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.1vw, 2rem);
+      line-height: 1.15;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: 0;
+    }
+    .guide-copy {
+      margin: .5rem 0 0;
+      max-width: 760px;
+      color: #475569;
+      line-height: 1.55;
+      font-size: .95rem;
+    }
+    .guided-upload-form {
+      display: grid;
+      gap: 1rem;
+    }
+    .guided-upload-meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .75rem;
+    }
+    .guided-file-drop {
+      display: grid;
+      gap: .75rem;
+      padding: 1rem;
+      border: 1.5px dashed #93c5fd;
+      border-radius: .75rem;
+      background: #eff6ff;
+    }
+    .guided-file-drop input[type="file"] {
+      width: 100%;
+      padding: .65rem;
+      border: 1px solid #bfdbfe;
+      border-radius: .5rem;
+      background: #ffffff;
+    }
+    .guided-actions {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .guide-primary {
+      min-height: 46px;
+      padding: .72rem 1.15rem;
+      border-radius: .65rem;
+      font-weight: 800;
+      border: 1px solid transparent;
+      color: #ffffff;
+      background: #0f4c81;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .45rem;
+    }
+    .guide-secondary {
+      min-height: 42px;
+      padding: .65rem .95rem;
+      border-radius: .65rem;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      background: #ffffff;
+      font-weight: 750;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+    }
+    .journey-steps {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .75rem;
+    }
+    .journey-step {
+      min-height: 136px;
+      display: grid;
+      align-content: start;
+      gap: .55rem;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: .75rem;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+    .journey-step::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: #cbd5e1;
+    }
+    .journey-step.ready::before { background: #16a34a; }
+    .journey-step.running::before { background: #0ea5e9; }
+    .journey-step.failed::before { background: #dc2626; }
+    .journey-step-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: .5rem;
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .journey-step.ready .journey-step-icon { background: #dcfce7; color: #166534; }
+    .journey-step.running .journey-step-icon { background: #dbeafe; color: #0b57d0; }
+    .journey-step.failed .journey-step-icon { background: #fee2e2; color: #991b1b; }
+    .journey-step h4 {
+      margin: 0;
+      font-size: .92rem;
+      color: #0f172a;
+      line-height: 1.25;
+    }
+    .journey-step p {
+      margin: 0;
+      font-size: .8rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .process-panel {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(320px, .65fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+    .process-list {
+      display: grid;
+      gap: .75rem;
+    }
+    .process-item {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+      gap: .75rem;
+      align-items: center;
+      padding: .85rem;
+      border: 1px solid #e2e8f0;
+      border-radius: .65rem;
+      background: #ffffff;
+    }
+    .process-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: .5rem;
+      display: grid;
+      place-items: center;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    .process-item.ready .process-dot { background: #dcfce7; color: #166534; }
+    .process-item.running .process-dot { background: #dbeafe; color: #0b57d0; }
+    .process-item.failed .process-dot { background: #fee2e2; color: #991b1b; }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .75rem;
+    }
+    .result-card {
+      min-width: 0;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: .75rem;
+      background: #ffffff;
+    }
+    .result-card strong {
+      display: block;
+      margin-top: .35rem;
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      line-height: 1.1;
+      color: #0f172a;
+      overflow-wrap: anywhere;
+    }
+    .expert-details summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: #334155;
+      list-style: none;
+    }
+    .expert-details summary::-webkit-details-marker { display: none; }
     .primary-button, .secondary-button, .disabled-button {
       min-height: 40px;
       display: inline-flex;
@@ -787,6 +982,10 @@
       .dashboard-flow-grid, .orchestration-body-grid, .analytics-top-grid, .data-quality-grid, .lakehouse-validation-grid { grid-template-columns: 1fr; }
       .dashboard-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .orchestration-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .guide-hero, .process-panel { grid-template-columns: 1fr; }
+      .guided-upload-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .journey-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .system-services-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .control-actions { justify-content: flex-start; }
     }
@@ -851,6 +1050,9 @@
       .app-header { padding: 1rem; align-items: flex-start; }
       .content { padding: 1rem 1rem calc(var(--footer-height) + 2rem); }
       .grid-2, .grid-3, .grid-4, .grid-5, .home-metrics-grid, .dashboard-metrics-grid, .orchestration-summary-grid, .system-services-grid { grid-template-columns: 1fr; }
+      .guided-upload-meta, .journey-steps, .result-grid { grid-template-columns: 1fr; }
+      .process-item { grid-template-columns: 38px minmax(0, 1fr); }
+      .process-item > .status-badge { grid-column: 2; width: fit-content; }
       .span-2, .span-3 { grid-column: span 1; }
       .app-footer { left: 0; padding: 0 .8rem; font-size: .58rem; }
       .footer-right { gap: .7rem; }
@@ -1315,6 +1517,118 @@
       };
     }
 
+    function currentWorkflowSteps() {
+      const layers = state.truth?.layers || {};
+      const dashboardReady = state.truth?.dashboard?.status === "ready" || state.truth?.dashboard?.dashboard_opens === true;
+      const latest = latestPipelineActivity();
+      const hasFailure = latest && String(latest.status || "").toLowerCase().includes("fail");
+      const rawReady = layers.raw?.status === "ready" || state.excelLakehouse?.status === "ready";
+      const bronzeReady = layers.bronze?.status === "ready" || state.excelLakehouse?.artifacts?.bronze_excel_cells?.available;
+      const silverReady = layers.silver?.status === "ready" || state.excelLakehouse?.artifacts?.silver_rab_items_flexible?.available;
+      const goldReady = layers.gold?.status === "ready" || state.excelLakehouse?.artifacts?.fact_anggaran?.available;
+      const serviceReady = state.truth?.services?.superset?.status === "ready" || state.services?.superset;
+      const states = [rawReady, bronzeReady, silverReady, goldReady, dashboardReady || (goldReady && serviceReady)];
+      const runningIndex = hasFailure ? -1 : states.findIndex(ready => !ready);
+      return [
+        ["Upload Excel", "File RAB/RPD/IKU/Nomenklatur tersimpan sebagai sumber.", "upload_file", states[0]],
+        ["Baca Cell", "Workbook dibaca lengkap sampai level cell dan sheet.", "dataset", states[1]],
+        ["Rapikan Data", "Item biaya, kegiatan, akun, dan IKU dinormalisasi.", "filter_alt", states[2]],
+        ["Buat Gold", "fact_anggaran siap menjadi sumber dashboard.", "stars", states[3]],
+        ["Dashboard", "Superset membaca hasil akhir yang sudah bersih.", "dashboard", states[4]]
+      ].map((item, index) => {
+        const [title, text, icon, ready] = item;
+        const stateName = hasFailure && index === runningIndex ? "failed" : ready ? "ready" : index === runningIndex ? "running" : "waiting";
+        return { title, text, icon, stateName };
+      });
+    }
+
+    function journeyStepsHtml() {
+      return currentWorkflowSteps().map(step => `<article class="journey-step ${step.stateName}">
+        <div class="journey-step-icon"><span class="material-symbols-outlined" style="font-size:22px;">${step.icon}</span></div>
+        <h4>${step.title}</h4>
+        <p>${step.text}</p>
+        ${badge(step.stateName === "ready" ? "Selesai" : step.stateName === "running" ? "Berjalan" : step.stateName === "failed" ? "Gagal" : "Menunggu", step.stateName === "ready" ? "ok" : step.stateName === "failed" ? "error" : "info")}
+      </article>`).join("");
+    }
+
+    function processListHtml() {
+      return currentWorkflowSteps().map(step => `<div class="process-item ${step.stateName}">
+        <div class="process-dot"><span class="material-symbols-outlined" style="font-size:21px;">${step.icon}</span></div>
+        <div style="min-width:0;">
+          <strong style="display:block;color:#0f172a;">${step.title}</strong>
+          <span class="small muted">${step.text}</span>
+        </div>
+        ${badge(step.stateName === "ready" ? "Selesai" : step.stateName === "running" ? "Berjalan" : step.stateName === "failed" ? "Gagal" : "Menunggu", step.stateName === "ready" ? "ok" : step.stateName === "failed" ? "error" : "info")}
+      </div>`).join("");
+    }
+
+    function workflowPrimaryStatus() {
+      const steps = currentWorkflowSteps();
+      const completed = steps.filter(step => step.stateName === "ready").length;
+      const failed = steps.find(step => step.stateName === "failed");
+      if (failed) return { label: "Perlu dicek", note: `${failed.title} gagal diproses. Lihat log proses untuk detail.`, type: "error", completed };
+      if (completed === steps.length) return { label: "Sistem berjalan", note: "Data sudah sampai Gold dan dashboard dapat dicek.", type: "ok", completed };
+      if (completed > 0) return { label: "Sedang disiapkan", note: `${completed} dari ${steps.length} tahap sudah selesai.`, type: "info", completed };
+      return { label: "Siap mulai", note: "Upload file Excel lalu jalankan sistem.", type: "info", completed };
+    }
+
+    function resultCardsHtml() {
+      const counts = state.excelLakehouse?.counts || {};
+      const fact = state.excelLakehouse?.fact_anggaran || {};
+      return [
+        ["Total Anggaran", has(fact.total_jumlah) ? rupiah(fact.total_jumlah) : "-", "Nilai dari fact_anggaran", "account_balance_wallet"],
+        ["Weighted IKU", has(fact.total_weighted_iku) ? rupiah(fact.total_weighted_iku) : "-", "Tidak menggandakan item multi-IKU", "monitoring"],
+        ["Item Gold", has(counts.fact_anggaran_rows) ? n(counts.fact_anggaran_rows) : "-", "Baris final untuk dashboard", "format_list_numbered"],
+        ["Nomenklatur", has(counts.nomenklatur_detail) ? n(counts.nomenklatur_detail) : "-", "Master kegiatan/IKU terbaca", "account_tree"]
+      ].map(([title, value, note, icon]) => `<article class="result-card">
+        <div class="metric-label"><span>${title}</span><span class="material-symbols-outlined">${icon}</span></div>
+        <strong>${value}</strong>
+        <p class="metric-note">${note}</p>
+      </article>`).join("");
+    }
+
+    function guidedUploadPanel() {
+      const status = workflowPrimaryStatus();
+      const dashboard = state.truth?.dashboard || {};
+      return `<section class="guide-hero">
+        <div class="guide-card">
+          <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;">
+            <div>
+              <h3 class="guide-title">Mulai dari upload Excel, lalu biarkan sistem bekerja</h3>
+              <p class="guide-copy">Alur ini dibuat untuk pengguna pemula: pilih file, isi tahun, klik satu tombol untuk menyimpan, lalu jalankan pemrosesan sampai hasil Gold dan dashboard siap.</p>
+            </div>
+            ${badge(status.label, status.type)}
+          </div>
+          <form id="excelDatasetForm" class="guided-upload-form" enctype="multipart/form-data">
+            <div class="guided-upload-meta">
+              <label class="field-label">Tahun<input class="input" name="tahun_input" value="2025" placeholder="2025"></label>
+              <label class="field-label">Periode<input class="input" name="periode" value="Tahunan" placeholder="Tahunan"></label>
+              <label class="field-label">Prodi<input class="input" name="prodi" value="Sains Data"></label>
+              <label class="field-label">Fakultas<input class="input" name="fakultas" value="Fakultas Sains"></label>
+              <input type="hidden" name="jenis_dataset" value="mixed_excel">
+            </div>
+            <label class="guided-file-drop">
+              <span style="font-weight:800;color:#0f172a;display:flex;gap:.45rem;align-items:center;"><span class="material-symbols-outlined">table_chart</span>Pilih workbook Excel</span>
+              <span class="small muted">Bisa berisi RAB, RPD/IKU, dan Nomenklatur. Sistem akan mendeteksi struktur yang sesuai.</span>
+              <input type="file" name="file_excel[]" accept=".xlsx,.xlsm,.xltx,.xltm" multiple>
+            </label>
+            <div class="guided-actions">
+              <button class="guide-primary" type="submit"><span class="material-symbols-outlined" style="font-size:20px;">cloud_upload</span>1. Upload Data</button>
+              <button class="guide-primary" type="button" id="runExcelLakehouse"><span class="material-symbols-outlined" style="font-size:20px;">play_arrow</span>2. Jalankan Sistem</button>
+              <a class="guide-secondary" href="${safe(dashboard.dashboard_url || CONTROL.dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Cek Dashboard</a>
+            </div>
+          </form>
+        </div>
+        <aside class="guide-card">
+          <h3 class="section-title" style="margin-bottom:.5rem;">Status Saat Ini</h3>
+          <p class="guide-copy" style="margin-top:0;">${status.note}</p>
+          <div style="margin-top:1rem;display:grid;gap:.65rem;">
+            ${processListHtml()}
+          </div>
+        </aside>
+      </section>`;
+    }
+
     function tailwindCard(title, value, subtitle, icon, iconColor, iconBg, valueColor = "#111827") {
       const valueSize = String(value || "").length > 18 ? "1.05rem" : "1.35rem";
       return `<div style="background:#fff; border:1px solid #e5e7eb; box-shadow:0 1px 2px rgba(15,23,42,0.04); border-radius:0.5rem; padding:1rem; display:flex; flex-direction:column; gap:.7rem;">
@@ -1378,108 +1692,33 @@
     }
 
     function renderData() {
-      const q = qualitySummary();
-      const source = state.sourceStatus || {};
-      const ref = state.referenceSummary || {};
-      const target = runtimeTarget();
-      const qualityRate = q.totalRows ? `${((q.validRows / q.totalRows) * 100).toFixed(1)}%` : "-";
       document.getElementById("page-data").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
-          ${excelLakehousePanel()}
-          <section class="section-grid grid-4 w-full">
-            ${[
-              {
-                label: "Status Ingestion Terakhir",
-                value: q.available ? (q.rejectedRows === 0 ? "validated" : "validated") : "Belum ada data",
-                sub: q.available ? (q.rejectedRows === 0 ? "Semua baris lolos Quality Gate" : `${q.rejectedRows} baris dikarantina`) : "Menunggu hasil Quality Gate realtime",
-                color: !q.available ? "#475569" : q.rejectedRows === 0 ? "#166534" : "#92400e",
-                bg: !q.available ? "#f8fafc" : q.rejectedRows === 0 ? "#f0fdf4" : "#fffbeb",
-                border: !q.available ? "#e2e8f0" : q.rejectedRows === 0 ? "#86efac" : "#fcd34d",
-                icon: !q.available ? "hourglass_empty" : q.rejectedRows === 0 ? "check_circle" : "warning"
-              },
-              {
-                label: "Quality Gate Score",
-                value: qualityRate,
-                sub: q.available ? (q.validRows === q.totalRows ? "Sempurna, 0 baris ditolak" : "Ada baris yang tidak lolos validasi") : "Belum ada hasil validasi",
-                color: "#0b57d0",
-                bg: "#eff6ff",
-                border: "#93c5fd",
-                icon: "verified"
-              },
-              {
-                label: "Valid Rows Diproses",
-                value: q.available ? n(q.validRows) : "-",
-                sub: q.available ? `dari ${n(q.totalRows)} total baris sumber` : "Belum ada hasil Quality Gate",
-                color: q.available ? "#166534" : "#475569",
-                bg: q.available ? "#f0fdf4" : "#f8fafc",
-                border: q.available ? "#86efac" : "#e2e8f0",
-                icon: "table_rows"
-              },
-              {
-                label: "Baris Dikarantina",
-                value: q.available ? n(q.rejectedRows) : "-",
-                sub: q.available ? (q.rejectedRows === 0 ? "Tidak ada baris yang ditolak" : "Baris gagal validasi integritas") : "Belum ada log karantina",
-                color: !q.available || q.rejectedRows === 0 ? "#475569" : "#ba1a1a",
-                bg: !q.available || q.rejectedRows === 0 ? "#f8fafc" : "#fff1f2",
-                border: !q.available || q.rejectedRows === 0 ? "#e2e8f0" : "#fca5a5",
-                icon: !q.available || q.rejectedRows === 0 ? "shield" : "block"
-              }
-            ].map(c => `
-              <div style="background:${c.bg}; border:1.5px solid ${c.border}; border-radius:1rem; padding:1.5rem; display:flex; flex-direction:column; gap:0.5rem;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <p style="margin:0; font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#64748b;">${c.label}</p>
-                  <span class="material-symbols-outlined" style="font-size:20px; color:${c.color}; opacity:0.8;">${c.icon}</span>
-                </div>
-                <p style="margin:0; font-size:2rem; font-weight:800; color:${c.color}; line-height:1;">${c.value}</p>
-                <p style="margin:0; font-size:0.82rem; color:#475569;">${c.sub}</p>
-              </div>
-            `).join("")}
-          </section>
-
-          <section class="section-grid grid-3">
-            ${sourceStatusCard("Raw Excel", source.excel, "table_chart", `RAB/RPD/IKU/Nomenklatur ${targetLabel()}`)}
-            ${sourceStatusCard("Bronze Cells", state.excelLakehouse?.artifacts?.bronze_excel_cells, "dataset", "Cell-level value, formula, warna, merge")}
-            ${sourceStatusCard("Gold fact_anggaran", state.excelLakehouse?.artifacts?.fact_anggaran, "stars", "Single fact table untuk dashboard IKU")}
-          </section>
-
-          ${runtimeContextPanel()}
-
-          <section class="glass-panel w-full">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.5rem;">
+          ${guidedUploadPanel()}
+          <section class="guide-card">
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;">
               <div>
-                <h3 class="section-title" style="margin:0; display:flex; align-items:center; gap:0.5rem; color:#0f172a;">
-                  <span class="material-symbols-outlined" style="color:var(--primary);">verified</span>
-                  Preview Ingested Data (Bronze Layer)
-                </h3>
-                <p class="small muted" style="margin-top:0.25rem; color:#475569;">Menampilkan 10 baris pertama data yang lolos Quality Gate validasi dasar.</p>
+                <h3 class="section-title" style="margin:0;">Hasil Terakhir</h3>
+                <p class="small muted" style="margin:.25rem 0 0;">Angka ini diambil dari output pipeline, bukan input manual.</p>
               </div>
-              <span class="status-badge status-info" style="font-family:monospace;">Bronze preview</span>
+              ${badge(state.excelLakehouse?.status || "missing", state.excelLakehouse?.status === "ready" ? "ok" : "info")}
             </div>
-            ${state.goldPreview.length || state.silverPreview.length ? dataTable(state.goldPreview.length ? state.goldPreview : state.silverPreview) : emptyState()}
+            <div class="result-grid">${resultCardsHtml()}</div>
           </section>
-
-          <section class="glass-panel w-full" style="border-color:#fca5a5; background:#fffbfb;">
-            <div style="margin-bottom:1.25rem;">
-              <h3 class="section-title" style="margin:0; color:#991b1b; display:flex; align-items:center; gap:0.5rem;">
-                <span class="material-symbols-outlined" style="color:#ef4444;">error</span>
-                Quarantine & Rejected Rows
-              </h3>
-              <p class="small muted" style="margin-top:0.25rem; color:#ef4444;">Data berikut diblokir oleh Quality Gate karena tidak memenuhi aturan integritas data keuangan.</p>
+          <details class="guide-card expert-details">
+            <summary><span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;">folder_open</span> Lihat lokasi file dan detail teknis</summary>
+            <div class="section-grid grid-3" style="margin-top:1rem;">
+              ${sourceStatusCard("Raw Excel Aktif", state.sourceStatus?.excel_lakehouse || state.sourceStatus?.excel, "table_chart", "Lokasi file sumber Excel")}
+              ${sourceStatusCard("Bronze Parquet", state.excelLakehouse?.artifacts?.bronze_excel_cells, "database", "data/generated/bronze")}
+              ${sourceStatusCard("Gold Parquet", state.excelLakehouse?.artifacts?.fact_anggaran, "workspace_premium", "data/generated/gold")}
             </div>
-            <div class="table-quarantine">
-              ${state.rejectedRows.length ? dataTable(state.rejectedRows) : emptyState("Tidak ada rejected rows tersedia.", "Log karantina belum ditemukan atau masih kosong.")}
+            <div style="margin-top:1rem;">
+              ${state.goldPreview.length || state.silverPreview.length ? dataTable(state.goldPreview.length ? state.goldPreview : state.silverPreview) : emptyState("Preview belum tersedia.", "Jalankan sistem untuk menampilkan contoh data hasil.")}
             </div>
-          </section>
-
-          <section class="glass-panel w-full">
-            <div style="margin-bottom:1.25rem;">
-              <h3 class="section-title" style="margin:0; display:flex; align-items:center; gap:0.5rem; color:#0f172a;">
-                <span class="material-symbols-outlined" style="color:var(--primary);">history</span>
-                Ingestion History & Pipeline Logs
-              </h3>
-              <p class="small muted" style="margin-top:0.25rem; color:#475569;">Riwayat aktivitas eksekusi pipeline data penyerapan ke dalam S3/MinIO Lakehouse.</p>
-            </div>
-            ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada riwayat ingestion.", "Upload file atau jalankan pipeline untuk mengisi log realtime.")}
+          </details>
+          <section class="guide-card">
+            <h3 class="section-title" style="margin-bottom:.75rem;">Riwayat Proses</h3>
+            ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada riwayat proses.", "Upload file atau jalankan sistem untuk mengisi log.")}
           </section>
         </div>`;
     }
@@ -1551,44 +1790,36 @@
     }
 
     function renderDashboard() {
-      const q = qualitySummary();
-      const quality = state.metrics.quality || {};
-      const latency = state.metrics.latency || {};
-      const freshness = state.metrics.freshness || {};
-      const ref = state.referenceSummary || {};
       const dashStatus = state.truth?.dashboard?.status || state.dashboardStatus;
       const dashType = statusType(dashStatus);
       document.getElementById("page-dashboard").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
-          <section class="section-grid dashboard-metrics-grid">
-            ${metric("Data Quality Score", has(quality.data_quality_score) ? `${quality.data_quality_score}%` : "-", has(quality.data_quality_score) ? "Dari metrik Quality Gate terakhir" : "Belum ada metrik Quality Gate", "verified")}
-            ${metric("Dropout Rate", has(q.dropoutRate) ? `${q.dropoutRate}%` : "-", q.available ? `${q.rejectedRows} quarantine dari ${q.totalRows} baris` : "Belum ada hasil Quality Gate", "trending_down")}
-            ${metric("Pipeline Latency", (() => {
-              const raw = latencyValue(latency);
-              if (!raw) return "-";
-              return formatDuration(raw);
-            })(), "Waktu pemrosesan end-to-end pipeline terakhir", "speed")}
-            ${metric("Data Freshness", freshness.status === "validated" ? safe(freshness.freshness_seconds?.value ?? freshness.data_freshness_status?.value) : "-", freshness.status === "validated" ? "Dibaca dari artefak freshness" : "Belum ada hasil freshness", "update")}
-            ${metric("Quarantine Rows", q.available ? n(q.rejectedRows) : "-", "Baris gagal Quality Gate", "rule_folder")}
-            ${metric("Gold Validation", state.layers.goldValid ? "PASS" : state.truth?.reconciliation?.status || "missing", state.layers.goldValid ? "Rekonsiliasi tervalidasi" : "Belum ada rekonsiliasi valid", "stars")}
-            ${metric("Prodi Referensi", has(ref.ukt?.program_count) ? n(ref.ukt.program_count) : "-", "Master prodi terdaftar", "domain")}
-            ${metric("Kombinasi Master UKT", has(ref.ukt?.rows) ? n(ref.ukt.rows) : "-", "Prodi x Golongan UKT", "grid_view")}
-            ${metric("Master SPI", has(ref.spi?.rows) ? n(ref.spi.rows) : "-", "Referensi SPI per prodi", "payments")}
+          <section class="guide-card">
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+              <div>
+                <h3 class="guide-title">Ringkasan hasil yang siap dibaca di dashboard</h3>
+                <p class="guide-copy">Halaman ini hanya menampilkan metrik yang relevan untuk Excel Lakehouse RAB/IKU: total anggaran, item Gold, nomenklatur, kualitas mapping, dan link Superset.</p>
+              </div>
+              <a class="guide-primary" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Buka Superset</a>
+            </div>
+          </section>
+          <section class="result-grid">
+            ${resultCardsHtml()}
           </section>
           <section class="glass-panel w-full">
-            <h3 class="section-title">Medallion Data Pipeline Flow</h3>
-            ${renderFlowDiagram()}
+            <h3 class="section-title">Perjalanan Data</h3>
+            <div class="journey-steps">${journeyStepsHtml()}</div>
           </section>
           <section class="section-grid dashboard-flow-grid w-full">
             <div class="glass-panel" style="display:flex; flex-direction:column; height:100%;">
               <div style="flex:1;">
-                <h3 class="section-title">Latest Pipeline Activities ${tooltip("Log terbaru dari eksekusi pipeline Airflow.")}</h3>
+                <h3 class="section-title">Aktivitas Terakhir</h3>
                 ${rowsFromActivities() ? activityTable(rowsFromActivities()) : emptyState("Belum ada aktivitas pipeline.", "Jalankan pipeline untuk melihat aktivitas realtime.")}
               </div>
             </div>
             <div class="glass-panel" style="display:flex; flex-direction:column; height:100%;">
               <div style="flex:1;">
-                <h3 class="section-title">Superset Service Integration ${tooltip("Status koneksi live antara Data Lakehouse dan BI Superset.")}</h3>
+                <h3 class="section-title">Dashboard Superset</h3>
                 <dl class="kv">
                   <dt>Status Service</dt><dd>${badge(state.truth?.services?.superset?.status || "unreachable", statusType(state.truth?.services?.superset?.status || "unreachable"))}</dd>
                 <dt>Dashboard Name</dt><dd>SILARAS SD - Dashboard Anggaran IKU</dd>
@@ -1744,8 +1975,7 @@
 
     function renderOrkestrasi() {
       const latency = state.metrics.latency || {};
-      const q = qualitySummary();
-
+      const status = workflowPrimaryStatus();
       const logRows = state.activities.length ? state.activities.slice(0, 8).map(item => {
         const time = (item.time || "").slice(11, 19) || "-";
         const level = String(item.status || "INFO").toUpperCase();
@@ -1759,58 +1989,45 @@
 
       document.getElementById("page-orkestrasi").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
-          <section class="glass-panel">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1.5rem;">
+          <section class="guide-card">
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
               <div>
-                <div class="small muted" style="font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#64748b;">Pipeline Orchestration Console</div>
-                <h3 style="margin:.25rem 0 .35rem; font-weight:800; color:#0f172a;">keuangan_prodi_lakehouse_dag</h3>
-                <p class="muted" style="margin:0; font-size:0.88rem;">DAG utama untuk pemrosesan orkestrasi data lakehouse keuangan program studi.</p>
+                <h3 class="guide-title">Jalankan sistem dan pantau prosesnya</h3>
+                <p class="guide-copy">Klik satu tombol untuk memproses Excel menjadi Bronze, Silver, Gold, memperbarui manifest, lalu menyiapkan dashboard. Detail task teknis tetap ada di bagian bawah untuk audit.</p>
               </div>
-              <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-                <button type="button" class="primary-button" data-pipeline="full-run-basic"><span class="material-symbols-outlined">play_arrow</span>Eksekusi Pipeline End-to-End</button>
-                <a class="primary-button" href="http://localhost:8085" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Akses Web UI Airflow (8085)</a>
-              </div>
-            </div>
-            
-            <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid #e2e8f0;">
-              <div class="small muted" style="font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#64748b; margin-bottom:0.75rem;">Eksekusi Task Parsial (Manual)</div>
-              <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
-                <button type="button" class="secondary-button" data-pipeline="quality-gate"><span class="material-symbols-outlined">fact_check</span>Jalankan Validasi Quality Gate</button>
-                <button type="button" class="secondary-button" data-pipeline="bronze"><span class="material-symbols-outlined">database</span>Eksekusi Layer Bronze</button>
-                <button type="button" class="secondary-button" data-pipeline="silver"><span class="material-symbols-outlined">filter_alt</span>Eksekusi Layer Silver</button>
-                <button type="button" class="secondary-button" data-pipeline="gold"><span class="material-symbols-outlined">stars</span>Eksekusi Layer Gold</button>
-                <button type="button" class="secondary-button" data-pipeline="validate-gold"><span class="material-symbols-outlined">rule</span>Validasi Data Mart Gold</button>
-                <button type="button" class="secondary-button" data-pipeline="metrics"><span class="material-symbols-outlined">monitoring</span>Hitung Ulang Metrik</button>
+              <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+                <button type="button" class="guide-primary" data-pipeline="full-run-basic"><span class="material-symbols-outlined">play_arrow</span>Jalankan Sistem</button>
+                <a class="guide-secondary" href="http://localhost:8085" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Airflow</a>
               </div>
             </div>
-
             ${state.lastAction ? `<div class="divider"></div><p class="small muted" style="margin:0; color:#475569;">Aksi terakhir: <strong style="color:var(--primary);">${state.lastAction}</strong></p>` : ""}
-            <div class="divider"></div>
-            <div class="section-grid orchestration-summary-grid">
-              ${metric("Last Run", (() => { const lp = latestPipelineActivity(); if (lp) return formatLastRun(lp.time); const m = state.metrics.latency || {}; return m.last_run || "-"; })(), "Waktu pipeline terakhir dieksekusi", "schedule")}
-              ${metric("Next Run", "Manual", "Dijalankan lokal sesuai kebutuhan", "event")}
-              ${metric("Source to Gold", (() => { const raw = latencyValue(latency); return raw ? formatDuration(raw) : "-"; })(), latency.status === "validated" ? "Durasi dari sumber Excel aktif sampai Gold siap" : safe(latency.message || "Gold Excel belum tervalidasi"), "timer")}
-              ${metric("DAG Status", (() => { const lp = latestPipelineActivity(); return lp ? String(lp.status || "-") : "-"; })(), (() => { const lp = latestPipelineActivity(); return lp ? "Status task pipeline terakhir" : "Belum ada eksekusi"; })(), "check_circle")}
-              ${metric("DAG Name", "keuangan_prodi_lakehouse", "Airflow", "account_tree")}
+          </section>
+          <section class="process-panel">
+            <div class="guide-card" style="background:#f8fafc;">
+              <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;margin-bottom:.85rem;">
+                <div>
+                  <h3 class="section-title" style="margin:0;">Proses Berjalan</h3>
+                  <p class="small muted" style="margin:.25rem 0 0;">Status dibuat dari artefak pipeline dan service lokal.</p>
+                </div>
+                ${badge(status.label, status.type)}
+              </div>
+              <div class="process-list">${processListHtml()}</div>
+            </div>
+            <div class="guide-card">
+              <h3 class="section-title" style="margin-bottom:.75rem;">Ringkasan Run</h3>
+              <dl class="kv">
+                <dt>Run terakhir</dt><dd>${(() => { const lp = latestPipelineActivity(); return lp ? formatLastRun(lp.time) : "-"; })()}</dd>
+                <dt>Durasi source ke Gold</dt><dd>${(() => { const raw = latencyValue(latency); return raw ? formatDuration(raw) : "-"; })()}</dd>
+                <dt>Status task terakhir</dt><dd>${badge(latestPipelineActivity()?.status || "menunggu", statusType(latestPipelineActivity()?.status || "missing"))}</dd>
+                <dt>Output Gold</dt><dd>${has(state.excelLakehouse?.counts?.fact_anggaran_rows) ? `${n(state.excelLakehouse.counts.fact_anggaran_rows)} item` : "-"}</dd>
+              </dl>
             </div>
           </section>
           
-          <section class="glass-panel w-full">
-            <h3 class="section-title" style="color:#0f172a;">Pipeline Task Execution Flow</h3>
-            ${renderFlowDiagram(TASK_NODES)}
+          <section class="guide-card">
+            <h3 class="section-title" style="margin-bottom:.75rem;">Hasil Output</h3>
+            <div class="result-grid">${resultCardsHtml()}</div>
           </section>
-          <section class="glass-panel w-full">
-            <h3 class="section-title" style="color:#0f172a;">Task Instance Details</h3>
-            ${activityTable(state.activities.length ? state.activities.slice(0, 8).map(item => [
-              (item.time || "").slice(11, 16) || "-",
-              item.action || item.message || "-",
-              item.status || "-",
-              item.source || "-"
-            ]) : [
-              ["-", "Belum ada data task", "Menunggu", "Pipeline"]
-            ], "table-wide")}
-          </section>
-
           <section class="terminal-window w-full">
             <div class="terminal-header">
               <div class="terminal-dots">
@@ -1825,6 +2042,17 @@
               <div class="terminal-line"><span class="terminal-cursor"></span></div>
             </div>
           </section>
+          <details class="guide-card expert-details">
+            <summary><span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;">tune</span> Jalankan task teknis satu per satu</summary>
+            <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:1rem;">
+              <button type="button" class="secondary-button" data-pipeline="quality-gate"><span class="material-symbols-outlined">fact_check</span>Validasi</button>
+              <button type="button" class="secondary-button" data-pipeline="bronze"><span class="material-symbols-outlined">database</span>Bronze</button>
+              <button type="button" class="secondary-button" data-pipeline="silver"><span class="material-symbols-outlined">filter_alt</span>Silver</button>
+              <button type="button" class="secondary-button" data-pipeline="gold"><span class="material-symbols-outlined">stars</span>Gold</button>
+              <button type="button" class="secondary-button" data-pipeline="validate-gold"><span class="material-symbols-outlined">rule</span>Cek Gold</button>
+              <button type="button" class="secondary-button" data-pipeline="metrics"><span class="material-symbols-outlined">monitoring</span>Metrik</button>
+            </div>
+          </details>
         </div>`;
     }
 
@@ -2504,7 +2732,7 @@
 
     async function saveUploadContextDraft() {
       try {
-        const result = await apiPost("/api/upload/session/context", runtimeContextPayloadFromForm());
+        const result = await apiPost("/api/runtime-context", runtimeContextPayloadFromForm());
         state.uploadSession = result;
         state.runtimeConfig = result.context || state.runtimeConfig;
         state.contextSaveStatus = result.readiness?.context_ready ? "saved" : "idle";
@@ -2583,21 +2811,21 @@
         button.disabled = true;
         button.textContent = "Submitting...";
         try {
-          await apiPost("/api/uat/submit", { mode: "dummy" });
-          state.lastAction = "Simulasi UAT dummy: success";
-          showToast("Simulasi UAT dummy terkirim, bukan hasil UAT final.");
+          await apiPost("/api/uat/submit", { mode: "local_feedback" });
+          state.lastAction = "Evaluasi UAT lokal: success";
+          showToast("Evaluasi UAT lokal tersimpan.");
           await loadState();
         } catch (error) {
           showToast(error.message);
           button.disabled = false;
-          button.textContent = "Buat Simulasi UAT Dummy";
+          button.textContent = "Simpan Evaluasi UAT";
         }
       });
     }
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, referenceSummary, runtimeConfig, scenarios, truth, uploadSession, excelLakehouse] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, runtimeConfig, truth, excelLakehouse] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -2606,11 +2834,8 @@
           apiGet("/api/data/preview?layer=gold&limit=10").catch(() => null),
           apiGet("/api/data/preview?layer=silver&limit=10").catch(() => null),
           apiGet("/api/data/source-status").catch(() => null),
-          apiGet("/api/reference/summary").catch(() => null),
           apiGet("/api/runtime-config").catch(() => null),
-          apiGet("/api/upload/scenarios").catch(() => null),
           apiGet("/api/system-truth/status").catch(() => null),
-          apiGet("/api/upload/session/status").catch(() => null),
           apiGet("/api/excel-lakehouse/status").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
@@ -2646,10 +2871,10 @@
         state.goldPreview = tablePayloadToObjects(goldPreview);
         state.silverPreview = tablePayloadToObjects(silverPreview);
         state.sourceStatus = sourceStatus;
-        state.referenceSummary = referenceSummary;
+        state.referenceSummary = null;
         state.runtimeConfig = runtimeConfig || metrics.runtime_config || null;
-        state.scenarios = scenarios?.scenarios || [];
-        state.uploadSession = uploadSession;
+        state.scenarios = [];
+        state.uploadSession = null;
         state.excelLakehouse = excelLakehouse;
       } catch {
         try {
@@ -2673,11 +2898,10 @@
       if (routeAbortController) routeAbortController.abort();
       routeAbortController = new AbortController();
       const { signal } = routeAbortController;
-      const [activity, runtimeConfig, truth, uploadSession, excelLakehouse] = await Promise.all([
+      const [activity, runtimeConfig, truth, excelLakehouse] = await Promise.all([
         apiGet("/api/activity", { signal }).catch(() => null),
         apiGet("/api/runtime-config", { signal }).catch(() => null),
         apiGet("/api/system-truth/status", { signal }).catch(() => null),
-        apiGet("/api/upload/session/status", { signal }).catch(() => null),
         apiGet("/api/excel-lakehouse/status", { signal }).catch(() => null)
       ]);
       if (signal.aborted) return;
@@ -2699,7 +2923,7 @@
           goldValid: truth.reconciliation?.status === "validated"
         };
       }
-      if (uploadSession) state.uploadSession = uploadSession;
+      state.uploadSession = null;
       if (excelLakehouse) state.excelLakehouse = excelLakehouse;
       renderDataOnly();
       setRoute({ scroll: false });

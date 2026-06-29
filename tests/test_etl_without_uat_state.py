@@ -1,5 +1,7 @@
 import json
 
+import pandas as pd
+
 from src.status.system_truth_status import build_system_truth_status
 
 
@@ -15,23 +17,18 @@ def _write_csv(path, rows):
 
 def test_etl_without_uat_keeps_uat_null(tmp_path, monkeypatch):
     monkeypatch.setenv("SUPERSET_PORT", "65531")
-    _write_csv(tmp_path / "data/generated/bronze/csv_transactions_valid.csv", ["id", "1"])
-    _write_json(tmp_path / "data/generated/bronze/ingestion_metadata.json", {"files": []})
-    for path in [
-        "data/generated/silver/fact_piutang_ukt_prodi.csv",
-        "data/generated/silver/transactions_clean.csv",
-        "data/generated/silver/silver_rab.csv",
-        "data/generated/gold/fact_piutang_ukt_prodi.csv",
-        "data/generated/gold/dim_organisasi.csv",
-        "data/generated/gold/dim_mahasiswa.csv",
-        "data/generated/gold/dim_kualitas_piutang.csv",
-        "data/generated/gold/dim_waktu_tunggakan.csv",
-        "data/generated/gold/vw_dashboard_piutang_ukt.csv",
+    for relative in [
+        "data/generated/bronze/bronze_excel_cells.parquet",
+        "data/generated/silver/silver_rab_items_flexible.parquet",
+        "data/generated/silver/silver_nomenklatur_detail.parquet",
+        "data/generated/silver/silver_mapping.parquet",
+        "data/generated/silver/silver_validation.parquet",
+        "data/generated/gold/fact_anggaran.parquet",
     ]:
-        _write_csv(tmp_path / path, ["id", "1"])
-    _write_json(tmp_path / "data/quarantine/logs/quality_gate_summary.json", {"total_rows": 10, "valid_rows": 9, "rejected_rows": 1, "dropout_rate": 10.0})
-    _write_csv(tmp_path / "data/quarantine/logs/rejected_rows.csv", ["id", "1"])
-    _write_json(tmp_path / "outputs/metrics/reconcile_control_total.json", {"status": "pass", "total_piutang": 100, "jumlah_penunggak": 2, "target_total_piutang": 100, "target_jumlah_penunggak": 2})
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame([{"item_id": "A", "jumlah": 100, "jumlah_weighted_iku": 100}]).to_parquet(path)
+    _write_json(tmp_path / "outputs/reports/pipeline_count_validation.json", {"fact_anggaran_rows": 1})
 
     truth = build_system_truth_status(tmp_path)
 
@@ -39,4 +36,3 @@ def test_etl_without_uat_keeps_uat_null(tmp_path, monkeypatch):
     assert truth["reconciliation"]["status"] == "validated"
     assert truth["uat"]["status"] == "missing"
     assert truth["uat"]["average_score"] is None
-

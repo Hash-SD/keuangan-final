@@ -46,11 +46,6 @@ class RuntimeConfig:
     target_tahun_anggaran: str
     batch_id: str
     source_event: datetime
-    dummy_seed: int
-    dummy_transaction_rows: int
-    dummy_invalid_rows: int
-    target_total_piutang: int | None
-    target_jumlah_penunggak: int | None
     target_total_pagu_rab: int
 
     @property
@@ -67,7 +62,7 @@ class RuntimeConfig:
 
     @property
     def validation_mode(self) -> str:
-        return "observed_only" if self.target_total_piutang is None and self.target_jumlah_penunggak is None else "explicit_target"
+        return "excel_observed_only"
 
     @property
     def target_slug(self) -> str:
@@ -80,13 +75,8 @@ def get_runtime_config() -> RuntimeConfig:
         target_fakultas=_env("PORTAL_TARGET_FAKULTAS", "Fakultas Sains"),
         target_tahun_akademik=_env("PORTAL_TARGET_TAHUN_AKADEMIK", "2023/2024"),
         target_tahun_anggaran=_env("PORTAL_TARGET_TAHUN_ANGGARAN", "2024"),
-        batch_id=_env("PORTAL_BATCH_ID", "batch-dummy-20260526"),
+        batch_id=_env("PORTAL_BATCH_ID", "batch-excel-lakehouse"),
         source_event=_source_event(),
-        dummy_seed=_env_int("PORTAL_DUMMY_SEED", 99999999) or 99999999,
-        dummy_transaction_rows=_env_int("PORTAL_DUMMY_TRANSACTION_ROWS", 800) or 800,
-        dummy_invalid_rows=_env_int("PORTAL_DUMMY_INVALID_ROWS", 16) or 16,
-        target_total_piutang=_env_int("PORTAL_TARGET_TOTAL_PIUTANG"),
-        target_jumlah_penunggak=_env_int("PORTAL_TARGET_JUMLAH_PENUNGGAK"),
         target_total_pagu_rab=_env_int("PORTAL_TARGET_TOTAL_PAGU_RAB", 150_000_000) or 150_000_000,
     )
 

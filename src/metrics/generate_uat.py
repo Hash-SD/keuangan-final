@@ -14,11 +14,11 @@ from src.common.time_utils import utc_now_iso
 
 
 QUESTIONS = [
-    ("Navigation Facility", "Apakah filter prodi, semester, dan status piutang mudah digunakan?"),
-    ("Clarity of Visualization", "Apakah visual Big Number, Bar Chart, Pie Chart, Line Chart, dan Table mudah dibaca?"),
-    ("Data Relevance", "Apakah informasi piutang sesuai dengan kebutuhan pemantauan prodi?"),
-    ("Data Consistency", "Apakah rincian mahasiswa, status kualitas, dan nominal tampil konsisten tanpa duplikasi?"),
-    ("Usefulness in Decision", "Apakah informasi piutang macet membantu prioritas tindak lanjut?"),
+    ("Navigation Facility", "Apakah filter tahun, prodi, IKU, kegiatan, dan akun mudah digunakan?"),
+    ("Clarity of Visualization", "Apakah visual KPI, bar chart, tabel detail, dan validasi rekap mudah dibaca?"),
+    ("Data Relevance", "Apakah informasi anggaran RAB dan IKU sesuai kebutuhan pemantauan prodi?"),
+    ("Data Consistency", "Apakah rincian kegiatan, akun, IKU, dan nominal tampil konsisten tanpa duplikasi?"),
+    ("Usefulness in Decision", "Apakah informasi anggaran per IKU membantu prioritas perencanaan prodi?"),
 ]
 
 SIMULATED_SCORES = {
@@ -44,7 +44,7 @@ def _category(score: float) -> str:
 
 def main() -> None:
     uat_dir = OUTPUTS_DIR / "uat"
-    source = "simulasi UAT final laporan; skor dikalibrasi eksplisit agar rata-rata 4,84"
+    source = "evaluasi UAT lokal Excel Lakehouse; skor diisi manual dari pengguna internal"
     template = pd.DataFrame(
         [
             {
@@ -52,7 +52,7 @@ def main() -> None:
                 "pertanyaan": question,
                 "skala_min": 1,
                 "skala_max": 5,
-                "visual_dashboard": "Big Number, Bar Chart, Pie Chart, Line Chart, Table",
+                "visual_dashboard": "KPI, Bar Chart, Detail Table, Mapping Quality, Validasi Rekap",
                 "sumber_penilaian": source,
             }
             for indicator, question in QUESTIONS
@@ -74,7 +74,7 @@ def main() -> None:
                 }
             )
     response_df = pd.DataFrame(responses)
-    response_df.to_csv(uat_dir / "uat_dummy_response.csv", index=False)
+    response_df.to_csv(uat_dir / "uat_response.csv", index=False)
     matrix_rows = []
     for indicator, question in QUESTIONS:
         indicator_scores = response_df[response_df["indikator"] == indicator]["skor"]
@@ -104,7 +104,7 @@ def main() -> None:
         "source": source,
         "generated_at": utc_now_iso(),
         "required_indicators": [indicator for indicator, _ in QUESTIONS],
-        "dashboard_visual_terms": ["Big Number", "Bar Chart", "Pie Chart", "Line Chart", "Table"],
+        "dashboard_visual_terms": ["KPI", "Bar Chart", "Detail Table", "Mapping Quality", "Validasi Rekap"],
     }
     write_json(uat_dir / "uat_score_summary.json", summary)
     write_json(uat_dir / "uat_matrix_summary.json", {"batch_id": configured_batch_id(), "generated_at": utc_now_iso(), "items": matrix_rows, "summary": summary})

@@ -1,13 +1,26 @@
+SELECT COUNT(*) AS fact_anggaran_rows
+FROM gold.fact_anggaran;
+
 SELECT
-    o.nama_prodi,
-    w.tahun_akademik,
-    SUM(nominal_piutang_rp) AS total_piutang,
-    COUNT(*) AS jumlah_penunggak
-FROM gold.fact_piutang_ukt_prodi f
-JOIN gold.dim_organisasi o
-    ON f.organisasi_key = o.organisasi_key
-JOIN gold.dim_waktu_tunggakan w
-    ON f.waktu_tunggakan_key = w.waktu_tunggakan_key
-WHERE o.nama_prodi = 'Sains Data'
-GROUP BY o.nama_prodi, w.tahun_akademik
-ORDER BY w.tahun_akademik;
+    tahun,
+    COUNT(*) AS item_count,
+    SUM(jumlah) AS total_anggaran,
+    SUM(jumlah_weighted_iku) AS total_weighted_iku
+FROM gold.fact_anggaran
+GROUP BY tahun
+ORDER BY tahun;
+
+SELECT
+    kode_iku,
+    nama_iku,
+    SUM(jumlah_weighted_iku) AS total_weighted_iku
+FROM gold.fact_anggaran
+GROUP BY kode_iku, nama_iku
+ORDER BY kode_iku;
+
+SELECT
+    data_quality_flag,
+    COUNT(*) AS item_count
+FROM gold.fact_anggaran
+GROUP BY data_quality_flag
+ORDER BY data_quality_flag;

@@ -25,13 +25,13 @@ def lakehouse_summary() -> dict[str, Any]:
     return {
         "bronze": {
             "status": layers["bronze"]["status"],
-            "description": "Raw data PDF, CSV, dan Excel tersimpan apa adanya.",
+            "description": "Bronze cell-level dari workbook Excel RAB/RPD/IKU/Nomenklatur.",
             "files": layers["bronze"]["file_count"],
             "metadata": layers["bronze"]["existing"],
         },
         "silver": {
             "status": layers["silver"]["status"],
-            "description": "Data dibersihkan, distandarkan, dan Excel RAB di-unpivot.",
+            "description": "Normalisasi fleksibel item RAB, nomenklatur, mapping, dan validasi.",
             "tables": layers["silver"]["existing"],
         },
         "gold": {
