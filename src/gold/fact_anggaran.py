@@ -4,6 +4,8 @@ import re
 
 import pandas as pd
 
+from src.transformations.budget_cleaning import REVIEW_IKU_LABEL
+
 
 FACT_COLUMNS = [
     "item_id",
@@ -52,10 +54,13 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(columns=FACT_COLUMNS)
     rows: list[dict[str, object]] = []
     for _, item in silver_items.iterrows():
-        iku_values = _split_iku(item.get("iku")) or ["UNMAPPED_IKU"]
+        iku_values = _split_iku(item.get("iku"))
+        if not iku_values:
+            iku_values = [None]
         weight = 1 / len(iku_values)
         for iku in iku_values:
             jumlah = pd.to_numeric(pd.Series([item.get("jumlah")]), errors="coerce").iloc[0]
+            iku_label = iku or REVIEW_IKU_LABEL
             rows.append(
                 {
                     "item_id": item.get("item_id"),
@@ -69,8 +74,8 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
                     "akun": item.get("akun") or item.get("nama_akun"),
                     "kode_akun": item.get("kode_akun"),
                     "nama_akun": item.get("nama_akun"),
-                    "iku": iku,
-                    "kode_iku": iku if iku != "UNMAPPED_IKU" else None,
+                    "iku": iku_label,
+                    "kode_iku": iku,
                     "nama_iku": item.get("nama_iku"),
                     "nomenklatur_path": item.get("nomenklatur_path"),
                     "uraian_detail": item.get("uraian_detail"),

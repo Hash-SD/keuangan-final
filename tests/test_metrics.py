@@ -17,35 +17,35 @@ def test_data_quality_score_perfect_for_controlled_dummy_data():
 def test_pipeline_latency_uses_active_source_and_gold_artifacts(tmp_path, monkeypatch):
     source_time = datetime(2026, 6, 9, 1, 0, tzinfo=timezone.utc).timestamp()
     gold_time = datetime(2026, 6, 9, 1, 7, 30, tzinfo=timezone.utc).timestamp()
-    raw_pdf = tmp_path / "data/raw/pdf/file.pdf"
-    raw_csv = tmp_path / "data/raw/csv/file.csv"
-    raw_excel = tmp_path / "data/raw/excel/file.xlsx"
-    for path in [raw_pdf, raw_csv, raw_excel]:
+    raw_rab = tmp_path / "data/raw/excel_lakehouse/2025/upload-test/rab.xlsx"
+    raw_nomenklatur = tmp_path / "data/raw/excel_lakehouse/2025/upload-test/nomenklatur.xlsx"
+    for path in [raw_rab, raw_nomenklatur]:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("x", encoding="utf-8")
         os.utime(path, (source_time, source_time))
 
     pointer = {
         "status": "committed",
-        "session_id": "upload-test",
+        "dataset_id": "excel-upload-test",
         "created_at": "2026-06-09T01:00:00+00:00",
-        "active_pdf": "data/raw/pdf/file.pdf",
-        "active_csv_files": ["data/raw/csv/file.csv"],
-        "active_excel": "data/raw/excel/file.xlsx",
+        "files": [
+            {"path": "data/raw/excel_lakehouse/2025/upload-test/rab.xlsx", "jenis_dataset": "rab"},
+            {"path": "data/raw/excel_lakehouse/2025/upload-test/nomenklatur.xlsx", "jenis_dataset": "nomenklatur"},
+        ],
     }
-    pointer_path = tmp_path / "outputs/reports/active_dataset_pointer.json"
+    pointer_path = tmp_path / "outputs/reports/active_excel_lakehouse_dataset.json"
     pointer_path.parent.mkdir(parents=True, exist_ok=True)
     pointer_path.write_text(json.dumps(pointer), encoding="utf-8")
 
-    for name in ["fact_piutang_ukt_prodi.csv", "vw_dashboard_piutang_ukt.csv", "gold_metadata.json"]:
-        path = tmp_path / "data/generated/gold" / name
+    for relative in ["data/generated/gold/fact_anggaran.csv", "data/generated/gold/vw_dashboard_iku_anggaran.csv", "data/generated/gold/vw_dashboard_detail_item.csv", "data/generated/excel_lakehouse_metadata.json"]:
+        path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({"upload_session_id": "upload-test"}) if name.endswith(".json") else "x", encoding="utf-8")
+        path.write_text(json.dumps({"dataset_id": "excel-upload-test"}) if path.suffix == ".json" else "x", encoding="utf-8")
         os.utime(path, (gold_time, gold_time))
 
     result = compute_pipeline_latency(base_dir=tmp_path, write_output=True)
 
     assert result["status"] == "validated"
-    assert result["source_basis"] == "active_dataset_pointer"
+    assert result["source_basis"] == "active_excel_lakehouse_dataset"
     assert result["pipeline_latency_seconds"] == 450
     assert (tmp_path / "outputs/metrics/pipeline_latency.json").exists()

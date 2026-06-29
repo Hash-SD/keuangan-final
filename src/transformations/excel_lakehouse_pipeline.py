@@ -20,6 +20,7 @@ from src.gold.fact_anggaran import build_fact_anggaran
 from src.mapping.flexible_mapping import build_mapping_table
 from src.parser_flexible.nomenklatur_parser import parse_nomenklatur_workbook
 from src.parser_flexible.rab_parser import parse_rab_workbook
+from src.transformations.budget_cleaning import clean_and_enrich_budget_items
 
 
 def _session_id() -> str:
@@ -203,8 +204,10 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
             silver_rab["cluster_kegiatan"] = silver_rab.get("kegiatan")
         if "created_at" not in silver_rab.columns:
             silver_rab["created_at"] = created_at
+        silver_rab = clean_and_enrich_budget_items(silver_rab, silver_nomenklatur, bridge_nomenklatur)
     fact = build_fact_anggaran(silver_rab)
-    dashboard_iku = fact.groupby(["run_id", "tahun", "periode", "prodi", "fakultas", "iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not fact.empty else pd.DataFrame()
+    mapped_fact = fact[fact["kode_iku"].notna() & fact["kode_iku"].astype(str).str.strip().ne("")] if not fact.empty else fact
+    dashboard_iku = mapped_fact.groupby(["run_id", "tahun", "periode", "prodi", "fakultas", "iku", "kode_iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not mapped_fact.empty else pd.DataFrame()
     dashboard_mapping = fact.groupby(["run_id", "mapping_status", "data_quality_flag"], dropna=False)["item_id"].nunique().reset_index(name="item_count") if not fact.empty else pd.DataFrame()
     dashboard_detail = fact.copy()
     dashboard_reconciliation = silver_validation.copy()

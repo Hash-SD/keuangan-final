@@ -1,6 +1,18 @@
 {
   "version": 1,
   "skills": {
+    "apache-superset": {
+      "source": "membranedev/application-skills",
+      "sourceType": "github",
+      "skillPath": "skills/apache-superset/SKILL.md",
+      "computedHash": "d51c86906191ab90cb058e9ca61992d89c32ea533f92be8af26b35b5eb74e934"
+    },
+    "brainstorming": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/brainstorming/SKILL.md",
+      "computedHash": "0c877c8521ec97a5d55fa682d33122b811aebddd4788b92ac008efe85cd305cd"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",

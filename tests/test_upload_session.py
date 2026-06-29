@@ -35,7 +35,9 @@ def restore_upload_state():
                 path.unlink()
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(content)
+            restore_path = path.with_name(f"{path.name}.restore.tmp")
+            restore_path.write_bytes(content)
+            restore_path.replace(path)
 
 
 def _client():

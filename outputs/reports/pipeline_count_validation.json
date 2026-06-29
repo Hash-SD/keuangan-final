@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-29T07:56:38+00:00",
+  "generated_at": "2026-06-29T09:14:13+00:00",
   "definitions": {
     "bronze_cells": "Rows in bronze_excel_cells; includes cells with value, formula, fill color, or merged-range lineage.",
     "silver_rab_candidate_rows": "Parsed RAB-like rows before downstream mapping curation.",

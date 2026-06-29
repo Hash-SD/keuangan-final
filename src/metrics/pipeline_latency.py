@@ -14,9 +14,10 @@ from src.common.runtime_config import get_runtime_config
 
 
 CORE_GOLD_ARTIFACTS = [
-    "data/generated/gold/fact_piutang_ukt_prodi.csv",
-    "data/generated/gold/vw_dashboard_piutang_ukt.csv",
-    "data/generated/gold/gold_metadata.json",
+    "data/generated/gold/fact_anggaran.csv",
+    "data/generated/gold/vw_dashboard_iku_anggaran.csv",
+    "data/generated/gold/vw_dashboard_detail_item.csv",
+    "data/generated/excel_lakehouse_metadata.json",
 ]
 
 
@@ -55,16 +56,34 @@ def _latest_existing_mtime(paths: list[Path]) -> datetime | None:
     return max(values) if values else None
 
 
+def _resolve_path(base_dir: Path, value: Any) -> Path | None:
+    if not value:
+        return None
+    path = Path(str(value))
+    return path if path.is_absolute() else base_dir / path
+
+
 def _active_source_ready_time(base_dir: Path, config_source_event: datetime) -> tuple[datetime, str, str | None]:
+    excel_pointer = _read_json(base_dir / "outputs" / "reports" / "active_excel_lakehouse_dataset.json")
+    if excel_pointer and excel_pointer.get("status") == "committed":
+        source_paths = [
+            _resolve_path(base_dir, item.get("path"))
+            for item in excel_pointer.get("files", [])
+            if isinstance(item, dict)
+        ]
+        source_mtimes = _latest_existing_mtime([path for path in source_paths if path is not None])
+        pointer_time = _parse_datetime(excel_pointer.get("committed_at") or excel_pointer.get("created_at"))
+        source_ready = max([value for value in [source_mtimes, pointer_time] if value is not None], default=None)
+        if source_ready:
+            return source_ready, "active_excel_lakehouse_dataset", str(excel_pointer.get("dataset_id") or "")
+
     pointer_path = base_dir / "outputs" / "reports" / "active_dataset_pointer.json"
     pointer = _read_json(pointer_path)
     if pointer and pointer.get("status") == "committed":
         source_paths = [
-            pointer.get("active_pdf"),
-            *(pointer.get("active_csv_files") or []),
             pointer.get("active_excel"),
         ]
-        source_mtimes = _latest_existing_mtime([base_dir / str(path) for path in source_paths if path])
+        source_mtimes = _latest_existing_mtime([path for path in (_resolve_path(base_dir, item) for item in source_paths) if path is not None])
         pointer_time = _parse_datetime(pointer.get("committed_at") or pointer.get("created_at"))
         source_ready = max([value for value in [source_mtimes, pointer_time] if value is not None], default=None)
         if source_ready:
@@ -73,13 +92,13 @@ def _active_source_ready_time(base_dir: Path, config_source_event: datetime) -> 
 
 
 def _gold_ready_time(base_dir: Path, active_session_id: str | None) -> tuple[datetime | None, str]:
-    metadata = _read_json(base_dir / "data" / "generated" / "gold" / "gold_metadata.json")
-    if active_session_id and metadata and metadata.get("upload_session_id") and metadata.get("upload_session_id") != active_session_id:
-        return None, "Gold tersedia, tetapi bukan untuk sesi upload aktif."
+    metadata = _read_json(base_dir / "data" / "generated" / "excel_lakehouse_metadata.json")
+    if active_session_id and metadata and metadata.get("dataset_id") and metadata.get("dataset_id") != active_session_id:
+        return None, "Gold Excel tersedia, tetapi bukan untuk dataset aktif."
     artifacts = [base_dir / path for path in CORE_GOLD_ARTIFACTS]
     if not all(path.exists() for path in artifacts):
-        return None, "Gold belum lengkap; latency berjalan dihitung sampai waktu saat ini."
-    return _latest_existing_mtime(artifacts), "Gold artifacts lengkap."
+        return None, "Gold Excel belum lengkap; latency berjalan dihitung sampai waktu saat ini."
+    return _latest_existing_mtime(artifacts), "Gold Excel artifacts lengkap."
 
 
 def compute_pipeline_latency(base_dir: Path | str | None = None, write_output: bool = True) -> dict[str, Any]:

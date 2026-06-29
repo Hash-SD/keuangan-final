@@ -1,0 +1,446 @@
+{
+  "silver": {
+    "rows": 277,
+    "iku": {
+      "nulls": 255,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "<NULL>": 255,
+        "IK 4.2; IK 4.3; IK 4.4": 12,
+        "IK 2.1; IK 2.2; IK 2.3; IK 2.4; IK 2.5; IK 4.2; IK 4.3": 10
+      }
+    },
+    "kode_iku": {
+      "nulls": 255,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "<NULL>": 255,
+        "IK 4.2; IK 4.3; IK 4.4": 12,
+        "IK 2.1; IK 2.2; IK 2.3; IK 2.4; IK 2.5; IK 4.2; IK 4.3": 10
+      }
+    },
+    "nama_iku": {
+      "nulls": 255,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "<NULL>": 255,
+        "FGD Kurikulum": 12,
+        "Kegiatan Sertifikasi": 10
+      }
+    },
+    "kegiatan": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.I - Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains": 54,
+        "4471.DBA.001.60.J - Pelaksanaan Operasional Fakultas Sains": 42,
+        "471.DBA.001.60.H - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains": 22,
+        "471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains": 12,
+        "4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "4471.DBA.001.60.J.KI.521211 - Pelaksanaan Operasional Fakultas Sains - Chemistry Open Lab": 7,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen": 5
+      }
+    },
+    "cluster_kegiatan": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.I - Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains": 54,
+        "4471.DBA.001.60.J - Pelaksanaan Operasional Fakultas Sains": 42,
+        "471.DBA.001.60.H - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains": 22,
+        "471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains": 12,
+        "4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "4471.DBA.001.60.J.KI.521211 - Pelaksanaan Operasional Fakultas Sains - Chemistry Open Lab": 7,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen": 5
+      }
+    },
+    "akun": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "524111 - 4471.DBA.001.60.J.KI. - Belanja Perjalanan Dinas": 26,
+        "521211 - 4471.DBA.001.60.I.KI. - Belanja Bahan": 26,
+        "524111 - 4471.DBA.001.60.I.KI. - Belanja Perjalanan Dinas": 18,
+        "521211 - 4471.DBA.001.60.J.KI. - Belanja Bahan": 12,
+        "521811 - Kegiatan - 4471.DBA.001.60.O.KI. Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "522151 - 4471.DBA.001.60.I.KI. - Belanja Jasa Profesi": 10,
+        "524111 - Kegiatan - 4471.DBA.001.60.J.KI. Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "521211 - 4471.DBA.001.60.H.KI. - Belanja Bahan": 10
+      }
+    },
+    "kode_akun": {
+      "nulls": 2,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "524111.0": 112,
+        "521211.0": 107,
+        "522151.0": 27,
+        "521811.0": 11,
+        "522141.0": 7,
+        "521219.0": 7,
+        "<NULL>": 2,
+        "522191.0": 2
+      }
+    },
+    "nama_akun": {
+      "nulls": 2,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.J.KI. - Belanja Perjalanan Dinas": 26,
+        "4471.DBA.001.60.I.KI. - Belanja Bahan": 26,
+        "4471.DBA.001.60.I.KI. - Belanja Perjalanan Dinas": 18,
+        "4471.DBA.001.60.J.KI. - Belanja Bahan": 12,
+        "Kegiatan - 4471.DBA.001.60.O.KI. Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "Kegiatan - 4471.DBA.001.60.J.KI. Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "4471.DBA.001.60.H.KI. - Belanja Bahan": 10,
+        "4471.DBA.001.60.I.KI. - Belanja Jasa Profesi": 10
+      }
+    },
+    "data_quality_flag": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "IKU_REVIEW_REQUIRED": 253,
+        "OK": 22,
+        "MISSING_ACCOUNT;IKU_REVIEW_REQUIRED": 2
+      }
+    },
+    "mapping_status": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "needs_review": 255,
+        "mapped_from_nomenklatur": 22
+      }
+    }
+  },
+  "fact": {
+    "rows": 361,
+    "iku": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "Perlu review IKU": 255,
+        "IK 4.2": 22,
+        "IK 4.3": 22,
+        "IK 4.4": 12,
+        "IK 2.1": 10,
+        "IK 2.2": 10,
+        "IK 2.3": 10,
+        "IK 2.4": 10
+      }
+    },
+    "kode_iku": {
+      "nulls": 255,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "<NULL>": 255,
+        "IK 4.2": 22,
+        "IK 4.3": 22,
+        "IK 4.4": 12,
+        "IK 2.1": 10,
+        "IK 2.2": 10,
+        "IK 2.3": 10,
+        "IK 2.4": 10
+      }
+    },
+    "nama_iku": {
+      "nulls": 255,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "<NULL>": 255,
+        "Kegiatan Sertifikasi": 70,
+        "FGD Kurikulum": 36
+      }
+    },
+    "kegiatan": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.J - Pelaksanaan Operasional Fakultas Sains": 102,
+        "4471.DBA.001.60.I - Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains": 78,
+        "471.DBA.001.60.H - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains": 22,
+        "471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains": 12,
+        "4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "4471.DBA.001.60.J.KI.521211 - Pelaksanaan Operasional Fakultas Sains - Chemistry Open Lab": 7,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen": 5
+      }
+    },
+    "cluster_kegiatan": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.J - Pelaksanaan Operasional Fakultas Sains": 102,
+        "4471.DBA.001.60.I - Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains": 78,
+        "471.DBA.001.60.H - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains": 22,
+        "471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains": 12,
+        "4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "4471.DBA.001.60.J.KI.521211 - Pelaksanaan Operasional Fakultas Sains - Chemistry Open Lab": 7,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen": 5
+      }
+    },
+    "akun": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "524111 - 4471.DBA.001.60.J.KI. - Belanja Perjalanan Dinas": 74,
+        "521211 - 4471.DBA.001.60.I.KI. - Belanja Bahan": 34,
+        "524111 - 4471.DBA.001.60.I.KI. - Belanja Perjalanan Dinas": 30,
+        "522151 - 4471.DBA.001.60.I.KI. - Belanja Jasa Profesi": 14,
+        "521219 - 4471.DBA.001.60.J.KI. - Belanja Barang Non Operasional": 14,
+        "521211 - 4471.DBA.001.60.J.KI. - Belanja Bahan": 12,
+        "521811 - Kegiatan - 4471.DBA.001.60.O.KI. Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "524111 - Kegiatan - 4471.DBA.001.60.J.KI. Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10
+      }
+    },
+    "kode_akun": {
+      "nulls": 2,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "524111.0": 172,
+        "521211.0": 115,
+        "522151.0": 31,
+        "521219.0": 19,
+        "521811.0": 11,
+        "522141.0": 7,
+        "<NULL>": 2,
+        "522191.0": 2
+      }
+    },
+    "nama_akun": {
+      "nulls": 2,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.J.KI. - Belanja Perjalanan Dinas": 74,
+        "4471.DBA.001.60.I.KI. - Belanja Bahan": 34,
+        "4471.DBA.001.60.I.KI. - Belanja Perjalanan Dinas": 30,
+        "4471.DBA.001.60.J.KI. - Belanja Barang Non Operasional": 14,
+        "4471.DBA.001.60.I.KI. - Belanja Jasa Profesi": 14,
+        "4471.DBA.001.60.J.KI. - Belanja Bahan": 12,
+        "Kegiatan - 4471.DBA.001.60.O.KI. Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "Kegiatan - 4471.DBA.001.60.J.KI. Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10
+      }
+    },
+    "data_quality_flag": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "IKU_REVIEW_REQUIRED": 253,
+        "OK": 106,
+        "MISSING_ACCOUNT;IKU_REVIEW_REQUIRED": 2
+      }
+    },
+    "mapping_status": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "needs_review": 255,
+        "mapped_from_nomenklatur": 106
+      }
+    },
+    "totals": {
+      "jumlah_sum": 1279879331.0,
+      "weighted_sum": 935795331.0,
+      "unique_items": 277
+    }
+  },
+  "iku_view": {
+    "rows": 8,
+    "iku": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "IK 2.1": 1,
+        "IK 2.2": 1,
+        "IK 2.3": 1,
+        "IK 2.4": 1,
+        "IK 2.5": 1,
+        "IK 4.2": 1,
+        "IK 4.3": 1,
+        "IK 4.4": 1
+      }
+    },
+    "kode_iku": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "IK 2.1": 1,
+        "IK 2.2": 1,
+        "IK 2.3": 1,
+        "IK 2.4": 1,
+        "IK 2.5": 1,
+        "IK 4.2": 1,
+        "IK 4.3": 1,
+        "IK 4.4": 1
+      }
+    }
+  },
+  "detail": {
+    "rows": 361,
+    "iku": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "Perlu review IKU": 255,
+        "IK 4.2": 22,
+        "IK 4.3": 22,
+        "IK 4.4": 12,
+        "IK 2.1": 10,
+        "IK 2.2": 10,
+        "IK 2.3": 10,
+        "IK 2.4": 10
+      }
+    },
+    "kode_iku": {
+      "nulls": 255,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "<NULL>": 255,
+        "IK 4.2": 22,
+        "IK 4.3": 22,
+        "IK 4.4": 12,
+        "IK 2.1": 10,
+        "IK 2.2": 10,
+        "IK 2.3": 10,
+        "IK 2.4": 10
+      }
+    },
+    "nama_iku": {
+      "nulls": 255,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "<NULL>": 255,
+        "Kegiatan Sertifikasi": 70,
+        "FGD Kurikulum": 36
+      }
+    },
+    "kegiatan": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.J - Pelaksanaan Operasional Fakultas Sains": 102,
+        "4471.DBA.001.60.I - Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains": 78,
+        "471.DBA.001.60.H - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains": 22,
+        "471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains": 12,
+        "4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "4471.DBA.001.60.J.KI.521211 - Pelaksanaan Operasional Fakultas Sains - Chemistry Open Lab": 7,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen": 5
+      }
+    },
+    "cluster_kegiatan": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.J - Pelaksanaan Operasional Fakultas Sains": 102,
+        "4471.DBA.001.60.I - Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains": 78,
+        "471.DBA.001.60.H - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains": 22,
+        "471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains": 12,
+        "4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10,
+        "4471.DBA.001.60.J.KI.521211 - Pelaksanaan Operasional Fakultas Sains - Chemistry Open Lab": 7,
+        "4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen": 5
+      }
+    },
+    "akun": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "524111 - 4471.DBA.001.60.J.KI. - Belanja Perjalanan Dinas": 74,
+        "521211 - 4471.DBA.001.60.I.KI. - Belanja Bahan": 34,
+        "524111 - 4471.DBA.001.60.I.KI. - Belanja Perjalanan Dinas": 30,
+        "522151 - 4471.DBA.001.60.I.KI. - Belanja Jasa Profesi": 14,
+        "521219 - 4471.DBA.001.60.J.KI. - Belanja Barang Non Operasional": 14,
+        "521211 - 4471.DBA.001.60.J.KI. - Belanja Bahan": 12,
+        "521811 - Kegiatan - 4471.DBA.001.60.O.KI. Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "524111 - Kegiatan - 4471.DBA.001.60.J.KI. Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10
+      }
+    },
+    "kode_akun": {
+      "nulls": 2,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "524111.0": 172,
+        "521211.0": 115,
+        "522151.0": 31,
+        "521219.0": 19,
+        "521811.0": 11,
+        "522141.0": 7,
+        "<NULL>": 2,
+        "522191.0": 2
+      }
+    },
+    "nama_akun": {
+      "nulls": 2,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "4471.DBA.001.60.J.KI. - Belanja Perjalanan Dinas": 74,
+        "4471.DBA.001.60.I.KI. - Belanja Bahan": 34,
+        "4471.DBA.001.60.I.KI. - Belanja Perjalanan Dinas": 30,
+        "4471.DBA.001.60.J.KI. - Belanja Barang Non Operasional": 14,
+        "4471.DBA.001.60.I.KI. - Belanja Jasa Profesi": 14,
+        "4471.DBA.001.60.J.KI. - Belanja Bahan": 12,
+        "Kegiatan - 4471.DBA.001.60.O.KI. Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi": 11,
+        "Kegiatan - 4471.DBA.001.60.J.KI. Pelaksanaan Operasional Fakultas Sains - PKS PS Kimia": 10
+      }
+    },
+    "data_quality_flag": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "IKU_REVIEW_REQUIRED": 253,
+        "OK": 106,
+        "MISSING_ACCOUNT;IKU_REVIEW_REQUIRED": 2
+      }
+    },
+    "mapping_status": {
+      "nulls": 0,
+      "pipe": 0,
+      "unmapped": 0,
+      "top": {
+        "needs_review": 255,
+        "mapped_from_nomenklatur": 106
+      }
+    },
+    "totals": {
+      "jumlah_sum": 1279879331.0,
+      "weighted_sum": 935795331.0,
+      "unique_items": 277
+    }
+  }
+}

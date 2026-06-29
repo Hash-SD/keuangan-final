@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import time
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +29,19 @@ def read_json(path: Path) -> dict[str, Any] | None:
 
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    body = json.dumps(payload, ensure_ascii=False, indent=2)
+    last_error: OSError | None = None
+    for attempt in range(5):
+        try:
+            tmp_path = path.with_name(f"{path.name}.{attempt}.tmp")
+            tmp_path.write_text(body, encoding="utf-8")
+            tmp_path.replace(path)
+            return
+        except OSError as exc:
+            last_error = exc
+            time.sleep(0.05 * (attempt + 1))
+    if last_error:
+        raise last_error
 
 
 def upload_registry() -> dict[str, Any]:

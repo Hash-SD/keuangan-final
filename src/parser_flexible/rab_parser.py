@@ -16,6 +16,7 @@ from src.excel_ingestion.excel_cell_extractor import (
     normalize_text,
     row_text,
 )
+from src.transformations.budget_cleaning import extract_valid_account
 
 
 RAB_COLOR_LEVELS = {
@@ -36,15 +37,7 @@ def _stable_id(parts: list[object]) -> str:
 
 
 def _split_account(text: object) -> tuple[str | None, str | None]:
-    value = normalize_text(text)
-    if not value:
-        return None, None
-    match = re.search(r"\b(\d{6})\b", value)
-    kode = match.group(1) if match else None
-    nama = value
-    if kode:
-        nama = re.sub(rf"\b{kode}\b\s*[-:]?", "", value).strip(" -:")
-    return kode, nama or None
+    return extract_valid_account(normalize_text(text))
 
 
 def _looks_like_total(text: object) -> bool:

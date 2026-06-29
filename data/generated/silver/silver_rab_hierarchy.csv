@@ -1,87 +1,84 @@
 tahun,periode,prodi,source_file,source_sheet,source_row,fill_color,row_type,row_text,dataset_session_id
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,1,FFD8D8D8,HEADER,Kode Program/Kegiatan/Output/Suboutput/Komponen/SubKomp/Detail | Uraian | Jumlah Usulan | Januari | Februari | Maret | April | Mei,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,2,FFD8D8D8,HEADER,I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,3,FFFFFF00,NOMENKLATUR,4471.DBA | Pendidikan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,4,FFFFFF00,NOMENKLATUR,4471.DBA.001. | Layanan Pendidikan (PNBP/BLU) | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,5,FFFFFF00,NOMENKLATUR,4471.DBA.001.60 | Penyelenggaraan Layanan Pendidikan Perguruan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,6,FFFF0000,KEGIATAN,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,8,FF92D050,AKUN,471.DBA.001.60.G.KI.522141 | Belanja Sewa | 44550000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,10,FF92D050,AKUN,4471.DBA.001.60.G.KI.524111 | Belanja Perjalanan Dinas Biasa | 5900000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,13,FF92D050,AKUN,4471.DBA.001.60.G.KI.521211 | Belanja Bahan | 2150000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,17,FFFF0000,KEGIATAN,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,19,FF92D050,AKUN,471.DBA.001.60.H.KI.522151 | Belanja Jasa Profesi | 14400000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,22,FF92D050,AKUN,4471.DBA.001.60.H.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,29,FF92D050,AKUN,4471.DBA.001.60.H.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,38,FF92D050,AKUN,4471.DBA.001.60.H.KI.522141 | Belanja Sewa | 650000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,41,FFFF0000,KEGIATAN,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,43,FF92D050,AKUN,4471.DBA.001.60.I.KI.522151 | Belanja Jasa Profesi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,54,FF92D050,AKUN,4471.DBA.001.60.I.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,76,FF92D050,AKUN,4471.DBA.001.60.I.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,96,FFFF0000,KEGIATAN,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,98,FF92D050,AKUN,4471.DBA.001.60.J.KI.522191 | Belanja Jasa Lainnya | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,101,FF92D050,AKUN,4471.DBA.001.60.J.KI.524111 | Belanja Perjalanan Dinas | 51783666,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,115,FF92D050,AKUN,4471.DBA.001.60.J.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Contoh RPD,127,FF92D050,AKUN,4471.DBA.001.60.J.KI.521219 | Belanja Barang Non Operasional | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,1,FFD8D8D8,HEADER,Kode Program/Kegiatan/Output/Suboutput/Komponen/SubKomp/Detail | Uraian | Jumlah Usulan | Januari | Februari | Maret | April | Mei,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,2,FFD8D8D8,HEADER,I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,3,FFFFFF00,NOMENKLATUR,4471.DBA | Pendidikan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,4,FFFFFF00,NOMENKLATUR,4471.DBA.001. | Layanan Pendidikan (PNBP/BLU) | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,5,FFFFFF00,NOMENKLATUR,4471.DBA.001.60 | Penyelenggaraan Layanan Pendidikan Perguruan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,6,FFFF0000,KEGIATAN,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,8,FF92D050,AKUN,471.DBA.001.60.G.KI.522141 | Belanja Sewa | 44550000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,10,FF92D050,AKUN,4471.DBA.001.60.G.KI.524111 | Belanja Perjalanan Dinas Biasa | 5900000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,13,FF92D050,AKUN,4471.DBA.001.60.G.KI.521211 | Belanja Bahan | 2150000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,17,FFFF0000,KEGIATAN,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,19,FF92D050,AKUN,471.DBA.001.60.H.KI.522151 | Belanja Jasa Profesi | 14400000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,22,FF92D050,AKUN,4471.DBA.001.60.H.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,29,FF92D050,AKUN,4471.DBA.001.60.H.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,38,FF92D050,AKUN,4471.DBA.001.60.H.KI.522141 | Belanja Sewa | 650000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,41,FFFF0000,KEGIATAN,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,43,FF92D050,AKUN,4471.DBA.001.60.I.KI.522151 | Belanja Jasa Profesi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,54,FF92D050,AKUN,4471.DBA.001.60.I.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,76,FF92D050,AKUN,4471.DBA.001.60.I.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,96,FFFF0000,KEGIATAN,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,98,FF92D050,AKUN,4471.DBA.001.60.J.KI.522191 | Belanja Jasa Lainnya | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,101,FF92D050,AKUN,4471.DBA.001.60.J.KI.524111 | Belanja Perjalanan Dinas | 51783666,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,115,FF92D050,AKUN,4471.DBA.001.60.J.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RPD,127,FF92D050,AKUN,4471.DBA.001.60.J.KI.521219 | Belanja Barang Non Operasional | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,1,FFFF0000,KEGIATAN,"PS: Untuk edit data, bisa langsung ke sheet tiap akun || Jika akan hapus data cukup hapus teks/angka/ clear content, jangan lakukan insert/delete row/ column|| Data RPD otomatis mengikuti sheet RAB, hanya perlu ubah jadwal penarikan",upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,2,FFD8D8D8,HEADER,Kode Program/Kegiatan/Output/Suboutput/Komponen/SubKomp/Detail | Uraian | Jumlah Usulan | Sasaran Kegiatan | Indikator Kinerja Kegiatan | Program Strategis | Indikator Kinerja Program | Definisi Operasional | Mendukung IKU,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,3,FFFFFF00,NOMENKLATUR,4471.DBA | Pendidikan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,4,FFFFFF00,NOMENKLATUR,4471.DBA.001. | Layanan Pendidikan (PNBP/BLU) | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,5,FFFFFF00,NOMENKLATUR,4471.DBA.001.60 | Penyelenggaraan Layanan Pendidikan Perguruan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,6,FFFF0000,KEGIATAN,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,7,FF00B0F0,UNIT,471.DBA.001.60.G.SD | SAINS DATA | 52600000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,8,FF92D050,AKUN,471.DBA.001.60.G.SD.522141 | Belanja Sewa | 44550000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,10,FF92D050,AKUN,4471.DBA.001.60.G.SD.524111 | Belanja Perjalanan Dinas Biasa | 5900000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,13,FF92D050,AKUN,4471.DBA.001.60.G.SD.521211 | Belanja Bahan | 2150000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,17,FFFF0000,KEGIATAN,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | 30970000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,18,FF00B0F0,UNIT,471.DBA.001.60.H.SD | SAINS DATA | 30970000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,19,FF92D050,AKUN,471.DBA.001.60.H.SD.522151 | Belanja Jasa Profesi | 14400000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,22,FF92D050,AKUN,4471.DBA.001.60.H.SD.524111 | Belanja Perjalanan Dinas | 7610000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,26,FF92D050,AKUN,4471.DBA.001.60.H.SD.521211 | Belanja Bahan | 8310000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,33,FF92D050,AKUN,4471.DBA.001.60.H.SD.522141 | Belanja Sewa | 650000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,35,FFFF0000,KEGIATAN,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | 50344000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,36,FF00B0F0,UNIT,4471.DBA.001.60.I.SD | SAINS DATA | 50344000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,37,FF92D050,AKUN,4471.DBA.001.60.I.SD.522151 | Belanja Jasa Profesi | 16200000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,43,FF92D050,AKUN,4471.DBA.001.60.I.SD.524111 | Belanja Perjalanan Dinas | 26830000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,53,FF92D050,AKUN,4471.DBA.001.60.I.SD.521211 | Belanja Bahan | 7314000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,67,FFFF0000,KEGIATAN,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,68,FF00B0F0,UNIT,4471.DBA.001.60.J.SD | Sains Data | #REF!,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,69,FF92D050,AKUN,4471.DBA.001.60.J.SD.524111 | Belanja Perjalanan Dinas | 51783666,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,83,FF92D050,AKUN,4471.DBA.001.60.J.SD.521211 | Belanja Bahan | 5637500,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,90,FF92D050,AKUN,4471.DBA.001.60.J.SD.521219 | Belanja Barang Non Operasional | 31080000,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,94,FF92D050,AKUN,4471.DBA.001.60.J.SD.521111 | Belanja Keperluan Perkantoran | 2775000.0000000005,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,96,FFFF0000,KEGIATAN,4471.DBA.001.60.O | Penyelenggaraan Operasional Perkuliahan | 10556100,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,97,FF00B0F0,UNIT,4471.DBA.001.60.O.SD | Sains Data | 10556100,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,RAB,98,FF92D050,AKUN,4471.DBA.001.60.O.SD.521811 | Belanja Barang Persediaan Barang Konsumsi | 10556100,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Rekap + Komen FS,3,FFFFFF00,NOMENKLATUR,Workshop Implementasi dan Evaluasi Kurikulum OBE | jasa profesi | 5400000 | Agenda Fakultas -- rumpun ilmu 2024 || 2025 boleh dilakukan pendalaman,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Rekap + Komen FS,14,FFFFFF00,NOMENKLATUR,Keperluan cetak program studi kimia | belanja bahan | 4593750 | coba dipertimbangkan untuk online || tetap lanjut,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Rekap + Komen FS,20,FFFFFF00,NOMENKLATUR,Workshop paten untuk dosen dan mahasiswa | jasa profesi | 2700000 | Agenda ngopi sore FS - Tim Paten ITERA,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Rekap + Komen FS,23,FFFFFF00,NOMENKLATUR,"Workshop penulisan artikel untuk dosen dan mahasiswa | jasa profesi | 2700000 | Agenda FS 2025, > 2 narsum, > 1 hari, perlu pemantauan",upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Rekap + Komen FS,26,FFFFFF00,NOMENKLATUR,Workshop GC MS | jasa profesi | 2700000 | Agenda FS 2025,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Rekap + Komen FS,29,FFFFFF00,NOMENKLATUR,Workshop HPLC | jasa profesi | 2700000 | Agenda FS 2025,upload-2026-06-09-011818-37cc4d
-2025,,Sains Data,RAB 2025 SD RAB IKU.xlsx,Rekap + Komen FS,43,FFFF0000,KEGIATAN,Kompetisi PKM Internal Prodi | belanja barang non operasional lainnya | 9990000 | Tidak bisa hibah,upload-2026-06-09-011818-37cc4d
-2024,,Sains Data,Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,USULAN PROKER SD,32,FF92D050,AKUN,4 | Akreditasi Lapangan Prodi | 1 | 32606250 | Sertifikat akreditasi | Dosen & Mahasiswa,upload-2026-06-09-011818-37cc4d
-2024,,Sains Data,Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,USULAN PROKER SD,33,FF92D050,AKUN,5 | Honor Output Tim Borang | 1 | 6350000,upload-2026-06-09-011818-37cc4d
-2024,,Sains Data,Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,PKS,50,FFFFFF00,NOMENKLATUR,Universitas Indonesia,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,1,FFD8D8D8,HEADER,Kode Program/Kegiatan/Output/Suboutput/Komponen/SubKomp/Detail | Uraian | Jumlah Usulan | Januari | Februari | Maret | April | Mei,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,2,FFD8D8D8,HEADER,I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,3,FFFFFF00,NOMENKLATUR,4471.DBA | Pendidikan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,4,FFFFFF00,NOMENKLATUR,4471.DBA.001. | Layanan Pendidikan (PNBP/BLU) | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,5,FFFFFF00,NOMENKLATUR,4471.DBA.001.60 | Penyelenggaraan Layanan Pendidikan Perguruan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,6,FFFF0000,KEGIATAN,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,8,FF92D050,AKUN,471.DBA.001.60.G.KI.522141 | Belanja Sewa | 44550000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,10,FF92D050,AKUN,4471.DBA.001.60.G.KI.524111 | Belanja Perjalanan Dinas Biasa | 5900000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,13,FF92D050,AKUN,4471.DBA.001.60.G.KI.521211 | Belanja Bahan | 2150000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,17,FFFF0000,KEGIATAN,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,19,FF92D050,AKUN,471.DBA.001.60.H.KI.522151 | Belanja Jasa Profesi | 14400000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,22,FF92D050,AKUN,4471.DBA.001.60.H.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,29,FF92D050,AKUN,4471.DBA.001.60.H.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,38,FF92D050,AKUN,4471.DBA.001.60.H.KI.522141 | Belanja Sewa | 650000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,41,FFFF0000,KEGIATAN,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,43,FF92D050,AKUN,4471.DBA.001.60.I.KI.522151 | Belanja Jasa Profesi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,54,FF92D050,AKUN,4471.DBA.001.60.I.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,76,FF92D050,AKUN,4471.DBA.001.60.I.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,96,FFFF0000,KEGIATAN,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,98,FF92D050,AKUN,4471.DBA.001.60.J.KI.522191 | Belanja Jasa Lainnya | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,101,FF92D050,AKUN,4471.DBA.001.60.J.KI.524111 | Belanja Perjalanan Dinas | 51783666,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,115,FF92D050,AKUN,4471.DBA.001.60.J.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Contoh RPD,127,FF92D050,AKUN,4471.DBA.001.60.J.KI.521219 | Belanja Barang Non Operasional | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,1,FFD8D8D8,HEADER,Kode Program/Kegiatan/Output/Suboutput/Komponen/SubKomp/Detail | Uraian | Jumlah Usulan | Januari | Februari | Maret | April | Mei,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,2,FFD8D8D8,HEADER,I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III | IV | I | II | III,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,3,FFFFFF00,NOMENKLATUR,4471.DBA | Pendidikan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,4,FFFFFF00,NOMENKLATUR,4471.DBA.001. | Layanan Pendidikan (PNBP/BLU) | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,5,FFFFFF00,NOMENKLATUR,4471.DBA.001.60 | Penyelenggaraan Layanan Pendidikan Perguruan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,6,FFFF0000,KEGIATAN,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,8,FF92D050,AKUN,471.DBA.001.60.G.KI.522141 | Belanja Sewa | 44550000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,10,FF92D050,AKUN,4471.DBA.001.60.G.KI.524111 | Belanja Perjalanan Dinas Biasa | 5900000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,13,FF92D050,AKUN,4471.DBA.001.60.G.KI.521211 | Belanja Bahan | 2150000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,17,FFFF0000,KEGIATAN,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,19,FF92D050,AKUN,471.DBA.001.60.H.KI.522151 | Belanja Jasa Profesi | 14400000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,22,FF92D050,AKUN,4471.DBA.001.60.H.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,29,FF92D050,AKUN,4471.DBA.001.60.H.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,38,FF92D050,AKUN,4471.DBA.001.60.H.KI.522141 | Belanja Sewa | 650000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,41,FFFF0000,KEGIATAN,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,43,FF92D050,AKUN,4471.DBA.001.60.I.KI.522151 | Belanja Jasa Profesi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,54,FF92D050,AKUN,4471.DBA.001.60.I.KI.524111 | Belanja Perjalanan Dinas | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,76,FF92D050,AKUN,4471.DBA.001.60.I.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,96,FFFF0000,KEGIATAN,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,98,FF92D050,AKUN,4471.DBA.001.60.J.KI.522191 | Belanja Jasa Lainnya | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,101,FF92D050,AKUN,4471.DBA.001.60.J.KI.524111 | Belanja Perjalanan Dinas | 51783666,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,115,FF92D050,AKUN,4471.DBA.001.60.J.KI.521211 | Belanja Bahan | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RPD,127,FF92D050,AKUN,4471.DBA.001.60.J.KI.521219 | Belanja Barang Non Operasional | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,1,FFFF0000,KEGIATAN,"PS: Untuk edit data, bisa langsung ke sheet tiap akun || Jika akan hapus data cukup hapus teks/angka/ clear content, jangan lakukan insert/delete row/ column|| Data RPD otomatis mengikuti sheet RAB, hanya perlu ubah jadwal penarikan",upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,2,FFD8D8D8,HEADER,Kode Program/Kegiatan/Output/Suboutput/Komponen/SubKomp/Detail | Uraian | Jumlah Usulan | Sasaran Kegiatan | Indikator Kinerja Kegiatan | Program Strategis | Indikator Kinerja Program | Definisi Operasional | Mendukung IKU,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,3,FFFFFF00,NOMENKLATUR,4471.DBA | Pendidikan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,4,FFFFFF00,NOMENKLATUR,4471.DBA.001. | Layanan Pendidikan (PNBP/BLU) | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,5,FFFFFF00,NOMENKLATUR,4471.DBA.001.60 | Penyelenggaraan Layanan Pendidikan Perguruan Tinggi | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,6,FFFF0000,KEGIATAN,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,7,FF00B0F0,UNIT,471.DBA.001.60.G.SD | SAINS DATA | 52600000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,8,FF92D050,AKUN,471.DBA.001.60.G.SD.522141 | Belanja Sewa | 44550000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,10,FF92D050,AKUN,4471.DBA.001.60.G.SD.524111 | Belanja Perjalanan Dinas Biasa | 5900000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,13,FF92D050,AKUN,4471.DBA.001.60.G.SD.521211 | Belanja Bahan | 2150000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,17,FFFF0000,KEGIATAN,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | 30970000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,18,FF00B0F0,UNIT,471.DBA.001.60.H.SD | SAINS DATA | 30970000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,19,FF92D050,AKUN,471.DBA.001.60.H.SD.522151 | Belanja Jasa Profesi | 14400000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,22,FF92D050,AKUN,4471.DBA.001.60.H.SD.524111 | Belanja Perjalanan Dinas | 7610000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,26,FF92D050,AKUN,4471.DBA.001.60.H.SD.521211 | Belanja Bahan | 8310000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,33,FF92D050,AKUN,4471.DBA.001.60.H.SD.522141 | Belanja Sewa | 650000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,35,FFFF0000,KEGIATAN,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | 50344000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,36,FF00B0F0,UNIT,4471.DBA.001.60.I.SD | SAINS DATA | 50344000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,37,FF92D050,AKUN,4471.DBA.001.60.I.SD.522151 | Belanja Jasa Profesi | 16200000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,43,FF92D050,AKUN,4471.DBA.001.60.I.SD.524111 | Belanja Perjalanan Dinas | 26830000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,53,FF92D050,AKUN,4471.DBA.001.60.I.SD.521211 | Belanja Bahan | 7314000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,67,FFFF0000,KEGIATAN,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,68,FF00B0F0,UNIT,4471.DBA.001.60.J.SD | Sains Data | #REF!,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,69,FF92D050,AKUN,4471.DBA.001.60.J.SD.524111 | Belanja Perjalanan Dinas | 51783666,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,83,FF92D050,AKUN,4471.DBA.001.60.J.SD.521211 | Belanja Bahan | 5637500,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,90,FF92D050,AKUN,4471.DBA.001.60.J.SD.521219 | Belanja Barang Non Operasional | 31080000,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,94,FF92D050,AKUN,4471.DBA.001.60.J.SD.521111 | Belanja Keperluan Perkantoran | 2775000.0000000005,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,96,FFFF0000,KEGIATAN,4471.DBA.001.60.O | Penyelenggaraan Operasional Perkuliahan | 10556100,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,97,FF00B0F0,UNIT,4471.DBA.001.60.O.SD | Sains Data | 10556100,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,98,FF92D050,AKUN,4471.DBA.001.60.O.SD.521811 | Belanja Barang Persediaan Barang Konsumsi | 10556100,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,3,FFFFFF00,NOMENKLATUR,Workshop Implementasi dan Evaluasi Kurikulum OBE | jasa profesi | 5400000 | Agenda Fakultas -- rumpun ilmu 2024 || 2025 boleh dilakukan pendalaman,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,14,FFFFFF00,NOMENKLATUR,Keperluan cetak program studi kimia | belanja bahan | 4593750 | coba dipertimbangkan untuk online || tetap lanjut,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,20,FFFFFF00,NOMENKLATUR,Workshop paten untuk dosen dan mahasiswa | jasa profesi | 2700000 | Agenda ngopi sore FS - Tim Paten ITERA,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,23,FFFFFF00,NOMENKLATUR,"Workshop penulisan artikel untuk dosen dan mahasiswa | jasa profesi | 2700000 | Agenda FS 2025, > 2 narsum, > 1 hari, perlu pemantauan",upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,26,FFFFFF00,NOMENKLATUR,Workshop GC MS | jasa profesi | 2700000 | Agenda FS 2025,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,29,FFFFFF00,NOMENKLATUR,Workshop HPLC | jasa profesi | 2700000 | Agenda FS 2025,upload-2026-06-09-011818-37cc4d
+2025,sample_verification,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,43,FFFF0000,KEGIATAN,Kompetisi PKM Internal Prodi | belanja barang non operasional lainnya | 9990000 | Tidak bisa hibah,upload-2026-06-09-011818-37cc4d

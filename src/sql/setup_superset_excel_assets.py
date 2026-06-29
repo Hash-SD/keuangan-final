@@ -163,7 +163,7 @@ def _native_filters(dataset_id: int) -> list[dict]:
     return [
         nf("filter_tahun", "Tahun", "tahun"),
         nf("filter_prodi", "Prodi", "prodi"),
-        nf("filter_iku", "IKU", "iku"),
+        nf("filter_iku", "IKU", "kode_iku"),
         nf("filter_kegiatan", "Kegiatan", "kegiatan"),
         nf("filter_akun", "Akun", "akun"),
         nf("filter_quality", "Data Quality", "data_quality_flag"),
@@ -200,20 +200,21 @@ def main() -> None:
         session = _login()
         database_id = _database_id(session)
         dataset_id = _dataset_id(session, database_id)
-        total_anggaran = _metric("Total Anggaran", "SUM", "jumlah")
+        total_anggaran = _metric("Total Anggaran", "SUM", "jumlah_weighted_iku")
         total_weighted = _metric("Total Weighted IKU", "SUM", "jumlah_weighted_iku")
         count_items = _metric("Jumlah Item", "COUNT_DISTINCT", "item_id")
         count_iku = _metric("Jumlah IKU", "COUNT_DISTINCT", "kode_iku")
         count_kegiatan = _metric("Jumlah Kegiatan", "COUNT_DISTINCT", "kegiatan")
+        mapped_iku_filter = [{"col": "kode_iku", "op": "IS NOT NULL", "val": None}]
         chart_payloads = [
             _chart_payload(dataset_id, "Executive KPI - Total Anggaran", "big_number_total", {"metric": total_anggaran, "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": []}),
             _chart_payload(dataset_id, "Executive KPI - Total Weighted IKU", "big_number_total", {"metric": total_weighted, "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": []}),
             _chart_payload(dataset_id, "Executive KPI - Jumlah Item", "big_number_total", {"metric": count_items, "y_axis_format": ",d"}, {"metrics": [count_items], "columns": []}),
-            _chart_payload(dataset_id, "Executive KPI - Jumlah IKU", "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": []}),
+            _chart_payload(dataset_id, "Executive KPI - Jumlah IKU", "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": [], "filters": mapped_iku_filter}),
             _chart_payload(dataset_id, "Executive KPI - Jumlah Kegiatan", "big_number_total", {"metric": count_kegiatan, "y_axis_format": ",d"}, {"metrics": [count_kegiatan], "columns": []}),
-            _chart_payload(dataset_id, "Anggaran per IKU", "echarts_timeseries_bar", {"metrics": [total_weighted], "x_axis": "iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": ["iku"], "orderby": [[total_weighted, False]]}),
-            _chart_payload(dataset_id, "Cluster Kegiatan", "treemap_v2", {"metric": total_anggaran, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["iku", "kegiatan"]}),
-            _chart_payload(dataset_id, "Komposisi Akun", "pie", {"metric": total_anggaran, "groupby": ["akun"], "label_type": "key_percent"}, {"metrics": [total_anggaran], "columns": ["akun"]}),
+            _chart_payload(dataset_id, "Anggaran per IKU", "echarts_timeseries_bar", {"metrics": [total_weighted], "x_axis": "kode_iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": ["kode_iku"], "orderby": [[total_weighted, False]], "filters": mapped_iku_filter}),
+            _chart_payload(dataset_id, "Cluster Kegiatan", "treemap_v2", {"metric": total_anggaran, "groupby": ["kode_iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["kode_iku", "kegiatan"], "filters": mapped_iku_filter}),
+            _chart_payload(dataset_id, "Komposisi Akun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]], "row_limit": 25}),
             _chart_payload(dataset_id, "Anggaran per Akun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]]}),
             _chart_payload(dataset_id, "Mapping Quality", "pie", {"metric": count_items, "groupby": ["mapping_status"], "label_type": "key_percent"}, {"metrics": [count_items], "columns": ["mapping_status"]}),
             _chart_payload(dataset_id, "Detail Item Biaya", "table", {"all_columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "page_length": 25}, {"columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "metrics": []}),

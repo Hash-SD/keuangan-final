@@ -1,106 +1,16 @@
 mapping_subject,source_value,target_value,mapping_method,mapping_status,mapping_note,dataset_session_id
-akun,100000,100000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,108000,108000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,115000,115000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,120000,120000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,125000,125000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,130000,130000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,150000,150000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,156000,156000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,165000,165000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,168000,168000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,176000,176000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,180000,180000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,195000,195000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,197000,197000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,200000,200000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,205000,205000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,210000,210000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,225000,225000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,227000,227000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,230000,230000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,240000,240000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,250000,250000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,264000,264000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,267000,267000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,275000,275000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,282000,282000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,285000,285000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,290000,290000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,295500,295500,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,300000,300000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,320000,320000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,325000,325000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,330000,330000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,340000,340000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,343750,343750,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,350000,350000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,360000,360000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,368000,368000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,375000,375000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,380000,380000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,395000,395000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,400000,400000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,412500,412500,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,420000,420000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,430000,430000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,435000,435000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,450000,450000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,480000,480000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,490050,490050,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,500000,500000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,520000,520000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 akun,521111,521111,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 akun,521211,521211,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,521213,521213,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 akun,521219,521219,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
+akun,521811,521811,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 akun,522141,522141,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 akun,522151,522151,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 akun,522191,522191,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 akun,524111,524111,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,524114,524114,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,525000,525000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,530000,530000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,590000,590000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,594000,594000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,600000,600000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,625000,625000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,650000,650000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,660000,660000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,666000,666000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,675000,675000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,686000,686000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,700000,700000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,739200,739200,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,750000,750000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,760000,760000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,800000,800000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,845000,845000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,880000,880000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,900000,900000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,902990,902990,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,935000,935000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-akun,980000,980000,exact_or_source,exact_match,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | #REF!,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | #REF!,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | #REF!,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | #REF!,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Belanja ATK,Belanja ATK,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Belanja Jasa Lainnya (522191),Belanja Jasa Lainnya (522191),exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Belanja Keperluan Kantor,Belanja Keperluan Kantor,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Belanja Paket Meeting,Belanja Paket Meeting,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Belanja jasa lainnya (Lisensi),Belanja jasa lainnya (Lisensi),exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Cetak Buku Perwalian,Cetak Buku Perwalian,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Dies Prodi SD,Dies Prodi SD,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Evaluasi Perkuliahan Program Studi Sains Data | penginapan,Evaluasi Perkuliahan Program Studi Sains Data | penginapan,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Kegiatan Akreditasi,Kegiatan Akreditasi,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,PKS,PKS,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Pelatihan Desain Web,Pelatihan Desain Web,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Pemeliharaan Web,Pemeliharaan Web,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Promosi Prodi,Promosi Prodi,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,SG & Kuliah Tamu,SG & Kuliah Tamu,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Sertifikasi Spark,Sertifikasi Spark,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,Workshop (PRIORITAS II),Workshop (PRIORITAS II),exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,| 4471.DBA.001.60.G.KI.521211 - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains - Kunjungan Industri PS Kimia,| 4471.DBA.001.60.G.KI.521211 - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains - Kunjungan Industri PS Kimia,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,| 4471.DBA.001.60.G.KI.522141 - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains - Kunjungan Industri Program Studi Kimia,| 4471.DBA.001.60.G.KI.522141 - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains - Kunjungan Industri Program Studi Kimia,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,| 4471.DBA.001.60.G.KI.524111 - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains - Kunjungan Industri,| 4471.DBA.001.60.G.KI.524111 - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains - Kunjungan Industri,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
@@ -150,18 +60,7 @@ kegiatan,| 4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains 
 kegiatan,| 4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen,| 4471.DBA.001.60.J.KI.524111 - Pelaksanaan Operasional Fakultas Sains - Pelatihan dan Sertifikasi Kompetensi untuk dosen,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,| 4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi,| 4471.DBA.001.60.O.KI.521811 - Penyelenggaraan Operasional Perkuliahan - Belanja Keperluan Re-Akreditasi,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,| 471.DBA.001.60.H.KI.522151 - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains - Welcoming New Semester PS Kimia,| 471.DBA.001.60.H.KI.522151 - Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains - Welcoming New Semester PS Kimia,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Kompetisi Data Science Institut Teknologi Sumatera | Prioritas 2,| Kompetisi Data Science Institut Teknologi Sumatera | Prioritas 2,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Kompetisi Data Science Institut Teknologi Sumatera | Prioritas 3,| Kompetisi Data Science Institut Teknologi Sumatera | Prioritas 3,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Kuliah Tamu PS SD | Prioritas 2,| Kuliah Tamu PS SD | Prioritas 2,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Kunjungan Industri | Prioritas 2,| Kunjungan Industri | Prioritas 2,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Kunjungan ke Perusahaan/StartUp | Prioritas 1,| Kunjungan ke Perusahaan/StartUp | Prioritas 1,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Lisensi Software Prodi Sains Data | Prioritas 1,| Lisensi Software Prodi Sains Data | Prioritas 1,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,| Operasional Jsains,| Operasional Jsains,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Operasional Program Studi | Prioritas 1,| Operasional Program Studi | Prioritas 1,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Pengadaan Diktat Mata Kuliah | Prioritas 1,| Pengadaan Diktat Mata Kuliah | Prioritas 1,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Pengadaan LogBook Perwalian Mahasiswa | Prioritas 1,| Pengadaan LogBook Perwalian Mahasiswa | Prioritas 1,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Studium Generale 1,| Studium Generale 1,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
-kegiatan,| Workshop Prodi Sain Data | Prioritas 1,| Workshop Prodi Sain Data | Prioritas 1,exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 kegiatan,"| Yudisium bulan Maret, April, Agustus, November","| Yudisium bulan Maret, April, Agustus, November",exact_or_source,reviewable_source,Generated from parsed source. Manual curation can override this row.,upload-2026-06-09-011818-37cc4d
 nomenklatur,Audit Kurikulum & RPS,Audit Kurikulum & RPS,nomenklatur_master,master_reference,Generated from Nomenklatur workbook detail.,upload-2026-06-09-011818-37cc4d
 nomenklatur,Bantuan Kewirausahaan,Bantuan Kewirausahaan,nomenklatur_master,master_reference,Generated from Nomenklatur workbook detail.,upload-2026-06-09-011818-37cc4d
