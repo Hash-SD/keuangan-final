@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T05:10:33+00:00",
+  "generated_at": "2026-06-30T05:59:13+00:00",
   "status_schema": [
     "completed",
     "configured",
@@ -29,13 +29,18 @@
   "sources": {
     "excel_lakehouse": {
       "status": "ready",
-      "file_count": 40,
+      "file_count": 60,
       "files": [
         "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Nomenklatur.xlsx",
         "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB 2025 SD RAB IKU.xlsx",
         "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/Nomenklatur.xlsx",
+        "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB 2025 SD RAB IKU.xlsx",
+        "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/Nomenklatur.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB 2025 SD RAB IKU.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
@@ -46,6 +51,11 @@
         "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/Nomenklatur.xlsx",
+        "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB 2025 SD RAB IKU.xlsx",
+        "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/Nomenklatur.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB 2025 SD RAB IKU.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
@@ -66,6 +76,16 @@
         "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/Nomenklatur.xlsx",
+        "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB 2025 SD RAB IKU.xlsx",
+        "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/Nomenklatur.xlsx",
+        "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB 2025 SD RAB IKU.xlsx",
+        "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
         "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/Nomenklatur.xlsx",
         "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/RAB 2025 SD RAB IKU.xlsx",
         "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
@@ -92,7 +112,7 @@
       "existing": [
         "data/raw/excel_lakehouse"
       ],
-      "file_count": 40
+      "file_count": 60
     },
     "bronze": {
       "status": "ready",
@@ -138,7 +158,7 @@
       "existing": [
         "outputs/reports"
       ],
-      "file_count": 66
+      "file_count": 67
     },
     "metrics": {
       "status": "ready",
@@ -158,19 +178,19 @@
       "existing": [
         "outputs/reports"
       ],
-      "file_count": 66
+      "file_count": 67
     }
   },
   "quality_gate": {
     "status": "validated",
     "total_rows": {
-      "value": 1010,
+      "value": 1309,
       "status": "validated",
       "source": "outputs/reports/pipeline_count_validation.json",
       "message": "Validasi Excel Lakehouse dibaca dari artefak pipeline."
     },
     "valid_rows": {
-      "value": 1010,
+      "value": 1309,
       "status": "validated",
       "source": "outputs/reports/pipeline_count_validation.json",
       "message": "Validasi Excel Lakehouse dibaca dari artefak pipeline."
@@ -197,19 +217,19 @@
   "reconciliation": {
     "status": "validated",
     "total_anggaran": {
-      "value": 2733067665.0,
+      "value": 3543705181.0,
       "status": "validated",
       "source": "data/generated/gold/fact_anggaran.parquet",
       "message": "Nilai dibaca langsung dari fact_anggaran."
     },
     "total_weighted_iku": {
-      "value": 913391665.0,
+      "value": 1179984871.0,
       "status": "validated",
       "source": "data/generated/gold/fact_anggaran.parquet",
       "message": "Nilai dibaca langsung dari fact_anggaran."
     },
     "fact_rows": {
-      "value": 1010,
+      "value": 1309,
       "status": "validated",
       "source": "data/generated/gold/fact_anggaran.parquet",
       "message": "Nilai dibaca langsung dari fact_anggaran."
@@ -220,27 +240,27 @@
     "pipeline_latency": {
       "status": "validated",
       "latency_seconds": {
-        "value": 18112,
+        "value": 22004,
         "status": "validated",
         "source": "outputs/metrics/pipeline_latency.json",
         "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
       },
       "pipeline_latency_seconds": {
-        "value": 18112,
+        "value": 22004,
         "status": "validated",
         "source": "outputs/metrics/pipeline_latency.json",
         "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
       },
       "elapsed_seconds": {
-        "value": 18112,
+        "value": 22004,
         "status": "validated",
         "source": "outputs/metrics/pipeline_latency.json",
         "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
       },
       "source_arrival": "2026-06-29T23:51:28.429841+00:00",
       "source_basis": "active_excel_lakehouse_dataset",
-      "gold_ready": "2026-06-30T04:53:20.768521+00:00",
-      "computed_at": "2026-06-30T05:10:33.605731+00:00",
+      "gold_ready": "2026-06-30T05:58:12.681480+00:00",
+      "computed_at": "2026-06-30T05:59:13.585701+00:00",
       "dataset_session_id": "excel-active-real-multiyear-bundle",
       "source": "outputs/metrics/pipeline_latency.json",
       "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
@@ -293,7 +313,7 @@
     "message": "Hasil UAT dibaca dari artefak penilaian.",
     "matrix": {
       "batch_id": "batch-excel-lakehouse",
-      "generated_at": "2026-06-30T04:58:35+00:00",
+      "generated_at": "2026-06-30T05:20:24+00:00",
       "items": [
         {
           "indikator": "Navigation Facility",
@@ -349,7 +369,7 @@
         "respondent_count": 5,
         "response_count": 25,
         "source": "evaluasi UAT lokal Excel Lakehouse; skor diisi manual dari pengguna internal",
-        "generated_at": "2026-06-30T04:58:35+00:00",
+        "generated_at": "2026-06-30T05:20:24+00:00",
         "required_indicators": [
           "Navigation Facility",
           "Clarity of Visualization",
@@ -439,9 +459,9 @@
           "Health": "",
           "ID": "e2ef6faecf4d",
           "Image": "apache/airflow:2.10.5-python3.11",
-          "Labels": "desktop.docker.io/binds/3/SourceKind=hostFile,desktop.docker.io/binds/5/SourceKind=hostFile,desktop.docker.io/binds/5/Target=/opt/airflow/data,desktop.docker.io/ports.scheme=v2,org.apache.airflow.distro=debian,com.docker.compose.config-hash=11cf556db92f9649aa3825d33a67c890e7ef5d657040eff0d50692e5bd9cb796,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\outputs,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\requirements.txt,org.opencontainers.image.description=Reference, production-ready Apache Airflow image,org.opencontainers.image.vendor=Apache Software Foundation,com.docker.compose.image=sha256:b16e19f925ae0dcabaa2271b37212891ed68bf74e26c2db61f46dddd7d502937,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/4/Target=/opt/airflow/src,desktop.docker.io/binds/5/Source=C:\\Users\\hm\\keuangan-final\\data,org.apache.airflow.uid=50000,org.opencontainers.image.authors=dev@airflow.apache.org,org.opencontainers.image.url=https://airflow.apache.org,com.docker.compose.project=keuangan-final,desktop.docker.io/binds/0/Target=/opt/airflow/outputs,desktop.docker.io/binds/4/Source=C:\\Users\\hm\\keuangan-final\\src,desktop.docker.io/binds/4/SourceKind=hostFile,org.apache.airflow.main-image.commit-sha=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,com.docker.compose.replace=keuangan-airflow-scheduler,com.docker.compose.version=2.39.2,desktop.docker.io/binds/1/Target=/opt/airflow/requirements.txt,desktop.docker.io/binds/3/Source=C:\\Users\\hm\\keuangan-final\\dags,org.apache.airflow.version=2.10.5,org.opencontainers.image.created=,org.opencontainers.image.revision=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.opencontainers.image.title=Production Airflow Image,com.docker.compose.depends_on=airflow-init:service_completed_successfully:false,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/0/SourceKind=hostFile,org.opencontainers.image.version=2.10.5,com.docker.compose.oneoff=False,org.apache.airflow.component=airflow,org.apache.airflow.main-image.build-id=,org.opencontainers.image.documentation=https://airflow.apache.org/docs/docker-stack/index.html,org.opencontainers.image.licenses=Apache-2.0,org.opencontainers.image.source=https://github.com/apache/airflow,com.docker.compose.container-number=1,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/opt/airflow/dags,org.opencontainers.image.ref.name=airflow,com.docker.compose.service=airflow-scheduler,org.apache.airflow.image=airflow,org.apache.airflow.module=airflow",
+          "Labels": "com.docker.compose.project=keuangan-final,desktop.docker.io/binds/3/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/opt/airflow/dags,org.opencontainers.image.authors=dev@airflow.apache.org,com.docker.compose.depends_on=airflow-init:service_completed_successfully:false,com.docker.compose.version=2.39.2,org.apache.airflow.main-image.build-id=,desktop.docker.io/binds/5/Target=/opt/airflow/data,org.opencontainers.image.vendor=Apache Software Foundation,com.docker.compose.image=sha256:b16e19f925ae0dcabaa2271b37212891ed68bf74e26c2db61f46dddd7d502937,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.replace=keuangan-airflow-scheduler,desktop.docker.io/binds/1/Target=/opt/airflow/requirements.txt,desktop.docker.io/binds/3/Source=C:\\Users\\hm\\keuangan-final\\dags,org.opencontainers.image.version=2.10.5,desktop.docker.io/binds/0/Target=/opt/airflow/outputs,desktop.docker.io/binds/4/SourceKind=hostFile,org.apache.airflow.component=airflow,org.opencontainers.image.revision=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,com.docker.compose.config-hash=11cf556db92f9649aa3825d33a67c890e7ef5d657040eff0d50692e5bd9cb796,com.docker.compose.service=airflow-scheduler,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\requirements.txt,org.apache.airflow.image=airflow,org.apache.airflow.uid=50000,org.opencontainers.image.title=Production Airflow Image,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/5/Source=C:\\Users\\hm\\keuangan-final\\data,org.apache.airflow.distro=debian,org.apache.airflow.module=airflow,org.opencontainers.image.licenses=Apache-2.0,org.opencontainers.image.ref.name=airflow,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\outputs,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/5/SourceKind=hostFile,org.opencontainers.image.created=,org.opencontainers.image.description=Reference, production-ready Apache Airflow image,org.opencontainers.image.source=https://github.com/apache/airflow,org.apache.airflow.version=2.10.5,org.opencontainers.image.documentation=https://airflow.apache.org/docs/docker-stack/index.html,com.docker.compose.container-number=1,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/4/Source=C:\\Users\\hm\\keuangan-final\\src,desktop.docker.io/binds/4/Target=/opt/airflow/src,desktop.docker.io/ports.scheme=v2,org.apache.airflow.main-image.commit-sha=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.opencontainers.image.url=https://airflow.apache.org",
           "LocalVolumes": "1",
-          "Mounts": "/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,keuangan-finalâ€¦",
+          "Mounts": "/run/desktop/mâ€¦,/run/desktop/mâ€¦,keuangan-finalâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦",
           "Name": "keuangan-airflow-scheduler",
           "Names": "keuangan-airflow-scheduler",
           "Networks": "lakehouse_net",
@@ -468,9 +488,9 @@
           "Health": "healthy",
           "ID": "6b8cc4fa01f8",
           "Image": "apache/airflow:2.10.5-python3.11",
-          "Labels": "desktop.docker.io/binds/3/Source=C:\\Users\\hm\\keuangan-final\\dags,org.apache.airflow.distro=debian,org.opencontainers.image.authors=dev@airflow.apache.org,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.replace=keuangan-airflow-webserver,desktop.docker.io/binds/1/Target=/opt/airflow/requirements.txt,org.opencontainers.image.source=https://github.com/apache/airflow,org.opencontainers.image.title=Production Airflow Image,org.opencontainers.image.version=2.10.5,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.service=airflow-webserver,com.docker.compose.version=2.39.2,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\requirements.txt,desktop.docker.io/binds/4/Source=C:\\Users\\hm\\keuangan-final\\src,desktop.docker.io/binds/4/SourceKind=hostFile,org.opencontainers.image.ref.name=airflow,org.opencontainers.image.revision=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.opencontainers.image.url=https://airflow.apache.org,com.docker.compose.image=sha256:b16e19f925ae0dcabaa2271b37212891ed68bf74e26c2db61f46dddd7d502937,desktop.docker.io/binds/5/Target=/opt/airflow/data,org.apache.airflow.main-image.commit-sha=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.apache.airflow.module=airflow,org.opencontainers.image.documentation=https://airflow.apache.org/docs/docker-stack/index.html,com.docker.compose.container-number=1,desktop.docker.io/binds/0/Target=/opt/airflow/outputs,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/SourceKind=hostFile,org.apache.airflow.version=2.10.5,org.apache.airflow.main-image.build-id=,org.opencontainers.image.vendor=Apache Software Foundation,com.docker.compose.depends_on=airflow-init:service_completed_successfully:false,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\outputs,desktop.docker.io/binds/4/Target=/opt/airflow/src,desktop.docker.io/binds/5/Source=C:\\Users\\hm\\keuangan-final\\data,desktop.docker.io/binds/5/SourceKind=hostFile,org.opencontainers.image.description=Reference, production-ready Apache Airflow image,org.opencontainers.image.licenses=Apache-2.0,com.docker.compose.config-hash=e69d2ee2c5c00f2ac7b69e8af3f6ac63b5566793639d909845f534141e016015,desktop.docker.io/ports.scheme=v2,org.apache.airflow.component=airflow,org.apache.airflow.image=airflow,org.apache.airflow.uid=50000,desktop.docker.io/binds/3/Target=/opt/airflow/dags,desktop.docker.io/ports/8080/tcp=:8085,org.opencontainers.image.created=",
+          "Labels": "com.docker.compose.replace=keuangan-airflow-webserver,org.apache.airflow.main-image.commit-sha=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.opencontainers.image.documentation=https://airflow.apache.org/docs/docker-stack/index.html,org.opencontainers.image.revision=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,org.opencontainers.image.authors=dev@airflow.apache.org,org.opencontainers.image.description=Reference, production-ready Apache Airflow image,org.opencontainers.image.licenses=Apache-2.0,desktop.docker.io/binds/1/Target=/opt/airflow/requirements.txt,desktop.docker.io/binds/3/Source=C:\\Users\\hm\\keuangan-final\\dags,desktop.docker.io/binds/5/Source=C:\\Users\\hm\\keuangan-final\\data,org.apache.airflow.image=airflow,org.opencontainers.image.ref.name=airflow,com.docker.compose.image=sha256:b16e19f925ae0dcabaa2271b37212891ed68bf74e26c2db61f46dddd7d502937,com.docker.compose.oneoff=False,desktop.docker.io/binds/3/SourceKind=hostFile,org.apache.airflow.uid=50000,org.apache.airflow.version=2.10.5,desktop.docker.io/binds/4/Target=/opt/airflow/src,desktop.docker.io/binds/5/Target=/opt/airflow/data,org.apache.airflow.main-image.build-id=,com.docker.compose.project=keuangan-final,com.docker.compose.service=airflow-webserver,com.docker.compose.version=2.39.2,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\requirements.txt,org.opencontainers.image.source=https://github.com/apache/airflow,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/8080/tcp=:8085,org.opencontainers.image.title=Production Airflow Image,com.docker.compose.container-number=1,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Target=/opt/airflow/outputs,desktop.docker.io/binds/4/SourceKind=hostFile,desktop.docker.io/binds/5/SourceKind=hostFile,org.opencontainers.image.url=https://airflow.apache.org,org.opencontainers.image.vendor=Apache Software Foundation,com.docker.compose.config-hash=e69d2ee2c5c00f2ac7b69e8af3f6ac63b5566793639d909845f534141e016015,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/opt/airflow/dags,org.apache.airflow.distro=debian,org.opencontainers.image.version=2.10.5,org.opencontainers.image.created=,com.docker.compose.depends_on=airflow-init:service_completed_successfully:false,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\outputs,desktop.docker.io/binds/4/Source=C:\\Users\\hm\\keuangan-final\\src,org.apache.airflow.component=airflow,org.apache.airflow.module=airflow",
           "LocalVolumes": "1",
-          "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦",
+          "Mounts": "/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,keuangan-finalâ€¦",
           "Name": "keuangan-airflow-webserver",
           "Names": "keuangan-airflow-webserver",
           "Networks": "lakehouse_net",
@@ -490,11 +510,11 @@
               "Protocol": "tcp"
             }
           ],
-          "RunningFor": "11 hours ago",
+          "RunningFor": "12 hours ago",
           "Service": "airflow-webserver",
           "Size": "0B",
           "State": "running",
-          "Status": "Up 11 hours (healthy)"
+          "Status": "Up 12 hours (healthy)"
         },
         {
           "Command": "\"/usr/bin/docker-entâ€¦\"",
@@ -503,7 +523,7 @@
           "Health": "healthy",
           "ID": "939f82a96ec7",
           "Image": "minio/minio:latest",
-          "Labels": "vcs-ref=32d8e5209f029a1fb7235308ab32253bface1001,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.redhat.component=ubi9-micro-container,com.redhat.license_terms=https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI,com.docker.compose.config-hash=a44c7bc2d8f74c88cd9ce4d3282259e6fedd3e833b92ddfdee10f906b29b38f0,com.docker.compose.oneoff=False,release=RELEASE.2025-09-07T16-13-09Z,summary=MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service.,architecture=x86_64,com.docker.compose.depends_on=,desktop.docker.io/ports/9001/tcp=:9001,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/9000/tcp=:9000,io.openshift.expose-services=,url=https://catalog.redhat.com/en/search?searchType=containers,vcs-type=git,com.docker.compose.image=sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e,com.docker.compose.project=keuangan-final,com.docker.compose.version=2.39.2,vendor=MinIO Inc <dev@min.io>,io.k8s.display-name=Red Hat Universal Base Image 9 Micro,maintainer=MinIO Inc <dev@min.io>,version=RELEASE.2025-09-07T16-13-09Z,com.docker.compose.replace=keuangan-minio,com.docker.compose.service=minio,description=MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads.,com.docker.compose.container-number=1,io.buildah.version=1.40.1,io.k8s.description=Very small image which doesn't install the package manager.,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,build-date=2025-08-06T08:12:37,distribution-scope=public,name=MinIO",
+          "Labels": "com.docker.compose.image=sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e,com.docker.compose.oneoff=False,maintainer=MinIO Inc <dev@min.io>,version=RELEASE.2025-09-07T16-13-09Z,com.docker.compose.version=2.39.2,com.redhat.license_terms=https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI,io.openshift.expose-services=,name=MinIO,summary=MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service.,url=https://catalog.redhat.com/en/search?searchType=containers,architecture=x86_64,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,vendor=MinIO Inc <dev@min.io>,com.redhat.component=ubi9-micro-container,desktop.docker.io/ports/9001/tcp=:9001,description=MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads.,desktop.docker.io/ports.scheme=v2,distribution-scope=public,io.buildah.version=1.40.1,io.k8s.display-name=Red Hat Universal Base Image 9 Micro,vcs-type=git,com.docker.compose.config-hash=a44c7bc2d8f74c88cd9ce4d3282259e6fedd3e833b92ddfdee10f906b29b38f0,com.docker.compose.container-number=1,io.k8s.description=Very small image which doesn't install the package manager.,release=RELEASE.2025-09-07T16-13-09Z,com.docker.compose.replace=keuangan-minio,desktop.docker.io/ports/9000/tcp=:9000,com.docker.compose.project=keuangan-final,vcs-ref=32d8e5209f029a1fb7235308ab32253bface1001,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=minio,build-date=2025-08-06T08:12:37,com.docker.compose.depends_on=",
           "LocalVolumes": "1",
           "Mounts": "keuangan-finalâ€¦",
           "Name": "keuangan-minio",
@@ -541,7 +561,7 @@
           "Service": "minio",
           "Size": "0B",
           "State": "running",
-          "Status": "Up 12 hours (healthy)"
+          "Status": "Up 13 hours (healthy)"
         },
         {
           "Command": "\"/bin/sh -c 'gunicorâ€¦\"",
@@ -550,7 +570,7 @@
           "Health": "healthy",
           "ID": "d7299191dbbd",
           "Image": "keuangan-portal:latest",
-          "Labels": "com.docker.compose.depends_on=airflow-webserver:service_healthy:false,superset:service_healthy:false,trino:service_healthy:false,minio:service_healthy:false,postgres-metastore:service_healthy:false,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Target=/opt/lakehouse,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.service=portal-backend,com.docker.compose.version=2.39.2,com.docker.compose.config-hash=45fa748e68e1ca8bd70796efba9a750f177a19d5338ef87c41e185b566977fbc,com.docker.compose.replace=keuangan-portal-backend,desktop.docker.io/ports/8091/tcp=:8091,com.docker.compose.image=sha256:e4da713a78c533090c8da02ffad457d6753c54a5891dfc714461aea2601456e3,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/0/SourceKind=hostFile",
+          "Labels": "com.docker.compose.replace=keuangan-portal-backend,desktop.docker.io/ports.scheme=v2,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/0/Target=/opt/lakehouse,com.docker.compose.config-hash=45fa748e68e1ca8bd70796efba9a750f177a19d5338ef87c41e185b566977fbc,com.docker.compose.image=sha256:e4da713a78c533090c8da02ffad457d6753c54a5891dfc714461aea2601456e3,com.docker.compose.service=portal-backend,com.docker.compose.version=2.39.2,desktop.docker.io/ports/8091/tcp=:8091,com.docker.compose.container-number=1,com.docker.compose.project=keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,com.docker.compose.depends_on=airflow-webserver:service_healthy:false,superset:service_healthy:false,trino:service_healthy:false,minio:service_healthy:false,postgres-metastore:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final",
           "LocalVolumes": "0",
           "Mounts": "/run/desktop/mâ€¦",
           "Name": "keuangan-portal-backend",
@@ -572,11 +592,11 @@
               "Protocol": "tcp"
             }
           ],
-          "RunningFor": "11 hours ago",
+          "RunningFor": "12 hours ago",
           "Service": "portal-backend",
           "Size": "0B",
           "State": "running",
-          "Status": "Up About an hour (healthy)"
+          "Status": "Up 2 hours (healthy)"
         },
         {
           "Command": "\"python -m http.servâ€¦\"",
@@ -585,7 +605,7 @@
           "Health": "healthy",
           "ID": "b8b64015460d",
           "Image": "keuangan-portal:latest",
-          "Labels": "com.docker.compose.version=2.39.2,com.docker.compose.container-number=1,com.docker.compose.image=sha256:e4da713a78c533090c8da02ffad457d6753c54a5891dfc714461aea2601456e3,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=portal-frontend,desktop.docker.io/binds/0/Target=/opt/lakehouse,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.replace=keuangan-portal-frontend,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/8090/tcp=:8090,com.docker.compose.config-hash=7498c82b190940d5875ff504641e570a2cbf5867a43d2f39776947efe88174c6,com.docker.compose.depends_on=portal-backend:service_healthy:false,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/0/SourceKind=hostFile",
+          "Labels": "com.docker.compose.config-hash=7498c82b190940d5875ff504641e570a2cbf5867a43d2f39776947efe88174c6,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.replace=keuangan-portal-frontend,com.docker.compose.oneoff=False,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/ports/8090/tcp=:8090,com.docker.compose.project=keuangan-final,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/0/Target=/opt/lakehouse,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,com.docker.compose.depends_on=portal-backend:service_healthy:false,com.docker.compose.image=sha256:e4da713a78c533090c8da02ffad457d6753c54a5891dfc714461aea2601456e3,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=portal-frontend,com.docker.compose.version=2.39.2",
           "LocalVolumes": "0",
           "Mounts": "/run/desktop/mâ€¦",
           "Name": "keuangan-portal-frontend",
@@ -607,11 +627,11 @@
               "Protocol": "tcp"
             }
           ],
-          "RunningFor": "11 hours ago",
+          "RunningFor": "12 hours ago",
           "Service": "portal-frontend",
           "Size": "0B",
           "State": "running",
-          "Status": "Up 11 hours (healthy)"
+          "Status": "Up 12 hours (healthy)"
         },
         {
           "Command": "\"docker-entrypoint.sâ€¦\"",
@@ -620,7 +640,7 @@
           "Health": "healthy",
           "ID": "db98004a81d8",
           "Image": "postgres:16-alpine",
-          "Labels": "com.docker.compose.container-number=1,com.docker.compose.project=keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.replace=keuangan-postgres-metastore,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=:5432,com.docker.compose.version=2.39.2,com.docker.compose.config-hash=e5bcad7fd0f9772e9064f6e72078559dc0863fdbc66b4dd7d8a091505ce49612,com.docker.compose.depends_on=,com.docker.compose.image=sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=postgres-metastore",
+          "Labels": "com.docker.compose.depends_on=,com.docker.compose.image=sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229,com.docker.compose.replace=keuangan-postgres-metastore,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=:5432,com.docker.compose.version=2.39.2,com.docker.compose.config-hash=e5bcad7fd0f9772e9064f6e72078559dc0863fdbc66b4dd7d8a091505ce49612,com.docker.compose.container-number=1,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=postgres-metastore",
           "LocalVolumes": "1",
           "Mounts": "keuangan-finalâ€¦",
           "Name": "keuangan-postgres-metastore",
@@ -646,7 +666,7 @@
           "Service": "postgres-metastore",
           "Size": "0B",
           "State": "running",
-          "Status": "Up 12 hours (healthy)"
+          "Status": "Up 13 hours (healthy)"
         },
         {
           "Command": "\"/opt/entrypoint.sh â€¦\"",
@@ -655,7 +675,7 @@
           "Health": "healthy",
           "ID": "e37af185e5a4",
           "Image": "apache/spark:3.5.6",
-          "Labels": "com.docker.compose.config-hash=7fb4035428e223c022974567372b8eb377008dfc8423d8cafe0f2d63133875e3,com.docker.compose.depends_on=,com.docker.compose.oneoff=False,com.docker.compose.replace=keuangan-spark-master,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Target=/opt/lakehouse,desktop.docker.io/ports/7077/tcp=:7077,org.opencontainers.image.version=20.04,com.docker.compose.project=keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.service=spark-master,desktop.docker.io/ports/8080/tcp=:8080,com.docker.compose.image=sha256:599722640c8a42ff5ecca329a3faa5371b3bd5c752b320776d5cdd1eed3441ac,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,com.docker.compose.version=2.39.2,desktop.docker.io/binds/0/SourceKind=hostFile,org.opencontainers.image.ref.name=ubuntu",
+          "Labels": "com.docker.compose.config-hash=7fb4035428e223c022974567372b8eb377008dfc8423d8cafe0f2d63133875e3,com.docker.compose.image=sha256:599722640c8a42ff5ecca329a3faa5371b3bd5c752b320776d5cdd1eed3441ac,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Target=/opt/lakehouse,org.opencontainers.image.ref.name=ubuntu,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/7077/tcp=:7077,com.docker.compose.project=keuangan-final,com.docker.compose.replace=keuangan-spark-master,com.docker.compose.service=spark-master,com.docker.compose.version=2.39.2,desktop.docker.io/binds/0/SourceKind=hostFile,com.docker.compose.container-number=1,com.docker.compose.depends_on=,desktop.docker.io/ports/8080/tcp=:8080,org.opencontainers.image.version=20.04",
           "LocalVolumes": "1",
           "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦",
           "Name": "keuangan-spark-master",
@@ -702,7 +722,7 @@
           "Health": "",
           "ID": "f7a072c066bc",
           "Image": "apache/spark:3.5.6",
-          "Labels": "com.docker.compose.depends_on=spark-master:service_healthy:false,com.docker.compose.project=keuangan-final,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/1/Target=/opt/lakehouse,com.docker.compose.config-hash=c50f13e611fdc645954ede0f29e79a26e96edcd1bba8e3e0aef0df85023d3c7f,com.docker.compose.oneoff=False,com.docker.compose.service=spark-worker,com.docker.compose.version=2.39.2,org.opencontainers.image.version=20.04,com.docker.compose.container-number=1,com.docker.compose.replace=keuangan-spark-worker,desktop.docker.io/binds/1/SourceKind=hostFile,org.opencontainers.image.ref.name=ubuntu,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/8081/tcp=:8081,com.docker.compose.image=sha256:599722640c8a42ff5ecca329a3faa5371b3bd5c752b320776d5cdd1eed3441ac",
+          "Labels": "com.docker.compose.replace=keuangan-spark-worker,com.docker.compose.version=2.39.2,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final,org.opencontainers.image.ref.name=ubuntu,com.docker.compose.project=keuangan-final,com.docker.compose.depends_on=spark-master:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,desktop.docker.io/binds/1/Target=/opt/lakehouse,com.docker.compose.image=sha256:599722640c8a42ff5ecca329a3faa5371b3bd5c752b320776d5cdd1eed3441ac,com.docker.compose.service=spark-worker,desktop.docker.io/ports/8081/tcp=:8081,org.opencontainers.image.version=20.04,com.docker.compose.config-hash=c50f13e611fdc645954ede0f29e79a26e96edcd1bba8e3e0aef0df85023d3c7f",
           "LocalVolumes": "1",
           "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦",
           "Name": "keuangan-spark-worker",
@@ -737,7 +757,7 @@
           "Health": "healthy",
           "ID": "80f1b8272159",
           "Image": "apache/superset:4.1.1",
-          "Labels": "build_trigger=4.1.1,com.docker.compose.depends_on=trino:service_healthy:false,com.docker.compose.image=sha256:1d1fdaaeb19ce9cdba71620ee1cc6117d73813b2f3b422ce5a1bf752c247b7c0,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.version=2.39.2,com.docker.compose.config-hash=8bee5fd8cdd6f94a18dad9340233cbaf28cbc765a7078e4c506d3f0328deb389,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.service=superset,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\config\\superset\\superset_config.py,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/0/Target=/app/pythonpath/superset_config.py,desktop.docker.io/ports.scheme=v2,build_actor=sadpandajoe,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.replace=keuangan-superset,desktop.docker.io/ports/8088/tcp=:8089,sha=6264ff516532f0359d914bd72356f2007925109b,target=lean,version=4.1.1,base=3.10-slim-bookworm,com.docker.compose.container-number=1",
+          "Labels": "desktop.docker.io/binds/0/SourceKind=hostFile,build_actor=sadpandajoe,build_trigger=4.1.1,com.docker.compose.depends_on=trino:service_healthy:false,com.docker.compose.image=sha256:1d1fdaaeb19ce9cdba71620ee1cc6117d73813b2f3b422ce5a1bf752c247b7c0,com.docker.compose.oneoff=False,com.docker.compose.version=2.39.2,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\config\\superset\\superset_config.py,desktop.docker.io/binds/0/Target=/app/pythonpath/superset_config.py,desktop.docker.io/ports/8088/tcp=:8089,sha=6264ff516532f0359d914bd72356f2007925109b,target=lean,com.docker.compose.config-hash=8bee5fd8cdd6f94a18dad9340233cbaf28cbc765a7078e4c506d3f0328deb389,com.docker.compose.project=keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.replace=keuangan-superset,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,base=3.10-slim-bookworm,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=superset,version=4.1.1",
           "LocalVolumes": "1",
           "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦",
           "Name": "keuangan-superset",
@@ -772,7 +792,7 @@
           "Health": "healthy",
           "ID": "a29085e819f9",
           "Image": "trinodb/trino:474",
-          "Labels": "desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\config\\trino\\etc,io.k8s.description=Very small image which doesn't install the package manager.,build-date=2025-03-13T10:28:55Z,com.redhat.component=ubi9-micro-container,com.redhat.license_terms=https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI,description=Very small image which doesn't install the package manager.,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/1/Target=/etc/trino/custom,maintainer=Red Hat, Inc.,url=https://www.redhat.com,architecture=x86_64,com.docker.compose.config-hash=83ec57a379ee0f0e0566be23ce38a00c31a3491a8beef5f128542c61590936c5,com.docker.compose.project=keuangan-final,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\config\\trino\\catalog,vendor=Red Hat, Inc.,io.k8s.display-name=Red Hat Universal Base Image 9 Micro,io.openshift.expose-services=,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.version=2.39.2,desktop.docker.io/ports/8080/tcp=:8082,io.buildah.version=1.39.0-dev,name=ubi9/ubi-micro,release=1741861735,version=9.5,desktop.docker.io/binds/0/Target=/etc/trino/catalog,desktop.docker.io/ports.scheme=v2,summary=ubi9 micro image,vcs-ref=6dff53527db12d92c8199eb8cb541efb85a4a903,com.docker.compose.container-number=1,com.docker.compose.depends_on=minio:service_healthy:false,postgres-metastore:service_healthy:false,com.docker.compose.replace=keuangan-trino,com.docker.compose.service=trino,com.docker.compose.oneoff=False,vcs-type=git,com.docker.compose.image=sha256:d259f20e7fb7391039c4c75f11a70d4d761c58a7fa4a0f723066324f1666040d,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/SourceKind=hostFile,distribution-scope=public",
+          "Labels": "build-date=2025-03-13T10:28:55Z,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\config\\trino\\etc,desktop.docker.io/binds/1/Target=/etc/trino/custom,desktop.docker.io/ports.scheme=v2,io.openshift.expose-services=,vcs-type=git,architecture=x86_64,com.redhat.component=ubi9-micro-container,com.redhat.license_terms=https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI,maintainer=Red Hat, Inc.,com.docker.compose.config-hash=83ec57a379ee0f0e0566be23ce38a00c31a3491a8beef5f128542c61590936c5,com.docker.compose.image=sha256:d259f20e7fb7391039c4c75f11a70d4d761c58a7fa4a0f723066324f1666040d,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.replace=keuangan-trino,desktop.docker.io/ports/8080/tcp=:8082,url=https://www.redhat.com,vendor=Red Hat, Inc.,version=9.5,com.docker.compose.project=keuangan-final,com.docker.compose.version=2.39.2,description=Very small image which doesn't install the package manager.,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/SourceKind=hostFile,io.k8s.description=Very small image which doesn't install the package manager.,name=ubi9/ubi-micro,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Target=/etc/trino/catalog,io.k8s.display-name=Red Hat Universal Base Image 9 Micro,com.docker.compose.depends_on=minio:service_healthy:false,postgres-metastore:service_healthy:false,com.docker.compose.oneoff=False,com.docker.compose.service=trino,distribution-scope=public,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\config\\trino\\catalog,vcs-ref=6dff53527db12d92c8199eb8cb541efb85a4a903,com.docker.compose.container-number=1,io.buildah.version=1.39.0-dev,release=1741861735,summary=ubi9 micro image",
           "LocalVolumes": "0",
           "Mounts": "/run/desktop/mâ€¦,/run/desktop/mâ€¦",
           "Name": "keuangan-trino",
@@ -798,7 +818,7 @@
           "Service": "trino",
           "Size": "0B",
           "State": "running",
-          "Status": "Up 12 hours (healthy)"
+          "Status": "Up 13 hours (healthy)"
         }
       ]
     }
@@ -807,7 +827,7 @@
     "status": "mapped_not_uploaded",
     "manifest_source": "outputs/reports/storage_manifest.json",
     "manifest": {
-      "generated_at": "2026-06-30T00:00:35+00:00",
+      "generated_at": "2026-06-30T05:59:10+00:00",
       "bucket": "lakehouse",
       "upload_enabled": false,
       "required_prefixes": [
@@ -831,12 +851,562 @@
       "entries": [
         {
           "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/03a33144-8212-46be-a867-6bf0a9588516/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/6e2de695-fc5c-4e9c-bbf6-e552abd08ea9/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ea67c4e5-7ec4-4346-b4f9-f1fcdeea4680/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/ef72bd16-3b0d-4b71-95ce-093c9d1124a4/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:09+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/Nomenklatur.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/Nomenklatur.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 91281,
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB 2025 SD RAB IKU.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB 2025 SD RAB IKU.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 849126,
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 485119,
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 637754,
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
+          "local_path": "data/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "s3_path": "s3://lakehouse/raw/excel_lakehouse/test-session/f4197c75-0189-419a-83ab-f0142b655aa5/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+          "upload_status": "mapped_not_uploaded",
+          "row_count": null,
+          "file_size": 403043,
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "raw",
           "local_path": "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/Nomenklatur.xlsx",
           "s3_path": "s3://lakehouse/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/Nomenklatur.xlsx",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 91281,
-          "created_at": "2026-06-30T00:00:34+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -846,7 +1416,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 849126,
-          "created_at": "2026-06-30T00:00:34+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -856,7 +1426,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 485119,
-          "created_at": "2026-06-30T00:00:34+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -866,7 +1436,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 637754,
-          "created_at": "2026-06-30T00:00:34+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -876,7 +1446,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 403043,
-          "created_at": "2026-06-30T00:00:34+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -886,7 +1456,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 55449,
           "file_size": 20582944,
-          "created_at": "2026-06-30T00:00:34+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -895,8 +1465,8 @@
           "s3_path": "s3://lakehouse/bronze/bronze_excel_cells.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 354906,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 354901,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -906,7 +1476,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 6059,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -916,7 +1486,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1989,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -926,7 +1496,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 55449,
           "file_size": 20582944,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -935,8 +1505,8 @@
           "s3_path": "s3://lakehouse/bronze/upload-2026-06-09-011818-37cc4d/bronze_excel_cells.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 354906,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 354901,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -946,7 +1516,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 975,
           "file_size": 131922,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -956,7 +1526,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 16948,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -964,9 +1534,9 @@
           "local_path": "data/generated/silver/silver_mapping.csv",
           "s3_path": "s3://lakehouse/silver/silver_mapping.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 290,
-          "file_size": 68333,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 292,
+          "file_size": 69145,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -975,8 +1545,8 @@
           "s3_path": "s3://lakehouse/silver/silver_mapping.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 19170,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 19286,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -986,7 +1556,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 248,
           "file_size": 269105,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -996,7 +1566,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 55112,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1006,7 +1576,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 4,
           "file_size": 844,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1016,7 +1586,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 5858,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1026,7 +1596,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 63,
           "file_size": 11545,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1036,7 +1606,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 9190,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1044,9 +1614,9 @@
           "local_path": "data/generated/silver/silver_rab_items_flexible.csv",
           "s3_path": "s3://lakehouse/silver/silver_rab_items_flexible.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 375,
-          "file_size": 231069,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 459,
+          "file_size": 508698,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1055,8 +1625,8 @@
           "s3_path": "s3://lakehouse/silver/silver_rab_items_flexible.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 59120,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 74317,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1065,8 +1635,8 @@
           "s3_path": "s3://lakehouse/silver/silver_validation.csv",
           "upload_status": "mapped_not_uploaded",
           "row_count": 4,
-          "file_size": 538,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 497,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1075,8 +1645,8 @@
           "s3_path": "s3://lakehouse/silver/silver_validation.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 4521,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 4539,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1086,7 +1656,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 975,
           "file_size": 131922,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1096,7 +1666,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 16948,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1104,9 +1674,9 @@
           "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_mapping.csv",
           "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_mapping.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 290,
-          "file_size": 68333,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 292,
+          "file_size": 69145,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1115,8 +1685,8 @@
           "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_mapping.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 19170,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 19286,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1126,7 +1696,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 248,
           "file_size": 269105,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1136,7 +1706,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 55112,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1146,7 +1716,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 4,
           "file_size": 844,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1156,7 +1726,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 5858,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1166,7 +1736,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 63,
           "file_size": 11545,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1176,7 +1746,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
           "file_size": 9190,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1184,9 +1754,9 @@
           "local_path": "data/generated/silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.csv",
           "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 375,
-          "file_size": 231069,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 459,
+          "file_size": 508698,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1195,8 +1765,8 @@
           "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 59120,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 74317,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1205,8 +1775,8 @@
           "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_validation.csv",
           "upload_status": "mapped_not_uploaded",
           "row_count": 4,
-          "file_size": 538,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 497,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1215,8 +1785,8 @@
           "s3_path": "s3://lakehouse/silver/upload-2026-06-09-011818-37cc4d/silver_validation.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 4521,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 4539,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1224,9 +1794,9 @@
           "local_path": "data/generated/gold/fact_anggaran.csv",
           "s3_path": "s3://lakehouse/gold/fact_anggaran.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 395,
-          "file_size": 229055,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 1309,
+          "file_size": 1141493,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1235,8 +1805,8 @@
           "s3_path": "s3://lakehouse/gold/fact_anggaran.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 43283,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 58513,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1244,9 +1814,9 @@
           "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.csv",
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 395,
-          "file_size": 229055,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 1309,
+          "file_size": 1141493,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1255,8 +1825,8 @@
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 43283,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 58513,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1264,9 +1834,9 @@
           "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.csv",
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 395,
-          "file_size": 229055,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 1309,
+          "file_size": 1141493,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1275,8 +1845,8 @@
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 43283,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 58513,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1284,9 +1854,9 @@
           "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.csv",
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 12,
-          "file_size": 1841,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 69,
+          "file_size": 9434,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1295,8 +1865,8 @@
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 5967,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 6281,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1304,9 +1874,9 @@
           "local_path": "data/generated/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.csv",
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 3,
-          "file_size": 400,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 5,
+          "file_size": 603,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1315,8 +1885,8 @@
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 3874,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 3899,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1325,8 +1895,8 @@
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.csv",
           "upload_status": "mapped_not_uploaded",
           "row_count": 4,
-          "file_size": 538,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 497,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1335,8 +1905,8 @@
           "s3_path": "s3://lakehouse/gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 4521,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 4539,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1344,9 +1914,9 @@
           "local_path": "data/generated/gold/vw_dashboard_detail_item.csv",
           "s3_path": "s3://lakehouse/gold/vw_dashboard_detail_item.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 395,
-          "file_size": 229055,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 1309,
+          "file_size": 1141493,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1355,8 +1925,8 @@
           "s3_path": "s3://lakehouse/gold/vw_dashboard_detail_item.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 43283,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 58513,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1364,9 +1934,9 @@
           "local_path": "data/generated/gold/vw_dashboard_iku_anggaran.csv",
           "s3_path": "s3://lakehouse/gold/vw_dashboard_iku_anggaran.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 12,
-          "file_size": 1841,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 69,
+          "file_size": 9434,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1375,8 +1945,8 @@
           "s3_path": "s3://lakehouse/gold/vw_dashboard_iku_anggaran.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 5967,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 6281,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1384,9 +1954,9 @@
           "local_path": "data/generated/gold/vw_dashboard_mapping_quality.csv",
           "s3_path": "s3://lakehouse/gold/vw_dashboard_mapping_quality.csv",
           "upload_status": "mapped_not_uploaded",
-          "row_count": 3,
-          "file_size": 400,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "row_count": 5,
+          "file_size": 603,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1395,8 +1965,8 @@
           "s3_path": "s3://lakehouse/gold/vw_dashboard_mapping_quality.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 3874,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 3899,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1405,8 +1975,8 @@
           "s3_path": "s3://lakehouse/gold/vw_dashboard_reconciliation.csv",
           "upload_status": "mapped_not_uploaded",
           "row_count": 4,
-          "file_size": 538,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 497,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1415,8 +1985,8 @@
           "s3_path": "s3://lakehouse/gold/vw_dashboard_reconciliation.parquet",
           "upload_status": "mapped_not_uploaded",
           "row_count": 0,
-          "file_size": 4521,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 4539,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1426,7 +1996,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 769,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1436,7 +2006,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1989,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1446,7 +2016,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 511,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1456,7 +2026,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1435,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1465,8 +2035,8 @@
           "s3_path": "s3://lakehouse/reports/activity_log.json",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
-          "file_size": 30162,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 30226,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1476,7 +2046,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 2536,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1486,7 +2056,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 613,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1496,7 +2066,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 994,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1505,8 +2075,8 @@
           "s3_path": "s3://lakehouse/reports/bab4_evidence_summary.json",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
-          "file_size": 500,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 473,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1516,7 +2086,17 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 208,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "reports",
+          "local_path": "outputs/reports/bolt_performance_finish_report.md",
+          "s3_path": "s3://lakehouse/reports/bolt_performance_finish_report.md",
+          "upload_status": "skipped",
+          "row_count": null,
+          "file_size": 2203,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1526,7 +2106,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 178,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1536,7 +2116,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1364,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1546,7 +2126,17 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 366,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "reports",
+          "local_path": "outputs/reports/dashboard_filter_and_mapping_cleanup_report.md",
+          "s3_path": "s3://lakehouse/reports/dashboard_filter_and_mapping_cleanup_report.md",
+          "upload_status": "skipped",
+          "row_count": null,
+          "file_size": 4249,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1556,7 +2146,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 4805,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1566,7 +2156,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 3,
           "file_size": 1778,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1576,7 +2166,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 3256,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1586,7 +2176,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 8286,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1596,7 +2186,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 9008,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1606,7 +2196,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 10640,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1616,7 +2206,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1377,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1626,7 +2216,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 28341,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1636,7 +2226,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 315896,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1646,7 +2236,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 883,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1656,7 +2246,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 3,
           "file_size": 162,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1666,7 +2256,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 31712,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1676,7 +2266,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 50248,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1686,7 +2276,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 2344,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1696,7 +2286,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 188,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1706,7 +2296,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 8036,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1715,8 +2305,8 @@
           "s3_path": "s3://lakehouse/reports/final_test_report.md",
           "upload_status": "skipped",
           "row_count": null,
-          "file_size": 344,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 433,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1726,7 +2316,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 134,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1736,7 +2326,17 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 189,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "reports",
+          "local_path": "outputs/reports/iku_automation_and_review_design_report.md",
+          "s3_path": "s3://lakehouse/reports/iku_automation_and_review_design_report.md",
+          "upload_status": "skipped",
+          "row_count": null,
+          "file_size": 4448,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1746,7 +2346,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 5881,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1756,7 +2356,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 5454,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1766,7 +2366,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": 3,
           "file_size": 6876,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1776,7 +2376,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 9431,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1786,7 +2386,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 2332,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1796,7 +2396,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 244,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1806,7 +2406,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 2558,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1815,8 +2415,8 @@
           "s3_path": "s3://lakehouse/reports/pipeline_count_validation.json",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
-          "file_size": 1436,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 1438,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1826,7 +2426,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 271,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1836,7 +2436,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 11423,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1846,7 +2446,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 317,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1856,7 +2456,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 358,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1866,7 +2466,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 4373,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1876,7 +2476,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 4310,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1886,7 +2486,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1068,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1896,7 +2496,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 822,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1906,7 +2506,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 7779,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1915,8 +2515,8 @@
           "s3_path": "s3://lakehouse/reports/storage_manifest.json",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
-          "file_size": 50465,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 50461,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1926,7 +2526,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1615,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1936,7 +2536,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 140,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1946,7 +2546,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1982,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1956,7 +2556,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 868,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1966,7 +2566,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 868,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1975,8 +2575,8 @@
           "s3_path": "s3://lakehouse/reports/superset_excel_assets.json",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
-          "file_size": 809,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 941,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1985,8 +2585,8 @@
           "s3_path": "s3://lakehouse/reports/superset_excel_dashboard.json",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
-          "file_size": 809,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 941,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -1996,7 +2596,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 2361,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -2006,7 +2606,7 @@
           "upload_status": "skipped",
           "row_count": null,
           "file_size": 275,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -2015,8 +2615,8 @@
           "s3_path": "s3://lakehouse/reports/system_truth_status.csv",
           "upload_status": "mapped_not_uploaded",
           "row_count": 24,
-          "file_size": 1761,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 1835,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -2025,8 +2625,8 @@
           "s3_path": "s3://lakehouse/reports/system_truth_status.json",
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
-          "file_size": 96529,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "file_size": 74583,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -2036,7 +2636,17 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 152196,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
+          "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
+        },
+        {
+          "layer": "reports",
+          "local_path": "outputs/reports/upload_reset_readiness_audit.md",
+          "s3_path": "s3://lakehouse/reports/upload_reset_readiness_audit.md",
+          "upload_status": "skipped",
+          "row_count": null,
+          "file_size": 6573,
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         },
         {
@@ -2046,7 +2656,7 @@
           "upload_status": "mapped_not_uploaded",
           "row_count": null,
           "file_size": 1619,
-          "created_at": "2026-06-30T00:00:35+00:00",
+          "created_at": "2026-06-30T05:59:10+00:00",
           "run_id": "8015561f-9cf5-488f-ade1-a03997d5bc7b"
         }
       ]
@@ -2062,15 +2672,15 @@
   "bab4_evidence": {
     "status": "ready",
     "message": "Ringkasan hanya memuat hasil Excel Lakehouse yang tersedia.",
-    "total_anggaran": 2733067665.0,
-    "total_weighted_iku": 913391665.0,
-    "fact_rows": 1010,
+    "total_anggaran": 3543705181.0,
+    "total_weighted_iku": 1179984871.0,
+    "fact_rows": 1309,
     "storage_status": "mapped_not_uploaded",
     "uat_average": 4.84,
     "uat_percentage": 96.8,
     "uat_category": "Sangat baik",
     "dashboard_status": "created",
     "dashboard_url": "http://localhost:8089/superset/dashboard/p/1PJ4eEy4EQB/",
-    "executed_at": "2026-06-30T05:10:33+00:00"
+    "executed_at": "2026-06-30T05:59:13+00:00"
   }
 }

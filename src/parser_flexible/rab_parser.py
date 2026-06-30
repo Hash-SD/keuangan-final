@@ -42,7 +42,39 @@ def _split_account(text: object) -> tuple[str | None, str | None]:
 
 def _looks_like_total(text: object) -> bool:
     value = (normalize_text(text) or "").lower()
-    return bool(re.search(r"\b(total|subtotal|jumlah)\b", value))
+    first_segment = value.split("|", 1)[0].strip()
+    return bool(re.match(r"^(grand\s+total|total|subtotal|jumlah)\b", first_segment))
+
+
+def _amount_header_score(text: str) -> int:
+    if not text:
+        return 0
+    if "jumah diterima" in text or "jumlah diterima" in text:
+        return 0
+    if "jumlah total" in text:
+        return 100
+    if "total setelah pajak" in text:
+        return 95
+    if "grand total" in text:
+        return 90
+    if text == "total" or text.endswith(" total") or text.startswith("total "):
+        return 85
+    if "jumlah usulan" in text or text == "jumlah":
+        return 80
+    if "nominal" in text:
+        return 75
+    if "total sebelum pajak" in text:
+        return 30
+    if "total" in text or "jumlah" in text:
+        return 20
+    return 0
+
+
+def _select_amount_column(candidates: list[tuple[int, int]]) -> int | None:
+    if not candidates:
+        return None
+    # Prefer the strongest semantic label, then the right-most matching column.
+    return max(candidates, key=lambda item: (item[1], item[0]))[0]
 
 
 def _parse_iku_from_values(values: list[object]) -> str | None:
@@ -127,31 +159,53 @@ def _extract_simple_rab_table(source: ExcelSource) -> pd.DataFrame:
 
 def _header_map(ws: Worksheet, row_number: int) -> dict[str, int]:
     mapping: dict[str, int] = {}
+    amount_candidates: list[tuple[int, int]] = []
     for column_number in range(1, min(ws.max_column, 30) + 1):
         text = (normalize_text(ws.cell(row=row_number, column=column_number).value) or "").lower()
         if not text:
             continue
-        if "urai" in text or "rincian" in text or "belanja" in text:
+        if "urai" in text or "rincian" in text:
             mapping.setdefault("uraian", column_number)
         elif "supplier" in text or "penyedia" in text:
             mapping.setdefault("supplier", column_number)
         elif text in {"qty", "kuantitas", "volume"} or "qty" in text:
             mapping.setdefault("qty", column_number)
-        elif "satuan" in text:
-            mapping.setdefault("satuan", column_number)
         elif "harga" in text:
             mapping.setdefault("harga_satuan", column_number)
-        elif "total" in text or "jumlah" in text:
-            mapping.setdefault("jumlah", column_number)
+        elif "satuan" in text:
+            mapping.setdefault("satuan", column_number)
+        score = _amount_header_score(text)
+        if score:
+            amount_candidates.append((column_number, score))
+    amount_column = _select_amount_column(amount_candidates)
+    if amount_column:
+        mapping["jumlah"] = amount_column
+        mapping["_jumlah_candidates"] = [column for column, _ in sorted(amount_candidates, key=lambda item: (-item[1], -item[0]))]
     return mapping
 
 
 def _find_recent_header(ws: Worksheet, row_number: int) -> dict[str, int]:
-    for probe in range(row_number, max(row_number - 10, 0), -1):
+    lower_bound = max(1, row_number - 30)
+    for probe in range(row_number, lower_bound - 1, -1):
         header = _header_map(ws, probe)
         if "uraian" in header and ("jumlah" in header or "harga_satuan" in header):
             return header
     return {}
+
+
+def _rightmost_amount_from_row(ws: Worksheet, row_number: int, header: dict[str, int]) -> float | None:
+    candidate_columns = header.get("_jumlah_candidates") or []
+    for column_number in candidate_columns:
+        amount = normalize_money(ws.cell(row=row_number, column=column_number).value)
+        if amount is not None:
+            return amount
+
+    lower_column = max(header.get("harga_satuan") or 1, header.get("qty") or 1)
+    values = [
+        normalize_money(ws.cell(row=row_number, column=column_number).value)
+        for column_number in range(lower_column + 1, min(ws.max_column, 30) + 1)
+    ]
+    return next((value for value in reversed(values) if value is not None), None)
 
 
 def _row_item_from_header(ws: Worksheet, row_number: int, header: dict[str, int]) -> dict[str, object] | None:
@@ -160,12 +214,16 @@ def _row_item_from_header(ws: Worksheet, row_number: int, header: dict[str, int]
     uraian = normalize_text(ws.cell(row=row_number, column=header["uraian"]).value)
     if not uraian or _looks_like_total(uraian):
         return None
+    if uraian.lower() in {"uraian", "rincian"}:
+        return None
     qty = normalize_money(ws.cell(row=row_number, column=header.get("qty", -1)).value) if header.get("qty") else None
     harga = normalize_money(ws.cell(row=row_number, column=header.get("harga_satuan", -1)).value) if header.get("harga_satuan") else None
     jumlah = normalize_money(ws.cell(row=row_number, column=header.get("jumlah", -1)).value) if header.get("jumlah") else None
+    if jumlah is None:
+        jumlah = _rightmost_amount_from_row(ws, row_number, header)
     if jumlah is None and qty is not None and harga is not None:
         jumlah = qty * harga
-    if jumlah is None and harga is None:
+    if jumlah is None:
         return None
     return {
         "uraian_detail": uraian,
@@ -182,13 +240,15 @@ def _row_item_from_2025_layout(ws: Worksheet, row_number: int) -> dict[str, obje
     qty = normalize_money(ws.cell(row=row_number, column=8).value)
     satuan = normalize_text(ws.cell(row=row_number, column=9).value)
     harga = normalize_money(ws.cell(row=row_number, column=11).value)
-    jumlah = normalize_money(ws.cell(row=row_number, column=14).value) or normalize_money(ws.cell(row=row_number, column=16).value)
+    jumlah = normalize_money(ws.cell(row=row_number, column=16).value) or normalize_money(ws.cell(row=row_number, column=14).value)
     if not uraian or _looks_like_total(uraian):
         return None
-    if jumlah is None and qty is None and harga is None:
+    if uraian.lower() in {"uraian", "rincian"}:
         return None
     if jumlah is None and qty is not None and harga is not None:
         jumlah = qty * harga
+    if jumlah is None:
+        return None
     return {"uraian_detail": uraian, "qty": qty, "satuan": satuan, "harga_satuan": harga, "jumlah": jumlah, "supplier": None}
 
 
@@ -211,9 +271,10 @@ def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame,
             continue
         if "master" in sheet_lower or "ket_akun" in sheet_lower:
             continue
+        is_rekap_sheet = "rekap" in sheet_lower
         current = {
             "nomenklatur_path": None,
-            "kegiatan": ws.title if "rekap" not in sheet_lower and "prioritas" not in sheet_lower and "usulan" not in sheet_lower else None,
+            "kegiatan": ws.title if not is_rekap_sheet and "prioritas" not in sheet_lower and "usulan" not in sheet_lower else None,
             "unit": prodi,
             "akun": None,
             "kode_akun": None,
@@ -267,6 +328,28 @@ def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame,
                     continue
 
             lowered = text.lower()
+            if is_rekap_sheet:
+                header = _find_recent_header(ws, row_number)
+                amount = _rightmost_amount_from_row(ws, row_number, header) if header else None
+                uraian_column = header.get("uraian") if header else None
+                label = normalize_text(ws.cell(row=row_number, column=uraian_column).value) if uraian_column else text
+                if amount is not None and label:
+                    validation_type = "REKAP_FINAL_TOTAL" if _looks_like_total(label) else "REKAP_ACCOUNT_ROW"
+                    if validation_type == "REKAP_FINAL_TOTAL" or "belanja" in label.lower() or row_account_code:
+                        validation.append(
+                            {
+                                "tahun": tahun,
+                                "periode": periode,
+                                "source_file": source.path.name,
+                                "source_sheet": ws.title,
+                                "source_row": row_number,
+                                "validation_type": validation_type,
+                                "total_rekap": amount,
+                                "row_text": text,
+                            }
+                        )
+                continue
+
             if "kegiatan" in lowered and ":" in text and not _looks_like_total(text):
                 current["kegiatan"] = text.split(":", 1)[1].strip() or current["kegiatan"]
                 continue
@@ -281,7 +364,7 @@ def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame,
                             "source_file": source.path.name,
                             "source_sheet": ws.title,
                             "source_row": row_number,
-                            "validation_type": "TOTAL_ROW",
+                            "validation_type": "SHEET_TOTAL_ROW",
                             "total_rekap": total,
                             "row_text": text,
                         }
@@ -318,10 +401,19 @@ def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame,
         detail_total = item_df.groupby(["source_file"], dropna=False)["jumlah"].sum().reset_index(name="total_detail")
         validation_df = pd.DataFrame(validation)
         if not validation_df.empty:
-            rekap_total = validation_df.groupby(["source_file"], dropna=False)["total_rekap"].sum().reset_index()
-            validation_df = detail_total.merge(rekap_total, on="source_file", how="outer").fillna(0)
-            validation_df["selisih"] = validation_df["total_rekap"] - validation_df["total_detail"]
-            validation_df["validation_status"] = validation_df["selisih"].abs().apply(lambda value: "OK" if value < 1 else "REVIEW")
+            rekap_candidates = validation_df[validation_df["validation_type"].eq("REKAP_FINAL_TOTAL")]
+            if rekap_candidates.empty:
+                rekap_candidates = validation_df[validation_df["validation_type"].eq("REKAP_ACCOUNT_ROW")]
+            if not rekap_candidates.empty:
+                rekap_total = rekap_candidates.groupby(["source_file"], dropna=False)["total_rekap"].sum().reset_index()
+                validation_df = detail_total.merge(rekap_total, on="source_file", how="outer").fillna(0)
+                validation_df["selisih"] = validation_df["total_rekap"] - validation_df["total_detail"]
+                validation_df["validation_status"] = validation_df["selisih"].abs().apply(lambda value: "OK" if value < 1 else "REVIEW")
+            else:
+                validation_df = detail_total
+                validation_df["total_rekap"] = None
+                validation_df["selisih"] = None
+                validation_df["validation_status"] = "NO_REKAP_TOTAL"
         else:
             validation_df = detail_total
             validation_df["total_rekap"] = None

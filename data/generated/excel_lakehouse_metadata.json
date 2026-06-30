@@ -1,5 +1,5 @@
 {
-  "run_id": "9d6a7a7a-47c1-4a34-9e4b-14465aacaf42",
+  "run_id": "2d2f85da-d0f9-46f1-aa15-561e5300c834",
   "dataset_session_id": "upload-2026-06-09-011818-37cc4d",
   "source_files": [
     "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB 2025 SD RAB IKU.xlsx",
@@ -66,9 +66,9 @@
     }
   ],
   "bronze_cells": 55340,
-  "silver_rab_items": 375,
+  "silver_rab_items": 459,
   "silver_nomenklatur_detail": 248,
-  "fact_anggaran_rows": 1010,
+  "fact_anggaran_rows": 1309,
   "outputs": {
     "bronze_excel_cells.csv": {
       "csv": "C:\\Users\\hm\\keuangan-final\\data\\generated\\bronze\\bronze_excel_cells.csv",

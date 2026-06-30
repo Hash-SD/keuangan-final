@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T03:53:57+00:00",
+  "generated_at": "2026-06-30T05:59:11+00:00",
   "definitions": {
     "bronze_cells": "Rows in bronze_excel_cells; includes cells with value, formula, fill color, or merged-range lineage.",
     "silver_rab_candidate_rows": "Parsed RAB-like rows before downstream mapping curation.",
@@ -9,12 +9,12 @@
   },
   "counts": {
     "bronze_cells": 55340,
-    "silver_rab_candidate_rows": 375,
-    "silver_rab_items_flexible": 375,
+    "silver_rab_candidate_rows": 459,
+    "silver_rab_items_flexible": 459,
     "silver_nomenklatur_detail": 248,
-    "fact_anggaran_rows": 1010,
-    "fact_unique_item_ids": 353,
-    "fact_unique_item_iku_rows": 1010
+    "fact_anggaran_rows": 1309,
+    "fact_unique_item_ids": 459,
+    "fact_unique_item_iku_rows": 1309
   },
   "quality_checks": {
     "duplicate_fact_rows": 0,
