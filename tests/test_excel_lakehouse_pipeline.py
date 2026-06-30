@@ -66,4 +66,47 @@ def test_discover_excel_sources_prefers_complete_uploaded_multiyear_bundle(tmp_p
 
     assert [source.path.name for source in sources] == filenames
     assert [str(source.tahun_input) for source in sources] == ["2025", "2025", "2024", "2023", "2023"]
-    assert [source.periode for source in sources] == [None, None, None, "Jan-Jun", "Jul-Des"]
+    assert [source.periode for source in sources] == ["Tahunan", "Tahunan", "Tahunan", "Jan-Jun", "Jul-Des"]
+
+
+def test_discover_excel_sources_prefers_active_upload_over_old_bundle(tmp_path, monkeypatch):
+    raw_root = tmp_path / "data" / "raw" / "excel_lakehouse"
+    old_bundle = raw_root / "old-session" / "old-run"
+    old_bundle.mkdir(parents=True)
+    for filename in [
+        "RAB 2025 SD RAB IKU.xlsx",
+        "Nomenklatur.xlsx",
+        "Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+    ]:
+        (old_bundle / filename).write_bytes(b"placeholder")
+    active_file = raw_root / "2024" / "active-dataset" / "Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx"
+    active_file.parent.mkdir(parents=True)
+    active_file.write_bytes(b"placeholder")
+    active_pointer = tmp_path / "outputs" / "reports" / "active_excel_lakehouse_dataset.json"
+    active_pointer.parent.mkdir(parents=True)
+    active_pointer.write_text(
+        '{"prodi":"Sains Data","tahun_input":"2024","files":[{"path":"data/raw/excel_lakehouse/2024/active-dataset/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx","jenis_dataset":"rab"}]}',
+        encoding="utf-8",
+    )
+    monkeypatch.delenv("FINANCE_EXCEL_FILES", raising=False)
+    monkeypatch.setattr(excel_lakehouse_pipeline, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(excel_lakehouse_pipeline, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(excel_lakehouse_pipeline, "active_dataset_pointer", lambda: {"session_id": "test-session"})
+    monkeypatch.setattr(excel_lakehouse_pipeline, "active_period_metadata", lambda: {"target_tahun_anggaran": "2025", "target_prodi": "Sains Data"})
+    monkeypatch.setattr(excel_lakehouse_pipeline, "raw_rab_path", lambda: tmp_path / "missing.xlsx")
+
+    sources = excel_lakehouse_pipeline.discover_excel_sources()
+
+    assert [source.path.name for source in sources] == ["Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx"]
+    assert str(sources[0].tahun_input) == "2024"
+
+
+def test_2025_parser_excludes_template_example_sheets():
+    if not FILES[0].exists():
+        pytest.skip("sample workbook not available")
+
+    items, _, _ = excel_lakehouse_pipeline.parse_rab_workbook(ExcelSource(path=FILES[0], tahun_input=2025, prodi="Sains Data", jenis_dataset="rab"))
+
+    assert not items["source_sheet"].str.lower().str.startswith("contoh").any()

@@ -8,6 +8,7 @@ from .services.activity import append_activity, read_activities
 from .services.files import csv_preview, read_json, relative_path, resolve_preview_file
 from .services.excel_lakehouse import excel_lakehouse_status
 from .services.excel_upload import commit_excel_lakehouse_dataset
+from .services.iku_review import iku_review_queue, mapping_review_queue, save_iku_override
 from .services.lakehouse import lakehouse_summary
 from .services.metrics import metrics_payload
 from .services.paths import OUTPUTS_DIR, PORTAL_DIR
@@ -19,12 +20,13 @@ from src.status.system_truth_status import build_system_truth_status
 
 def create_app() -> Flask:
     app = Flask(__name__, static_folder=str(PORTAL_DIR), static_url_path="")
-    app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024
+    max_upload_mb = int(os.getenv("PORTAL_MAX_UPLOAD_MB", "100"))
+    app.config["MAX_CONTENT_LENGTH"] = max_upload_mb * 1024 * 1024
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     @app.errorhandler(413)
     def too_large(_error):
-        return jsonify({"status": "failed", "message": "Ukuran file melebihi batas 25 MB."}), 413
+        return jsonify({"status": "failed", "message": f"Ukuran file melebihi batas {max_upload_mb} MB."}), 413
 
     @app.get("/")
     def index():
@@ -186,6 +188,21 @@ def create_app() -> Flask:
     def data_quality_run(run_id: str):
         payload = read_json(OUTPUTS_DIR / "reports" / "pipeline_count_validation.json")
         return jsonify(payload or {"run_id": run_id, "status": "missing"})
+
+    @app.get("/api/iku-review/queue")
+    def iku_review_queue_endpoint():
+        return jsonify(iku_review_queue(limit=request.args.get("limit", 100, type=int)))
+
+    @app.get("/api/mapping-review/queue")
+    def mapping_review_queue_endpoint():
+        return jsonify(mapping_review_queue(limit=request.args.get("limit", 100, type=int)))
+
+    @app.post("/api/iku-review/override")
+    def iku_review_override_endpoint():
+        try:
+            return jsonify(save_iku_override(request.get_json(silent=True) or {}))
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
 
     @app.get("/api/dashboard/links/<run_id>")
     def dashboard_links_run(run_id: str):

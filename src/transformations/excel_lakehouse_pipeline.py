@@ -96,7 +96,7 @@ def _discover_uploaded_multiyear_bundle() -> list[Path]:
     for directory in raw_root.rglob("*"):
         if not directory.is_dir():
             continue
-        if any(part.lower() in {"test-session", "dummy-session"} for part in directory.parts):
+        if any(part.lower() in {"test-session", "synthetic-session"} for part in directory.parts):
             continue
         files_by_kind: dict[str, Path] = {}
         for path in sorted(directory.iterdir()):
@@ -135,10 +135,6 @@ def discover_excel_sources() -> list[ExcelSource]:
     if env_paths:
         return [_excel_source(path, prodi, tahun_input=tahun_input) for path in paths if _resolve_repo_path(path).exists()]
 
-    uploaded_bundle = _discover_uploaded_multiyear_bundle()
-    if uploaded_bundle:
-        return [_excel_source(path, prodi, tahun_input=tahun_input) for path in uploaded_bundle]
-
     if isinstance(excel_pointer.get("files"), list):
         paths.extend(Path(str(item.get("path") or item)) for item in excel_pointer["files"])
         pointer_paths = [_resolve_repo_path(path) for path in paths]
@@ -155,6 +151,10 @@ def discover_excel_sources() -> list[ExcelSource]:
         ]
         if pointer_sources:
             return pointer_sources
+
+    uploaded_bundle = _discover_uploaded_multiyear_bundle()
+    if uploaded_bundle:
+        return [_excel_source(path, prodi, tahun_input=tahun_input) for path in uploaded_bundle]
     active_excel = pointer.get("active_excel")
     if active_excel:
         paths.append(Path(active_excel))

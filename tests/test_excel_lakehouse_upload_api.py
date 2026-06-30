@@ -46,4 +46,8 @@ def test_excel_lakehouse_upload_accepts_multi_file_excel_only(tmp_path, monkeypa
     assert payload["status"] == "committed"
     assert payload["excel_only"] is True
     assert len(payload["files"]) == 2
+    assert payload["upload_scope"] == "single_year"
+    assert payload["detected_years"] == ["2025"]
+    assert payload["has_nomenklatur"] is False
+    assert payload["warnings"]
     assert excel_upload.ACTIVE_EXCEL_DATASET_PATH.exists()

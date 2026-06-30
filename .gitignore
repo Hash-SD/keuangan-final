@@ -10,12 +10,7 @@ dist/
 build/
 *.egg-info/
 data/generated/
-data/raw/pdf/*.pdf
-data/raw/csv/*.csv
-data/raw/excel/*.xlsx
-data/raw/pdf/**/*.pdf
-data/raw/csv/**/*.csv
-data/raw/excel/**/*.xlsx
+data/raw/excel_lakehouse/**/*.xlsx
 data/uploads/staging/
 data/quarantine/
 outputs/metrics/*.json
@@ -31,4 +26,3 @@ config/spark/jars/*.jar
 # IDE and Editor folders
 .agents/
 .windsurf/
-

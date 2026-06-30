@@ -1,5 +1,5 @@
 {
-  "run_id": "0b63978c-0fba-4e54-9072-993aff88dad9",
+  "run_id": "9d6a7a7a-47c1-4a34-9e4b-14465aacaf42",
   "dataset_session_id": "upload-2026-06-09-011818-37cc4d",
   "source_files": [
     "C:\\Users\\hm\\keuangan-final\\data\\raw\\excel_lakehouse\\upload-2026-06-09-011818-37cc4d\\239ab80c-8350-4b03-8943-f5308ed3b595\\RAB 2025 SD RAB IKU.xlsx",
@@ -16,7 +16,7 @@
       "filename": "RAB 2025 SD RAB IKU.xlsx",
       "jenis_dataset": "rab",
       "tahun_input": "2025",
-      "periode": null,
+      "periode": "Tahunan",
       "prodi": "Sains Data",
       "size_bytes": 849126
     },
@@ -27,7 +27,7 @@
       "filename": "Nomenklatur.xlsx",
       "jenis_dataset": "nomenklatur",
       "tahun_input": "2025",
-      "periode": null,
+      "periode": "Tahunan",
       "prodi": "Sains Data",
       "size_bytes": 91281
     },
@@ -38,7 +38,7 @@
       "filename": "Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
       "jenis_dataset": "rab",
       "tahun_input": "2024",
-      "periode": null,
+      "periode": "Tahunan",
       "prodi": "Sains Data",
       "size_bytes": 403043
     },
@@ -66,9 +66,9 @@
     }
   ],
   "bronze_cells": 55340,
-  "silver_rab_items": 445,
+  "silver_rab_items": 375,
   "silver_nomenklatur_detail": 248,
-  "fact_anggaran_rows": 502,
+  "fact_anggaran_rows": 1010,
   "outputs": {
     "bronze_excel_cells.csv": {
       "csv": "C:\\Users\\hm\\keuangan-final\\data\\generated\\bronze\\bronze_excel_cells.csv",

@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
+import re
 
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
@@ -24,6 +25,32 @@ def _kind(filename: str, explicit: str | None = None) -> str:
     if explicit in {"rab", "rpd", "iku", "nomenklatur"}:
         return explicit
     return "nomenklatur" if "nomenklatur" in filename.lower() else "rab"
+
+
+def _detect_year(filename: str, fallback: str | None) -> str | None:
+    match = re.search(r"\b(20\d{2})\b", filename)
+    return match.group(1) if match else fallback
+
+
+def _upload_scope(saved: list[dict[str, Any]], tahun_input: str | None) -> dict[str, Any]:
+    years = sorted({year for item in saved if (year := _detect_year(str(item["filename"]), tahun_input))})
+    kinds = {str(item.get("jenis_dataset") or "") for item in saved}
+    has_nomenklatur = "nomenklatur" in kinds
+    has_2025_like = any("2025" in str(item["filename"]) or _detect_year(str(item["filename"]), tahun_input) == "2025" for item in saved)
+    warnings: list[str] = []
+    if not has_nomenklatur:
+        warnings.append("Nomenklatur belum diunggah; mapping IKU dapat berstatus perlu review.")
+    if len(years) > 1 and not has_2025_like:
+        warnings.append("Upload multi-tahun sebaiknya menyertakan workbook 2025-like sebagai acuan format.")
+    if not years:
+        warnings.append("Tahun tidak terdeteksi dari metadata atau nama file.")
+    return {
+        "upload_scope": "multi_year_bundle" if len(years) > 1 else "single_year",
+        "detected_years": years,
+        "has_nomenklatur": has_nomenklatur,
+        "has_2025_like_template": has_2025_like,
+        "warnings": warnings,
+    }
 
 
 def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
@@ -61,6 +88,7 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
                 "jenis_dataset": _kind(filename, jenis_dataset),
             }
         )
+    scope = _upload_scope(saved, tahun_input or None)
 
     dataset = {
         "dataset_id": dataset_id,
@@ -72,6 +100,7 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
         "fakultas": fakultas,
         "jenis_dataset": jenis_dataset,
         "catatan": catatan,
+        **scope,
         "files": saved,
         "created_at": utc_now_iso(),
     }

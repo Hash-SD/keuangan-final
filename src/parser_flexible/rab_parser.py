@@ -207,6 +207,8 @@ def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame,
 
     for ws in wb.worksheets:
         sheet_lower = ws.title.lower()
+        if sheet_lower.startswith("contoh"):
+            continue
         if "master" in sheet_lower or "ket_akun" in sheet_lower:
             continue
         current = {

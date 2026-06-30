@@ -1339,6 +1339,7 @@
       rejectedRows: [],
       goldPreview: [],
       silverPreview: [],
+      ikuReview: null,
       lastAction: null,
       isUserEditing: false,
       isUploading: false,
@@ -1506,12 +1507,12 @@
       const totalRows = q.total_rows ?? null;
       const rejectedRows = q.rejected_rows ?? null;
       const validRows = q.valid_rows ?? null;
-      const dropoutRate = q.dropout_rate ?? null;
+      const rejectionRate = q.rejection_rate ?? null;
       return {
         totalRows,
         validRows,
         rejectedRows,
-        dropoutRate,
+        rejectionRate,
         available: q.status === "validated",
         status: q.status || "missing"
       };
@@ -1572,6 +1573,10 @@
       return { label: "Siap mulai", note: "Upload file Excel lalu jalankan sistem.", type: "info", completed };
     }
 
+    function defaultDashboardUrl() {
+      return state.dashboardLinks?.dashboard_url || state.truth?.dashboard?.dashboard_url || CONTROL.dashboardUrl;
+    }
+
     function resultCardsHtml() {
       const counts = state.excelLakehouse?.counts || {};
       const fact = state.excelLakehouse?.fact_anggaran || {};
@@ -1589,7 +1594,7 @@
 
     function guidedUploadPanel() {
       const status = workflowPrimaryStatus();
-      const dashboard = state.truth?.dashboard || {};
+      const dashboardUrl = defaultDashboardUrl();
       return `<section class="guide-hero">
         <div class="guide-card">
           <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;">
@@ -1615,7 +1620,7 @@
             <div class="guided-actions">
               <button class="guide-primary" type="submit"><span class="material-symbols-outlined" style="font-size:20px;">cloud_upload</span>1. Upload Data</button>
               <button class="guide-primary" type="button" id="runExcelLakehouse"><span class="material-symbols-outlined" style="font-size:20px;">play_arrow</span>2. Jalankan Sistem</button>
-              <a class="guide-secondary" href="${safe(dashboard.dashboard_url || CONTROL.dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Cek Dashboard</a>
+              <a class="guide-secondary" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Cek Dashboard</a>
             </div>
           </form>
         </div>
@@ -1770,7 +1775,7 @@
     function sourceStatusCard(title, payload, icon, note) {
       const status = payload?.available === true ? "ready" : payload?.status || (payload ? "missing" : "missing");
       const isReady = status === "ready" || payload?.available === true;
-      const fallbackPath = String(note || "").startsWith("data/") ? note : runtimeTarget().paths?.raw_rab || "data/raw/excel/rab_prodi_sains_data.xlsx";
+      const fallbackPath = String(note || "").startsWith("data/") ? note : runtimeTarget().paths?.raw_rab || "data/raw/excel_lakehouse";
       const detail = payload?.path || payload?.local_path || fallbackPath;
       return `<article class="glass-card location-card">
         <div class="location-card-head">
@@ -1792,6 +1797,18 @@
     function renderDashboard() {
       const dashStatus = state.truth?.dashboard?.status || state.dashboardStatus;
       const dashType = statusType(dashStatus);
+      const dashboardLinks = state.dashboardLinks?.dashboard_urls_by_year || {};
+      const dashboardUrl = defaultDashboardUrl();
+      const orderedDashboardLinks = Object.entries(dashboardLinks)
+        .sort(([left], [right]) => left === "Semua" ? -1 : right === "Semua" ? 1 : String(left).localeCompare(String(right)));
+      const quickLinks = orderedDashboardLinks.length
+        ? orderedDashboardLinks.map(([label, url]) => `
+            <a class="secondary-button" href="${safe(url)}" target="_blank" rel="noreferrer">
+              <span class="material-symbols-outlined" style="font-size:18px;">filter_alt</span>${safe(label === "Semua" ? "Semua Tahun" : label)}
+            </a>`).join("")
+        : `<a class="secondary-button" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer">
+            <span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Semua Tahun
+          </a>`;
       document.getElementById("page-dashboard").innerHTML = `
         <div class="section-grid" style="gap:1.5rem;">
           <section class="guide-card">
@@ -1800,7 +1817,7 @@
                 <h3 class="guide-title">Ringkasan hasil yang siap dibaca di dashboard</h3>
                 <p class="guide-copy">Halaman ini hanya menampilkan metrik yang relevan untuk Excel Lakehouse RAB/IKU: total anggaran, item Gold, nomenklatur, kualitas mapping, dan link Superset.</p>
               </div>
-              <a class="guide-primary" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Buka Superset</a>
+              <a class="guide-primary" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Buka Superset Semua Tahun</a>
             </div>
           </section>
           <section class="result-grid">
@@ -1809,6 +1826,16 @@
           <section class="glass-panel w-full">
             <h3 class="section-title">Perjalanan Data</h3>
             <div class="journey-steps">${journeyStepsHtml()}</div>
+          </section>
+          <section class="glass-panel w-full">
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+              <div>
+                <h3 class="section-title" style="margin-bottom:.35rem;">Review IKU</h3>
+                <p class="small muted" style="margin:0;">Item hasil auto-mapping yang masih perlu dicek dapat dikoreksi di sini. Simpan override, lalu jalankan pipeline ulang agar masuk ke Gold dan Superset.</p>
+              </div>
+              ${badge(`${n(state.ikuReview?.summary?.total_review || 0)} item review`, (state.ikuReview?.summary?.literal_iku_review_rows_in_gold || 0) ? "warning" : "ok")}
+            </div>
+            ${ikuReviewPanel()}
           </section>
           <section class="section-grid dashboard-flow-grid w-full">
             <div class="glass-panel" style="display:flex; flex-direction:column; height:100%;">
@@ -1829,9 +1856,54 @@
                 </dl>
               </div>
               <div class="divider"></div>
-              <a class="primary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>Buka Superset Dashboard</a>
+              <div class="upload-actions" style="margin:0;">
+                ${quickLinks}
+              </div>
             </div>
           </section>
+        </div>`;
+    }
+
+    function ikuReviewPanel() {
+      const review = state.ikuReview;
+      if (!review) return emptyState("Antrean review IKU belum dimuat.", "Refresh halaman Dashboard BI untuk mengambil data review terbaru.");
+      const rows = review.rows || [];
+      const options = review.iku_options || [];
+      if (!rows.length) return emptyState("Tidak ada item review IKU.", "Gold tidak berisi IKU_REVIEW_REQUIRED. Item suggested review akan muncul di sini jika ada.");
+      const optionHtml = options.map(opt => {
+        const label = `${safe(opt.iku_raw)} - ${safe(opt.detail_kegiatan)}`;
+        const value = JSON.stringify({
+          iku_codes: opt.iku_raw,
+          detail_id: opt.detail_id,
+          detail_kegiatan: opt.detail_kegiatan,
+          nomenklatur_path: opt.nomenklatur_path
+        }).replace(/"/g, "&quot;");
+        return `<option value="${value}">${safe(label)}</option>`;
+      }).join("");
+      return `
+        <div class="table-wrap table-preview" style="margin-top:1rem;">
+          <table>
+            <thead>
+              <tr><th>Item</th><th>Kegiatan</th><th>Nilai</th><th>Saran IKU</th><th>Ubah IKU</th><th>Aksi</th></tr>
+            </thead>
+            <tbody>
+              ${rows.slice(0, 20).map(row => `
+                <tr>
+                  <td><strong>${safe(row.source_sheet)}:${safe(row.source_row)}</strong><br><span class="small muted">${safe(row.item_id)}</span></td>
+                  <td>${safe(row.kegiatan)}<br><span class="small muted">${safe(row.uraian_detail)}</span></td>
+                  <td>${rupiah(row.jumlah)}</td>
+                  <td>${safe(row.kode_iku)}<br><span class="small muted">${safe(row.nama_iku)}</span></td>
+                  <td>
+                    <select class="input iku-review-select" data-item-id="${safe(row.item_id)}">
+                      <option value="">Pilih dari Nomenklatur</option>
+                      ${optionHtml}
+                    </select>
+                  </td>
+                  <td><button type="button" class="secondary-button iku-review-save" data-item-id="${safe(row.item_id)}"><span class="material-symbols-outlined" style="font-size:16px;">save</span>Simpan</button></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
         </div>`;
     }
 
@@ -1896,7 +1968,7 @@
       const status = state.excelLakehouse || {};
       const summary = status.pipeline_summary || status.metadata || {};
       const artifacts = status.artifacts || {};
-      const dashboard = state.truth?.dashboard || {};
+      const dashboardUrl = defaultDashboardUrl();
       return `<section class="glass-panel w-full upload-workbench">
         <div class="upload-workbench-head">
           <div class="upload-title-row">
@@ -1919,7 +1991,7 @@
           <div class="upload-actions">
             <button class="primary-button" type="submit"><span class="material-symbols-outlined" style="font-size:18px;">cloud_upload</span>Upload Dataset Excel</button>
             <button class="secondary-button" type="button" id="runExcelLakehouse"><span class="material-symbols-outlined" style="font-size:18px;">play_arrow</span>Run Pipeline Excel</button>
-            <a class="secondary-button" href="${safe(dashboard.dashboard_url || CONTROL.dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Superset Dashboard</a>
+            <a class="secondary-button" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Superset Dashboard</a>
           </div>
         </form>
         <div class="upload-metrics-grid">
@@ -2112,6 +2184,7 @@
       const officialUat = state.metrics.uat || {};
       const officialMatrix = officialUat.status === "completed" ? (state.metrics.uatMatrix?.items || []) : [];
       const distColors = ["#10b981","#0ea5e9","#f59e0b","#f97316","#ef4444"];
+      const dashboardUrl = defaultDashboardUrl();
 
       const dashboardSection = stats ? `
         <div class="uat-dashboard-grid">
@@ -2178,7 +2251,7 @@
             </div>
             <p class="muted" style="font-size:0.9rem; line-height:1.5; margin-top:0.5rem;">Dashboard analitik anggaran IKU Prodi dinyatakan tersedia jika dataset fact_anggaran, chart, dashboard, dan layanan Superset tervalidasi.</p>
             <div class="divider"></div>
-            <a class="primary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span> Buka Superset Dashboard</a>
+            <a class="primary-button" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span> Buka Superset Semua Tahun</a>
           </div>
 
           <div class="uat-card">
@@ -2286,6 +2359,7 @@
         { name: "SILARAS SD", role: "Portal Lokal", key: "portal", hostPort: "8090", containerPort: "8090", url: "http://localhost:8090", cred: "-", action: "Buka Web UI" }
       ];
       const source = state.sourceStatus || {};
+      const dashboardUrl = defaultDashboardUrl();
       
       const serviceRows = services.map(service => {
         const online = state.services[service.key];
@@ -2302,7 +2376,7 @@
               <div style="display: flex; gap: .5rem; justify-content: flex-end;">
                 <button type="button" class="secondary-button" style="min-height:32px; padding: 0.25rem 0.65rem; font-size:0.78rem;" data-copy="${copyValue}"><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">content_copy</span> Copy</button>
                 ${service.copy ? "" : `<a class="primary-button" style="min-height:32px; padding: 0.25rem 0.75rem; font-size:0.78rem;" href="${service.url}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">open_in_new</span> Buka</a>`}
-                ${service.name === "Superset" ? `<a class="secondary-button" style="min-height:32px; padding: 0.25rem 0.75rem; font-size:0.78rem;" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">dashboard</span> Dashboard</a>` : ""}
+                ${service.name === "Superset" ? `<a class="secondary-button" style="min-height:32px; padding: 0.25rem 0.75rem; font-size:0.78rem;" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:14px; vertical-align:middle;">dashboard</span> Dashboard</a>` : ""}
               </div>
             </td>
           </tr>
@@ -2452,7 +2526,7 @@
         </dl>
         <div class="card-actions">
           ${service.copy ? `<button type="button" class="secondary-button" data-copy="${service.copy}"><span class="material-symbols-outlined">content_copy</span>${service.action}</button>` : `<a class="primary-button" href="${service.openUrl || service.url}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined">open_in_new</span>${service.action}</a>`}
-          ${service.name === "Superset" ? `<a class="secondary-button" href="${CONTROL.dashboardUrl}" target="_blank" rel="noreferrer">Dashboard</a>` : ""}
+          ${service.name === "Superset" ? `<a class="secondary-button" href="${safe(defaultDashboardUrl())}" target="_blank" rel="noreferrer">Dashboard</a>` : ""}
         </div>
       </article>`;
     }
@@ -2502,6 +2576,7 @@
       bindRuntimeContextControls();
       bindExcelLakehouseControls();
       bindPipelineButtons();
+      bindIkuReviewControls();
       bindUatSubmit();
     }
 
@@ -2802,6 +2877,35 @@
       });
     }
 
+    function bindIkuReviewControls() {
+      document.querySelectorAll(".iku-review-save").forEach(button => {
+        if (button.dataset.bound) return;
+        button.dataset.bound = "true";
+        button.addEventListener("click", async () => {
+          const itemId = button.dataset.itemId;
+          const select = document.querySelector(`.iku-review-select[data-item-id="${CSS.escape(itemId)}"]`);
+          if (!select || !select.value) {
+            showToast("Pilih IKU terlebih dahulu.");
+            return;
+          }
+          const old = button.innerHTML;
+          button.disabled = true;
+          button.textContent = "Saving...";
+          try {
+            const payload = JSON.parse(select.value);
+            await apiPost("/api/iku-review/override", { item_id: itemId, ...payload });
+            showToast("Override IKU tersimpan. Jalankan pipeline ulang untuk menerapkan.");
+            state.ikuReview = await apiGet("/api/iku-review/queue?limit=100").catch(() => state.ikuReview);
+            renderActivePage();
+          } catch (error) {
+            showToast(error.message || "Gagal menyimpan override IKU.");
+            button.disabled = false;
+            button.innerHTML = old;
+          }
+        });
+      });
+    }
+
     function bindUatSubmit() {
       const button = document.getElementById("uatSubmit");
       if (!button) return;
@@ -2825,7 +2929,7 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, runtimeConfig, truth, excelLakehouse] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, runtimeConfig, truth, excelLakehouse, dashboardLinks, ikuReview] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -2836,7 +2940,9 @@
           apiGet("/api/data/source-status").catch(() => null),
           apiGet("/api/runtime-config").catch(() => null),
           apiGet("/api/system-truth/status").catch(() => null),
-          apiGet("/api/excel-lakehouse/status").catch(() => null)
+          apiGet("/api/excel-lakehouse/status").catch(() => null),
+          apiGet("/api/dashboard/links/current").catch(() => null),
+          apiGet("/api/iku-review/queue?limit=100").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
         state.truth = truth || metrics.raw?.truth || lakehouse.truth || null;
@@ -2876,11 +2982,14 @@
         state.scenarios = [];
         state.uploadSession = null;
         state.excelLakehouse = excelLakehouse;
+        state.dashboardLinks = dashboardLinks;
+        state.ikuReview = ikuReview;
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });
           if (!response.ok) throw new Error("Fallback API unavailable");
           Object.assign(state, await response.json());
+          state.dashboardLinks = await apiGet("/api/dashboard/links/current").catch(() => state.dashboardLinks || null);
         } catch {
           state.metrics = {};
           state.lakehouse = null;
@@ -2888,6 +2997,7 @@
           state.truth = null;
           state.layers = { bronzeReady: false, silverReady: false, goldReady: false, goldValid: false };
           state.services = { portal: true, airflow: false, superset: false, minioConsole: false, minioApi: false, sparkMaster: false, sparkWorker: false, trino: false, postgres: false };
+          state.dashboardLinks = await apiGet("/api/dashboard/links/current").catch(() => state.dashboardLinks || null);
         }
       }
       renderAll();

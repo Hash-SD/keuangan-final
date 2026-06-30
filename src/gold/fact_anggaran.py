@@ -4,9 +4,6 @@ import re
 
 import pandas as pd
 
-from src.transformations.budget_cleaning import REVIEW_IKU_LABEL
-
-
 FACT_COLUMNS = [
     "item_id",
     "run_id",
@@ -19,6 +16,7 @@ FACT_COLUMNS = [
     "akun",
     "kode_akun",
     "nama_akun",
+    "nama_akun_asli",
     "iku",
     "kode_iku",
     "nama_iku",
@@ -37,6 +35,8 @@ FACT_COLUMNS = [
     "source_row",
     "created_at",
 ]
+
+UNCLASSIFIED_IKU_LABEL = "IKU belum terklasifikasi"
 
 
 def _split_iku(value: object) -> list[str]:
@@ -62,7 +62,7 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
             iku_values = [None]
         weight = 1 / len(iku_values)
         for iku in iku_values:
-            iku_label = iku or REVIEW_IKU_LABEL
+            iku_label = iku or UNCLASSIFIED_IKU_LABEL
             rows.append(
                 {
                     "item_id": item.get("item_id"),
@@ -76,9 +76,10 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
                     "akun": item.get("akun") or item.get("nama_akun"),
                     "kode_akun": item.get("kode_akun"),
                     "nama_akun": item.get("nama_akun"),
+                    "nama_akun_asli": item.get("nama_akun_asli"),
                     "iku": iku_label,
-                    "kode_iku": iku,
-                    "nama_iku": item.get("nama_iku"),
+                    "kode_iku": iku or UNCLASSIFIED_IKU_LABEL,
+                    "nama_iku": item.get("nama_iku") or iku_label,
                     "nomenklatur_path": item.get("nomenklatur_path"),
                     "uraian_detail": item.get("uraian_detail"),
                     "qty": item.get("qty"),

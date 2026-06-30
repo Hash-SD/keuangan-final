@@ -5,12 +5,12 @@ Status: `validated`
 ## Counts
 
 - `bronze_cells`: `55340`
-- `silver_rab_candidate_rows`: `445`
-- `silver_rab_items_flexible`: `445`
+- `silver_rab_candidate_rows`: `375`
+- `silver_rab_items_flexible`: `375`
 - `silver_nomenklatur_detail`: `248`
-- `fact_anggaran_rows`: `445`
-- `fact_unique_item_ids`: `445`
-- `fact_unique_item_iku_rows`: `445`
+- `fact_anggaran_rows`: `1010`
+- `fact_unique_item_ids`: `353`
+- `fact_unique_item_iku_rows`: `1010`
 
 ## Definitions
 

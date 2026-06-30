@@ -51,9 +51,23 @@ def normalize_money(value: object) -> float | None:
     if not text or text in {"-", ".", ","}:
         return None
     if "," in text and "." in text:
-        text = text.replace(".", "").replace(",", ".")
+        separators = [idx for idx, char in enumerate(text) if char in ",."]
+        decimal_separator = text[separators[-1]] if len(text) - separators[-1] - 1 != 3 else None
+        if decimal_separator:
+            thousands_separator = "." if decimal_separator == "," else ","
+            text = text.replace(thousands_separator, "").replace(decimal_separator, ".")
+        else:
+            text = text.replace(",", "").replace(".", "")
     elif "," in text:
-        text = text.replace(",", ".")
+        parts = text.split(",")
+        if len(parts) > 1 and all(len(part) == 3 for part in parts[1:]):
+            text = "".join(parts)
+        else:
+            text = text.replace(",", ".")
+    elif "." in text:
+        parts = text.split(".")
+        if len(parts) > 1 and all(len(part) == 3 for part in parts[1:]):
+            text = "".join(parts)
     try:
         return float(text)
     except ValueError:

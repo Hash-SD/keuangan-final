@@ -10,7 +10,7 @@ import requests
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
-from src.common.paths import OUTPUTS_DIR
+from src.common.paths import GENERATED_DIR, OUTPUTS_DIR
 
 
 BASE_URL = os.getenv("SUPERSET_BASE_URL", "http://localhost:8089")
@@ -109,7 +109,14 @@ def _metric(label: str, aggregate: str, column: str) -> dict:
 
 
 def _chart_payload(dataset_id: int, name: str, viz_type: str, form_data: dict, query: dict) -> dict:
-    form_data = {"datasource": f"{dataset_id}__table", "viz_type": viz_type, "row_limit": 10000, "adhoc_filters": [], **form_data}
+    form_data = {
+        "datasource": f"{dataset_id}__table",
+        "viz_type": viz_type,
+        "row_limit": 10000,
+        "adhoc_filters": [],
+        "time_range": "No filter",
+        **form_data,
+    }
     query = {"filters": [], "extras": {"having": "", "where": ""}, "applied_time_extras": {}, "annotation_layers": [], "row_limit": 10000, "series_limit": 0, **query}
     return {
         "slice_name": name,
@@ -147,26 +154,69 @@ def _position_json(chart_ids: list[int]) -> dict:
     return layout
 
 
-def _native_filters(dataset_id: int) -> list[dict]:
-    def nf(filter_id: str, label: str, column: str) -> dict:
+def _filter_values(column: str) -> list:
+    import pandas as pd
+
+    fact_path = GENERATED_DIR / "gold" / "fact_anggaran.parquet"
+    if not fact_path.exists():
+        return []
+    frame = pd.read_parquet(fact_path, columns=[column])
+    values = frame[column].dropna().drop_duplicates().tolist()
+    return sorted(values, key=lambda value: str(value))
+
+
+def _default_filter_mask(column: str, values: list) -> dict:
+    if not values:
+        return {"extraFormData": {}, "filterState": {}, "ownState": {}}
+    return {
+        "extraFormData": {
+            "adhoc_filters": [
+                {
+                    "clause": "WHERE",
+                    "comparator": values,
+                    "expressionType": "SIMPLE",
+                    "operator": "IN",
+                    "subject": column,
+                }
+            ]
+        },
+        "filterState": {"value": values, "label": "Semua"},
+        "ownState": {},
+    }
+
+
+def _native_filters(dataset_id: int, chart_ids: list[int]) -> list[dict]:
+    def nf(filter_id: str, label: str, column: str, multi_select: bool = True) -> dict:
+        empty_mask = {"extraFormData": {"filters": []}, "filterState": {"value": None}, "ownState": {}}
         return {
             "id": filter_id,
             "name": label,
             "filterType": "filter_select",
+            "datasetId": dataset_id,
+            "groupby": column,
+            "adhoc_filters": [],
+            "time_range": "No filter",
             "targets": [{"datasetId": dataset_id, "column": {"name": column}}],
-            "defaultDataMask": {"extraFormData": {}, "filterState": {"value": None}},
+            "defaultDataMask": empty_mask,
             "cascadeParentIds": [],
             "scope": {"rootPath": ["ROOT_ID"], "excluded": []},
+            "chartsInScope": chart_ids,
             "type": "NATIVE_FILTER",
-            "controlValues": {"enableEmptyFilter": True, "multiSelect": True, "searchAllOptions": True},
+            "controlValues": {
+                "enableEmptyFilter": False,
+                "multiSelect": multi_select,
+                "searchAllOptions": True,
+                "defaultToFirstItem": False,
+                "inverseSelection": False,
+            },
         }
     return [
-        nf("filter_tahun", "Tahun", "tahun"),
-        nf("filter_prodi", "Prodi", "prodi"),
-        nf("filter_iku", "IKU", "kode_iku"),
-        nf("filter_kegiatan", "Kegiatan", "kegiatan"),
-        nf("filter_akun", "Akun", "akun"),
-        nf("filter_quality", "Data Quality", "data_quality_flag"),
+        nf("NATIVE_FILTER-tahun", "Tahun", "tahun"),
+        nf("NATIVE_FILTER-prodi", "Prodi", "prodi"),
+        nf("NATIVE_FILTER-iku", "IKU", "iku"),
+        nf("NATIVE_FILTER-kegiatan", "Kegiatan", "kegiatan"),
+        nf("NATIVE_FILTER-akun", "Akun", "akun"),
+        nf("NATIVE_FILTER-quality", "Data Quality", "data_quality_flag"),
     ]
 
 
@@ -177,7 +227,16 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
         "dashboard_title": DASHBOARD_TITLE,
         "slug": DASHBOARD_SLUG,
         "published": True,
-        "json_metadata": json.dumps({"native_filter_configuration": _native_filters(dataset_id), "color_namespace": "superset", "color_scheme": "supersetColors"}),
+        "json_metadata": json.dumps({
+            "native_filter_configuration": _native_filters(dataset_id, chart_ids),
+            "color_namespace": "superset",
+            "color_scheme": "supersetColors",
+            "show_native_filters": True,
+            "label_colors": {},
+            "timed_refresh_immune_slices": [],
+            "filter_scopes": {},
+            "chart_configuration": {str(chart_id): {"id": chart_id, "crossFilters": {"scope": "global", "chartsInScope": chart_ids}} for chart_id in chart_ids},
+        }),
         "position_json": json.dumps(_position_json(chart_ids)),
     }
     matches = [item for item in _get_items(session, "dashboard") if item.get("slug") == DASHBOARD_SLUG or item.get("dashboard_title") == DASHBOARD_TITLE]
@@ -195,6 +254,66 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
     return dashboard_id
 
 
+def _filter_state(column: str, value: str) -> dict:
+    return {
+        "extraFormData": {
+            "adhoc_filters": [
+                {
+                    "clause": "WHERE",
+                    "comparator": [value],
+                    "expressionType": "SIMPLE",
+                    "operator": "IN",
+                    "subject": column,
+                }
+            ]
+        },
+        "filterState": {"value": [value], "label": value},
+        "ownState": {},
+    }
+
+
+def _create_year_permalinks(session: requests.Session, dashboard_id: int) -> dict[str, str]:
+    filter_ids = [
+        "NATIVE_FILTER-tahun",
+        "NATIVE_FILTER-prodi",
+        "NATIVE_FILTER-iku",
+        "NATIVE_FILTER-kegiatan",
+        "NATIVE_FILTER-akun",
+        "NATIVE_FILTER-quality",
+    ]
+    all_years_payload = {
+        "dataMask": {filter_id: {"extraFormData": {"filters": []}, "filterState": {"value": None}, "ownState": {}} for filter_id in filter_ids},
+        "activeTabs": [],
+        "urlParams": [],
+        "anchor": None,
+    }
+    all_years_response = session.post(
+        f"{BASE_URL}/api/v1/dashboard/{dashboard_id}/permalink",
+        json=all_years_payload,
+        headers={"Origin": PUBLIC_BASE_URL},
+        timeout=60,
+    )
+    all_years_response.raise_for_status()
+    links: dict[str, str] = {"Semua": all_years_response.json()["url"]}
+    for year in _filter_values("tahun"):
+        value = str(year)
+        payload = {
+            "dataMask": {"NATIVE_FILTER-tahun": _filter_state("tahun", value)},
+            "activeTabs": [],
+            "urlParams": [],
+            "anchor": None,
+        }
+        response = session.post(
+            f"{BASE_URL}/api/v1/dashboard/{dashboard_id}/permalink",
+            json=payload,
+            headers={"Origin": PUBLIC_BASE_URL},
+            timeout=60,
+        )
+        response.raise_for_status()
+        links[value] = response.json()["url"]
+    return links
+
+
 def main() -> None:
     try:
         session = _login()
@@ -203,17 +322,18 @@ def main() -> None:
         total_anggaran = _metric("Total Anggaran", "SUM", "jumlah_weighted_iku")
         total_weighted = _metric("Total Weighted IKU", "SUM", "jumlah_weighted_iku")
         count_items = _metric("Jumlah Item", "COUNT_DISTINCT", "item_id")
-        count_iku = _metric("Jumlah IKU", "COUNT_DISTINCT", "kode_iku")
+        count_iku = _metric("Jumlah IKU", "COUNT_DISTINCT", "iku")
         count_kegiatan = _metric("Jumlah Kegiatan", "COUNT_DISTINCT", "kegiatan")
-        mapped_iku_filter = [{"col": "kode_iku", "op": "IS NOT NULL", "val": None}]
         chart_payloads = [
             _chart_payload(dataset_id, "Executive KPI - Total Anggaran", "big_number_total", {"metric": total_anggaran, "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": []}),
             _chart_payload(dataset_id, "Executive KPI - Total Weighted IKU", "big_number_total", {"metric": total_weighted, "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": []}),
             _chart_payload(dataset_id, "Executive KPI - Jumlah Item", "big_number_total", {"metric": count_items, "y_axis_format": ",d"}, {"metrics": [count_items], "columns": []}),
-            _chart_payload(dataset_id, "Executive KPI - Jumlah IKU", "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": [], "filters": mapped_iku_filter}),
+            _chart_payload(dataset_id, "Executive KPI - Jumlah IKU", "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": []}),
             _chart_payload(dataset_id, "Executive KPI - Jumlah Kegiatan", "big_number_total", {"metric": count_kegiatan, "y_axis_format": ",d"}, {"metrics": [count_kegiatan], "columns": []}),
-            _chart_payload(dataset_id, "Anggaran per IKU", "echarts_timeseries_bar", {"metrics": [total_weighted], "x_axis": "kode_iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": ["kode_iku"], "orderby": [[total_weighted, False]], "filters": mapped_iku_filter}),
-            _chart_payload(dataset_id, "Cluster Kegiatan", "treemap_v2", {"metric": total_anggaran, "groupby": ["kode_iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["kode_iku", "kegiatan"], "filters": mapped_iku_filter}),
+            _chart_payload(dataset_id, "Ringkasan per Tahun", "table", {"groupby": ["tahun"], "metrics": [total_anggaran, count_items], "page_length": 10}, {"metrics": [total_anggaran, count_items], "columns": ["tahun"], "orderby": [["tahun", True]], "row_limit": 10}),
+            _chart_payload(dataset_id, "Anggaran per Tahun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "tahun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["tahun"], "orderby": [["tahun", True]]}),
+            _chart_payload(dataset_id, "Anggaran per IKU", "echarts_timeseries_bar", {"metrics": [total_weighted], "x_axis": "iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": ["iku"], "orderby": [[total_weighted, False]]}),
+            _chart_payload(dataset_id, "Cluster Kegiatan", "treemap_v2", {"metric": total_anggaran, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["iku", "kegiatan"]}),
             _chart_payload(dataset_id, "Komposisi Akun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]], "row_limit": 25}),
             _chart_payload(dataset_id, "Anggaran per Akun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]]}),
             _chart_payload(dataset_id, "Mapping Quality", "pie", {"metric": count_items, "groupby": ["mapping_status"], "label_type": "key_percent"}, {"metrics": [count_items], "columns": ["mapping_status"]}),
@@ -222,6 +342,8 @@ def main() -> None:
         ]
         chart_ids = [_upsert_chart(session, payload) for payload in chart_payloads]
         dashboard_id = _upsert_dashboard(session, dataset_id, chart_ids)
+        dashboard_urls_by_year = _create_year_permalinks(session, dashboard_id)
+        default_dashboard_url = dashboard_urls_by_year.get("Semua") or f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/"
         result = {
             "status": "validated",
             "superset_api_status": "ready",
@@ -230,7 +352,10 @@ def main() -> None:
             "table_name": TABLE_NAME,
             "dashboard_id": dashboard_id,
             "dashboard_title": DASHBOARD_TITLE,
-            "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
+            "dashboard_url": default_dashboard_url,
+            "dashboard_canonical_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
+            "default_filter_state": "all_years",
+            "dashboard_urls_by_year": dashboard_urls_by_year,
             "chart_ids": chart_ids,
             "chart_count": len(chart_ids),
         }

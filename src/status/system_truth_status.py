@@ -142,7 +142,7 @@ def _quality_gate_status(base_dir: Path) -> dict[str, Any]:
             "total_rows": _value(None, "missing", None, "Validasi Excel belum tersedia."),
             "valid_rows": _value(None, "missing", None, "Validasi Excel belum tersedia."),
             "rejected_rows": _value(None, "missing", None, "Validasi Excel belum tersedia."),
-            "dropout_rate": _value(None, "missing", None, "Validasi Excel belum tersedia."),
+            "rejection_rate": _value(None, "missing", None, "Validasi Excel belum tersedia."),
             "quality_score": _value(None, "missing", None, "Validasi Excel belum tersedia."),
         }
     source = _rel(path if path.exists() else base_dir / "outputs" / "reports" / "pipeline_run_summary.json", base_dir)
@@ -155,14 +155,15 @@ def _quality_gate_status(base_dir: Path) -> dict[str, Any]:
         "total_rows": _value(rows, status, source, message),
         "valid_rows": _value(rows, status, source, message),
         "rejected_rows": _value(0, status, source, message),
-        "dropout_rate": _value(0, status, source, message),
+        "rejection_rate": _value(0, status, source, message),
         "quality_score": _value(100 if rows else None, status, source, message),
     }
 
 
 def _fact_anggaran_status(base_dir: Path) -> dict[str, Any]:
     path = base_dir / "data" / "generated" / "gold" / "fact_anggaran.parquet"
-    if not path.exists():
+    csv_path = path.with_suffix(".csv")
+    if not path.exists() and not csv_path.exists():
         return {
             "status": "missing",
             "total_anggaran": _value(None, "missing", None, "fact_anggaran belum tersedia."),
@@ -170,8 +171,15 @@ def _fact_anggaran_status(base_dir: Path) -> dict[str, Any]:
             "fact_rows": _value(None, "missing", None, "fact_anggaran belum tersedia."),
             "source": None,
         }
-    source = _rel(path, base_dir)
-    fact = pd.read_parquet(path)
+    source_path = path if path.exists() else csv_path
+    try:
+        fact = pd.read_parquet(path) if path.exists() else pd.read_csv(csv_path, low_memory=False)
+    except ImportError:
+        if not csv_path.exists():
+            raise
+        source_path = csv_path
+        fact = pd.read_csv(csv_path, low_memory=False)
+    source = _rel(source_path, base_dir)
     jumlah = pd.to_numeric(fact.get("jumlah"), errors="coerce").fillna(0)
     weighted = pd.to_numeric(fact.get("jumlah_weighted_iku"), errors="coerce").fillna(0)
     status = "validated"
@@ -383,7 +391,7 @@ def build_system_truth_status(base_dir: Path | str | None = None, write_outputs:
         "metrics": {
             "pipeline_latency": _pipeline_latency_status(base, write_output=write_outputs),
             "data_freshness": _metric_file_status(base, "data_freshness.json", ["freshness_seconds", "data_freshness_status"]),
-            "dropout_rate": {"status": quality_gate["status"], "dropout_rate": quality_gate["dropout_rate"]},
+            "rejection_rate": {"status": quality_gate["status"], "rejection_rate": quality_gate["rejection_rate"]},
             "data_quality_score": {"status": quality_gate["status"], "data_quality_score": quality_gate["quality_score"]},
         },
         "uat": _uat_status(base),

@@ -401,7 +401,7 @@ services:
       - ./:/opt/lakehouse
     working_dir: /opt/lakehouse
     entrypoint: python
-    command: portal/server.py
+    command: -m http.server 8090 --bind 0.0.0.0 --directory portal
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090', timeout=5)"]
       interval: 20s
