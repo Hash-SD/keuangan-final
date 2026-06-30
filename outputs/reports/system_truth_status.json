@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T04:10:30+00:00",
+  "generated_at": "2026-06-30T05:10:33+00:00",
   "status_schema": [
     "completed",
     "configured",
@@ -29,18 +29,33 @@
   "sources": {
     "excel_lakehouse": {
       "status": "ready",
-      "file_count": 25,
+      "file_count": 40,
       "files": [
+        "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Nomenklatur.xlsx",
+        "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB 2025 SD RAB IKU.xlsx",
+        "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/025ca1e3-5380-4e3f-9a6f-d62ad3193039/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/Nomenklatur.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB 2025 SD RAB IKU.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/0bd0cf51-ad1f-4346-9015-b3cf60ba2d15/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/Nomenklatur.xlsx",
+        "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB 2025 SD RAB IKU.xlsx",
+        "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/1ef87051-a0f1-483a-9f20-5e25676d668c/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/Nomenklatur.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB 2025 SD RAB IKU.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
         "data/raw/excel_lakehouse/test-session/9cc50c85-defe-49e7-973e-8ff3446878d9/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
+        "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/Nomenklatur.xlsx",
+        "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB 2025 SD RAB IKU.xlsx",
+        "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
+        "data/raw/excel_lakehouse/test-session/aa23eb0f-9dc3-41e4-8c7b-1ffdaa95e4ae/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
         "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/Nomenklatur.xlsx",
         "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB 2025 SD RAB IKU.xlsx",
         "data/raw/excel_lakehouse/test-session/b0a5caac-dcdb-459b-9bdf-630829878bf2/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
@@ -77,7 +92,7 @@
       "existing": [
         "data/raw/excel_lakehouse"
       ],
-      "file_count": 25
+      "file_count": 40
     },
     "bronze": {
       "status": "ready",
@@ -123,7 +138,7 @@
       "existing": [
         "outputs/reports"
       ],
-      "file_count": 65
+      "file_count": 66
     },
     "metrics": {
       "status": "ready",
@@ -143,7 +158,7 @@
       "existing": [
         "outputs/reports"
       ],
-      "file_count": 65
+      "file_count": 66
     }
   },
   "quality_gate": {
@@ -184,48 +199,48 @@
     "total_anggaran": {
       "value": 2733067665.0,
       "status": "validated",
-      "source": "data/generated/gold/fact_anggaran.csv",
+      "source": "data/generated/gold/fact_anggaran.parquet",
       "message": "Nilai dibaca langsung dari fact_anggaran."
     },
     "total_weighted_iku": {
       "value": 913391665.0,
       "status": "validated",
-      "source": "data/generated/gold/fact_anggaran.csv",
+      "source": "data/generated/gold/fact_anggaran.parquet",
       "message": "Nilai dibaca langsung dari fact_anggaran."
     },
     "fact_rows": {
       "value": 1010,
       "status": "validated",
-      "source": "data/generated/gold/fact_anggaran.csv",
+      "source": "data/generated/gold/fact_anggaran.parquet",
       "message": "Nilai dibaca langsung dari fact_anggaran."
     },
-    "source": "data/generated/gold/fact_anggaran.csv"
+    "source": "data/generated/gold/fact_anggaran.parquet"
   },
   "metrics": {
     "pipeline_latency": {
       "status": "validated",
       "latency_seconds": {
-        "value": 14530,
+        "value": 18112,
         "status": "validated",
         "source": "outputs/metrics/pipeline_latency.json",
         "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
       },
       "pipeline_latency_seconds": {
-        "value": 14530,
+        "value": 18112,
         "status": "validated",
         "source": "outputs/metrics/pipeline_latency.json",
         "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
       },
       "elapsed_seconds": {
-        "value": 14530,
+        "value": 18112,
         "status": "validated",
         "source": "outputs/metrics/pipeline_latency.json",
         "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
       },
       "source_arrival": "2026-06-29T23:51:28.429841+00:00",
       "source_basis": "active_excel_lakehouse_dataset",
-      "gold_ready": "2026-06-30T03:53:38.894701+00:00",
-      "computed_at": "2026-06-30T04:10:30.845269+00:00",
+      "gold_ready": "2026-06-30T04:53:20.768521+00:00",
+      "computed_at": "2026-06-30T05:10:33.605731+00:00",
       "dataset_session_id": "excel-active-real-multiyear-bundle",
       "source": "outputs/metrics/pipeline_latency.json",
       "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru."
@@ -278,7 +293,7 @@
     "message": "Hasil UAT dibaca dari artefak penilaian.",
     "matrix": {
       "batch_id": "batch-excel-lakehouse",
-      "generated_at": "2026-06-30T04:06:00+00:00",
+      "generated_at": "2026-06-30T04:58:35+00:00",
       "items": [
         {
           "indikator": "Navigation Facility",
@@ -334,7 +349,7 @@
         "respondent_count": 5,
         "response_count": 25,
         "source": "evaluasi UAT lokal Excel Lakehouse; skor diisi manual dari pengguna internal",
-        "generated_at": "2026-06-30T04:06:00+00:00",
+        "generated_at": "2026-06-30T04:58:35+00:00",
         "required_indicators": [
           "Navigation Facility",
           "Clarity of Visualization",
@@ -355,68 +370,437 @@
   "services": {
     "portal": {
       "status": "ready",
-      "url": "http://portal-frontend:8090",
+      "url": "http://localhost:8090",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "portalBackend": {
       "status": "ready",
-      "url": "http://portal-backend:8091/api/health",
+      "url": "http://localhost:8091/api/health",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "airflow": {
       "status": "ready",
-      "url": "http://airflow-webserver:8080/health",
+      "url": "http://localhost:8085/health",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "superset": {
       "status": "ready",
-      "url": "http://superset:8088/health",
+      "url": "http://localhost:8089/health",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "minioApi": {
       "status": "ready",
-      "url": "http://minio:9000/minio/health/live",
+      "url": "http://localhost:9000/minio/health/live",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "minioConsole": {
       "status": "ready",
-      "url": "http://minio:9001",
+      "url": "http://localhost:9001",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "sparkMaster": {
       "status": "ready",
-      "url": "http://spark-master:8080",
+      "url": "http://localhost:8080",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "sparkWorker": {
       "status": "ready",
-      "url": "http://spark-worker:8081",
+      "url": "http://localhost:8081",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "trino": {
       "status": "ready",
-      "url": "http://trino:8080/v1/info",
+      "url": "http://localhost:8082/v1/info",
       "http_status": 200,
       "message": "HTTP endpoint sehat."
     },
     "postgres": {
       "status": "ready",
-      "host": "postgres-metastore",
+      "host": "localhost",
       "port": 5432,
       "message": "TCP endpoint dapat dijangkau."
     },
     "docker": {
-      "status": "unreachable",
-      "message": "Docker engine tidak dapat diakses: [Errno 2] No such file or directory: 'docker'",
-      "services": []
+      "status": "ready",
+      "message": "Docker compose dapat diakses.",
+      "services": [
+        {
+          "Command": "\"/usr/bin/dumb-init â€¦\"",
+          "CreatedAt": "2026-06-09 00:58:40 +0700 +07",
+          "ExitCode": 0,
+          "Health": "",
+          "ID": "e2ef6faecf4d",
+          "Image": "apache/airflow:2.10.5-python3.11",
+          "Labels": "desktop.docker.io/binds/3/SourceKind=hostFile,desktop.docker.io/binds/5/SourceKind=hostFile,desktop.docker.io/binds/5/Target=/opt/airflow/data,desktop.docker.io/ports.scheme=v2,org.apache.airflow.distro=debian,com.docker.compose.config-hash=11cf556db92f9649aa3825d33a67c890e7ef5d657040eff0d50692e5bd9cb796,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\outputs,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\requirements.txt,org.opencontainers.image.description=Reference, production-ready Apache Airflow image,org.opencontainers.image.vendor=Apache Software Foundation,com.docker.compose.image=sha256:b16e19f925ae0dcabaa2271b37212891ed68bf74e26c2db61f46dddd7d502937,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/4/Target=/opt/airflow/src,desktop.docker.io/binds/5/Source=C:\\Users\\hm\\keuangan-final\\data,org.apache.airflow.uid=50000,org.opencontainers.image.authors=dev@airflow.apache.org,org.opencontainers.image.url=https://airflow.apache.org,com.docker.compose.project=keuangan-final,desktop.docker.io/binds/0/Target=/opt/airflow/outputs,desktop.docker.io/binds/4/Source=C:\\Users\\hm\\keuangan-final\\src,desktop.docker.io/binds/4/SourceKind=hostFile,org.apache.airflow.main-image.commit-sha=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,com.docker.compose.replace=keuangan-airflow-scheduler,com.docker.compose.version=2.39.2,desktop.docker.io/binds/1/Target=/opt/airflow/requirements.txt,desktop.docker.io/binds/3/Source=C:\\Users\\hm\\keuangan-final\\dags,org.apache.airflow.version=2.10.5,org.opencontainers.image.created=,org.opencontainers.image.revision=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.opencontainers.image.title=Production Airflow Image,com.docker.compose.depends_on=airflow-init:service_completed_successfully:false,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/0/SourceKind=hostFile,org.opencontainers.image.version=2.10.5,com.docker.compose.oneoff=False,org.apache.airflow.component=airflow,org.apache.airflow.main-image.build-id=,org.opencontainers.image.documentation=https://airflow.apache.org/docs/docker-stack/index.html,org.opencontainers.image.licenses=Apache-2.0,org.opencontainers.image.source=https://github.com/apache/airflow,com.docker.compose.container-number=1,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/Target=/opt/airflow/dags,org.opencontainers.image.ref.name=airflow,com.docker.compose.service=airflow-scheduler,org.apache.airflow.image=airflow,org.apache.airflow.module=airflow",
+          "LocalVolumes": "1",
+          "Mounts": "/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,keuangan-finalâ€¦",
+          "Name": "keuangan-airflow-scheduler",
+          "Names": "keuangan-airflow-scheduler",
+          "Networks": "lakehouse_net",
+          "Ports": "8080/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "",
+              "TargetPort": 8080,
+              "PublishedPort": 0,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "3 weeks ago",
+          "Service": "airflow-scheduler",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 6 hours"
+        },
+        {
+          "Command": "\"/usr/bin/dumb-init â€¦\"",
+          "CreatedAt": "2026-06-30 01:22:30 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "6b8cc4fa01f8",
+          "Image": "apache/airflow:2.10.5-python3.11",
+          "Labels": "desktop.docker.io/binds/3/Source=C:\\Users\\hm\\keuangan-final\\dags,org.apache.airflow.distro=debian,org.opencontainers.image.authors=dev@airflow.apache.org,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.replace=keuangan-airflow-webserver,desktop.docker.io/binds/1/Target=/opt/airflow/requirements.txt,org.opencontainers.image.source=https://github.com/apache/airflow,org.opencontainers.image.title=Production Airflow Image,org.opencontainers.image.version=2.10.5,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.service=airflow-webserver,com.docker.compose.version=2.39.2,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\requirements.txt,desktop.docker.io/binds/4/Source=C:\\Users\\hm\\keuangan-final\\src,desktop.docker.io/binds/4/SourceKind=hostFile,org.opencontainers.image.ref.name=airflow,org.opencontainers.image.revision=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.opencontainers.image.url=https://airflow.apache.org,com.docker.compose.image=sha256:b16e19f925ae0dcabaa2271b37212891ed68bf74e26c2db61f46dddd7d502937,desktop.docker.io/binds/5/Target=/opt/airflow/data,org.apache.airflow.main-image.commit-sha=223b0a4b61a44a83895371b2c9a3a5cafa5df8ea,org.apache.airflow.module=airflow,org.opencontainers.image.documentation=https://airflow.apache.org/docs/docker-stack/index.html,com.docker.compose.container-number=1,desktop.docker.io/binds/0/Target=/opt/airflow/outputs,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/3/SourceKind=hostFile,org.apache.airflow.version=2.10.5,org.apache.airflow.main-image.build-id=,org.opencontainers.image.vendor=Apache Software Foundation,com.docker.compose.depends_on=airflow-init:service_completed_successfully:false,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\outputs,desktop.docker.io/binds/4/Target=/opt/airflow/src,desktop.docker.io/binds/5/Source=C:\\Users\\hm\\keuangan-final\\data,desktop.docker.io/binds/5/SourceKind=hostFile,org.opencontainers.image.description=Reference, production-ready Apache Airflow image,org.opencontainers.image.licenses=Apache-2.0,com.docker.compose.config-hash=e69d2ee2c5c00f2ac7b69e8af3f6ac63b5566793639d909845f534141e016015,desktop.docker.io/ports.scheme=v2,org.apache.airflow.component=airflow,org.apache.airflow.image=airflow,org.apache.airflow.uid=50000,desktop.docker.io/binds/3/Target=/opt/airflow/dags,desktop.docker.io/ports/8080/tcp=:8085,org.opencontainers.image.created=",
+          "LocalVolumes": "1",
+          "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦,/run/desktop/mâ€¦",
+          "Name": "keuangan-airflow-webserver",
+          "Names": "keuangan-airflow-webserver",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:8085->8080/tcp, [::]:8085->8080/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 8080,
+              "PublishedPort": 8085,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 8080,
+              "PublishedPort": 8085,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "11 hours ago",
+          "Service": "airflow-webserver",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 11 hours (healthy)"
+        },
+        {
+          "Command": "\"/usr/bin/docker-entâ€¦\"",
+          "CreatedAt": "2026-05-28 19:19:28 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "939f82a96ec7",
+          "Image": "minio/minio:latest",
+          "Labels": "vcs-ref=32d8e5209f029a1fb7235308ab32253bface1001,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.redhat.component=ubi9-micro-container,com.redhat.license_terms=https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI,com.docker.compose.config-hash=a44c7bc2d8f74c88cd9ce4d3282259e6fedd3e833b92ddfdee10f906b29b38f0,com.docker.compose.oneoff=False,release=RELEASE.2025-09-07T16-13-09Z,summary=MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service.,architecture=x86_64,com.docker.compose.depends_on=,desktop.docker.io/ports/9001/tcp=:9001,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/9000/tcp=:9000,io.openshift.expose-services=,url=https://catalog.redhat.com/en/search?searchType=containers,vcs-type=git,com.docker.compose.image=sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e,com.docker.compose.project=keuangan-final,com.docker.compose.version=2.39.2,vendor=MinIO Inc <dev@min.io>,io.k8s.display-name=Red Hat Universal Base Image 9 Micro,maintainer=MinIO Inc <dev@min.io>,version=RELEASE.2025-09-07T16-13-09Z,com.docker.compose.replace=keuangan-minio,com.docker.compose.service=minio,description=MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads.,com.docker.compose.container-number=1,io.buildah.version=1.40.1,io.k8s.description=Very small image which doesn't install the package manager.,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,build-date=2025-08-06T08:12:37,distribution-scope=public,name=MinIO",
+          "LocalVolumes": "1",
+          "Mounts": "keuangan-finalâ€¦",
+          "Name": "keuangan-minio",
+          "Names": "keuangan-minio",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:9000-9001->9000-9001/tcp, [::]:9000-9001->9000-9001/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 9000,
+              "PublishedPort": 9000,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 9000,
+              "PublishedPort": 9000,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 9001,
+              "PublishedPort": 9001,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 9001,
+              "PublishedPort": 9001,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "4 weeks ago",
+          "Service": "minio",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 12 hours (healthy)"
+        },
+        {
+          "Command": "\"/bin/sh -c 'gunicorâ€¦\"",
+          "CreatedAt": "2026-06-30 01:22:31 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "d7299191dbbd",
+          "Image": "keuangan-portal:latest",
+          "Labels": "com.docker.compose.depends_on=airflow-webserver:service_healthy:false,superset:service_healthy:false,trino:service_healthy:false,minio:service_healthy:false,postgres-metastore:service_healthy:false,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Target=/opt/lakehouse,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.service=portal-backend,com.docker.compose.version=2.39.2,com.docker.compose.config-hash=45fa748e68e1ca8bd70796efba9a750f177a19d5338ef87c41e185b566977fbc,com.docker.compose.replace=keuangan-portal-backend,desktop.docker.io/ports/8091/tcp=:8091,com.docker.compose.image=sha256:e4da713a78c533090c8da02ffad457d6753c54a5891dfc714461aea2601456e3,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/0/SourceKind=hostFile",
+          "LocalVolumes": "0",
+          "Mounts": "/run/desktop/mâ€¦",
+          "Name": "keuangan-portal-backend",
+          "Names": "keuangan-portal-backend",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:8091->8091/tcp, [::]:8091->8091/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 8091,
+              "PublishedPort": 8091,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 8091,
+              "PublishedPort": 8091,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "11 hours ago",
+          "Service": "portal-backend",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up About an hour (healthy)"
+        },
+        {
+          "Command": "\"python -m http.servâ€¦\"",
+          "CreatedAt": "2026-06-30 01:24:40 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "b8b64015460d",
+          "Image": "keuangan-portal:latest",
+          "Labels": "com.docker.compose.version=2.39.2,com.docker.compose.container-number=1,com.docker.compose.image=sha256:e4da713a78c533090c8da02ffad457d6753c54a5891dfc714461aea2601456e3,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=portal-frontend,desktop.docker.io/binds/0/Target=/opt/lakehouse,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.replace=keuangan-portal-frontend,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/8090/tcp=:8090,com.docker.compose.config-hash=7498c82b190940d5875ff504641e570a2cbf5867a43d2f39776947efe88174c6,com.docker.compose.depends_on=portal-backend:service_healthy:false,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/binds/0/SourceKind=hostFile",
+          "LocalVolumes": "0",
+          "Mounts": "/run/desktop/mâ€¦",
+          "Name": "keuangan-portal-frontend",
+          "Names": "keuangan-portal-frontend",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 8090,
+              "PublishedPort": 8090,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 8090,
+              "PublishedPort": 8090,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "11 hours ago",
+          "Service": "portal-frontend",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 11 hours (healthy)"
+        },
+        {
+          "Command": "\"docker-entrypoint.sâ€¦\"",
+          "CreatedAt": "2026-05-26 16:40:58 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "db98004a81d8",
+          "Image": "postgres:16-alpine",
+          "Labels": "com.docker.compose.container-number=1,com.docker.compose.project=keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.replace=keuangan-postgres-metastore,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/5432/tcp=:5432,com.docker.compose.version=2.39.2,com.docker.compose.config-hash=e5bcad7fd0f9772e9064f6e72078559dc0863fdbc66b4dd7d8a091505ce49612,com.docker.compose.depends_on=,com.docker.compose.image=sha256:16bc17c64a573ef34162af9298258d1aec548232985b33ed7b1eac33ba35c229,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.service=postgres-metastore",
+          "LocalVolumes": "1",
+          "Mounts": "keuangan-finalâ€¦",
+          "Name": "keuangan-postgres-metastore",
+          "Names": "keuangan-postgres-metastore",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 5432,
+              "PublishedPort": 5432,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 5432,
+              "PublishedPort": 5432,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "4 weeks ago",
+          "Service": "postgres-metastore",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 12 hours (healthy)"
+        },
+        {
+          "Command": "\"/opt/entrypoint.sh â€¦\"",
+          "CreatedAt": "2026-05-26 16:49:59 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "e37af185e5a4",
+          "Image": "apache/spark:3.5.6",
+          "Labels": "com.docker.compose.config-hash=7fb4035428e223c022974567372b8eb377008dfc8423d8cafe0f2d63133875e3,com.docker.compose.depends_on=,com.docker.compose.oneoff=False,com.docker.compose.replace=keuangan-spark-master,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/Target=/opt/lakehouse,desktop.docker.io/ports/7077/tcp=:7077,org.opencontainers.image.version=20.04,com.docker.compose.project=keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.service=spark-master,desktop.docker.io/ports/8080/tcp=:8080,com.docker.compose.image=sha256:599722640c8a42ff5ecca329a3faa5371b3bd5c752b320776d5cdd1eed3441ac,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/ports.scheme=v2,com.docker.compose.container-number=1,com.docker.compose.version=2.39.2,desktop.docker.io/binds/0/SourceKind=hostFile,org.opencontainers.image.ref.name=ubuntu",
+          "LocalVolumes": "1",
+          "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦",
+          "Name": "keuangan-spark-master",
+          "Names": "keuangan-spark-master",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:7077->7077/tcp, [::]:7077->7077/tcp, 0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 7077,
+              "PublishedPort": 7077,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 7077,
+              "PublishedPort": 7077,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 8080,
+              "PublishedPort": 8080,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 8080,
+              "PublishedPort": 8080,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "4 weeks ago",
+          "Service": "spark-master",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 6 hours (healthy)"
+        },
+        {
+          "Command": "\"/opt/entrypoint.sh â€¦\"",
+          "CreatedAt": "2026-05-26 16:50:00 +0700 +07",
+          "ExitCode": 0,
+          "Health": "",
+          "ID": "f7a072c066bc",
+          "Image": "apache/spark:3.5.6",
+          "Labels": "com.docker.compose.depends_on=spark-master:service_healthy:false,com.docker.compose.project=keuangan-final,desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/1/Target=/opt/lakehouse,com.docker.compose.config-hash=c50f13e611fdc645954ede0f29e79a26e96edcd1bba8e3e0aef0df85023d3c7f,com.docker.compose.oneoff=False,com.docker.compose.service=spark-worker,com.docker.compose.version=2.39.2,org.opencontainers.image.version=20.04,com.docker.compose.container-number=1,com.docker.compose.replace=keuangan-spark-worker,desktop.docker.io/binds/1/SourceKind=hostFile,org.opencontainers.image.ref.name=ubuntu,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,desktop.docker.io/ports.scheme=v2,desktop.docker.io/ports/8081/tcp=:8081,com.docker.compose.image=sha256:599722640c8a42ff5ecca329a3faa5371b3bd5c752b320776d5cdd1eed3441ac",
+          "LocalVolumes": "1",
+          "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦",
+          "Name": "keuangan-spark-worker",
+          "Names": "keuangan-spark-worker",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 8081,
+              "PublishedPort": 8081,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 8081,
+              "PublishedPort": 8081,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "4 weeks ago",
+          "Service": "spark-worker",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 6 hours"
+        },
+        {
+          "Command": "\"/bin/sh -c ' pip inâ€¦\"",
+          "CreatedAt": "2026-05-26 16:41:00 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "80f1b8272159",
+          "Image": "apache/superset:4.1.1",
+          "Labels": "build_trigger=4.1.1,com.docker.compose.depends_on=trino:service_healthy:false,com.docker.compose.image=sha256:1d1fdaaeb19ce9cdba71620ee1cc6117d73813b2f3b422ce5a1bf752c247b7c0,com.docker.compose.oneoff=False,com.docker.compose.project=keuangan-final,com.docker.compose.version=2.39.2,com.docker.compose.config-hash=8bee5fd8cdd6f94a18dad9340233cbaf28cbc765a7078e4c506d3f0328deb389,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.service=superset,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\config\\superset\\superset_config.py,desktop.docker.io/binds/0/SourceKind=hostFile,desktop.docker.io/binds/0/Target=/app/pythonpath/superset_config.py,desktop.docker.io/ports.scheme=v2,build_actor=sadpandajoe,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,com.docker.compose.replace=keuangan-superset,desktop.docker.io/ports/8088/tcp=:8089,sha=6264ff516532f0359d914bd72356f2007925109b,target=lean,version=4.1.1,base=3.10-slim-bookworm,com.docker.compose.container-number=1",
+          "LocalVolumes": "1",
+          "Mounts": "/run/desktop/mâ€¦,keuangan-finalâ€¦",
+          "Name": "keuangan-superset",
+          "Names": "keuangan-superset",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:8089->8088/tcp, [::]:8089->8088/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 8088,
+              "PublishedPort": 8089,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 8088,
+              "PublishedPort": 8089,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "4 weeks ago",
+          "Service": "superset",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 12 hours (healthy)"
+        },
+        {
+          "Command": "\"/usr/lib/trino/bin/â€¦\"",
+          "CreatedAt": "2026-05-26 16:40:59 +0700 +07",
+          "ExitCode": 0,
+          "Health": "healthy",
+          "ID": "a29085e819f9",
+          "Image": "trinodb/trino:474",
+          "Labels": "desktop.docker.io/binds/1/Source=C:\\Users\\hm\\keuangan-final\\config\\trino\\etc,io.k8s.description=Very small image which doesn't install the package manager.,build-date=2025-03-13T10:28:55Z,com.redhat.component=ubi9-micro-container,com.redhat.license_terms=https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI,description=Very small image which doesn't install the package manager.,desktop.docker.io/binds/1/SourceKind=hostFile,desktop.docker.io/binds/1/Target=/etc/trino/custom,maintainer=Red Hat, Inc.,url=https://www.redhat.com,architecture=x86_64,com.docker.compose.config-hash=83ec57a379ee0f0e0566be23ce38a00c31a3491a8beef5f128542c61590936c5,com.docker.compose.project=keuangan-final,desktop.docker.io/binds/0/Source=C:\\Users\\hm\\keuangan-final\\config\\trino\\catalog,vendor=Red Hat, Inc.,io.k8s.display-name=Red Hat Universal Base Image 9 Micro,io.openshift.expose-services=,com.docker.compose.project.config_files=C:\\Users\\hm\\keuangan-final\\docker-compose.yml,com.docker.compose.version=2.39.2,desktop.docker.io/ports/8080/tcp=:8082,io.buildah.version=1.39.0-dev,name=ubi9/ubi-micro,release=1741861735,version=9.5,desktop.docker.io/binds/0/Target=/etc/trino/catalog,desktop.docker.io/ports.scheme=v2,summary=ubi9 micro image,vcs-ref=6dff53527db12d92c8199eb8cb541efb85a4a903,com.docker.compose.container-number=1,com.docker.compose.depends_on=minio:service_healthy:false,postgres-metastore:service_healthy:false,com.docker.compose.replace=keuangan-trino,com.docker.compose.service=trino,com.docker.compose.oneoff=False,vcs-type=git,com.docker.compose.image=sha256:d259f20e7fb7391039c4c75f11a70d4d761c58a7fa4a0f723066324f1666040d,com.docker.compose.project.working_dir=C:\\Users\\hm\\keuangan-final,desktop.docker.io/binds/0/SourceKind=hostFile,distribution-scope=public",
+          "LocalVolumes": "0",
+          "Mounts": "/run/desktop/mâ€¦,/run/desktop/mâ€¦",
+          "Name": "keuangan-trino",
+          "Names": "keuangan-trino",
+          "Networks": "lakehouse_net",
+          "Ports": "0.0.0.0:8082->8080/tcp, [::]:8082->8080/tcp",
+          "Project": "keuangan-final",
+          "Publishers": [
+            {
+              "URL": "0.0.0.0",
+              "TargetPort": 8080,
+              "PublishedPort": 8082,
+              "Protocol": "tcp"
+            },
+            {
+              "URL": "::",
+              "TargetPort": 8080,
+              "PublishedPort": 8082,
+              "Protocol": "tcp"
+            }
+          ],
+          "RunningFor": "4 weeks ago",
+          "Service": "trino",
+          "Size": "0B",
+          "State": "running",
+          "Status": "Up 12 hours (healthy)"
+        }
+      ]
     }
   },
   "storage": {
@@ -1673,7 +2057,7 @@
     "status": "created",
     "source": "outputs/reports/superset_excel_dashboard.json",
     "message": "Artefak dashboard Excel Lakehouse tersedia.",
-    "dashboard_url": "http://localhost:8089/superset/dashboard/p/Xe6bqXQkxq7/"
+    "dashboard_url": "http://localhost:8089/superset/dashboard/p/1PJ4eEy4EQB/"
   },
   "bab4_evidence": {
     "status": "ready",
@@ -1686,7 +2070,7 @@
     "uat_percentage": 96.8,
     "uat_category": "Sangat baik",
     "dashboard_status": "created",
-    "dashboard_url": "http://localhost:8089/superset/dashboard/p/Xe6bqXQkxq7/",
-    "executed_at": "2026-06-30T04:10:30+00:00"
+    "dashboard_url": "http://localhost:8089/superset/dashboard/p/1PJ4eEy4EQB/",
+    "executed_at": "2026-06-30T05:10:33+00:00"
   }
 }

@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 from typing import Any
-import pandas as pd
-
-from .paths import DATA_DIR
 
 from src.status.system_truth_status import build_system_truth_status
 
@@ -12,16 +9,10 @@ def lakehouse_summary() -> dict[str, Any]:
     truth = build_system_truth_status(write_outputs=True)
     layers = truth["layers"]
     reconcile = truth["reconciliation"]
-    fact_anggaran_path = DATA_DIR / "generated" / "gold" / "fact_anggaran.csv"
-    fact_anggaran_rows = None
-    fact_anggaran_total = None
-    if fact_anggaran_path.exists():
-        try:
-            fact_anggaran = pd.read_csv(fact_anggaran_path)
-            fact_anggaran_rows = int(len(fact_anggaran))
-            fact_anggaran_total = float(pd.to_numeric(fact_anggaran.get("jumlah_weighted_iku"), errors="coerce").sum())
-        except Exception:
-            fact_anggaran_rows = None
+    # Performance: `build_system_truth_status` already validates fact rows and
+    # weighted total from Parquet, so avoid a second fact table read per request.
+    fact_anggaran_rows = (reconcile.get("fact_rows") or {}).get("value")
+    fact_anggaran_total = (reconcile.get("total_weighted_iku") or {}).get("value")
     return {
         "bronze": {
             "status": layers["bronze"]["status"],

@@ -1,0 +1,21 @@
+{
+  "status": "BASELINE",
+  "csv_size_bytes": 876192,
+  "parquet_size_bytes": 51567,
+  "csv_read_seconds": [
+    0.008905700000468642,
+    0.006176700000651181,
+    0.006259699999645818,
+    0.006371900002704933,
+    0.006435200004489161
+  ],
+  "csv_read_median_seconds": 0.006371900002704933,
+  "lakehouse_summary_seconds": [
+    0.4372609999991255,
+    0.3586959000022034,
+    0.43220019999716897
+  ],
+  "lakehouse_summary_median_seconds": 0.43220019999716897,
+  "rows": 1010,
+  "total_weighted": 913391665.0
+}

@@ -1,0 +1,15 @@
+{
+  "status": "AFTER_FINAL",
+  "optimization": "reuse reconciliation fact_rows and total_weighted_iku; remove duplicate fact table read from lakehouse_summary",
+  "lakehouse_summary_seconds": [
+    0.37210050000430783,
+    0.41009379999741213,
+    0.39094749999640044,
+    0.41511269999318756,
+    0.3983399999997346
+  ],
+  "lakehouse_summary_median_seconds": 0.3983399999997346,
+  "errors": [],
+  "endpoint_rows": 1010,
+  "endpoint_total_weighted": 913391665.0
+}

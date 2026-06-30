@@ -1,6 +1,24 @@
 {
   "version": 1,
   "skills": {
+    "ai-research-explore": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/ai-research-explore/SKILL.md",
+      "computedHash": "43cc1e0e9595f4932cd63ecad82582cfb13eb7440382c71aec69729b059e51fc"
+    },
+    "ai-research-reproduction": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/ai-research-reproduction/SKILL.md",
+      "computedHash": "26685482ed02a9c67c5a7131120c429b3f3f5990ba8584a7ad8a292bb93ada53"
+    },
+    "analyze-project": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/analyze-project/SKILL.md",
+      "computedHash": "65fac6f4a0f3d458ee3a920451a4fe6f8052a051a47c44126624320ba201c7a8"
+    },
     "apache-superset": {
       "source": "membranedev/application-skills",
       "sourceType": "github",
@@ -13,17 +31,77 @@
       "skillPath": "skills/brainstorming/SKILL.md",
       "computedHash": "0c877c8521ec97a5d55fa682d33122b811aebddd4788b92ac008efe85cd305cd"
     },
+    "diagnosing-bugs": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
+      "computedHash": "c8743c51df3760039b2dcb8a5a61437da3128c6efb4c5381734a3f05403e9a84"
+    },
+    "env-and-assets-bootstrap": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/env-and-assets-bootstrap/SKILL.md",
+      "computedHash": "c37ab83210c7c885949d10fe3f6bbcb2811d49e9d1a792dd3a9d35dc2721494e"
+    },
+    "explore-code": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/explore-code/SKILL.md",
+      "computedHash": "1b561d34f02cce37b9ecac7acc7f02bbc9bc4051a77ab04066344b0f78fee882"
+    },
+    "explore-run": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/explore-run/SKILL.md",
+      "computedHash": "af68548a24c1306d646460dc15a73639c01431c7aa637f7a27fb9c2eb2a859d6"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "781bd6d3f9b19f8c9af6b53d8d0e4876d0183841b565db34ca7092ffa412d111"
     },
+    "minimal-run-and-audit": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/minimal-run-and-audit/SKILL.md",
+      "computedHash": "e4a909a8252796ebf54204f66c41e957b2449c7faca1e80a8da251ae0c374737"
+    },
+    "paper-context-resolver": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/paper-context-resolver/SKILL.md",
+      "computedHash": "b3892afe8dd5559fdd3ed030e90d471c232c375c4d93e6958787b94fb80b124e"
+    },
+    "performance": {
+      "source": "addyosmani/web-quality-skills",
+      "sourceType": "github",
+      "skillPath": "skills/performance/SKILL.md",
+      "computedHash": "646931a3af896ae12a3cad3d762668cb6487fe3ab179daf8fdc974fb79acfe49"
+    },
     "persona-researcher": {
       "source": "googleworkspace/cli",
       "sourceType": "github",
       "skillPath": "skills/persona-researcher/SKILL.md",
       "computedHash": "44b53d2a82d5b758e61deece15634c4afd9999c331fa181dbae87c15155b0010"
+    },
+    "repo-intake-and-plan": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/repo-intake-and-plan/SKILL.md",
+      "computedHash": "c0d54a9e1385ec6d66ad027fa100f1286af7c27ace8fa9a9ab5945e452ab93e7"
+    },
+    "run-train": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/run-train/SKILL.md",
+      "computedHash": "b7d4991594b5660a2eda00b13873edd2ebf74c8d6b20ae4a4050da6905678efa"
+    },
+    "safe-debug": {
+      "source": "lllllllama/ai-paper-reproduction-skill",
+      "sourceType": "github",
+      "skillPath": "skills/safe-debug/SKILL.md",
+      "computedHash": "34e2604d4f8671d646aca7ec1fc9a3a947c08736e7fbeffb7d9c8670684ea821"
     }
   }
 }

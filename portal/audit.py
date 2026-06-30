@@ -13,8 +13,9 @@ if 'meta name="description"' not in content:
 if 'display=swap' not in content:
     issues.append('PERF: Google fonts missing display=swap')
 
-# 3. Check var usage
-vars_used = re.findall(r'\bvar\b', content)
+# 3. Check JavaScript var declarations. CSS custom properties use var(...)
+# legitimately, so only flag declaration-like tokens such as `var name`.
+vars_used = re.findall(r'\bvar\s+[$A-Za-z_]', content)
 if vars_used:
     issues.append('JS: var used ' + str(len(vars_used)) + ' times - should use const/let')
 
