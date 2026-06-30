@@ -3,52 +3,101 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-import pytest
+from openpyxl import Workbook
 
 from src.excel_ingestion.excel_cell_extractor import ExcelSource
 from src.parser_flexible.rab_parser import parse_rab_workbook
 
 
-LOCAL_SAMPLE_DIR = Path(
-    "data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/"
-    "239ab80c-8350-4b03-8943-f5308ed3b595"
-)
-RAB_2024 = LOCAL_SAMPLE_DIR / "Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx"
-RAB_2023_JAN = LOCAL_SAMPLE_DIR / "RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx"
-RAB_2023_JUL = LOCAL_SAMPLE_DIR / "RAB_SD_Usulan KE (1)_jul-des 2023.xlsx"
+def _write_workbook(path: Path, *, rekap_total: int, rows: list[tuple[object, ...]]) -> None:
+    workbook = Workbook()
+    rekap = workbook.active
+    rekap.title = "REKAP"
+    rekap.cell(row=11, column=5, value="Uraian")
+    rekap.cell(row=11, column=8, value="Nominal")
+    rekap.cell(row=12, column=5, value="Belanja Uji Parser")
+    rekap.cell(row=12, column=8, value=rekap_total)
+    rekap.cell(row=36, column=5, value="Total")
+    rekap.cell(row=36, column=8, value=rekap_total)
+
+    detail = workbook.create_sheet("SG & Kuliah Tamu")
+    headers = [
+        "No",
+        "Uraian",
+        "Suplier",
+        "QTY",
+        "Satuan",
+        "Harga Satuan",
+        "Total Sebelum Pajak",
+        "PPh 21",
+        "PPN [10%]",
+        "PPh 22 [1.5%]",
+        "PPh 23 [2%]",
+        "Jumah diterima",
+        "Total",
+    ]
+    for column_number, value in enumerate(headers, start=1):
+        detail.cell(row=12, column=column_number, value=value)
+    for row_number, row_values in enumerate(rows, start=13):
+        for column_number, value in enumerate(row_values, start=1):
+            detail.cell(row=row_number, column=column_number, value=value)
+
+    workbook.save(path)
 
 
-@pytest.mark.skipif(not RAB_2024.exists(), reason="local uploaded 2024 workbook not available")
-def test_2024_parser_uses_final_amount_column_not_tax_or_intermediate_total():
-    items, _, validation = parse_rab_workbook(
-        ExcelSource(path=RAB_2024, tahun_input=2024, prodi="Sains Data", jenis_dataset="rab")
+def test_parser_uses_final_amount_column_not_tax_or_intermediate_total(tmp_path):
+    path = tmp_path / "rab_2024_amount_columns.xlsx"
+    _write_workbook(
+        path,
+        rekap_total=6_745_050,
+        rows=[
+            (1, "KULIAH TAMU Kecerdasan Buatan", None, 2, "Jam", 900_000, 1_800_000, 90_000, 0, 0, 0, 1_710_000, 1_800_000),
+            (2, "Cetak Buku Perwalian", None, 297, "Buah", 15_000, 4_455_000, 0, 490_050, 0, 89_100, 4_365_900, 4_945_050),
+        ],
     )
 
-    assert len(items) == 113
+    items, _, validation = parse_rab_workbook(
+        ExcelSource(path=path, tahun_input=2024, prodi="Sains Data", jenis_dataset="rab")
+    )
+
+    assert len(items) == 2
     assert items["jumlah"].isna().sum() == 0
     assert items["uraian_detail"].str.lower().eq("uraian").sum() == 0
-    assert int(items["jumlah"].sum()) == 154_588_390
+    assert int(items["jumlah"].sum()) == 6_745_050
 
-    kuliah_tamu = items[
-        items["raw_row_text"].astype(str).str.contains("KULIAH TAMU Kecerdasan Buatan", case=False, na=False)
-    ]
-    assert len(kuliah_tamu) == 1
-    assert kuliah_tamu.iloc[0]["qty"] == 2
-    assert kuliah_tamu.iloc[0]["harga_satuan"] == 900_000
-    assert kuliah_tamu.iloc[0]["jumlah"] == 1_800_000
+    kuliah_tamu = items[items["uraian_detail"].eq("KULIAH TAMU Kecerdasan Buatan")].iloc[0]
+    assert kuliah_tamu["qty"] == 2
+    assert kuliah_tamu["harga_satuan"] == 900_000
+    assert kuliah_tamu["jumlah"] == 1_800_000
 
-    assert validation.iloc[0]["validation_status"] == "REVIEW"
-    assert validation.iloc[0]["total_rekap"] == 164_849_800
+    assert validation.iloc[0]["validation_status"] == "OK"
+    assert validation.iloc[0]["total_rekap"] == 6_745_050
 
 
-@pytest.mark.skipif(
-    not (RAB_2023_JAN.exists() and RAB_2023_JUL.exists()),
-    reason="local uploaded 2023 workbooks not available",
-)
-def test_2023_parser_matches_period_rekap_totals_without_header_rows():
+def test_parser_matches_2023_period_rekap_totals_without_header_rows(tmp_path):
+    jan_path = tmp_path / "rab_2023_jan_jun.xlsx"
+    jul_path = tmp_path / "rab_2023_jul_des.xlsx"
+    _write_workbook(
+        jan_path,
+        rekap_total=37_000_000,
+        rows=[
+            (1, "Belanja Bahan Januari", None, 1, "Paket", 4_950_000, 4_500_000, 0, 450_000, 0, 0, 4_500_000, 4_950_000),
+            (2, "Belanja Non Ops Januari", None, 1, "Paket", 32_050_000, 32_050_000, 0, 0, 0, 0, 32_050_000, 32_050_000),
+        ],
+    )
+    _write_workbook(
+        jul_path,
+        rekap_total=90_027_000,
+        rows=[
+            (1, "Belanja Bahan Semester 2", None, 1, "Paket", 37_075_000, 37_075_000, 0, 0, 0, 0, 37_075_000, 37_075_000),
+            (2, "Belanja Sewa Semester 2", None, 1, "Paket", 15_792_000, 14_100_000, 0, 1_410_000, 0, 282_000, 12_408_000, 15_792_000),
+            (3, "Belanja Lainnya Semester 2", None, 1, "Paket", 37_160_000, 37_160_000, 0, 0, 0, 0, 37_160_000, 37_160_000),
+        ],
+    )
+
     frames = []
     validations = []
-    for path, periode in [(RAB_2023_JAN, "Jan-Jun"), (RAB_2023_JUL, "Jul-Des")]:
+    for path, periode in [(jan_path, "Jan-Jun"), (jul_path, "Jul-Des")]:
         items, _, validation = parse_rab_workbook(
             ExcelSource(path=path, tahun_input=2023, periode=periode, prodi="Sains Data", jenis_dataset="rab")
         )
@@ -58,7 +107,7 @@ def test_2023_parser_matches_period_rekap_totals_without_header_rows():
     merged = pd.concat(frames, ignore_index=True)
     validation_df = pd.concat(validations, ignore_index=True)
 
-    assert len(merged) == 62
+    assert len(merged) == 5
     assert int(merged["jumlah"].sum()) == 127_027_000
     assert merged["jumlah"].isna().sum() == 0
     assert merged["uraian_detail"].str.lower().eq("uraian").sum() == 0

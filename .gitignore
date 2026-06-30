@@ -13,6 +13,7 @@ data/generated/
 data/raw/excel_lakehouse/**/*.xlsx
 data/uploads/staging/
 data/quarantine/
+data/tmp/
 outputs/metrics/*.json
 outputs/metrics/*.csv
 outputs/reports/
@@ -22,6 +23,9 @@ outputs/screenshots/
 outputs/uat/*.csv
 outputs/uat/*.json
 config/spark/jars/*.jar
+FINAL_VERIFICATION_REPORT.md
+docs/brainstorming/pipeline_count_validation.md
+.jules/
 
 # IDE and Editor folders
 .agents/
