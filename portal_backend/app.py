@@ -10,6 +10,7 @@ from .services.excel_lakehouse import excel_lakehouse_status
 from .services.excel_upload import commit_excel_lakehouse_dataset
 from .services.iku_review import iku_review_queue, mapping_review_queue, save_iku_override
 from .services.lakehouse import lakehouse_summary
+from .services.local_dashboard import dashboard_section, write_dashboard_reports
 from .services.metrics import metrics_payload
 from .services.paths import OUTPUTS_DIR, PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
@@ -208,6 +209,32 @@ def create_app() -> Flask:
     def dashboard_links_run(run_id: str):
         payload = read_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json") or read_json(OUTPUTS_DIR / "reports" / "superset_excel_assets.json")
         return jsonify(payload or {"run_id": run_id, "status": "missing", "dashboard_url": None})
+
+    @app.get("/api/local-dashboard/status")
+    def local_dashboard_status():
+        return jsonify(dashboard_section(request.args, "status"))
+
+    @app.get("/api/local-dashboard/filters")
+    def local_dashboard_filters():
+        return jsonify(dashboard_section(request.args, "filters"))
+
+    @app.get("/api/local-dashboard/summary")
+    def local_dashboard_summary():
+        return jsonify(dashboard_section(request.args, "summary"))
+
+    @app.get("/api/local-dashboard/charts")
+    def local_dashboard_charts():
+        return jsonify(dashboard_section(request.args, "charts"))
+
+    @app.get("/api/local-dashboard/table")
+    def local_dashboard_table():
+        return jsonify(dashboard_section(request.args, "table"))
+
+    @app.get("/api/local-dashboard/all")
+    def local_dashboard_all():
+        payload = dashboard_section(request.args, "all")
+        write_dashboard_reports()
+        return jsonify(payload)
 
     @app.post("/api/pipeline/<name>")
     def pipeline(name: str):

@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "portal/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/local-dashboard/(.*)",
+      "dest": "/portal/local-dashboard/$1"
+    },
+    {
+      "src": "/vendor/(.*)",
+      "dest": "/portal/vendor/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/portal/local-dashboard/index.html"
+    }
+  ]
+}

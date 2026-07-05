@@ -8,7 +8,10 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docker:up": "docker compose up -d --build",
+    "docker:ps": "docker compose ps",
+    "test:playwright": "playwright test",
+    "test:dashboard": "playwright test tests/playwright/local-dashboard.spec.ts"
   },
   "repository": {
     "type": "git",
@@ -25,5 +28,8 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "playwright": "^1.60.0"
+  },
+  "dependencies": {
+    "echarts": "^6.1.0"
   }
 }

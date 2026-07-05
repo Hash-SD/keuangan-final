@@ -1,0 +1,1 @@
+window.SILARAS_API_BASE_URL = window.SILARAS_API_BASE_URL || "";
