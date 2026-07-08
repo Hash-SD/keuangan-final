@@ -28,6 +28,9 @@ CREATE TABLE IF NOT EXISTS gold.fact_anggaran (
     source_file TEXT,
     source_sheet TEXT,
     source_row INTEGER,
+    source_role TEXT,
+    row_type TEXT,
+    quality_flags TEXT,
     created_at TIMESTAMP
 );
 

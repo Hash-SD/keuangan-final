@@ -1,11 +1,12 @@
 $ErrorActionPreference = "Stop"
 
-$port = 8090
+$port = if ($env:PORTAL_PORT) { [int]$env:PORTAL_PORT } else { 8090 }
 $portalRoot = Resolve-Path (Join-Path $PSScriptRoot "..\portal")
 $serverScript = Join-Path $portalRoot "server.py"
 
 $listener = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
 if (-not $listener) {
+    $env:PORTAL_PORT = [string]$port
     Start-Process -WindowStyle Hidden -WorkingDirectory $portalRoot -FilePath "python" -ArgumentList $serverScript
     Start-Sleep -Seconds 2
 }

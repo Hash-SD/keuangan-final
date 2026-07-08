@@ -90,6 +90,35 @@ def cell_fill_color(cell: Cell) -> str | None:
     return None
 
 
+def _color_value(color: object) -> str | None:
+    if color is None:
+        return None
+    color_type = getattr(color, "type", None)
+    if color_type == "rgb" and getattr(color, "rgb", None):
+        return str(color.rgb).upper()
+    if color_type == "theme":
+        return f"theme:{getattr(color, 'theme', '')}:{getattr(color, 'tint', '')}"
+    if color_type == "indexed":
+        return f"indexed:{getattr(color, 'indexed', '')}"
+    if getattr(color, "rgb", None):
+        return str(color.rgb).upper()
+    return None
+
+
+def _border_style(cell: Cell, side: str) -> str | None:
+    border_side = getattr(cell.border, side, None)
+    return getattr(border_side, "style", None)
+
+
+def _indexed_color_value(color: object) -> int | str | None:
+    value = getattr(color, "indexed", None)
+    if value is None:
+        return None
+    if isinstance(value, (int, str)):
+        return value
+    return str(value)
+
+
 def dominant_row_color(ws: Worksheet, row_number: int, max_column: int | None = None) -> str | None:
     counts: dict[str, int] = {}
     end_col = min(max_column or ws.max_column, ws.max_column)
@@ -173,10 +202,27 @@ def extract_excel_cells(source: ExcelSource, run_id: str) -> pd.DataFrame:
                         "row_number": cell.row,
                         "column_number": cell.column,
                         "cell_address": cell.coordinate,
+                        "coordinate": cell.coordinate,
                         "cell_value": value,
+                        "value": value,
+                        "data_type": cell.data_type,
                         "cell_formula": formula,
+                        "formula": formula,
+                        "number_format": cell.number_format,
+                        "fill_type": cell.fill.fill_type,
                         "fill_color": fill_color,
+                        "fill_fg_rgb": _color_value(cell.fill.fgColor),
+                        "fill_fg_indexed": _indexed_color_value(cell.fill.fgColor),
+                        "font_bold": bool(cell.font.bold),
+                        "font_italic": bool(cell.font.italic),
+                        "font_color": _color_value(cell.font.color),
+                        "border_left_style": _border_style(cell, "left"),
+                        "border_right_style": _border_style(cell, "right"),
+                        "border_top_style": _border_style(cell, "top"),
+                        "border_bottom_style": _border_style(cell, "bottom"),
+                        "alignment_horizontal": cell.alignment.horizontal,
                         "is_merged": merged_range is not None,
+                        "is_merged_cell": merged_range is not None,
                         "merged_range": merged_range,
                         "extracted_at": extracted_at,
                     }

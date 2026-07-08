@@ -1,10 +1,11 @@
 $ErrorActionPreference = "Stop"
 
-$frontendPort = 8090
-$backendPort = 8091
+$frontendPort = if ($env:PORTAL_PORT) { [int]$env:PORTAL_PORT } else { 8090 }
+$backendPort = if ($env:PORTAL_BACKEND_BIND_PORT) { [int]$env:PORTAL_BACKEND_BIND_PORT } else { 8091 }
 $root = Resolve-Path (Join-Path $PSScriptRoot "..")
 
 function Start-PortalBackend {
+    $env:PORTAL_BACKEND_BIND_PORT = [string]$backendPort
     Start-Process -WindowStyle Hidden -WorkingDirectory $root -FilePath "python" -ArgumentList "-m", "portal_backend.app"
     Start-Sleep -Seconds 2
 }
@@ -43,6 +44,7 @@ elseif (-not (Test-RuntimeContextPost)) {
 
 $frontendListener = Get-NetTCPConnection -LocalPort $frontendPort -State Listen -ErrorAction SilentlyContinue
 if (-not $frontendListener) {
+    $env:PORTAL_PORT = [string]$frontendPort
     & (Join-Path $PSScriptRoot "start_portal.ps1") | Out-Null
 }
 

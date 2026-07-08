@@ -42,12 +42,25 @@ with DAG(
     """
 
     start = EmptyOperator(task_id="start")
-    validate_upload_context = BashOperator(task_id="validate_upload_context", bash_command=f"test -d {SAMPLE_EXCEL_DIR}")
+    validate_upload_context = BashOperator(
+        task_id="validate_upload_context",
+        bash_command=(
+            "python -c \"import os, pathlib; "
+            "files=[p for p in os.getenv('FINANCE_EXCEL_FILES','').split(';') if p.strip()]; "
+            "ok=bool(files) or pathlib.Path('" + SAMPLE_EXCEL_DIR + "').exists(); "
+            "raise SystemExit(0 if ok else 'FINANCE_EXCEL_FILES is empty and sample Excel directory is missing')\""
+        ),
+        append_env=True,
+    )
     extract_excel_to_bronze = BashOperator(
         task_id="extract_excel_to_bronze",
         bash_command=f"{PY} /opt/airflow/src/transformations/excel_lakehouse_pipeline.py",
         append_env=True,
-        env={"FINANCE_EXCEL_FILES": SAMPLE_EXCEL_FILES, "PYTHONPATH": "/opt/airflow"},
+        env={
+            "PYTHONPATH": "/opt/airflow",
+            "RAB_MAIN_SHEET_NAME": "RAB",
+            "RAB_STRICT_RECONCILIATION": "true",
+        },
     )
     detect_year_and_format = EmptyOperator(task_id="detect_year_and_format")
     parse_flexible = EmptyOperator(task_id="parse_flexible")

@@ -42,6 +42,9 @@ TABLES = {
         ("source_file", "text"),
         ("source_sheet", "text"),
         ("source_row", "integer"),
+        ("source_role", "text"),
+        ("row_type", "text"),
+        ("quality_flags", "text"),
         ("created_at", "timestamptz"),
     ],
     "vw_dashboard_iku_anggaran": [
@@ -95,6 +98,9 @@ TABLES = {
         ("source_file", "text"),
         ("source_sheet", "text"),
         ("source_row", "integer"),
+        ("source_role", "text"),
+        ("row_type", "text"),
+        ("quality_flags", "text"),
         ("created_at", "timestamptz"),
     ],
 }

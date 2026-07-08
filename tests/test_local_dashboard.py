@@ -101,8 +101,9 @@ def test_local_dashboard_falls_back_to_superset_gold_fact_anggaran(tmp_path, mon
     payload = client.get("/api/local-dashboard/all").get_json()
 
     assert payload["status"] == "validated"
-    assert payload["source_kind"] == "superset_fact_anggaran"
+    assert payload["source_kind"] == "gold_fact_anggaran"
     assert payload["source_dataset"] == "fact_anggaran"
+    assert "superset_reference" in payload
     assert payload["data"]["labels"]["title"] == "Dashboard Anggaran IKU Sains Data"
     assert payload["data"]["summary"]["total_nominal_piutang_rp"] == 750000
 

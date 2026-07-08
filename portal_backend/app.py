@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
 import os
+from datetime import datetime, timezone
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+import pandas as pd
 
 from .services.activity import append_activity, read_activities
 from .services.files import csv_preview, read_json, relative_path, resolve_preview_file
@@ -10,10 +13,11 @@ from .services.excel_lakehouse import excel_lakehouse_status
 from .services.excel_upload import commit_excel_lakehouse_dataset
 from .services.iku_review import iku_review_queue, mapping_review_queue, save_iku_override
 from .services.lakehouse import lakehouse_summary
-from .services.local_dashboard import dashboard_section, write_dashboard_reports
+from .services.local_dashboard import dashboard_section, read_superset_reference, write_dashboard_reports
 from .services.metrics import metrics_payload
 from .services.paths import OUTPUTS_DIR, PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
+from .services.superset_api import fetch_superset_fact_rows
 from .services.system_status import service_statuses
 from src.common.runtime_paths import raw_rab_path
 from src.status.system_truth_status import build_system_truth_status
@@ -50,7 +54,7 @@ def create_app() -> Flask:
         checks["system_truth"] = {"status": "ready", "generated_at": truth.get("generated_at")}
         checks["storage_manifest"] = {"status": "ready" if manifest and not manifest.get("_error") else "missing", "source": "outputs/reports/storage_manifest.json"}
         checks["superset"] = truth.get("services", {}).get("superset", {"status": "unreachable"})
-        ready = all(item.get("status") in {"ready", "empty", "skipped", "mapped", "configured", "unreachable"} for item in checks.values())
+        ready = all(item.get("status") in {"ready", "empty", "skipped", "mapped", "configured"} for item in checks.values())
         return jsonify({"status": "ready" if ready else "not_ready", "checks": checks})
 
     @app.get("/api/superset/status")
@@ -60,6 +64,25 @@ def create_app() -> Flask:
             {
                 "service": truth.get("services", {}).get("superset", {"status": "unreachable"}),
                 "dashboard": truth.get("dashboard", {"status": "not_started"}),
+            }
+        )
+
+    @app.get("/api/superset/assets")
+    def superset_assets():
+        return jsonify(read_superset_reference())
+
+    @app.get("/api/superset/chart-data")
+    def superset_chart_data():
+        limit = request.args.get("limit", 100, type=int)
+        frame, metadata = fetch_superset_fact_rows(limit=limit)
+        if frame is None:
+            return jsonify({**metadata, "data": None}), 503
+        return jsonify(
+            {
+                **metadata,
+                "row_count": int(len(frame)),
+                "columns": list(frame.columns),
+                "data": frame.head(max(limit, 1)).where(pd.notna(frame), None).to_dict(orient="records"),
             }
         )
 
@@ -78,11 +101,30 @@ def create_app() -> Flask:
 
     @app.get("/api/runtime-context")
     def runtime_context_get():
-        return runtime_config()
+        payload = read_json(OUTPUTS_DIR / "reports" / "active_runtime_context.json") or {}
+        base = runtime_config().get_json()
+        return jsonify({**base, "context": payload.get("context") or {}, "readiness": payload.get("readiness") or {}})
 
     @app.post("/api/runtime-context")
     def runtime_context_post():
-        return jsonify({"status": "success", "context": (request.get_json(silent=True) or {})})
+        context = request.get_json(silent=True) or {}
+        required = ["target_prodi", "target_tahun_anggaran"]
+        missing = [key for key in required if not str(context.get(key) or "").strip()]
+        readiness = {
+            "context_ready": not missing,
+            "missing": missing,
+            "message": "Konteks upload siap dipakai pipeline." if not missing else "Lengkapi konteks upload sebelum menjalankan pipeline.",
+        }
+        payload = {
+            "status": "success",
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "context": context,
+            "readiness": readiness,
+        }
+        path = OUTPUTS_DIR / "reports" / "active_runtime_context.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        return jsonify(payload)
 
     @app.get("/api/status/services")
     def status_services():
@@ -253,6 +295,7 @@ def create_app() -> Flask:
             "metrics": "metrics",
             "excel-storage-manifest": "excel-storage-manifest",
             "excel-count-validation": "excel-count-validation",
+            "load-gold-postgres": "load-gold-postgres",
             "validate-gold": "validate-gold",
         }
         command = mapping.get(name)
@@ -267,8 +310,26 @@ def create_app() -> Flask:
 
     @app.post("/api/uat/submit")
     def uat_submit():
+        payload = request.get_json(silent=True) or {}
+        report_path = OUTPUTS_DIR / "reports" / "uat_local_submissions.json"
+        existing = read_json(report_path) or {"status": "available", "items": []}
+        item = {
+            "submitted_at": datetime.now(timezone.utc).isoformat(),
+            "mode": payload.get("mode") or "local_feedback",
+            "evaluator": payload.get("evaluator"),
+            "module": payload.get("module"),
+            "scores": payload.get("scores") or [],
+            "feedback": payload.get("feedback"),
+            "time_label": payload.get("time"),
+        }
+        items = [item, *(existing.get("items") or [])][:250]
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(
+            json.dumps({"status": "available", "generated_at": item["submitted_at"], "items": items}, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
         append_activity("uat_submit", "analytics", "success", "Evaluasi UAT lokal diterima.", "outputs/uat")
-        return jsonify({"status": "success", "message": "Evaluasi UAT lokal diterima."})
+        return jsonify({"status": "success", "message": "Evaluasi UAT lokal diterima.", "item": item})
 
     return app
 

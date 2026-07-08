@@ -9,6 +9,7 @@ from src.common.logging_utils import write_json
 from src.common.time_utils import utc_now_iso
 
 from .paths import OUTPUTS_DIR, ROOT_DIR
+from .superset_api import fetch_superset_fact_rows, read_superset_reference
 
 
 DASHBOARD_VIEW_RELATIVE = "data/generated/gold/vw_dashboard_piutang_ukt.csv"
@@ -157,6 +158,10 @@ def load_dashboard_view(path: Path | None = None) -> tuple[pd.DataFrame | None, 
     source_path = path or DASHBOARD_VIEW_PATH
     source_kind = "piutang_ukt"
     labels = PIUTANG_LABELS
+    if not source_path.exists() and path is None and _rel(source_path) == DASHBOARD_VIEW_RELATIVE:
+        superset_frame, superset_metadata = _load_superset_api_view()
+        if superset_frame is not None:
+            return superset_frame, superset_metadata
     if not source_path.exists() and path is None and SUPERSET_GOLD_PATH.exists():
         return _load_superset_gold_view()
     if not source_path.exists():
@@ -171,6 +176,62 @@ def load_dashboard_view(path: Path | None = None) -> tuple[pd.DataFrame | None, 
         "source_kind": source_kind,
         "source_dataset": "vw_dashboard_piutang_ukt",
         "labels": labels,
+        "generated_at": utc_now_iso(),
+        "row_count": int(len(frame)),
+    }
+    return frame, metadata
+
+
+def _fact_to_dashboard_frame(source: pd.DataFrame) -> pd.DataFrame:
+    amount_column = "jumlah_weighted_iku" if "jumlah_weighted_iku" in source.columns else "jumlah"
+    return pd.DataFrame(
+        {
+            "tahun_akademik": source["tahun"].astype(str),
+            "tahun_anggaran": source["tahun"].astype(str),
+            "semester": source["periode"].fillna("Tahunan").astype(str),
+            "nama_prodi": source["prodi"].fillna("-").astype(str),
+            "nama_fakultas": source["fakultas"].fillna("-").astype(str),
+            "kualitas": source.get("data_quality_flag", source.get("mapping_status", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
+            "nominal_piutang_rp": pd.to_numeric(source[amount_column], errors="coerce").fillna(0),
+            "jumlah_mhs_penunggak": 1,
+            "nim": source["item_id"].fillna("-").astype(str),
+            "nama_debitur": source["kegiatan"].fillna(source.get("uraian_detail", "-")).astype(str),
+            "iku": source.get("iku", source.get("kode_iku", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
+            "kegiatan": source["kegiatan"].fillna("-").astype(str),
+            "akun": source.get("akun", source.get("nama_akun", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
+            "mapping_status": source.get("mapping_status", source.get("data_quality_flag", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
+            "uraian_detail": source.get("uraian_detail", source["kegiatan"]).fillna("-").astype(str),
+        }
+    )
+
+
+def _load_superset_api_view() -> tuple[pd.DataFrame | None, dict[str, Any]]:
+    source, api_metadata = fetch_superset_fact_rows()
+    if source is None or source.empty:
+        return None, api_metadata
+    missing = [column for column in SUPERSET_REQUIRED_COLUMNS if column not in source.columns]
+    if missing:
+        return None, {
+            "status": "missing_columns",
+            "source": "superset_api:/api/v1/chart/data",
+            "source_kind": "superset_api",
+            "source_dataset": "fact_anggaran",
+            "generated_at": utc_now_iso(),
+            "message": "Superset API fact_anggaran tidak memiliki kolom minimum untuk dashboard lokal.",
+            "missing_columns": missing,
+            "superset_reference": api_metadata.get("superset_reference"),
+            "data": None,
+        }
+    frame = _fact_to_dashboard_frame(source)
+    metadata = {
+        "status": "superset_api_ready",
+        "source": "superset_api:/api/v1/chart/data",
+        "source_kind": "superset_api",
+        "source_dataset": "fact_anggaran",
+        "source_priority": ["superset_api", "gold_fact_anggaran"],
+        "source_note": "Data dashboard lokal dibaca melalui Superset API chart/data dari dataset fact_anggaran.",
+        "superset_reference": api_metadata.get("superset_reference"),
+        "labels": SUPERSET_LABELS,
         "generated_at": utc_now_iso(),
         "row_count": int(len(frame)),
     }
@@ -194,35 +255,19 @@ def _load_superset_gold_view() -> tuple[pd.DataFrame | None, dict[str, Any]]:
             "missing_columns": missing,
             "data": None,
         }
-    amount_column = "jumlah_weighted_iku" if "jumlah_weighted_iku" in source.columns else "jumlah"
-    frame = pd.DataFrame(
-        {
-            "tahun_akademik": source["tahun"].astype(str),
-            "tahun_anggaran": source["tahun"].astype(str),
-            "semester": source["periode"].fillna("Tahunan").astype(str),
-            "nama_prodi": source["prodi"].fillna("-").astype(str),
-            "nama_fakultas": source["fakultas"].fillna("-").astype(str),
-            "kualitas": source.get("data_quality_flag", source.get("mapping_status", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "nominal_piutang_rp": pd.to_numeric(source[amount_column], errors="coerce").fillna(0),
-            "jumlah_mhs_penunggak": 1,
-            "nim": source["item_id"].fillna("-").astype(str),
-            "nama_debitur": source["kegiatan"].fillna(source.get("uraian_detail", "-")).astype(str),
-            "iku": source.get("iku", source.get("kode_iku", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "kegiatan": source["kegiatan"].fillna("-").astype(str),
-            "akun": source.get("akun", source.get("nama_akun", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "mapping_status": source.get("mapping_status", source.get("data_quality_flag", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "uraian_detail": source.get("uraian_detail", source["kegiatan"]).fillna("-").astype(str),
-        }
-    )
+    frame = _fact_to_dashboard_frame(source)
     metadata = {
         "status": "gold_csv_ready",
         "source": _rel(SUPERSET_GOLD_PATH),
-        "source_kind": "superset_fact_anggaran",
+        "source_kind": "gold_fact_anggaran",
         "source_dataset": "fact_anggaran",
-        "source_note": "Fallback faktual: vw_dashboard_piutang_ukt belum ada, sehingga dashboard lokal membaca Gold fact_anggaran yang sama dengan Superset.",
+        "source_priority": ["superset_api", "gold_fact_anggaran"],
+        "superset_reference": read_superset_reference(),
+        "source_note": "Fallback faktual: Superset API belum tersedia, sehingga dashboard lokal membaca Gold fact_anggaran yang sama dengan dataset Superset.",
         "labels": SUPERSET_LABELS,
         "generated_at": utc_now_iso(),
         "row_count": int(len(frame)),
+        "fallback_reason": "superset_api_unavailable",
     }
     return frame, metadata
 
@@ -387,6 +432,8 @@ def build_dashboard_response(args: Any | None = None, section: str = "all", path
         "source_kind": metadata.get("source_kind"),
         "source_dataset": metadata.get("source_dataset"),
         "source_note": metadata.get("source_note"),
+        "source_priority": metadata.get("source_priority"),
+        "superset_reference": metadata.get("superset_reference"),
         "generated_at": metadata["generated_at"],
         "filters": filters,
         "data": {"labels": metadata.get("labels", PIUTANG_LABELS)},

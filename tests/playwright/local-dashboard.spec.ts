@@ -29,7 +29,7 @@ test("local dashboard filters, charts, cross-filter, and detail table update", a
 
   await page.goto("/local-dashboard/");
 
-  await expect(page.getByRole("heading", { name: /Dashboard Lokal/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Dashboard Lokal Piutang UKT|Dashboard Anggaran IKU Sains Data/ })).toBeVisible();
   await expect(page.locator("#kpiGrid").getByText("Rp3.500.000")).toBeVisible();
   await expect(page.getByText("validated: vw_dashboard_piutang_ukt")).toBeVisible();
   await expect(page.getByText("data/generated/gold/vw_dashboard_piutang_ukt.csv")).toBeVisible();

@@ -815,6 +815,46 @@
       flex-wrap: wrap;
       grid-column: 1 / -1;
     }
+    .upload-inline-status {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: .55rem;
+      padding: .75rem .85rem;
+      border: 1px solid #dbe3ef;
+      border-radius: .7rem;
+      background: #f8fafc;
+      color: #475569;
+      font-size: .86rem;
+      font-weight: 650;
+    }
+    .upload-inline-status[data-state="running"] {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #0f4c81;
+    }
+    .upload-inline-status[data-state="success"] {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .upload-inline-status[data-state="failed"] {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .upload-progress-track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(15, 76, 129, .12);
+    }
+    .upload-progress-fill {
+      width: var(--progress, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+      transition: width .18s ease;
+    }
     .upload-metrics-grid {
       display: grid;
       grid-template-columns: minmax(180px, 1.35fr) repeat(3, minmax(140px, 1fr));
@@ -1307,7 +1347,14 @@
       targetTahunAkademik: "2023/2024",
       dashboardUrl: "http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/"
     };
-    const API_BASE_URL = window.location.port === "8090" ? "http://localhost:8091" : window.location.origin;
+    const API_BASE_URL = (() => {
+      const params = new URLSearchParams(window.location.search);
+      const configured = params.get("api_base") || window.SILARAS_API_BASE_URL || localStorage.getItem("SILARAS_API_BASE_URL");
+      if (configured) return configured.replace(/\/$/, "");
+      if (window.location.port === "8090") return "http://localhost:8091";
+      if (window.location.port === "8190") return "http://localhost:8191";
+      return window.location.origin;
+    })();
 
     let pages = [
       ["beranda", "SILARAS SD", "home", "Sistem Lakehouse Anggaran RAB dan IKU Sains Data dari upload Excel sampai dashboard Superset."],
@@ -1353,7 +1400,15 @@
     const rupiah = value => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value || 0)).replace(/\s/g, "");
     const n = value => new Intl.NumberFormat("id-ID").format(Number(value || 0));
     const badge = (text, type = "info") => `<span class="status-badge status-${type}"><span class="dot" style="width:6px;height:6px;"></span>${text}</span>`;
-    const safe = value => value === undefined || value === null || value === "" ? "-" : value;
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+    const safe = value => value === undefined || value === null || value === "" ? "-" : escapeHtml(value);
     const has = value => value !== undefined && value !== null;
     const rawValue = item => item && typeof item === "object" && "value" in item ? item.value : item;
     function formatBytes(bytes) {
@@ -1621,6 +1676,10 @@
               <button class="guide-primary" type="submit"><span class="material-symbols-outlined" style="font-size:20px;">cloud_upload</span>1. Upload Data</button>
               <button class="guide-primary" type="button" id="runExcelLakehouse"><span class="material-symbols-outlined" style="font-size:20px;">play_arrow</span>2. Jalankan Sistem</button>
               <a class="guide-secondary" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Cek Dashboard</a>
+            </div>
+            <div id="uploadInlineStatus" class="upload-inline-status" data-state="idle">
+              <span>Siap menerima workbook Excel. Setelah upload, jalankan sistem untuk memperbarui Gold, database, dan Superset.</span>
+              <div class="upload-progress-track" aria-hidden="true"><div class="upload-progress-fill" style="--progress:0%;"></div></div>
             </div>
           </form>
         </div>
@@ -1996,6 +2055,10 @@
             <button class="secondary-button" type="button" id="runExcelLakehouse"><span class="material-symbols-outlined" style="font-size:18px;">play_arrow</span>Run Pipeline Excel</button>
             <a class="secondary-button" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Superset Dashboard</a>
           </div>
+          <div id="uploadInlineStatus" class="upload-inline-status" data-state="idle">
+            <span>Upload belum berjalan. Pilih workbook, lalu sistem akan menampilkan progress dan dataset aktif di sini.</span>
+            <div class="upload-progress-track" aria-hidden="true"><div class="upload-progress-fill" style="--progress:0%;"></div></div>
+          </div>
         </form>
         <div class="upload-metrics-grid">
           ${tailwindCard("Run ID", safe(summary.run_id), "Pipeline run terakhir", "tag", "#0b57d0", "#eff6ff")}
@@ -2139,13 +2202,14 @@
       return `<div class="terminal-line"><span class="terminal-time">[${time}]</span><span class="terminal-level ${levelClass}">${level}:</span><span class="terminal-text">${text}</span></div>`;
     }
 
+    // UAT submissions stored in localStorage
+    const UAT_KEY = "portal_uat_submissions";
+    const UAT_DRAFT_KEY = "portal_uat_draft";
     function selectScore(el) {
       el.parentElement.querySelectorAll('.score-box').forEach(box => box.classList.remove('active'));
       el.classList.add('active');
+      persistUATDraftFromDom();
     }
-
-    // UAT submissions stored in localStorage
-    const UAT_KEY = "portal_uat_submissions";
     function getUATSubmissions() {
       try {
         const parsed = JSON.parse(localStorage.getItem(UAT_KEY) || "[]");
@@ -2159,6 +2223,73 @@
       const all = getUATSubmissions();
       all.unshift({ id: `uat-${Date.now()}-${Math.random().toString(16).slice(2)}`, ...entry });
       setUATSubmissions(all);
+    }
+    function getUATDraft() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(UAT_DRAFT_KEY) || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch { return {}; }
+    }
+    function hasUATDraft() {
+      const draft = getUATDraft();
+      return Boolean((draft.evaluator || "").trim() || (draft.module || "").trim() || (draft.feedback || "").trim() || Object.keys(draft.scores || {}).length);
+    }
+    function setUATDraft(draft) {
+      localStorage.setItem(UAT_DRAFT_KEY, JSON.stringify({ ...draft, updated_at: new Date().toISOString() }));
+    }
+    function clearUATDraft() {
+      localStorage.removeItem(UAT_DRAFT_KEY);
+      state.isUserEditing = false;
+      state.dirtyFields.delete("uatForm");
+    }
+    function readUATDraftFromDom() {
+      const scores = {};
+      document.querySelectorAll("#uatForm .score-boxes").forEach(group => {
+        const active = group.querySelector(".score-box.active");
+        if (active) scores[group.dataset.criteria || ""] = Number(active.textContent);
+      });
+      return {
+        evaluator: document.getElementById("uat-evaluator")?.value || "",
+        module: document.getElementById("uat-module")?.value || "",
+        feedback: document.getElementById("uat-feedback")?.value || "",
+        scores,
+      };
+    }
+    function persistUATDraftFromDom() {
+      if (!document.getElementById("uatForm")) return;
+      state.isUserEditing = true;
+      state.lastUserInputAt = Date.now();
+      state.dirtyFields.add("uatForm");
+      setUATDraft(readUATDraftFromDom());
+    }
+    function applyUATDraft() {
+      const form = document.getElementById("uatForm");
+      if (!form) return;
+      const draft = getUATDraft();
+      const evaluator = document.getElementById("uat-evaluator");
+      const module = document.getElementById("uat-module");
+      const feedback = document.getElementById("uat-feedback");
+      if (evaluator && draft.evaluator) evaluator.value = draft.evaluator;
+      if (module && draft.module) module.value = draft.module;
+      if (feedback && draft.feedback) feedback.value = draft.feedback;
+      Object.entries(draft.scores || {}).forEach(([criteria, score]) => {
+        const group = form.querySelector(`.score-boxes[data-criteria="${CSS.escape(criteria)}"]`);
+        if (!group) return;
+        group.querySelectorAll(".score-box").forEach(box => box.classList.toggle("active", Number(box.textContent) === Number(score)));
+      });
+    }
+    function bindUATDraftControls() {
+      const form = document.getElementById("uatForm");
+      if (!form || form.dataset.draftBound) return;
+      form.dataset.draftBound = "true";
+      form.querySelectorAll("input, select, textarea").forEach(input => {
+        input.addEventListener("input", persistUATDraftFromDom);
+        input.addEventListener("change", persistUATDraftFromDom);
+        input.addEventListener("focus", () => {
+          state.isUserEditing = true;
+          state.dirtyFields.add("uatForm");
+        });
+      });
     }
     function deleteUATSubmission(encodedId) {
       const id = decodeURIComponent(encodedId || "");
@@ -2327,9 +2458,11 @@
           ${historySection}
           
         </div>`;
+      applyUATDraft();
+      bindUATDraftControls();
     }
 
-    function submitUAT(e) {
+    async function submitUAT(e) {
       e.preventDefault();
       const evaluator = document.getElementById("uat-evaluator").value.trim();
       const module = document.getElementById("uat-module").value;
@@ -2343,8 +2476,15 @@
         return;
       }
       const now = new Date().toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
-      saveUATSubmission({ time: now, evaluator, module, scores, feedback });
-      showToast("Evaluasi berhasil disimpan!");
+      const entry = { time: now, evaluator, module, scores, feedback };
+      saveUATSubmission(entry);
+      clearUATDraft();
+      try {
+        await apiPost("/api/uat/submit", { mode: "local_feedback", ...entry });
+        showToast("Evaluasi berhasil disimpan!");
+      } catch (error) {
+        showToast("Evaluasi lokal tersimpan; backend UAT perlu dicek.");
+      }
       renderAnalytics();
     }
 
@@ -2687,6 +2827,36 @@
       return payload;
     }
 
+    function apiUpload(path, formData, onProgress) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", `${API_BASE_URL}${path}`);
+        xhr.upload.onprogress = event => {
+          if (event.lengthComputable && typeof onProgress === "function") {
+            onProgress(Math.round((event.loaded / event.total) * 100));
+          }
+        };
+        xhr.onload = () => {
+          let payload = {};
+          try { payload = JSON.parse(xhr.responseText || "{}"); } catch {}
+          if (xhr.status >= 200 && xhr.status < 300) resolve(payload);
+          else reject(new Error(payload.message || `POST ${path} gagal (${xhr.status})`));
+        };
+        xhr.onerror = () => reject(new Error("Upload gagal karena koneksi backend terputus."));
+        xhr.send(formData);
+      });
+    }
+
+    function setUploadInlineStatus(container, message, stateName = "idle", progress = null) {
+      const target = container || document.querySelector(".page.active #uploadInlineStatus") || document.getElementById("uploadInlineStatus");
+      if (!target) return;
+      target.dataset.state = stateName;
+      const label = target.querySelector("span");
+      if (label) label.textContent = message;
+      const fill = target.querySelector(".upload-progress-fill");
+      if (fill && progress !== null) fill.style.setProperty("--progress", `${Math.max(0, Math.min(100, progress))}%`);
+    }
+
     function uatMatrixTable(items) {
       return `<div class="table-wrap table-wide"><table>
         <thead><tr><th>Indikator</th><th>Pertanyaan</th><th style="text-align:right;">Skor</th><th style="text-align:right;">Persentase</th><th>Kategori</th><th style="text-align:right;">Responden</th><th>Sumber</th></tr></thead>
@@ -2716,41 +2886,70 @@
     }
 
     function bindExcelLakehouseControls() {
-      const form = document.getElementById("excelDatasetForm");
-      if (form && !form.dataset.bound) {
+      document.querySelectorAll("#excelDatasetForm").forEach(form => {
+      if (!form.dataset.bound) {
         form.dataset.bound = "true";
+        const inlineStatus = form.querySelector("#uploadInlineStatus");
+        form.querySelectorAll("input[type='file']").forEach(input => {
+          input.addEventListener("change", () => {
+            const countFiles = input.files?.length || 0;
+            setUploadInlineStatus(inlineStatus, countFiles ? `${countFiles} workbook dipilih. Klik Upload Dataset Excel untuk menyimpan ke Raw.` : "Belum ada workbook dipilih.", "idle", 0);
+          });
+        });
         form.addEventListener("submit", async event => {
           event.preventDefault();
           const formData = new FormData(form);
+          appendRuntimeContext(formData);
+          state.isUploading = true;
+          state.lastUserInputAt = Date.now();
+          form.querySelectorAll("button, input, select").forEach(item => item.disabled = true);
+          setUploadInlineStatus(inlineStatus, "Mengunggah workbook ke backend lokal...", "running", 8);
           try {
-            const result = await apiPost("/api/upload/excel-dataset", formData);
-            showToast(`Dataset Excel tersimpan: ${result.dataset_id}`);
+            const result = await apiUpload("/api/upload/excel-dataset", formData, progress => {
+              setUploadInlineStatus(inlineStatus, `Mengunggah workbook... ${progress}%`, "running", progress);
+            });
+            const fileCount = result.files?.length || result.source_files?.length || 0;
+            setUploadInlineStatus(inlineStatus, `Dataset aktif: ${result.dataset_id || result.session_id || "uploaded"} (${fileCount} file). Lanjutkan dengan Jalankan Sistem.`, "success", 100);
+            showToast(`Dataset Excel tersimpan: ${result.dataset_id || result.session_id || "uploaded"}`);
             await loadLightweightStateForCurrentRoute();
           } catch (error) {
+            setUploadInlineStatus(inlineStatus, error.message || "Upload Excel gagal.", "failed", 100);
             showToast(error.message || "Upload Excel gagal");
+          } finally {
+            state.isUploading = false;
+            form.querySelectorAll("button, input, select").forEach(item => item.disabled = false);
           }
         });
       }
-      const run = document.getElementById("runExcelLakehouse");
-      if (run && !run.dataset.bound) {
+      });
+      document.querySelectorAll("#runExcelLakehouse").forEach(run => {
+      if (!run.dataset.bound) {
         run.dataset.bound = "true";
         run.addEventListener("click", async () => {
+          const form = run.closest("form") || document.querySelector(".page.active #excelDatasetForm");
+          const inlineStatus = form?.querySelector("#uploadInlineStatus");
           run.disabled = true;
           const old = run.innerHTML;
-          run.textContent = "Running...";
+          state.isCommitting = true;
+          setUploadInlineStatus(inlineStatus, "Menjalankan pipeline lengkap: Bronze, Silver, Gold, manifest, Postgres, Superset, truth status.", "running", 16);
+          run.textContent = "Menjalankan Sistem...";
           try {
-            const runId = state.excelLakehouse?.metadata?.run_id || state.excelLakehouse?.pipeline_summary?.run_id || "latest";
-            const result = await apiPost(`/api/pipeline/run/${runId}`, {});
-            showToast(result.pipeline?.status === "success" ? "Pipeline Excel selesai." : "Pipeline Excel perlu dicek.");
+            const result = await apiPost("/api/pipeline/full-run", { mode: "local-basic" });
+            const ok = result.status === "success";
+            setUploadInlineStatus(inlineStatus, ok ? "Pipeline lengkap selesai. Gold, database, dan aset Superset sudah diminta refresh." : "Pipeline selesai dengan catatan. Buka Orkestrasi untuk detail step.", ok ? "success" : "failed", 100);
+            showToast(ok ? "Pipeline lengkap selesai." : "Pipeline perlu dicek.");
             await loadLightweightStateForCurrentRoute();
           } catch (error) {
+            setUploadInlineStatus(inlineStatus, error.message || "Pipeline Excel gagal.", "failed", 100);
             showToast(error.message || "Pipeline Excel gagal");
           } finally {
+            state.isCommitting = false;
             run.disabled = false;
             run.innerHTML = old;
           }
         });
       }
+      });
     }
 
     async function apiDelete(path, body) {
@@ -3064,6 +3263,8 @@
         await loadLakehousePageState();
       } else if (route === "system") {
         await loadSystemPageState();
+      } else if (route === "analytics" && hasUATDraft()) {
+        state.activities = (await apiGet("/api/activity").catch(() => ({ activities: state.activities }))).activities || state.activities;
       } else {
         await loadState();
       }

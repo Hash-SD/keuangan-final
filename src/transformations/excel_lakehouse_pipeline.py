@@ -13,7 +13,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
-from src.common.paths import DATA_DIR, GENERATED_DIR, RAW_DIR, ensure_parent
+from src.common.paths import DATA_DIR, GENERATED_DIR, OUTPUTS_DIR, RAW_DIR, ensure_parent
 from src.common.runtime_paths import active_dataset_pointer, active_period_metadata, raw_rab_path
 from src.common.time_utils import utc_now_iso
 from src.excel_ingestion.excel_cell_extractor import ExcelSource, extract_excel_cells
@@ -206,11 +206,6 @@ def _write_session_and_combined(df: pd.DataFrame, layer: str, filename: str, ses
     if "dataset_session_id" not in current.columns:
         current["dataset_session_id"] = session_id
     current.to_csv(session_path, index=False)
-    if combined_path.exists():
-        existing = pd.read_csv(combined_path, low_memory=False)
-        if "dataset_session_id" in existing.columns:
-            existing = existing[existing["dataset_session_id"].fillna("").astype(str) != session_id]
-            current = pd.concat([existing, current], ignore_index=True, sort=False)
     current.to_csv(combined_path, index=False)
     parquet_name = f"{Path(filename).stem}.parquet"
     session_parquet = base / session_id / parquet_name
@@ -218,6 +213,63 @@ def _write_session_and_combined(df: pd.DataFrame, layer: str, filename: str, ses
     _write_parquet(session_parquet, df.assign(dataset_session_id=session_id) if "dataset_session_id" not in df.columns else df)
     _write_parquet(combined_parquet, current)
     return {"csv": str(combined_path), "parquet": str(combined_parquet), "session_csv": str(session_path), "session_parquet": str(session_parquet)}
+
+
+def _build_rab_reconciliation_report(silver_rab: pd.DataFrame, silver_validation: pd.DataFrame, fact: pd.DataFrame) -> dict[str, object]:
+    if silver_rab.empty:
+        return {
+            "status": "not_available",
+            "message": "Tidak ada Silver RAB untuk direkonsiliasi.",
+            "final_gold_total": 0,
+        }
+    main_rab = silver_rab[silver_rab.get("source_role", pd.Series(index=silver_rab.index, dtype=object)).fillna("").eq("main_rab")] if "source_role" in silver_rab.columns else silver_rab.iloc[0:0]
+    included = silver_rab[silver_rab.get("include_in_gold", pd.Series(index=silver_rab.index, dtype=bool)).fillna(False).astype(bool)] if "include_in_gold" in silver_rab.columns else silver_rab
+    included_main_rab = included[included.get("source_role", pd.Series(index=included.index, dtype=object)).fillna("").eq("main_rab")] if "source_role" in included.columns else included
+    orphan = silver_rab[silver_rab.get("row_type", pd.Series(index=silver_rab.index, dtype=object)).fillna("").eq("orphan_leaf_item")] if "row_type" in silver_rab.columns else silver_rab.iloc[0:0]
+    detail_support = silver_rab[silver_rab.get("source_role", pd.Series(index=silver_rab.index, dtype=object)).fillna("").eq("detail_support")] if "source_role" in silver_rab.columns else silver_rab.iloc[0:0]
+    formula_errors = []
+    if not silver_validation.empty and "validation_type" in silver_validation.columns:
+        error_rows = silver_validation[silver_validation["validation_type"].eq("FORMULA_ERROR")]
+        formula_errors = [
+            {
+                "cell": row.get("cell"),
+                "sheet": row.get("source_sheet"),
+                "row": int(row.get("source_row")) if pd.notna(row.get("source_row")) else None,
+                "formula": row.get("formula"),
+                "error": row.get("formula_error"),
+                "severity": row.get("severity") or "high",
+            }
+            for _, row in error_rows.iterrows()
+        ]
+    main_rab_final_total = float(pd.to_numeric(included_main_rab.get("jumlah", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()) if not included_main_rab.empty else 0.0
+    all_gold_total = float(pd.to_numeric(fact.get("jumlah_weighted_iku", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()) if not fact.empty else 0.0
+    return {
+        "status": "validated_with_warnings" if len(orphan) or formula_errors else "validated",
+        "source_files": sorted(str(value) for value in silver_rab["source_file"].dropna().unique()) if "source_file" in silver_rab.columns else [],
+        "main_sheet": "RAB",
+        "computed": {
+            "main_rab_leaf_total": float(pd.to_numeric(main_rab.get("jumlah", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()) if not main_rab.empty else 0.0,
+            "orphan_excluded_total": main_rab_final_total,
+            "detail_support_total": float(pd.to_numeric(detail_support.get("jumlah", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()) if not detail_support.empty else 0.0,
+            "all_gold_total": all_gold_total,
+        },
+        "excluded_rows": [
+            {
+                "sheet": row.get("source_sheet"),
+                "row": int(row.get("source_row")) if pd.notna(row.get("source_row")) else None,
+                "amount": float(row.get("jumlah") or 0),
+                "reason": "orphan_not_in_parent_sum",
+                "description": row.get("uraian_detail"),
+            }
+            for _, row in orphan.iterrows()
+        ],
+        "formula_errors": formula_errors,
+        "warnings": [
+            {"reason": "detail_support_sheets_not_included_in_gold_to_prevent_double_count"}
+        ] + ([{"reason": "orphan_rows_excluded_from_gold"}] if len(orphan) else []),
+        "final_gold_total": main_rab_final_total,
+        "all_gold_total": all_gold_total,
+    }
 
 
 def _archive_raw_sources(sources: list[ExcelSource], run_id: str, session_id: str) -> list[dict[str, object]]:
@@ -298,6 +350,23 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
             silver_rab["created_at"] = created_at
         silver_rab = clean_and_enrich_budget_items(silver_rab, silver_nomenklatur, bridge_nomenklatur)
     fact = build_fact_anggaran(silver_rab)
+    silver_rab_rows_classified = silver_rab.copy()
+    silver_rab_formula_coverage = (
+        silver_validation[silver_validation["validation_type"].eq("FORMULA_COVERAGE")].copy()
+        if not silver_validation.empty and "validation_type" in silver_validation.columns
+        else pd.DataFrame()
+    )
+    silver_rab_orphan_items = (
+        silver_rab[silver_rab["row_type"].eq("orphan_leaf_item")].copy()
+        if not silver_rab.empty and "row_type" in silver_rab.columns
+        else pd.DataFrame()
+    )
+    silver_detail_support_items = (
+        silver_rab[silver_rab["source_role"].eq("detail_support")].copy()
+        if not silver_rab.empty and "source_role" in silver_rab.columns
+        else pd.DataFrame()
+    )
+    rab_reconciliation_report = _build_rab_reconciliation_report(silver_rab, silver_validation, fact)
     mapped_fact = fact[fact["kode_iku"].notna() & fact["kode_iku"].astype(str).str.strip().ne("")] if not fact.empty else fact
     dashboard_iku = mapped_fact.groupby(["run_id", "tahun", "periode", "prodi", "fakultas", "iku", "kode_iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not mapped_fact.empty else pd.DataFrame()
     dashboard_mapping = fact.groupby(["run_id", "mapping_status", "data_quality_flag"], dropna=False)["item_id"].nunique().reset_index(name="item_count") if not fact.empty else pd.DataFrame()
@@ -308,6 +377,10 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     for layer, filename, df in [
         ("bronze", "bronze_excel_cells.csv", bronze),
         ("silver", "silver_rab_items_flexible.csv", silver_rab),
+        ("silver", "silver_rab_rows_classified.csv", silver_rab_rows_classified),
+        ("silver", "silver_rab_formula_coverage.csv", silver_rab_formula_coverage),
+        ("silver", "silver_rab_orphan_items.csv", silver_rab_orphan_items),
+        ("silver", "silver_detail_support_items.csv", silver_detail_support_items),
         ("silver", "silver_rab_hierarchy.csv", silver_hierarchy),
         ("silver", "silver_mapping.csv", silver_mapping),
         ("silver", "silver_validation.csv", silver_validation),
@@ -331,9 +404,12 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         "silver_rab_items": int(len(silver_rab)),
         "silver_nomenklatur_detail": int(len(silver_nomenklatur)),
         "fact_anggaran_rows": int(len(fact)),
+        "rab_reconciliation_status": rab_reconciliation_report.get("status"),
+        "rab_reconciliation_final_gold_total": rab_reconciliation_report.get("final_gold_total"),
         "outputs": outputs,
     }
     write_json(GENERATED_DIR / "excel_lakehouse_metadata.json", metadata)
+    write_json(OUTPUTS_DIR / "reports" / "rab_reconciliation_report.json", rab_reconciliation_report)
     return metadata
 
 

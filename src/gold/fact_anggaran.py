@@ -33,6 +33,9 @@ FACT_COLUMNS = [
     "source_file",
     "source_sheet",
     "source_row",
+    "source_role",
+    "row_type",
+    "quality_flags",
     "created_at",
 ]
 
@@ -52,8 +55,21 @@ def _split_iku(value: object) -> list[str]:
 def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
     if silver_items.empty:
         return pd.DataFrame(columns=FACT_COLUMNS)
+    source = silver_items.copy()
+    if {"source_file", "source_role"}.issubset(source.columns):
+        source_role = source["source_role"].fillna("").astype(str)
+        files_with_main_rab = set(source.loc[source_role.eq("main_rab"), "source_file"].dropna().astype(str))
+        if files_with_main_rab:
+            source_file = source["source_file"].fillna("").astype(str)
+            source = source[~source_file.isin(files_with_main_rab) | source_role.eq("main_rab")]
+    elif "source_role" in source.columns and source["source_role"].fillna("").astype(str).eq("main_rab").any():
+        source = source[source["source_role"].fillna("").astype(str).eq("main_rab")]
+    if "include_in_gold" in source.columns:
+        source = source[source["include_in_gold"].fillna(False).astype(bool)]
+    if "row_type" in source.columns:
+        source = source[~source["row_type"].fillna("").astype(str).isin(["subtotal_row", "subtotal_or_header", "total_row", "orphan_leaf_item", "blank_or_note"])]
     rows: list[dict[str, object]] = []
-    for _, item in silver_items.iterrows():
+    for _, item in source.iterrows():
         jumlah = pd.to_numeric(pd.Series([item.get("jumlah")]), errors="coerce").iloc[0]
         if pd.isna(jumlah):
             continue
@@ -93,6 +109,9 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
                     "source_file": item.get("source_file"),
                     "source_sheet": item.get("source_sheet"),
                     "source_row": item.get("source_row"),
+                    "source_role": item.get("source_role"),
+                    "row_type": item.get("row_type"),
+                    "quality_flags": item.get("quality_flags"),
                     "created_at": item.get("created_at"),
                 }
             )

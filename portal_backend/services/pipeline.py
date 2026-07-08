@@ -16,6 +16,7 @@ COMMANDS: dict[str, list[list[str]]] = {
     "bronze": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
     "silver": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
     "gold": [[sys.executable, "src/transformations/excel_lakehouse_pipeline.py"]],
+    "load-gold-postgres": [[sys.executable, "src/sql/load_gold_to_postgres.py"]],
     "superset-excel": [[sys.executable, "src/sql/setup_superset_excel_assets.py"]],
     "metrics": [
         [sys.executable, "src/metrics/pipeline_latency.py"],
@@ -31,7 +32,14 @@ COMMANDS: dict[str, list[list[str]]] = {
     "validate-gold": [[sys.executable, "src/metrics/validate_excel_lakehouse_counts.py"]],
 }
 
-FULL_RUN_BASIC = ["excel-lakehouse", "excel-count-validation", "excel-storage-manifest", "superset-excel", "truth-status"]
+FULL_RUN_BASIC = [
+    "excel-lakehouse",
+    "excel-count-validation",
+    "excel-storage-manifest",
+    "load-gold-postgres",
+    "superset-excel",
+    "truth-status",
+]
 FULL_RUN_UPLOADED_SOURCES = FULL_RUN_BASIC
 ACTIVITY_ACTIONS = {
     "quality-gate": ("excel_count_validation", "outputs/reports"),
@@ -39,6 +47,7 @@ ACTIVITY_ACTIONS = {
     "silver": ("excel_lakehouse", "silver"),
     "gold": ("excel_lakehouse", "gold"),
     "excel-lakehouse": ("excel_lakehouse", "gold/fact_anggaran"),
+    "load-gold-postgres": ("load_gold_to_postgres", "postgres/gold"),
     "superset-excel": ("superset_excel_dashboard", "superset"),
     "metrics": ("metrics", "outputs/metrics"),
     "excel-storage-manifest": ("excel_storage_manifest", "outputs/reports"),

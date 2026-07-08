@@ -49,6 +49,10 @@ Bronze:
 Silver:
 
 - `data/generated/silver/silver_rab_items_flexible.parquet`
+- `data/generated/silver/silver_rab_rows_classified.parquet`
+- `data/generated/silver/silver_rab_formula_coverage.parquet`
+- `data/generated/silver/silver_rab_orphan_items.parquet`
+- `data/generated/silver/silver_detail_support_items.parquet`
 - `data/generated/silver/silver_nomenklatur_detail.parquet`
 - `data/generated/silver/silver_mapping.parquet`
 - `data/generated/silver/silver_validation.parquet`
@@ -65,6 +69,7 @@ Reports:
 
 - `outputs/reports/pipeline_run_summary.json`
 - `outputs/reports/pipeline_count_validation.json`
+- `outputs/reports/rab_reconciliation_report.json`
 - `outputs/reports/storage_manifest.json`
 - `outputs/reports/system_truth_status.json`
 
@@ -114,6 +119,23 @@ Aturan IKU:
 - Satu item dengan satu IKU: `allocation_weight = 1`
 - Satu item dengan banyak IKU: `allocation_weight = 1 / jumlah_iku`
 - `jumlah_weighted_iku = jumlah * allocation_weight`
+
+## Rekonsiliasi RAB Excel
+
+Parser RAB menggunakan aturan strict reconciliation agar total Gold tidak membengkak:
+
+- Sheet `RAB` adalah sumber utama nominal untuk `fact_anggaran`.
+- Sheet rincian akun seperti `belanja bahan`, `perjalanan dinas`, `jasa profesi`, `belanja sewa`, dan sheet pendukung lain disimpan sebagai `detail_support`, tetapi tidak dijumlahkan ke Gold jika sheet `RAB` tersedia.
+- Baris subtotal, header, total, dan baris formula parent tidak masuk `fact_anggaran`.
+- Leaf item yang tidak masuk formula parent terdekat diberi flag `orphan_not_in_parent_sum` dan dikeluarkan dari Gold secara default.
+- Formula error seperti `#REF!`, `#VALUE!`, `#N/A`, dan `#DIV/0!` masuk laporan rekonsiliasi.
+- Warna/fill, bold, border, merged cell, dan formula disimpan sebagai metadata audit Bronze/Silver, bukan sebagai satu-satunya rule nominal.
+
+Contoh RAB 2025:
+
+- Gold total: `Rp235.746.266`
+- Excluded orphan: `RAB!P16` sebesar `Rp300.000`
+- Sheet rincian akun: disimpan sebagai supporting detail untuk mencegah double count
 
 ## Menjalankan Sample Pipeline
 

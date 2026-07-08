@@ -3,6 +3,7 @@ const API_BASE_URL = (() => {
   let configured = window.SILARAS_API_BASE_URL || localStorage.getItem("SILARAS_API_BASE_URL") || params.get("api_base");
   if (configured) return configured.replace(/\/$/, "");
   if (window.location.port === "8090") return "http://127.0.0.1:8091";
+  if (window.location.port === "8190") return "http://127.0.0.1:8191";
   return window.location.origin;
 })();
 
