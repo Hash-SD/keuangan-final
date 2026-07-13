@@ -10,6 +10,7 @@ import pandas as pd
 from .services.activity import append_activity, read_activities
 from .services.files import csv_preview, read_json, relative_path, resolve_preview_file
 from .services.excel_lakehouse import excel_lakehouse_status
+from .services import excel_upload
 from .services.excel_upload import commit_excel_lakehouse_dataset
 from .services.iku_review import iku_review_queue, mapping_review_queue, save_iku_override
 from .services.lakehouse import lakehouse_summary
@@ -21,6 +22,13 @@ from .services.superset_api import fetch_superset_fact_rows
 from .services.system_status import service_statuses
 from src.common.runtime_paths import raw_rab_path
 from src.status.system_truth_status import build_system_truth_status
+
+
+def _safe_relative_path(path):
+    try:
+        return relative_path(path)
+    except ValueError:
+        return str(path)
 
 
 def create_app() -> Flask:
@@ -154,6 +162,32 @@ def create_app() -> Flask:
     @app.get("/api/excel-lakehouse/status")
     def excel_lakehouse_status_endpoint():
         return jsonify(excel_lakehouse_status())
+
+    @app.get("/api/upload/session/status")
+    def upload_session_status():
+        active = read_json(excel_upload.ACTIVE_EXCEL_DATASET_PATH)
+        registry = read_json(excel_upload.EXCEL_DATASET_REGISTRY_PATH)
+        staging_dir = excel_upload.DATA_DIR / "uploads" / "staging"
+        staging_files = sorted(path for path in staging_dir.rglob("*") if path.is_file()) if staging_dir.exists() else []
+        active_files = active.get("files", []) if isinstance(active, dict) else []
+        committed_files = [
+            item
+            for item in active_files
+            if item.get("path") and (PORTAL_DIR.parent / str(item["path"])).exists()
+        ]
+        has_active = bool(active_files)
+        return jsonify(
+            {
+                "status": "committed" if committed_files else "empty",
+                "source": _safe_relative_path(excel_upload.ACTIVE_EXCEL_DATASET_PATH) if has_active else None,
+                "registry_source": _safe_relative_path(excel_upload.EXCEL_DATASET_REGISTRY_PATH) if registry and not registry.get("_error") else None,
+                "active_dataset_id": active.get("dataset_id") if isinstance(active, dict) else None,
+                "committed_file_count": len(committed_files),
+                "staging_file_count": len(staging_files),
+                "staging_status": "has_files" if staging_files else "empty",
+                "message": "Dataset Excel aktif tersedia di Raw." if committed_files else "Belum ada upload session aktif yang sudah commit.",
+            }
+        )
 
     @app.get("/api/storage/manifest")
     def storage_manifest():

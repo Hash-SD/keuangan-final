@@ -11,10 +11,21 @@ import requests
 from .paths import OUTPUTS_DIR
 
 
-BASE_URL = os.getenv("SUPERSET_BASE_URL", "http://localhost:8089").rstrip("/")
 USERNAME = os.getenv("SUPERSET_USERNAME", "admin")
 PASSWORD = os.getenv("SUPERSET_PASSWORD", "admin")
-TIMEOUT_SECONDS = float(os.getenv("SUPERSET_API_TIMEOUT_SECONDS", "1.0"))
+
+
+def _base_url() -> str:
+    explicit = os.getenv("SUPERSET_BASE_URL")
+    if explicit:
+        return explicit.rstrip("/")
+    host = os.getenv("SUPERSET_HOST", "localhost")
+    port = os.getenv("SUPERSET_PORT", "8089")
+    return f"http://{host}:{port}".rstrip("/")
+
+
+def _timeout_seconds() -> float:
+    return float(os.getenv("SUPERSET_API_TIMEOUT_SECONDS", "5.0"))
 
 FACT_COLUMNS = [
     "item_id",
@@ -58,14 +69,16 @@ def _read_json(path: Path) -> dict[str, Any] | None:
 
 def _login() -> requests.Session:
     session = requests.Session()
+    base_url = _base_url()
+    timeout = _timeout_seconds()
     login = session.post(
-        f"{BASE_URL}/api/v1/security/login",
+        f"{base_url}/api/v1/security/login",
         json={"username": USERNAME, "password": PASSWORD, "provider": "db", "refresh": True},
-        timeout=TIMEOUT_SECONDS,
+        timeout=timeout,
     )
     login.raise_for_status()
     session.headers.update({"Authorization": f"Bearer {login.json()['access_token']}"})
-    csrf = session.get(f"{BASE_URL}/api/v1/security/csrf_token/", timeout=TIMEOUT_SECONDS)
+    csrf = session.get(f"{base_url}/api/v1/security/csrf_token/", timeout=timeout)
     csrf.raise_for_status()
     session.headers.update({"X-CSRFToken": csrf.json()["result"]})
     return session
@@ -127,7 +140,7 @@ def fetch_superset_fact_rows(filters: dict[str, list[str]] | None = None, limit:
         return None, {"status": "not_available", "message": "Superset dataset_id belum tersedia.", "superset_reference": reference}
     try:
         session = _login()
-        response = session.post(f"{BASE_URL}/api/v1/chart/data", json=_chart_data_payload(int(dataset_id), filters=filters, limit=limit), timeout=TIMEOUT_SECONDS)
+        response = session.post(f"{_base_url()}/api/v1/chart/data", json=_chart_data_payload(int(dataset_id), filters=filters, limit=limit), timeout=_timeout_seconds())
         response.raise_for_status()
         result = response.json().get("result") or []
         data = result[0].get("data") if result and isinstance(result[0], dict) else []

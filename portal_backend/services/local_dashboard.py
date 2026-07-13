@@ -248,7 +248,7 @@ def _load_superset_gold_view() -> tuple[pd.DataFrame | None, dict[str, Any]]:
         return None, {
             "status": "missing_columns",
             "source": _rel(SUPERSET_GOLD_PATH),
-            "source_kind": "superset_fact_anggaran",
+            "source_kind": "gold_fact_anggaran",
             "source_dataset": "fact_anggaran",
             "generated_at": utc_now_iso(),
             "message": "Gold fact_anggaran tidak memiliki kolom minimum untuk dashboard lokal.",
