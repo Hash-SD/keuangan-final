@@ -151,9 +151,11 @@ python src\status\system_truth_status.py
 Hasil sample terakhir:
 
 - Bronze cells: `55340`
-- Silver RAB items: `445`
+- Silver RAB items: `393`
 - Nomenklatur detail: `248`
-- fact_anggaran rows: `445`
+- fact_anggaran rows: `607`
+- fact_anggaran weighted total: `Rp517.361.656`
+- fact_anggaran weighted 2025: `Rp235.746.266`
 - Count validation: `validated`
 
 ## Airflow
@@ -205,7 +207,24 @@ Endpoint pipeline:
 - `POST /api/pipeline/excel-lakehouse`
 - `POST /api/pipeline/excel-count-validation`
 - `POST /api/pipeline/excel-storage-manifest`
+- `POST /api/pipeline/load-gold-postgres`
 - `POST /api/pipeline/superset-excel`
+
+Endpoint dashboard lokal dan Superset:
+
+- `GET /api/local-dashboard/all`
+- `GET /api/local-dashboard/status`
+- `GET /api/local-dashboard/filters`
+- `GET /api/local-dashboard/summary`
+- `GET /api/local-dashboard/charts`
+- `GET /api/local-dashboard/table`
+- `GET /api/superset/assets`
+- `GET /api/superset/chart-data`
+
+Dashboard lokal mencoba membaca data dari Superset API terlebih dahulu melalui
+`/api/v1/chart/data`. Jika Superset tidak tersedia, dashboard fallback secara
+faktual ke Gold `fact_anggaran` lokal dan menandai `source_kind` sebagai
+`gold_fact_anggaran`.
 
 ## Superset
 

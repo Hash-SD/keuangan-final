@@ -4,6 +4,7 @@ import pandas as pd
 
 from portal_backend.app import create_app
 from portal_backend.services import local_dashboard
+from portal_backend.services import superset_api
 
 
 def _superset_fact_frame() -> pd.DataFrame:
@@ -64,3 +65,11 @@ def test_superset_chart_data_endpoint_returns_proxy_rows(monkeypatch):
     assert payload["source_dataset"] == "fact_anggaran"
     assert payload["row_count"] == 1
     assert payload["data"][0]["item_id"] == "superset-item-1"
+
+
+def test_superset_base_url_uses_compose_host_and_port(monkeypatch):
+    monkeypatch.delenv("SUPERSET_BASE_URL", raising=False)
+    monkeypatch.setenv("SUPERSET_HOST", "superset")
+    monkeypatch.setenv("SUPERSET_PORT", "8088")
+
+    assert superset_api._base_url() == "http://superset:8088"
