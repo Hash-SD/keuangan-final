@@ -1,0 +1,6 @@
+﻿component,status,evidence
+MinIO,QUERY_VALIDATED,"Read-only S3 ListObjectsV2: bucket lakehouse, 153 objects, prefix bronze/silver/gold/manifests/metrics/reports tersedia."
+PostgreSQL,QUERY_VALIDATED,psql query tersedia dari runtime sebelumnya.
+Trino,SERVICE_RUNNING,/v1/info HTTP 200; query table harus dibuktikan jika catalog/table tersedia.
+Iceberg,CONFIGURED_ONLY,status load dari report harus diverifikasi terhadap snapshot.
+Superset,SERVICE_RUNNING,/health HTTP 200; dataset/chart harus dibuktikan terpisah.

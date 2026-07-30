@@ -1,0 +1,116 @@
+{
+  "generated_at": "2026-07-30T11:25:59.259279+00:00",
+  "bucket": "lakehouse",
+  "endpoint_redacted": "configured",
+  "objects": [
+    {
+      "object_key": "metrics/data_freshness.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\metrics__data_freshness.json",
+      "size_bytes": 299,
+      "etag": "544e5f915fff8aeac848f319be216075",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "346b6780cf92b195be846d887e5e69a0903dfe099346dc09f9e8a1bb062ac088",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "metrics/pipeline_latency.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\metrics__pipeline_latency.json",
+      "size_bytes": 576,
+      "etag": "403ae2654d3805ce94d994723491ffd2",
+      "last_modified": "2026-06-09 01:16:13+00:00",
+      "sha256": "a04f14b214e4f62fb11b1caf957ce7c6e2295a7452ea3e85f4b31da590e3cdaf",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/active_dataset_pointer.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__active_dataset_pointer.json",
+      "size_bytes": 769,
+      "etag": "a60e9e7b212c5e19aa5033df6363db44",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "9a4c90893ce2d6afda2d895dd338dce2dc219475a24a4e10329b93e97bc19a1e",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/active_runtime_context.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__active_runtime_context.json",
+      "size_bytes": 511,
+      "etag": "f376d1053398261948221194392f2efb",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "8bc9c9388c4850936be5bf55f07bf8d0798eeeff58ebed5be76028b40e93d1b7",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/active_upload_session.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__active_upload_session.json",
+      "size_bytes": 1435,
+      "etag": "a2fd68216ddd4b2867fc73b596a652fc",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "c200cac126afa5aa1fece541561013381f14806d4b59bff622f148c459b60c00",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/latest_upload_metadata.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__latest_upload_metadata.json",
+      "size_bytes": 5970,
+      "etag": "15108df50da5ab224c63c165c7453dd4",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "fcfc15a484e44d5a9447621e03a74cb4553fa776692ce7e5a96589bef75b4a17",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/pipeline_run_summary.json",
+      "status": "NOT_FOUND_OR_UNREADABLE",
+      "reason": "NoSuchKey"
+    },
+    {
+      "object_key": "manifests/e2e_pipeline_by_year.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__e2e_pipeline_by_year.json",
+      "size_bytes": 31712,
+      "etag": "fce03322b89278dbfe697745e018693c",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "1b66f0bd836ff22ebd5cbf135dd8f08c6358c4a118f3502721c1075607976f1f",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/e2e_upload_sessions.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__e2e_upload_sessions.json",
+      "size_bytes": 50248,
+      "etag": "7477400a62ede9c732b95b6a7e583fc4",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "6b0970cf6aec7e6a8982d6dde6ea9ce9f46ed6993b843506318dde24d3dd42b1",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/activity_log.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__activity_log.json",
+      "size_bytes": 28617,
+      "etag": "7b5be0d852fb04c97932df048ec6be8f",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "6d1a67802deec682a043811afaa509668210eb0959d489577e348a6126842147",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/storage_manifest.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__storage_manifest.json",
+      "size_bytes": 1045510,
+      "etag": "7f385b7d91ce3368c52bae8fcfca5102",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "0c438bb1489b27a29c5dc2a947ed801499501be9098e5bf799cd00707f1b413b",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "manifests/system_truth_status.json",
+      "local_copy": "outputs\\bab4_evidence_final\\00_manifest\\minio_evidence\\manifests__system_truth_status.json",
+      "size_bytes": 1130259,
+      "etag": "490c587bf0669ac86574bbf010421ec8",
+      "last_modified": "2026-06-09 01:16:12+00:00",
+      "sha256": "aff62683490f3c011d6f22df9f0cafb592b135a720ed6b8ffdfae01dedf6d3d1",
+      "status": "RETRIEVED"
+    },
+    {
+      "object_key": "reports/rab_reconciliation_report.json",
+      "status": "NOT_FOUND_OR_UNREADABLE",
+      "reason": "NoSuchKey"
+    }
+  ]
+}

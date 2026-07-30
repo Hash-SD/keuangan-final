@@ -1,0 +1,6 @@
+﻿dag_id,run_id,state,execution_date,start_date,end_date
+keuangan_prodi_excel_lakehouse_dag,manual__2026-07-06T05:04:54.492897+00:00,failed,2026-07-06T05:04:54.492897+00:00,2026-07-06T05:04:55.033281+00:00,2026-07-06T05:06:11.138430+00:00
+keuangan_prodi_excel_lakehouse_dag,manual_final_verification_sample_fixed_20260629155327,success,2026-06-29T08:53:29+00:00,2026-06-29T08:53:30.129341+00:00,2026-06-29T09:11:06.104905+00:00
+keuangan_prodi_excel_lakehouse_dag,manual_final_verification_stdin_fixed_20260629154923,success,2026-06-29T08:49:26+00:00,2026-06-29T08:49:26.239756+00:00,2026-06-29T08:51:07.191753+00:00
+keuangan_prodi_excel_lakehouse_dag,manual_final_verification_stdin_20260629154457,failed,2026-06-29T08:45:00+00:00,2026-06-29T08:45:00.961848+00:00,2026-06-29T08:47:04.250732+00:00
+keuangan_prodi_excel_lakehouse_dag,manual_final_verification_retry_20260629153331,failed,2026-06-29T08:33:33+00:00,2026-06-29T08:33:34.357546+00:00,2026-06-29T08:35:35.409954+00:00

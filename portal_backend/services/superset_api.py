@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,8 @@ def _timeout_seconds() -> float:
 
 FACT_COLUMNS = [
     "item_id",
+    "dataset_session_id",
+    "run_id",
     "tahun",
     "periode",
     "prodi",
@@ -148,3 +151,29 @@ def fetch_superset_fact_rows(filters: dict[str, list[str]] | None = None, limit:
         return frame, {"status": "ready", "source_kind": "superset_api", "source_dataset": "fact_anggaran", "superset_reference": reference}
     except Exception as exc:
         return None, {"status": "unreachable", "message": str(exc), "superset_reference": reference}
+
+
+def record_dashboard_verification(dataset_session_id: str, pipeline_run_id: str) -> dict[str, Any]:
+    frame, evidence = fetch_superset_fact_rows({"dataset_session_id": [dataset_session_id], "run_id": [pipeline_run_id]})
+    if frame is None or frame.empty:
+        return {"status": "not_available", "message": "Superset belum membaca data untuk dataset/run aktif.", "evidence": evidence}
+    manifest_path = OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{pipeline_run_id}.json"
+    manifest = _read_json(manifest_path) or {}
+    if manifest.get("dataset_session_id") != dataset_session_id:
+        return {"status": "invalid", "message": "Manifest tidak cocok dengan dataset yang diverifikasi."}
+    if manifest.get("pipeline_run_id") != pipeline_run_id:
+        return {"status": "invalid", "message": "Manifest tidak cocok dengan pipeline run yang diverifikasi."}
+    row_count = int(len(frame))
+    weighted_total = float(pd.to_numeric(frame.get("jumlah_weighted_iku"), errors="coerce").fillna(0).sum())
+    expected_rows = manifest.get("postgres_row_count") or manifest.get("fact_anggaran_rows")
+    expected_total = manifest.get("postgres_weighted_total")
+    if expected_rows is None or row_count != int(expected_rows):
+        return {"status": "invalid", "message": "Jumlah baris Superset tidak sama dengan Gold tervalidasi."}
+    if expected_total is not None and abs(weighted_total - float(expected_total)) > 0.01:
+        return {"status": "invalid", "message": "Total Superset tidak sama dengan Gold tervalidasi."}
+    verified_at = datetime.now(timezone.utc).isoformat()
+    manifest.update({"dashboard_verified_at": verified_at, "superset_verified_row_count": row_count, "superset_verified_weighted_total": weighted_total})
+    temporary = manifest_path.with_suffix(".tmp")
+    temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    temporary.replace(manifest_path)
+    return {"status": "validated", "dashboard_verified_at": verified_at, "row_count": row_count, "weighted_total": weighted_total}

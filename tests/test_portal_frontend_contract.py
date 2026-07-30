@@ -37,3 +37,17 @@ def test_upload_and_run_show_inline_status_and_use_full_pipeline():
     assert "setUploadInlineStatus" in html
     assert 'apiPost("/api/pipeline/full-run", { mode: "local-basic" })' in html
     assert "appendRuntimeContext(formData)" in html
+
+
+def test_upload_is_guarded_by_production_readiness():
+    html = _html()
+
+    assert "/api/production/readiness" in html
+    assert "Upload dinonaktifkan sampai production release gate lulus" in html
+
+
+def test_upload_session_is_reloaded_on_every_data_page_render():
+    html = _html()
+
+    assert 'apiGet("/api/upload/session/status")' in html
+    assert "state.datasetSession = datasetSession" in html

@@ -22,3 +22,7 @@ def test_excel_lakehouse_dag_imports_and_has_final_tasks():
     assert "validate_trino_postgres_catalog" in task_ids
     assert "refresh_superset_dashboard" in task_ids
     assert "generate_system_status" in task_ids
+    env = dag.get_task("extract_excel_to_bronze").env
+    assert env["DATASET_SESSION_ID"] == "{{ dag_run.conf.get('dataset_session_id', '') }}"
+    assert env["PIPELINE_RUN_ID"] == "{{ dag_run.conf.get('pipeline_run_id', '') }}"
+    assert env["AIRFLOW_DAG_RUN_ID"] == "{{ dag_run.run_id }}"

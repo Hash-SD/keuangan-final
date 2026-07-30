@@ -32,6 +32,7 @@ REQUIRED_COLUMNS = [
 ]
 
 FILTER_COLUMNS = [
+    "item_id",
     "tahun_akademik",
     "tahun_anggaran",
     "semester",
@@ -286,6 +287,8 @@ def apply_dashboard_filters(frame: pd.DataFrame, filters: dict[str, list[str]]) 
     for column, values in filters.items():
         if column not in FILTER_COLUMNS or not values:
             continue
+        if column not in filtered.columns:
+            return filtered.iloc[0:0].copy()
         allowed = {str(value) for value in values}
         filtered = filtered[filtered[column].astype(str).isin(allowed)]
     return filtered.copy()
@@ -383,6 +386,7 @@ def build_detail_table(frame: pd.DataFrame, limit: int = 50, offset: int = 0) ->
         "nama_prodi",
         "nama_fakultas",
         "kualitas",
+        "item_id",
         "nim",
         "nama_debitur",
         "nominal_piutang_rp",

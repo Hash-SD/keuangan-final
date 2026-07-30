@@ -1,0 +1,51 @@
+[
+  {
+    "component": "Kelengkapan atribut wajib",
+    "numerator": 7891.0,
+    "denominator": 7891.0,
+    "score_percent": 100.0,
+    "definition": "Nilai atribut wajib terisi dibagi seluruh nilai wajib."
+  },
+  {
+    "component": "Validitas nilai",
+    "numerator": 607.0,
+    "denominator": 607.0,
+    "score_percent": 100.0,
+    "definition": "Formula weighted, interval bobot, tahun, dan source_row valid."
+  },
+  {
+    "component": "Konsistensi",
+    "numerator": 607.0,
+    "denominator": 607.0,
+    "score_percent": 100.0,
+    "definition": "Tidak ada duplicate grain item_id x kode_iku."
+  },
+  {
+    "component": "Mapping item unik",
+    "numerator": 243.0,
+    "denominator": 253.0,
+    "score_percent": 96.04743083003953,
+    "definition": "Unit ukur adalah item unik, bukan baris alokasi IKU."
+  },
+  {
+    "component": "Rekonsiliasi lingkup sama",
+    "numerator": 6.0,
+    "denominator": 6.0,
+    "score_percent": 100.0,
+    "definition": "Hanya periode dengan kontrol sumber main_rab yang tersedia dibandingkan dengan Gold pada lingkup sama."
+  },
+  {
+    "component": "Traceability",
+    "numerator": 607.0,
+    "denominator": 607.0,
+    "score_percent": 100.0,
+    "definition": "Kelengkapan atribut penelusuran."
+  },
+  {
+    "component": "Skor Kualitas Data Turunan untuk Evaluasi Penelitian (parsial)",
+    "numerator": NaN,
+    "denominator": NaN,
+    "score_percent": 99.34123847167325,
+    "definition": "Rata-rata aritmetika enam komponen artefak aktif; bobot sama karena tidak ditemukan bobot metodologis. Tidak merepresentasikan klaim kualitas menyeluruh karena kontrol 2023/2024 belum tersedia."
+  }
+]

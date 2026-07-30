@@ -1,0 +1,41 @@
+tahun,periode,prodi,source_file,source_sheet,source_row,source_role,fill_color,row_type,row_text,dataset_session_id
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,1,main_rab,FFFF0000,KEGIATAN,"PS: Untuk edit data, bisa langsung ke sheet tiap akun || Jika akan hapus data cukup hapus teks/angka/ clear content, jangan lakukan insert/delete row/ column|| Data RPD otomatis mengikuti sheet RAB, hanya perlu ubah jadwal penarikan",excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,2,main_rab,FFD8D8D8,HEADER,Kode Program/Kegiatan/Output/Suboutput/Komponen/SubKomp/Detail | Uraian | Jumlah Usulan | Sasaran Kegiatan | Indikator Kinerja Kegiatan | Program Strategis | Indikator Kinerja Program | Definisi Operasional | Mendukung IKU,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,3,main_rab,FFFFFF00,NOMENKLATUR,4471.DBA | Pendidikan Tinggi | #REF!,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,4,main_rab,FFFFFF00,NOMENKLATUR,4471.DBA.001. | Layanan Pendidikan (PNBP/BLU) | #REF!,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,5,main_rab,FFFFFF00,NOMENKLATUR,4471.DBA.001.60 | Penyelenggaraan Layanan Pendidikan Perguruan Tinggi | #REF!,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,6,main_rab,FFFF0000,KEGIATAN,471.DBA.001.60.G | Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains | 52600000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,7,main_rab,FF00B0F0,UNIT,471.DBA.001.60.G.SD | SAINS DATA | 52600000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,8,main_rab,FF92D050,AKUN,471.DBA.001.60.G.SD.522141 | Belanja Sewa | 44550000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,10,main_rab,FF92D050,AKUN,4471.DBA.001.60.G.SD.524111 | Belanja Perjalanan Dinas Biasa | 5900000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,13,main_rab,FF92D050,AKUN,4471.DBA.001.60.G.SD.521211 | Belanja Bahan | 2150000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,17,main_rab,FFFF0000,KEGIATAN,471.DBA.001.60.H | Pelaksanaan Kegiatan Studium Generale/Sosialisasi Fakultas Sains | 30970000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,18,main_rab,FF00B0F0,UNIT,471.DBA.001.60.H.SD | SAINS DATA | 30970000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,19,main_rab,FF92D050,AKUN,471.DBA.001.60.H.SD.522151 | Belanja Jasa Profesi | 14400000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,22,main_rab,FF92D050,AKUN,4471.DBA.001.60.H.SD.524111 | Belanja Perjalanan Dinas | 7610000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,26,main_rab,FF92D050,AKUN,4471.DBA.001.60.H.SD.521211 | Belanja Bahan | 8310000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,33,main_rab,FF92D050,AKUN,4471.DBA.001.60.H.SD.522141 | Belanja Sewa | 650000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,35,main_rab,FFFF0000,KEGIATAN,4471.DBA.001.60.I | Pelaksanaan Kegiatan Workshop/ FGD/ Diskusi Publik Fakultas Sains | 50344000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,36,main_rab,FF00B0F0,UNIT,4471.DBA.001.60.I.SD | SAINS DATA | 50344000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,37,main_rab,FF92D050,AKUN,4471.DBA.001.60.I.SD.522151 | Belanja Jasa Profesi | 16200000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,43,main_rab,FF92D050,AKUN,4471.DBA.001.60.I.SD.524111 | Belanja Perjalanan Dinas | 26830000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,53,main_rab,FF92D050,AKUN,4471.DBA.001.60.I.SD.521211 | Belanja Bahan | 7314000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,67,main_rab,FFFF0000,KEGIATAN,4471.DBA.001.60.J | Pelaksanaan Operasional Fakultas Sains | #REF!,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,68,main_rab,FF00B0F0,UNIT,4471.DBA.001.60.J.SD | Sains Data | #REF!,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,69,main_rab,FF92D050,AKUN,4471.DBA.001.60.J.SD.524111 | Belanja Perjalanan Dinas | 51783666,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,83,main_rab,FF92D050,AKUN,4471.DBA.001.60.J.SD.521211 | Belanja Bahan | 5637500,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,90,main_rab,FF92D050,AKUN,4471.DBA.001.60.J.SD.521219 | Belanja Barang Non Operasional | 31080000,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,94,main_rab,FF92D050,AKUN,4471.DBA.001.60.J.SD.521111 | Belanja Keperluan Perkantoran | 2775000.0000000005,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,96,main_rab,FFFF0000,KEGIATAN,4471.DBA.001.60.O | Penyelenggaraan Operasional Perkuliahan | 10556100,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,97,main_rab,FF00B0F0,UNIT,4471.DBA.001.60.O.SD | Sains Data | 10556100,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,RAB,98,main_rab,FF92D050,AKUN,4471.DBA.001.60.O.SD.521811 | Belanja Barang Persediaan Barang Konsumsi | 10556100,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,3,reconciliation,FFFFFF00,NOMENKLATUR,Workshop Implementasi dan Evaluasi Kurikulum OBE | jasa profesi | 5400000 | Agenda Fakultas -- rumpun ilmu 2024 || 2025 boleh dilakukan pendalaman,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,14,reconciliation,FFFFFF00,NOMENKLATUR,Keperluan cetak program studi kimia | belanja bahan | 4593750 | coba dipertimbangkan untuk online || tetap lanjut,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,20,reconciliation,FFFFFF00,NOMENKLATUR,Workshop paten untuk dosen dan mahasiswa | jasa profesi | 2700000 | Agenda ngopi sore FS - Tim Paten ITERA,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,23,reconciliation,FFFFFF00,NOMENKLATUR,"Workshop penulisan artikel untuk dosen dan mahasiswa | jasa profesi | 2700000 | Agenda FS 2025, > 2 narsum, > 1 hari, perlu pemantauan",excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,26,reconciliation,FFFFFF00,NOMENKLATUR,Workshop GC MS | jasa profesi | 2700000 | Agenda FS 2025,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,29,reconciliation,FFFFFF00,NOMENKLATUR,Workshop HPLC | jasa profesi | 2700000 | Agenda FS 2025,excel-20260730T124202+0000-d25a77
+2025,,Sains Data,RAB_2025_SD_RAB_IKU.xlsx,Rekap + Komen FS,43,reconciliation,FFFF0000,KEGIATAN,Kompetisi PKM Internal Prodi | belanja barang non operasional lainnya | 9990000 | Tidak bisa hibah,excel-20260730T124202+0000-d25a77
+2024,,Sains Data,Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx,USULAN PROKER SD,32,unknown,FF92D050,AKUN,4 | Akreditasi Lapangan Prodi | 1 | 32606250 | Sertifikat akreditasi | Dosen & Mahasiswa,excel-20260730T124202+0000-d25a77
+2024,,Sains Data,Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx,USULAN PROKER SD,33,unknown,FF92D050,AKUN,5 | Honor Output Tim Borang | 1 | 6350000,excel-20260730T124202+0000-d25a77
+2024,,Sains Data,Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx,PKS,50,unknown,FFFFFF00,NOMENKLATUR,Universitas Indonesia,excel-20260730T124202+0000-d25a77

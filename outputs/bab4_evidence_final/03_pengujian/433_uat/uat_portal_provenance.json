@@ -1,0 +1,12 @@
+{
+  "endpoint": "POST /api/uat/submit",
+  "backend_file": "portal_backend/app.py",
+  "storage_file": null,
+  "activity_log": "outputs/reports/activity_log.json",
+  "summary_endpoint": "GET /api/uat/summary",
+  "summary_http_status": 200,
+  "summary_source": "outputs/uat/uat_matrix_summary.json",
+  "submission_count": 1,
+  "documentation_status": "VALIDATED_WITH_DOCUMENTATION_LIMITATION",
+  "generator_note": "src/metrics/generate_uat.py is treated as report generation only; portal submission data takes precedence. Raw portal submission file is unavailable in the current filesystem."
+}

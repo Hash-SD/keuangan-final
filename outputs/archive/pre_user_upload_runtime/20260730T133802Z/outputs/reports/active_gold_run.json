@@ -1,0 +1,75 @@
+{
+  "status": "PUBLISHED",
+  "dataset_session_id": "test-session",
+  "pipeline_run_id": "pipeline-test-run",
+  "outputs": {
+    "bronze_excel_cells.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\bronze\\test-session\\pipeline-test-run\\bronze_excel_cells.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\bronze\\test-session\\pipeline-test-run\\bronze_excel_cells.parquet"
+    },
+    "silver_rab_items_flexible.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_items_flexible.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_items_flexible.parquet"
+    },
+    "silver_rab_rows_classified.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_rows_classified.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_rows_classified.parquet"
+    },
+    "silver_rab_formula_coverage.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_formula_coverage.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_formula_coverage.parquet"
+    },
+    "silver_rab_orphan_items.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_orphan_items.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_orphan_items.parquet"
+    },
+    "silver_detail_support_items.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_detail_support_items.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_detail_support_items.parquet"
+    },
+    "silver_rab_hierarchy.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_hierarchy.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_rab_hierarchy.parquet"
+    },
+    "silver_mapping.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_mapping.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_mapping.parquet"
+    },
+    "silver_validation.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_validation.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_validation.parquet"
+    },
+    "silver_nomenklatur_detail.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_nomenklatur_detail.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_nomenklatur_detail.parquet"
+    },
+    "silver_bridge_detail_iku.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_bridge_detail_iku.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_bridge_detail_iku.parquet"
+    },
+    "silver_nomenklatur_warnings.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_nomenklatur_warnings.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\silver\\test-session\\pipeline-test-run\\silver_nomenklatur_warnings.parquet"
+    },
+    "fact_anggaran.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\fact_anggaran.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\fact_anggaran.parquet"
+    },
+    "vw_dashboard_iku_anggaran.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_iku_anggaran.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_iku_anggaran.parquet"
+    },
+    "vw_dashboard_mapping_quality.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_mapping_quality.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_mapping_quality.parquet"
+    },
+    "vw_dashboard_reconciliation.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_reconciliation.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_reconciliation.parquet"
+    },
+    "vw_dashboard_detail_item.csv": {
+      "csv": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_detail_item.csv",
+      "parquet": "C:\\Users\\hm\\AppData\\Local\\Temp\\pytest-of-hm\\pytest-145\\test_excel_lakehouse_pipeline_0\\generated\\gold\\test-session\\pipeline-test-run\\vw_dashboard_detail_item.parquet"
+    }
+  }
+}

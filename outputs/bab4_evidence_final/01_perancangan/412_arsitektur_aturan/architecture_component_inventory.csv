@@ -1,0 +1,11 @@
+﻿component,container,state,health,status
+airflow-scheduler,keuangan-airflow-scheduler,running,,SERVICE_RUNNING
+airflow-webserver,keuangan-airflow-webserver,running,healthy,SERVICE_RUNNING
+minio,keuangan-minio,running,healthy,SERVICE_RUNNING
+portal-backend,keuangan-portal-backend,running,healthy,SERVICE_RUNNING
+portal-frontend,keuangan-portal-frontend,running,healthy,SERVICE_RUNNING
+postgres-metastore,keuangan-postgres-metastore,running,healthy,SERVICE_RUNNING
+spark-master,keuangan-spark-master,running,healthy,SERVICE_RUNNING
+spark-worker,keuangan-spark-worker,running,,SERVICE_RUNNING
+superset,keuangan-superset,running,healthy,SERVICE_RUNNING
+trino,keuangan-trino,running,healthy,SERVICE_RUNNING

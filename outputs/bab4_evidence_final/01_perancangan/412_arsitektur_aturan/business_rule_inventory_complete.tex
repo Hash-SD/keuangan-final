@@ -1,0 +1,37 @@
+% Caption: Inventaris Aturan Pengolahan
+% Label: tab:aturan-pengolahan-aktual
+% Source: kode repository
+% Definitions: 
+\begingroup
+\scriptsize
+\begin{longtable}{lllllllllll}
+\toprule
+rule_id & rule_name & condition & decision & implementation_file & line_reference & input & output & evidence_artifact & test_result & status \\
+\midrule
+\endfirsthead
+\toprule
+rule_id & rule_name & condition & decision & implementation_file & line_reference & input & output & evidence_artifact & test_result & status \\
+\midrule
+\endhead
+\midrule
+\multicolumn{11}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+BR-01 & RAB utama sumber nominal & source\_role=main\_rab & Gunakan sebagai sumber Gold & src/gold/fact\_anggaran.py & 59-70 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-02 & Detail support tidak dijumlahkan & main\_rab tersedia & Keluarkan detail support dari Gold & src/gold/fact\_anggaran.py & 59-66 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-03 & Header/subtotal/total dikeluarkan & row\_type klasifikasi & Tidak masuk Gold & src/gold/fact\_anggaran.py & 67-70 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-04 & Orphan ditandai dan dikeluarkan & orphan\_leaf\_item & include\_in\_gold=False & src/parser\_flexible/rab\_parser.py & 591-597 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-05 & Formula error dicatat & formula berisi error & Masuk silver\_validation & src/parser\_flexible/rab\_parser.py & 156-179 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-06 & Metadata cell disimpan & ekstraksi Bronze & Simpan format/lineage & src/parser\_flexible/rab\_parser.py & 450-610 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-07 & Pemetaan IKU & satu/lebih IKU & Buat alokasi & src/gold/fact\_anggaran.py & 80-106 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-08 & Allocation weight & multi-IKU & Bobot total per item=1 & src/gold/fact\_anggaran.py & 80-106 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-09 & Jumlah weighted & jumlah dan bobot & jumlah*bobot & src/gold/fact\_anggaran.py & 105 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-10 & Grain fact\_anggaran & item x IKU & Cegah duplikasi grain & src/metrics/validate\_excel\_lakehouse\_counts.py & 39-51 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-11 & Lineage dipertahankan & source metadata ada & Simpan file/sheet/row & src/gold/fact\_anggaran.py & 107-116 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-12 & Fallback dashboard & Superset tidak tersedia & Gunakan Gold lokal & README.md & 91-96 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-13 & Rekonsiliasi & validasi total & Catat orphan/detail/formula & src/transformations/excel\_lakehouse\_pipeline.py & 225-269 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+BR-14 & Quality gate & validasi count & Validasi formula \& grain & src/metrics/validate\_excel\_lakehouse\_counts.py & 39-51 & artefak Bronze/Silver & artefak Gold/laporan & audit source scan & lihat tests/ dan validation & READY \\
+\end{longtable}
+\endgroup

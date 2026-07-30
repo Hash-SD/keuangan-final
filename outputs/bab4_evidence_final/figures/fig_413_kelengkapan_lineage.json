@@ -1,0 +1,9 @@
+{
+  "title": "Kelengkapan Atribut Lineage",
+  "source_csv": "outputs/bab4_evidence_final/figures/data/fig_413_kelengkapan_lineage.csv",
+  "x": "attribute",
+  "y": "completeness_percent",
+  "observations": 6,
+  "generated_at": "2026-07-30T12:25:28.829460+00:00",
+  "script": "outputs/bab4_evidence_final/scripts/bab4_final_audit.py"
+}

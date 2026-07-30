@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-07-30T13:01:15.620936+00:00",
+  "endpoint": "http://localhost:9000",
+  "bucket": "lakehouse",
+  "script": "outputs/bab4_evidence_final/scripts/audit_minio_objects.py",
+  "status": "QUERY_VALIDATED",
+  "object_count": 153,
+  "prefixes": [
+    "bronze",
+    "gold",
+    "manifests",
+    "metrics",
+    "raw",
+    "reports",
+    "silver"
+  ]
+}

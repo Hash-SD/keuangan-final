@@ -1,0 +1,2 @@
+﻿scenario,filter,gold_value,dashboard_value,difference,tolerance,status,reason
+tanpa filter,{},517361656.0,,,1,READY WITH LIMITATIONS,Gold lokal tervalidasi; response dashboard terfilter perlu bukti endpoint/query eksplisit.

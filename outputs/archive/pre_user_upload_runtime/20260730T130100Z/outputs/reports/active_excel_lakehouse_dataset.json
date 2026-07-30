@@ -1,0 +1,54 @@
+{
+  "dataset_id": "excel-20260730T124202+0000-d25a77",
+  "dataset_session_id": "excel-20260730T124202+0000-d25a77",
+  "status": "committed",
+  "excel_only": true,
+  "tahun_input": "2025",
+  "periode": null,
+  "prodi": "Sains Data",
+  "fakultas": "Fakultas Sains",
+  "jenis_dataset": null,
+  "catatan": null,
+  "upload_scope": "single_year",
+  "detected_years": [
+    "2025"
+  ],
+  "has_nomenklatur": true,
+  "has_2025_like_template": true,
+  "warnings": [],
+  "files": [
+    {
+      "filename": "Nomenklatur.xlsx",
+      "path": "data/raw/excel_lakehouse/2025/excel-20260730T124202+0000-d25a77/Nomenklatur.xlsx",
+      "size_bytes": 91281,
+      "jenis_dataset": "nomenklatur"
+    },
+    {
+      "filename": "RAB_2025_SD_RAB_IKU.xlsx",
+      "path": "data/raw/excel_lakehouse/2025/excel-20260730T124202+0000-d25a77/RAB_2025_SD_RAB_IKU.xlsx",
+      "size_bytes": 849126,
+      "jenis_dataset": "rab"
+    },
+    {
+      "filename": "RAB_SD_Usulan_KE_1_Jan-Jun_2023.xlsx",
+      "path": "data/raw/excel_lakehouse/2025/excel-20260730T124202+0000-d25a77/RAB_SD_Usulan_KE_1_Jan-Jun_2023.xlsx",
+      "size_bytes": 485119,
+      "jenis_dataset": "rab"
+    },
+    {
+      "filename": "RAB_SD_Usulan_KE_1_jul-des_2023.xlsx",
+      "path": "data/raw/excel_lakehouse/2025/excel-20260730T124202+0000-d25a77/RAB_SD_Usulan_KE_1_jul-des_2023.xlsx",
+      "size_bytes": 637754,
+      "jenis_dataset": "rab"
+    },
+    {
+      "filename": "Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx",
+      "path": "data/raw/excel_lakehouse/2025/excel-20260730T124202+0000-d25a77/Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx",
+      "size_bytes": 403043,
+      "jenis_dataset": "rab"
+    }
+  ],
+  "upload_started_at": "2026-07-30T12:42:02+00:00",
+  "upload_committed_at": "2026-07-30T12:42:02+00:00",
+  "created_at": "2026-07-30T12:42:02+00:00"
+}

@@ -1,0 +1,14 @@
+﻿attribute,filled_values,expected_values,completeness_percent,status
+item_id,607,607,100.0,READY
+run_id,607,607,100.0,READY
+tahun,607,607,100.0,READY
+prodi,607,607,100.0,READY
+kegiatan,607,607,100.0,READY
+uraian_detail,607,607,100.0,READY
+jumlah,607,607,100.0,READY
+allocation_weight,607,607,100.0,READY
+jumlah_weighted_iku,607,607,100.0,READY
+source_file,607,607,100.0,READY
+source_sheet,607,607,100.0,READY
+source_row,607,607,100.0,READY
+created_at,607,607,100.0,READY

@@ -1,0 +1,18 @@
+{
+  "dataset_mode": "uploaded",
+  "session_id": "upload-2026-06-09-011259-55a189",
+  "active_pdf": "data/raw/pdf/2026/upload-2026-06-09-011259-55a189_ITERA_LKTA2024Audited.pdf",
+  "active_csv_files": [
+    "data/raw/csv/2025-2026/upload-2026-06-09-011259-55a189_transaksi_ganjil.csv",
+    "data/raw/csv/2025-2026/upload-2026-06-09-011259-55a189_transaksi_genap.csv"
+  ],
+  "active_excel": "data/raw/excel/2026/upload-2026-06-09-011259-55a189_rab_prodi_sains_data.xlsx",
+  "target_prodi": "Sains Data",
+  "target_fakultas": "Fakultas Sains",
+  "tahun_akademik": "2025/2026",
+  "tahun_anggaran": "2026",
+  "target_label": "Sains Data - Tahun Akademik 2025/2026",
+  "context_source": "upload_session",
+  "status": "committed",
+  "created_at": "2026-06-09T01:13:11+00:00"
+}

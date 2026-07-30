@@ -1,0 +1,33 @@
+% Caption: Komponen Arsitektur Aktual
+% Label: tab:implementasi-komponen-arsitektur
+% Source: docker compose ps
+% Definitions: 
+\begingroup
+\scriptsize
+\begin{longtable}{lllll}
+\toprule
+component & container & state & health & status \\
+\midrule
+\endfirsthead
+\toprule
+component & container & state & health & status \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+airflow-scheduler & keuangan-airflow-scheduler & running &  & SERVICE\_RUNNING \\
+airflow-webserver & keuangan-airflow-webserver & running & healthy & SERVICE\_RUNNING \\
+minio & keuangan-minio & running & healthy & SERVICE\_RUNNING \\
+portal-backend & keuangan-portal-backend & running & healthy & SERVICE\_RUNNING \\
+portal-frontend & keuangan-portal-frontend & running & healthy & SERVICE\_RUNNING \\
+postgres-metastore & keuangan-postgres-metastore & running & healthy & SERVICE\_RUNNING \\
+spark-master & keuangan-spark-master & running & healthy & SERVICE\_RUNNING \\
+spark-worker & keuangan-spark-worker & running &  & SERVICE\_RUNNING \\
+superset & keuangan-superset & running & healthy & SERVICE\_RUNNING \\
+trino & keuangan-trino & running & healthy & SERVICE\_RUNNING \\
+\end{longtable}
+\endgroup

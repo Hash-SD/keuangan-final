@@ -1378,6 +1378,7 @@
       runtimeConfig: null,
       scenarios: [],
       uploadSession: null,
+      datasetSession: null,
       excelLakehouse: null,
       contextSaveStatus: "idle",
       lakehouse: null,
@@ -1650,6 +1651,11 @@
     function guidedUploadPanel() {
       const status = workflowPrimaryStatus();
       const dashboardUrl = defaultDashboardUrl();
+      const dataset = state.datasetSession || {};
+      const fileDetail = (dataset.files || []).map(file => `${safe(file.filename)} (${safe(file.jenis_dataset || "excel")})`).join(", ");
+      const uploadDetail = dataset.status === "committed"
+        ? `Dataset aktif ${safe(dataset.dataset_session_id || dataset.active_dataset_id || "-")}: ${n(dataset.committed_file_count || 0)} workbook tersimpan. ${fileDetail}`
+        : "Belum ada workbook yang tersimpan pada dataset aktif.";
       return `<section class="guide-hero">
         <div class="guide-card">
           <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1rem;">
@@ -1666,6 +1672,7 @@
               <label class="field-label">Prodi<input class="input" name="prodi" value="Sains Data"></label>
               <label class="field-label">Fakultas<input class="input" name="fakultas" value="Fakultas Sains"></label>
               <input type="hidden" name="jenis_dataset" value="mixed_excel">
+              <input type="hidden" name="append_to_active" value="true">
             </div>
             <label class="guided-file-drop">
               <span style="font-weight:800;color:#0f172a;display:flex;gap:.45rem;align-items:center;"><span class="material-symbols-outlined">table_chart</span>Pilih workbook Excel</span>
@@ -1678,7 +1685,7 @@
               <a class="guide-secondary" href="${safe(dashboardUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>Cek Dashboard</a>
             </div>
             <div id="uploadInlineStatus" class="upload-inline-status" data-state="idle">
-              <span>Siap menerima workbook Excel. Setelah upload, jalankan sistem untuk memperbarui Gold, database, dan Superset.</span>
+              <span>${uploadDetail}</span>
               <div class="upload-progress-track" aria-hidden="true"><div class="upload-progress-fill" style="--progress:0%;"></div></div>
             </div>
           </form>
@@ -2886,6 +2893,19 @@
     }
 
     function bindExcelLakehouseControls() {
+      apiGet("/api/production/readiness").then(readiness => {
+        const ready = readiness.status === "READY_FOR_USER_UPLOAD";
+        document.querySelectorAll("#excelDatasetForm button[type='submit']").forEach(button => {
+          button.disabled = !ready;
+          button.title = ready ? "" : "Upload dinonaktifkan sampai production release gate lulus.";
+        });
+        document.querySelectorAll("#excelDatasetForm input[type='file']").forEach(input => input.disabled = !ready);
+      }).catch(() => {
+        document.querySelectorAll("#excelDatasetForm button[type='submit'], #excelDatasetForm input[type='file']").forEach(item => {
+          item.disabled = true;
+          item.title = "Status production readiness tidak tersedia.";
+        });
+      });
       document.querySelectorAll("#excelDatasetForm").forEach(form => {
       if (!form.dataset.bound) {
         form.dataset.bound = "true";
@@ -3131,7 +3151,7 @@
 
     async function loadState() {
       try {
-        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, runtimeConfig, truth, excelLakehouse, dashboardLinks, ikuReview] = await Promise.all([
+        const [metrics, services, activity, lakehouse, rejected, goldPreview, silverPreview, sourceStatus, runtimeConfig, truth, excelLakehouse, dashboardLinks, ikuReview, datasetSession] = await Promise.all([
           apiGet("/api/metrics"),
           apiGet("/api/status/services"),
           apiGet("/api/activity"),
@@ -3144,7 +3164,8 @@
           apiGet("/api/system-truth/status").catch(() => null),
           apiGet("/api/excel-lakehouse/status").catch(() => null),
           apiGet("/api/dashboard/links/current").catch(() => null),
-          apiGet("/api/iku-review/queue?limit=100").catch(() => null)
+          apiGet("/api/iku-review/queue?limit=100").catch(() => null),
+          apiGet("/api/upload/session/status").catch(() => null)
         ]);
         state.metrics = metrics.raw || {};
         state.truth = truth || metrics.raw?.truth || lakehouse.truth || null;
@@ -3186,6 +3207,7 @@
         state.excelLakehouse = excelLakehouse;
         state.dashboardLinks = dashboardLinks;
         state.ikuReview = ikuReview;
+        state.datasetSession = datasetSession;
       } catch {
         try {
           const response = await fetch("/api/portal-state", { cache: "no-store" });
@@ -3210,15 +3232,17 @@
       if (routeAbortController) routeAbortController.abort();
       routeAbortController = new AbortController();
       const { signal } = routeAbortController;
-      const [activity, runtimeConfig, truth, excelLakehouse] = await Promise.all([
+      const [activity, runtimeConfig, truth, excelLakehouse, datasetSession] = await Promise.all([
         apiGet("/api/activity", { signal }).catch(() => null),
         apiGet("/api/runtime-config", { signal }).catch(() => null),
         apiGet("/api/system-truth/status", { signal }).catch(() => null),
-        apiGet("/api/excel-lakehouse/status", { signal }).catch(() => null)
+        apiGet("/api/excel-lakehouse/status", { signal }).catch(() => null),
+        apiGet("/api/upload/session/status", { signal }).catch(() => null)
       ]);
       if (signal.aborted) return;
       if (activity) state.activities = activity.activities || [];
       if (runtimeConfig && !state.isUserEditing) state.runtimeConfig = runtimeConfig;
+      state.datasetSession = datasetSession;
       if (truth) {
         state.truth = truth;
         const truthLayers = truth.layers || {};

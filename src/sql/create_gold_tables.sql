@@ -2,6 +2,7 @@ CREATE SCHEMA IF NOT EXISTS gold;
 
 CREATE TABLE IF NOT EXISTS gold.fact_anggaran (
     item_id TEXT,
+    dataset_session_id TEXT,
     run_id TEXT,
     tahun TEXT,
     periode TEXT,

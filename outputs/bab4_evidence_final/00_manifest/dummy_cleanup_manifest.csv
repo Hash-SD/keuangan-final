@@ -1,0 +1,2 @@
+target_type,target,match_token,status,collected_at
+cleanup_run,64 confirmed local/MinIO targets,dummy-;batch-dummy;dummy_transaction_rows;dummy_invalid_rows,DELETED,2026-07-30T11:45:01+00:00

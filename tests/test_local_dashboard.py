@@ -30,6 +30,7 @@ def _write_gold_view(path: Path) -> None:
                 "nominal_piutang_rp": 1000000,
                 "jumlah_mhs_penunggak": 1,
                 "nim": "120450001",
+                "item_id": "item-001",
                 "nama_debitur": "Debitur A",
             },
             {
@@ -42,6 +43,7 @@ def _write_gold_view(path: Path) -> None:
                 "nominal_piutang_rp": 2500000,
                 "jumlah_mhs_penunggak": 1,
                 "nim": "120450002",
+                "item_id": "item-002",
                 "nama_debitur": "Debitur B",
             },
             {
@@ -54,6 +56,7 @@ def _write_gold_view(path: Path) -> None:
                 "nominal_piutang_rp": 500000,
                 "jumlah_mhs_penunggak": 1,
                 "nim": "120450003",
+                "item_id": "item-003",
                 "nama_debitur": "Debitur C",
             },
         ]
@@ -156,3 +159,16 @@ def test_local_dashboard_table(tmp_path, monkeypatch):
     assert payload["status"] == "validated"
     assert payload["data"]["total_rows"] == 1
     assert payload["data"]["rows"][0]["nama_debitur"] == "Debitur B"
+
+
+def test_local_dashboard_table_filters_one_item_id(tmp_path, monkeypatch):
+    path = tmp_path / "data/generated/gold/vw_dashboard_piutang_ukt.csv"
+    _write_gold_view(path)
+    client = _client_for(path, monkeypatch)
+
+    payload = client.get("/api/local-dashboard/table?item_id=item-002").get_json()
+
+    assert payload["status"] == "validated"
+    assert payload["filters"] == {"item_id": ["item-002"]}
+    assert payload["data"]["total_rows"] == 1
+    assert payload["data"]["rows"][0]["item_id"] == "item-002"

@@ -6,7 +6,9 @@ import os
 from typing import Any
 
 from .activity import append_activity
+from .files import read_json
 from .metrics import metrics_payload
+from .excel_upload import ACTIVE_EXCEL_DATASET_PATH
 from .paths import ROOT_DIR
 from src.common.runtime_paths import active_dataset_pointer
 
@@ -61,14 +63,14 @@ def _tail(text: str, limit: int = 4000) -> str:
     return text[-limit:] if len(text) > limit else text
 
 
-def run_command_group(name: str, timeout: int = 600) -> dict[str, Any]:
+def run_command_group(name: str, timeout: int = 600, env_overrides: dict[str, str] | None = None) -> dict[str, Any]:
     commands = COMMANDS.get(name)
     if commands is None:
         return {"status": "failed", "message": f"Command tidak dikenal: {name}", "steps": []}
 
     steps = []
     status = "success"
-    env = {**os.environ, "DATASET_MODE": "uploaded_excel"}
+    env = {**os.environ, "DATASET_MODE": "uploaded_excel", **(env_overrides or {})}
     for args in commands:
         try:
             completed = subprocess.run(
@@ -127,6 +129,13 @@ def run_full(mode: str = "local-basic") -> dict[str, Any]:
     if mode != "local-basic":
         append_activity("full-run", "pipeline", "failed", f"Mode belum tersedia: {mode}", "local scripts")
         return {"status": "failed", "message": "Mode full-docker belum diaktifkan pada backend lokal awal.", "mode": mode, "steps": []}
+
+    active_dataset = read_json(ACTIVE_EXCEL_DATASET_PATH) or {}
+    kinds = {str(item.get("jenis_dataset") or "") for item in active_dataset.get("files", []) if isinstance(item, dict)}
+    if active_dataset.get("status") != "committed" or "rab" not in kinds:
+        message = "Dataset aktif belum memiliki workbook RAB. Upload RAB ke session yang sama sebelum menjalankan pipeline."
+        append_activity("full-run", "pipeline", "failed", message, "local scripts")
+        return {"status": "failed", "message": message, "mode": mode, "steps": []}
 
     results = []
     status = "success"

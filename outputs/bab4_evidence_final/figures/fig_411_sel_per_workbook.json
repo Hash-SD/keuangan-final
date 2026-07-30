@@ -1,0 +1,9 @@
+{
+  "title": "Jumlah Sel Terisi per Workbook",
+  "source_csv": "outputs/bab4_evidence_final/figures/data/fig_411_sel_per_workbook.csv",
+  "x": "alias_file",
+  "y": "filled_cells",
+  "observations": 5,
+  "generated_at": "2026-07-30T12:25:28.829460+00:00",
+  "script": "outputs/bab4_evidence_final/scripts/bab4_final_audit.py"
+}

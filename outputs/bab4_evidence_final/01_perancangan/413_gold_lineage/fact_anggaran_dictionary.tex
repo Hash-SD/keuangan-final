@@ -1,0 +1,56 @@
+% Caption: Data Dictionary fact_anggaran
+% Label: tab:dictionary-fact-anggaran
+% Source: fact_anggaran.parquet
+% Definitions: 
+\begingroup
+\scriptsize
+\begin{longtable}{llllllllll}
+\toprule
+column & dtype & filled & null_count & null_percent & unique_count & example & role & required & formation_source \\
+\midrule
+\endfirsthead
+\toprule
+column & dtype & filled & null_count & null_percent & unique_count & example & role & required & formation_source \\
+\midrule
+\endhead
+\midrule
+\multicolumn{10}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+item\_id & object & 607 & 0 & 0.0 & 253 & c25bb2e3641772cf5e0c68fc13a0abe8 & identitas item & True & fact\_anggaran.parquet \\
+run\_id & object & 607 & 0 & 0.0 & 1 & 344fb135-2995-427a-bd2d-84499890e1a7 & identitas pipeline & True & fact\_anggaran.parquet \\
+tahun & object & 607 & 0 & 0.0 & 3 & 2025 & dimensi waktu & True & fact\_anggaran.parquet \\
+periode & object & 607 & 0 & 0.0 & 3 & Tahunan & dimensi waktu & False & fact\_anggaran.parquet \\
+prodi & object & 607 & 0 & 0.0 & 1 & Sains Data & dimensi organisasi & True & fact\_anggaran.parquet \\
+fakultas & object & 607 & 0 & 0.0 & 1 & Fakultas Sains & dimensi organisasi & False & fact\_anggaran.parquet \\
+kegiatan & object & 607 & 0 & 0.0 & 31 & 471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains & dimensi kegiatan & True & fact\_anggaran.parquet \\
+cluster\_kegiatan & object & 607 & 0 & 0.0 & 31 & 471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains & atribut Gold & False & fact\_anggaran.parquet \\
+akun & object & 607 & 0 & 0.0 & 11 & 522141 - Belanja Sewa & dimensi akun & False & fact\_anggaran.parquet \\
+kode\_akun & object & 592 & 15 & 2.471169686985173 & 10 & 522141 & atribut Gold & False & fact\_anggaran.parquet \\
+nama\_akun & object & 592 & 15 & 2.471169686985173 & 10 & Belanja Sewa & atribut Gold & False & fact\_anggaran.parquet \\
+nama\_akun\_asli & object & 337 & 270 & 44.481054365733115 & 15 & Belanja Sewa & atribut Gold & False & fact\_anggaran.parquet \\
+iku & object & 607 & 0 & 0.0 & 26 & IK 4.5 & atribut Gold & False & fact\_anggaran.parquet \\
+kode\_iku & object & 607 & 0 & 0.0 & 26 & IK 4.5 & dimensi IKU & False & fact\_anggaran.parquet \\
+nama\_iku & object & 607 & 0 & 0.0 & 9 & Kegiatan praktikum, praktik studio, praktik bengkel, atau praktik lapangan & atribut Gold & False & fact\_anggaran.parquet \\
+nomenklatur\_path & object & 607 & 0 & 0.0 & 9 & Penyediaan Dana Bantuan Operasional Perguruan Tinggi Negeri Akademik > Bantuan Lembaga (Lembaga) > PT Penerima Bantuan Pembelajaran (BOPTN) (Lembaga) > Dukungan Operasional Penyelenggaraan Pendidikan > Penunjang Layanan Laboratorium > Kegiatan praktikum, praktik studio, praktik bengkel, atau praktik lapangan & atribut Gold & False & fact\_anggaran.parquet \\
+uraian\_detail & object & 607 & 0 & 0.0 & 217 & Sewa bus kunjungan Industri Program Studi Sains Data & atribut Gold & True & fact\_anggaran.parquet \\
+qty & float64 & 537 & 70 & 11.532125205930807 & 27 & 1.0 & atribut Gold & False & fact\_anggaran.parquet \\
+satuan & object & 537 & 70 & 11.532125205930807 & 40 & Buah & atribut Gold & False & fact\_anggaran.parquet \\
+harga\_satuan & float64 & 542 & 65 & 10.70840197693575 & 79 & 650000.0 & atribut Gold & False & fact\_anggaran.parquet \\
+jumlah & float64 & 607 & 0 & 0.0 & 134 & 44550000.0 & nilai sumber & True & fact\_anggaran.parquet \\
+jumlah\_weighted\_iku & float64 & 607 & 0 & 0.0 & 146 & 22275000.0 & nilai Gold berbobot & True & fact\_anggaran.parquet \\
+allocation\_weight & float64 & 607 & 0 & 0.0 & 5 & 0.5 & bobot alokasi & True & fact\_anggaran.parquet \\
+mapping\_status & object & 607 & 0 & 0.0 & 3 & mapped\_from\_nomenklatur & atribut Gold & False & fact\_anggaran.parquet \\
+data\_quality\_flag & object & 607 & 0 & 0.0 & 3 & OK & atribut Gold & False & fact\_anggaran.parquet \\
+source\_file & object & 607 & 0 & 0.0 & 4 & RAB 2025 SD RAB IKU.xlsx & lineage & True & fact\_anggaran.parquet \\
+source\_sheet & object & 607 & 0 & 0.0 & 22 & RAB & lineage & True & fact\_anggaran.parquet \\
+source\_row & int64 & 607 & 0 & 0.0 & 91 & 9 & lineage & True & fact\_anggaran.parquet \\
+source\_role & object & 607 & 0 & 0.0 & 3 & main\_rab & atribut Gold & False & fact\_anggaran.parquet \\
+row\_type & object & 607 & 0 & 0.0 & 1 & leaf\_item & atribut Gold & False & fact\_anggaran.parquet \\
+quality\_flags & object & 607 & 0 & 0.0 & 1 &  & atribut Gold & False & fact\_anggaran.parquet \\
+created\_at & object & 607 & 0 & 0.0 & 1 & 2026-07-30T11:52:20+00:00 & audit timestamp & True & fact\_anggaran.parquet \\
+dataset\_session\_id & object & 607 & 0 & 0.0 & 1 & upload-2026-06-09-011818-37cc4d & atribut Gold & False & fact\_anggaran.parquet \\
+\end{longtable}
+\endgroup
