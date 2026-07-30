@@ -44,6 +44,8 @@ def test_excel_lakehouse_upload_accepts_multi_file_excel_only(tmp_path, monkeypa
     payload = response.get_json()
     assert response.status_code == 200
     assert payload["status"] == "committed"
+    assert payload["dataset_session_id"] == payload["dataset_id"]
+    assert payload["upload_started_at"] <= payload["upload_committed_at"]
     assert payload["excel_only"] is True
     assert len(payload["files"]) == 2
     assert payload["upload_scope"] == "single_year"

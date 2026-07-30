@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-07-30T12:13:59.932377+00:00",
+  "commit": {
+    "command": "git rev-parse HEAD",
+    "exit_code": 0,
+    "stdout": "13a41dfaf7101db37a3770d591d7a9cbee1a9249",
+    "stderr": ""
+  },
+  "branch": {
+    "command": "git branch --show-current",
+    "exit_code": 0,
+    "stdout": "main",
+    "stderr": ""
+  },
+  "git_status": {
+    "command": "git status --short",
+    "exit_code": 0,
+    "stdout": "M portal_backend/services/local_dashboard.py\n M src/metrics/generate_uat.py\n M tests/test_local_dashboard.py\n M tests/test_uat_matrix.py\n?? PROMPT_AUDIT_BAB4_REVISED.md\n?? docs/superpowers/\n?? outputs/bab4_evidence/\n?? \"outputs/bab4_evidence_final (2).zip\"\n?? outputs/bab4_evidence_final.zip\n?? outputs/bab4_evidence_final/\n?? outputs/synthetic_2027/\n?? scripts/bab4/",
+    "stderr": ""
+  },
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "pandas": "2.3.1",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "script": "outputs/bab4_evidence_final/scripts/bab4_final_audit.py"
+}

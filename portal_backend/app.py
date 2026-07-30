@@ -19,6 +19,7 @@ from .services.metrics import metrics_payload
 from .services.paths import OUTPUTS_DIR, PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
 from .services.superset_api import fetch_superset_fact_rows
+from .services.production_state import production_readiness
 from .services.system_status import service_statuses
 from src.common.runtime_paths import raw_rab_path
 from src.status.system_truth_status import build_system_truth_status
@@ -64,6 +65,11 @@ def create_app() -> Flask:
         checks["superset"] = truth.get("services", {}).get("superset", {"status": "unreachable"})
         ready = all(item.get("status") in {"ready", "empty", "skipped", "mapped", "configured"} for item in checks.values())
         return jsonify({"status": "ready" if ready else "not_ready", "checks": checks})
+
+    @app.get("/api/production/readiness")
+    def production_readiness_endpoint():
+        payload = production_readiness()
+        return jsonify(payload), 200 if payload["status"] == "READY_FOR_USER_UPLOAD" else 503
 
     @app.get("/api/superset/status")
     def superset_status():
@@ -182,7 +188,9 @@ def create_app() -> Flask:
                 "source": _safe_relative_path(excel_upload.ACTIVE_EXCEL_DATASET_PATH) if has_active else None,
                 "registry_source": _safe_relative_path(excel_upload.EXCEL_DATASET_REGISTRY_PATH) if registry and not registry.get("_error") else None,
                 "active_dataset_id": active.get("dataset_id") if isinstance(active, dict) else None,
+                "dataset_session_id": active.get("dataset_session_id") if isinstance(active, dict) else None,
                 "committed_file_count": len(committed_files),
+                "files": committed_files,
                 "staging_file_count": len(staging_files),
                 "staging_status": "has_files" if staging_files else "empty",
                 "message": "Dataset Excel aktif tersedia di Raw." if committed_files else "Belum ada upload session aktif yang sudah commit.",
@@ -251,9 +259,14 @@ def create_app() -> Flask:
 
     @app.post("/api/pipeline/run/<run_id>")
     def pipeline_run_id(run_id: str):
-        result = run_command_group("excel-lakehouse")
-        count_result = run_command_group("excel-count-validation") if result.get("status") == "success" else None
-        storage_result = run_command_group("excel-storage-manifest") if result.get("status") == "success" else None
+        active = read_json(excel_upload.ACTIVE_EXCEL_DATASET_PATH) or {}
+        dataset_session_id = active.get("dataset_session_id") or active.get("dataset_id")
+        if active.get("status") != "committed" or not dataset_session_id:
+            return jsonify({"status": "failed", "message": "Dataset aktif COMMITTED tidak tersedia."}), 400
+        env_overrides = {"PIPELINE_RUN_ID": run_id, "DATASET_SESSION_ID": str(dataset_session_id)}
+        result = run_command_group("excel-lakehouse", env_overrides=env_overrides)
+        count_result = run_command_group("excel-count-validation", env_overrides=env_overrides) if result.get("status") == "success" else None
+        storage_result = run_command_group("excel-storage-manifest", env_overrides=env_overrides) if result.get("status") == "success" else None
         return jsonify({"run_id": run_id, "pipeline": result, "count_validation": count_result, "storage_manifest": storage_result}), 200 if result.get("status") == "success" else 500
 
     @app.get("/api/storage/manifest/<run_id>")
@@ -335,7 +348,9 @@ def create_app() -> Flask:
         command = mapping.get(name)
         if command is None:
             return jsonify({"status": "failed", "message": "Endpoint pipeline tidak dikenal."}), 404
-        result = run_command_group(command)
+        payload = request.get_json(silent=True) or {}
+        env_overrides = {key: str(value) for key, value in {"DATASET_SESSION_ID": payload.get("dataset_session_id"), "PIPELINE_RUN_ID": payload.get("pipeline_run_id"), "AIRFLOW_DAG_RUN_ID": payload.get("airflow_dag_run_id")}.items() if value}
+        result = run_command_group(command, env_overrides=env_overrides)
         return jsonify(result), 200 if result["status"] == "success" else 500
 
     @app.get("/api/uat/summary")

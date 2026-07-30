@@ -1,0 +1,2 @@
+﻿submission_id,submitted_at,respondent_role,respondent_alias,question_count,scores,average_score,storage,endpoint,indicators,status
+NOT_AVAILABLE,2026-07-30T10:23:30+00:00,Ketua Program Studi,R1,5,NOT_AVAILABLE,5.0,outputs/uat/uat_matrix_summary.json,GET /api/uat/summary,Navigation Facility; Clarity of Visualization; Data Relevance; Data Consistency; Usefulness in Decision,VALIDATED_WITH_DOCUMENTATION_LIMITATION

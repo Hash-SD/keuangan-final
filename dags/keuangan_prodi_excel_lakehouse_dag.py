@@ -8,16 +8,12 @@ from airflow.operators.empty import EmptyOperator
 
 
 PY = "python"
-SAMPLE_EXCEL_DIR = "/opt/airflow/data/raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4"
-SAMPLE_EXCEL_FILES = ";".join(
-    [
-        f"{SAMPLE_EXCEL_DIR}/RAB 2025 SD RAB IKU.xlsx",
-        f"{SAMPLE_EXCEL_DIR}/Nomenklatur.xlsx",
-        f"{SAMPLE_EXCEL_DIR}/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx",
-        f"{SAMPLE_EXCEL_DIR}/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx",
-        f"{SAMPLE_EXCEL_DIR}/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx",
-    ]
-)
+RUN_ENV = {
+    "PYTHONPATH": "/opt/airflow",
+    "DATASET_SESSION_ID": "{{ dag_run.conf.get('dataset_session_id', '') }}",
+    "PIPELINE_RUN_ID": "{{ dag_run.conf.get('pipeline_run_id', '') }}",
+    "AIRFLOW_DAG_RUN_ID": "{{ dag_run.run_id }}",
+}
 DEFAULT_ARGS = {
     "owner": "data-team",
     "retries": 1,
@@ -45,10 +41,10 @@ with DAG(
     validate_upload_context = BashOperator(
         task_id="validate_upload_context",
         bash_command=(
-            "python -c \"import os, pathlib; "
-            "files=[p for p in os.getenv('FINANCE_EXCEL_FILES','').split(';') if p.strip()]; "
-            "ok=bool(files) or pathlib.Path('" + SAMPLE_EXCEL_DIR + "').exists(); "
-            "raise SystemExit(0 if ok else 'FINANCE_EXCEL_FILES is empty and sample Excel directory is missing')\""
+            "python -c \"import json; from pathlib import Path; "
+            "p=Path('/opt/airflow/outputs/reports/active_excel_lakehouse_dataset.json'); "
+            "d=json.loads(p.read_text(encoding='utf-8')) if p.exists() else {}; "
+            "raise SystemExit(0 if d.get('status') == 'committed' and d.get('files') else 'Tidak ada dataset aktif COMMITTED')\""
         ),
         append_env=True,
     )
@@ -57,7 +53,7 @@ with DAG(
         bash_command=f"{PY} /opt/airflow/src/transformations/excel_lakehouse_pipeline.py",
         append_env=True,
         env={
-            "PYTHONPATH": "/opt/airflow",
+            **RUN_ENV,
             "RAB_MAIN_SHEET_NAME": "RAB",
             "RAB_STRICT_RECONCILIATION": "true",
         },
@@ -73,19 +69,19 @@ with DAG(
         task_id="write_minio_storage",
         bash_command=f"{PY} /opt/airflow/src/storage/excel_storage_manifest.py",
         append_env=True,
-        env={"PYTHONPATH": "/opt/airflow", "MINIO_UPLOAD_ENABLED": "true", "MINIO_ENDPOINT": "http://minio:9000", "MINIO_BUCKET": "lakehouse"},
+        env={**RUN_ENV, "MINIO_UPLOAD_ENABLED": "true", "MINIO_ENDPOINT": "http://minio:9000", "MINIO_BUCKET": "lakehouse"},
     )
     load_gold_to_postgres = BashOperator(
         task_id="load_gold_to_postgres",
         bash_command=f"{PY} /opt/airflow/src/sql/load_gold_to_postgres.py",
         append_env=True,
         env={
+            **RUN_ENV,
             "POSTGRES_HOST": "postgres-metastore",
             "POSTGRES_PORT": "5432",
             "POSTGRES_DB": "metastore",
             "POSTGRES_USER": "lakehouse",
             "POSTGRES_PASSWORD": "lakehouse",
-            "PYTHONPATH": "/opt/airflow",
         },
     )
     validate_trino_postgres_catalog = BashOperator(
@@ -99,20 +95,20 @@ with DAG(
             "print('PASS: Gold fact_anggaran is available through PostgreSQL/Trino catalog path')\""
         ),
         append_env=True,
-        env={"PYTHONPATH": "/opt/airflow"},
+        env=RUN_ENV,
     )
     refresh_superset_dataset = EmptyOperator(task_id="refresh_superset_dataset")
     refresh_superset_dashboard = BashOperator(
         task_id="refresh_superset_dashboard",
         bash_command=f"{PY} /opt/airflow/src/sql/setup_superset_excel_assets.py",
         append_env=True,
-        env={"SUPERSET_BASE_URL": "http://superset:8088", "PYTHONPATH": "/opt/airflow"},
+        env={**RUN_ENV, "SUPERSET_BASE_URL": "http://superset:8088"},
     )
     generate_storage_manifest = BashOperator(
         task_id="generate_storage_manifest",
         bash_command=f"{PY} /opt/airflow/src/storage/excel_storage_manifest.py",
         append_env=True,
-        env={"PYTHONPATH": "/opt/airflow", "MINIO_ENDPOINT": "http://minio:9000", "MINIO_BUCKET": "lakehouse", "MINIO_UPLOAD_ENABLED": "false"},
+        env={**RUN_ENV, "MINIO_ENDPOINT": "http://minio:9000", "MINIO_BUCKET": "lakehouse", "MINIO_UPLOAD_ENABLED": "false"},
     )
     generate_system_status = BashOperator(task_id="generate_system_status", bash_command=f"{PY} /opt/airflow/src/status/system_truth_status.py")
     end = EmptyOperator(task_id="end")

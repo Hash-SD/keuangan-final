@@ -1,0 +1,122 @@
+﻿bucket,layer,object_key,size_bytes,last_modified,etag,storage_class,status
+lakehouse,bronze,bronze/bronze_excel_cells.csv,20195564,2026-06-29 09:14:29.039000+00:00,4eba28d9277ad76295ee66bf9963180a-3,STANDARD,DATA_LOADED
+lakehouse,bronze,bronze/bronze_excel_cells.parquet,354774,2026-06-29 09:14:29.138000+00:00,bc17328f30b6d2c4ec902081f182926e,STANDARD,DATA_LOADED
+lakehouse,bronze,bronze/upload-2026-06-09-011818-37cc4d/bronze_excel_cells.csv,20195564,2026-06-29 09:14:29.686000+00:00,4eba28d9277ad76295ee66bf9963180a-3,STANDARD,DATA_LOADED
+lakehouse,bronze,bronze/upload-2026-06-09-011818-37cc4d/bronze_excel_cells.parquet,354774,2026-06-29 09:14:29.810000+00:00,bc17328f30b6d2c4ec902081f182926e,STANDARD,DATA_LOADED
+lakehouse,gold,gold/fact_anggaran.csv,297096,2026-06-29 09:14:31.469000+00:00,0d499dc5d12c321c1becdab7c65845fd,STANDARD,DATA_LOADED
+lakehouse,gold,gold/fact_anggaran.parquet,70902,2026-06-29 09:14:31.534000+00:00,8deef721ac41cb24f0563513c6dee908,STANDARD,DATA_LOADED
+lakehouse,gold,gold/gold_metadata.json,203,2026-06-09 01:16:12.199000+00:00,0e747377c358a5e3d4b3e712b1155ad5,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.csv,297096,2026-06-29 09:14:31.630000+00:00,0d499dc5d12c321c1becdab7c65845fd,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/fact_anggaran.parquet,70902,2026-06-29 09:14:31.722000+00:00,8deef721ac41cb24f0563513c6dee908,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.csv,297096,2026-06-29 09:14:31.801000+00:00,0d499dc5d12c321c1becdab7c65845fd,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_detail_item.parquet,70902,2026-06-29 09:14:31.886000+00:00,8deef721ac41cb24f0563513c6dee908,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.csv,599,2026-06-29 09:14:31.923000+00:00,3f0fddc92859884780e1ac0339842c3b,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_iku_anggaran.parquet,5257,2026-06-29 09:14:31.950000+00:00,5eed151a17d96c6b3b69b0f8021d3984,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.csv,581,2026-06-29 09:14:32+00:00,e7850dccc4c848fba9ca4ea45d1ec29d,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_mapping_quality.parquet,3842,2026-06-29 09:14:32.046000+00:00,cf76403a1375e04581fc973748f6bd02,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.csv,537,2026-06-29 09:14:32.079000+00:00,f35bd96891e46d0fa2a40dfe60075bf9,STANDARD,DATA_LOADED
+lakehouse,gold,gold/upload-2026-06-09-011818-37cc4d/vw_dashboard_reconciliation.parquet,4522,2026-06-29 09:14:32.109000+00:00,90c67f43287c726a704c4a6eaf4a709b,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_detail_item.csv,297096,2026-06-29 09:14:32.201000+00:00,0d499dc5d12c321c1becdab7c65845fd,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_detail_item.parquet,70902,2026-06-29 09:14:32.290000+00:00,8deef721ac41cb24f0563513c6dee908,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_iku_anggaran.csv,599,2026-06-29 09:14:32.313000+00:00,3f0fddc92859884780e1ac0339842c3b,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_iku_anggaran.parquet,5257,2026-06-29 09:14:32.358000+00:00,5eed151a17d96c6b3b69b0f8021d3984,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_mapping_quality.csv,581,2026-06-29 09:14:32.383000+00:00,e7850dccc4c848fba9ca4ea45d1ec29d,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_mapping_quality.parquet,3842,2026-06-29 09:14:32.420000+00:00,cf76403a1375e04581fc973748f6bd02,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_reconciliation.csv,537,2026-07-06 05:08:34.937000+00:00,f35bd96891e46d0fa2a40dfe60075bf9,STANDARD,DATA_LOADED
+lakehouse,gold,gold/vw_dashboard_reconciliation.parquet,4522,2026-06-29 09:14:32.482000+00:00,90c67f43287c726a704c4a6eaf4a709b,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/active_dataset_pointer.json,769,2026-06-09 01:16:12.308000+00:00,a60e9e7b212c5e19aa5033df6363db44,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/activity_log.json,28617,2026-06-09 01:16:12.383000+00:00,7b5be0d852fb04c97932df048ec6be8f,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/agent_work_notes.md,2536,2026-06-09 01:16:12.394000+00:00,a62a6a21edcf9d7e3f8602a6c0da84af,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/available_periods.json,963,2026-06-09 01:16:12.404000+00:00,f1bfffc048051825f48aa9364b8f82c0,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/bab4_evidence_summary.json,515,2026-06-09 01:16:12.413000+00:00,d82617f0f5c9293376a5eac25c2a1ae6,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/context7_docs_used.json,1364,2026-06-09 01:16:12.422000+00:00,02cefb1260e892386a6fc43bf96961e9,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/dataset_registry.json,22659,2026-06-09 01:16:12.520000+00:00,01cc775b7e6a1ca1da12fd63841148da,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/e2e_multiyear_test_report.md,883,2026-06-09 01:16:12.588000+00:00,2b239a3f22ceb84279cb81b417919d77,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/minio_storage_validation.json,2369,2026-06-09 01:16:12.744000+00:00,cbc994100d0c5d1ec201c38086c45e7c,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/production_readiness_report.json,4373,2026-06-09 01:16:12.753000+00:00,553fd060d4afb35783b5d32960a6c595,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/production_readiness_report.md,4310,2026-06-09 01:16:12.762000+00:00,6b89a1e01786edac2e4529ed3613118e,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/skill_discovery_summary.json,1068,2026-06-09 01:16:12.771000+00:00,6556b399c153f97fd3698e97444bac4b,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/storage_layers_status.json,7816,2026-06-09 01:16:12.780000+00:00,af413e5ef59cb499d6407c87e88ed12d,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/superset_assets.json,140,2026-06-09 01:16:12.864000+00:00,c06a05b78acaddffe2fa0ee06e28f3f0,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/superset_charts_by_year.json,1982,2026-06-09 01:16:12.873000+00:00,966a758fabb1ac9d565ad23eb1413370,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/superset_dashboard.json,868,2026-06-09 01:16:12.881000+00:00,d731a37e4ec6637b00a0849b4fe09955,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/superset_dashboard_status.json,868,2026-06-09 01:16:12.890000+00:00,d731a37e4ec6637b00a0849b4fe09955,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/superset_filters_validation.json,2361,2026-06-09 01:16:12.898000+00:00,c0b2e3e72b567bb6e040582a27d62d63,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/system_truth_status.csv,1818,2026-06-09 01:16:12.907000+00:00,4396ba331c7f4855ed9f79b0557d5dad,STANDARD,DATA_LOADED
+lakehouse,manifests,manifests/validation_command_results.json,1619,2026-06-09 01:16:12.948000+00:00,58e216a1f4a18e0e2736e4be59c21445,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/2025/excel-20260629T090651+0000-fdf53f/Nomenklatur.xlsx,91281,2026-06-29 09:14:25.806000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/2025/excel-20260629T090651+0000-fdf53f/RAB_2025_SD_RAB_IKU.xlsx,849126,2026-06-29 09:14:25.891000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/test-session/34fd57d2-8f3f-4f5d-bf23-d1593fcf3b21/Nomenklatur.xlsx,91281,2026-06-29 09:14:25.962000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/test-session/34fd57d2-8f3f-4f5d-bf23-d1593fcf3b21/RAB 2025 SD RAB IKU.xlsx,849126,2026-06-29 09:14:26.035000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/test-session/34fd57d2-8f3f-4f5d-bf23-d1593fcf3b21/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx,485119,2026-06-29 09:14:26.122000+00:00,13c35857c1af15992ddb222d04bea68e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/test-session/34fd57d2-8f3f-4f5d-bf23-d1593fcf3b21/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx,637754,2026-06-29 09:14:26.203000+00:00,03038feb32860cf6ad61edf0d47af06a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/test-session/34fd57d2-8f3f-4f5d-bf23-d1593fcf3b21/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,403043,2026-06-29 09:14:26.275000+00:00,19aea87fac8a23661b08395baa8c2c77,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/1543e030-d3d2-40f7-8146-ab0cc9737573/Nomenklatur_2026.xlsx,91281,2026-06-29 09:14:26.382000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/1543e030-d3d2-40f7-8146-ab0cc9737573/RAB_2026_from_2025_template.xlsx,849126,2026-06-29 09:14:26.483000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/Nomenklatur.xlsx,91281,2026-06-29 09:14:26.562000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/RAB 2025 SD RAB IKU.xlsx,849126,2026-06-29 09:14:26.651000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx,485119,2026-06-29 09:14:26.730000+00:00,13c35857c1af15992ddb222d04bea68e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx,637754,2026-06-29 09:14:26.820000+00:00,03038feb32860cf6ad61edf0d47af06a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/239ab80c-8350-4b03-8943-f5308ed3b595/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,403043,2026-06-29 09:14:26.898000+00:00,19aea87fac8a23661b08395baa8c2c77,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/27146810-274c-4fd9-9806-49e0ceed9a79/Nomenklatur.xlsx,91281,2026-06-29 09:14:26.966000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/27146810-274c-4fd9-9806-49e0ceed9a79/RAB 2025 SD RAB IKU.xlsx,849126,2026-06-29 09:14:27.059000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/27146810-274c-4fd9-9806-49e0ceed9a79/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx,485119,2026-06-29 09:14:27.134000+00:00,13c35857c1af15992ddb222d04bea68e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/27146810-274c-4fd9-9806-49e0ceed9a79/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx,637754,2026-06-29 09:14:27.202000+00:00,03038feb32860cf6ad61edf0d47af06a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/27146810-274c-4fd9-9806-49e0ceed9a79/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,403043,2026-06-29 09:14:27.291000+00:00,19aea87fac8a23661b08395baa8c2c77,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3a2929b0-730a-41b4-b3ab-00402b069f8e/master_biaya_itera.xlsx,16418,2026-06-29 09:14:27.385000+00:00,9f20e48f0cfe51eeacd6a6f5060c9f20,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3a2929b0-730a-41b4-b3ab-00402b069f8e/rab_prodi_sains_data.xlsx,5968,2026-06-29 09:14:27.409000+00:00,9e743662b96dd36159dd3a8eeef4dab5,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3a2929b0-730a-41b4-b3ab-00402b069f8e/rab_prodi_sains_data_2024_2025.xlsx,6061,2026-06-29 09:14:27.432000+00:00,03b9ff3aae577a36f7d84549f3acc68a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3a2929b0-730a-41b4-b3ab-00402b069f8e/upload-2026-06-09-011818-37cc4d_rab_prodi_sains_data.xlsx,6059,2026-06-29 09:14:27.454000+00:00,4532d3eb74768483b69be81e972cc443,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3cc31a27-9388-475a-ab9c-70e74de13bcb/Nomenklatur.xlsx,91281,2026-06-29 09:14:27.478000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3cc31a27-9388-475a-ab9c-70e74de13bcb/RAB 2025 SD RAB IKU.xlsx,849126,2026-06-29 09:14:27.555000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3cc31a27-9388-475a-ab9c-70e74de13bcb/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx,485119,2026-06-29 09:14:27.624000+00:00,13c35857c1af15992ddb222d04bea68e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3cc31a27-9388-475a-ab9c-70e74de13bcb/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx,637754,2026-06-29 09:14:27.711000+00:00,03038feb32860cf6ad61edf0d47af06a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/3cc31a27-9388-475a-ab9c-70e74de13bcb/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,403043,2026-06-29 09:14:27.778000+00:00,19aea87fac8a23661b08395baa8c2c77,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/4b6cf2e1-86f1-406b-a215-d83de6d7e8da/master_biaya_itera.xlsx,16418,2026-06-29 09:14:27.849000+00:00,9f20e48f0cfe51eeacd6a6f5060c9f20,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/4b6cf2e1-86f1-406b-a215-d83de6d7e8da/rab_prodi_sains_data.xlsx,5968,2026-06-29 09:14:27.880000+00:00,9e743662b96dd36159dd3a8eeef4dab5,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/4b6cf2e1-86f1-406b-a215-d83de6d7e8da/rab_prodi_sains_data_2024_2025.xlsx,6061,2026-06-29 09:14:27.901000+00:00,03b9ff3aae577a36f7d84549f3acc68a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/4b6cf2e1-86f1-406b-a215-d83de6d7e8da/upload-2026-06-09-011818-37cc4d_rab_prodi_sains_data.xlsx,6059,2026-06-29 09:14:27.942000+00:00,4532d3eb74768483b69be81e972cc443,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/Nomenklatur.xlsx,91281,2026-06-29 09:14:28.018000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB 2025 SD RAB IKU.xlsx,849126,2026-06-29 09:14:28.115000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx,485119,2026-06-29 09:14:28.169000+00:00,13c35857c1af15992ddb222d04bea68e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx,637754,2026-06-29 09:14:28.242000+00:00,03038feb32860cf6ad61edf0d47af06a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/67b436e8-d489-43b1-9747-0f063424e6b4/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,403043,2026-06-29 09:14:28.309000+00:00,19aea87fac8a23661b08395baa8c2c77,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/c0c84389-6a94-4d89-8c60-37072c3f16cb/Nomenklatur.xlsx,91281,2026-06-29 09:14:28.386000+00:00,cbea33b3f7d2a0151f2cdd7a86dc4a2e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/c0c84389-6a94-4d89-8c60-37072c3f16cb/RAB 2025 SD RAB IKU.xlsx,849126,2026-06-29 09:14:28.471000+00:00,e52170aca01256aa02d66a174e882ea1,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/c0c84389-6a94-4d89-8c60-37072c3f16cb/RAB_SD_Usulan KE (1)_Jan-Jun 2023.xlsx,485119,2026-06-29 09:14:28.536000+00:00,13c35857c1af15992ddb222d04bea68e,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/c0c84389-6a94-4d89-8c60-37072c3f16cb/RAB_SD_Usulan KE (1)_jul-des 2023.xlsx,637754,2026-06-29 09:14:28.622000+00:00,03038feb32860cf6ad61edf0d47af06a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/c0c84389-6a94-4d89-8c60-37072c3f16cb/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx,403043,2026-06-29 09:14:28.698000+00:00,19aea87fac8a23661b08395baa8c2c77,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/caba9de6-fad6-418f-ae16-885c44514013/master_biaya_itera.xlsx,16418,2026-06-29 09:14:28.733000+00:00,9f20e48f0cfe51eeacd6a6f5060c9f20,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/caba9de6-fad6-418f-ae16-885c44514013/rab_prodi_sains_data.xlsx,5968,2026-06-29 09:14:28.763000+00:00,9e743662b96dd36159dd3a8eeef4dab5,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/caba9de6-fad6-418f-ae16-885c44514013/rab_prodi_sains_data_2024_2025.xlsx,6061,2026-06-29 09:14:28.782000+00:00,03b9ff3aae577a36f7d84549f3acc68a,STANDARD,DATA_LOADED
+lakehouse,raw,raw/excel_lakehouse/upload-2026-06-09-011818-37cc4d/caba9de6-fad6-418f-ae16-885c44514013/upload-2026-06-09-011818-37cc4d_rab_prodi_sains_data.xlsx,6059,2026-06-29 09:14:28.824000+00:00,4532d3eb74768483b69be81e972cc443,STANDARD,DATA_LOADED
+lakehouse,reports,reports/activity_log.json,28455,2026-06-29 09:14:32.639000+00:00,d7f5b0a1f7927794ddd6a534a999b6c8,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_bridge_detail_iku.csv,131922,2026-06-29 09:14:29.917000+00:00,9f077fc5b3f0c93c400f2880b5d95705,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_bridge_detail_iku.parquet,16948,2026-06-29 09:14:29.994000+00:00,a70fc280cde608c41be902ce43b61df0,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_mapping.csv,79346,2026-06-29 09:14:30.070000+00:00,ad35d57ab4054de514baf4d9e79c0539,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_mapping.parquet,19748,2026-06-29 09:14:30.119000+00:00,466c0680ff1eba5fa8e287568a197fc3,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_metadata.json,240,2026-06-09 01:16:11.942000+00:00,9458b072bb7e9776d7e1a9683e796270,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_nomenklatur_detail.csv,269105,2026-06-29 09:14:30.197000+00:00,3e5d7295a13437159c7e3332d96fe71e,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_nomenklatur_detail.parquet,55112,2026-06-29 09:14:30.270000+00:00,77cd881d05f868e00dbfd2881856118c,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_nomenklatur_warnings.csv,844,2026-06-29 09:14:30.293000+00:00,a0ce0045494f14fcdfdf5d316b35f394,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_nomenklatur_warnings.parquet,5858,2026-06-29 09:14:30.316000+00:00,90cbd5e43dd2b08f3da0e1adedb5358b,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_rab_hierarchy.csv,15064,2026-06-29 09:14:30.366000+00:00,5fe3983e9c98a07f18103307c13e41fd,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_rab_hierarchy.parquet,9260,2026-06-29 09:14:30.413000+00:00,9a53e6d15908987003cef9786dd5e014,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_rab_items_flexible.csv,342912,2026-06-29 09:14:30.505000+00:00,129ac8c05b390f9eb7c4adcd9e5a3430,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_rab_items_flexible.parquet,83298,2026-06-29 09:14:30.594000+00:00,9bf25ff507859b823160146d7c0e5895,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_validation.csv,537,2026-06-29 09:14:30.645000+00:00,f35bd96891e46d0fa2a40dfe60075bf9,STANDARD,DATA_LOADED
+lakehouse,silver,silver/silver_validation.parquet,4522,2026-06-29 09:14:30.676000+00:00,90c67f43287c726a704c4a6eaf4a709b,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_bridge_detail_iku.csv,131922,2026-06-29 09:14:30.706000+00:00,9f077fc5b3f0c93c400f2880b5d95705,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_bridge_detail_iku.parquet,16948,2026-06-29 09:14:30.740000+00:00,a70fc280cde608c41be902ce43b61df0,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_mapping.csv,79346,2026-06-29 09:14:30.842000+00:00,ad35d57ab4054de514baf4d9e79c0539,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_mapping.parquet,19748,2026-06-29 09:14:30.875000+00:00,466c0680ff1eba5fa8e287568a197fc3,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_detail.csv,269105,2026-06-29 09:14:30.969000+00:00,3e5d7295a13437159c7e3332d96fe71e,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_detail.parquet,55112,2026-06-29 09:14:31.015000+00:00,77cd881d05f868e00dbfd2881856118c,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_warnings.csv,844,2026-06-29 09:14:31.062000+00:00,a0ce0045494f14fcdfdf5d316b35f394,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_nomenklatur_warnings.parquet,5858,2026-06-29 09:14:31.093000+00:00,90cbd5e43dd2b08f3da0e1adedb5358b,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_rab_hierarchy.csv,15064,2026-06-29 09:14:31.138000+00:00,5fe3983e9c98a07f18103307c13e41fd,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_rab_hierarchy.parquet,9260,2026-06-29 09:14:31.184000+00:00,9a53e6d15908987003cef9786dd5e014,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.csv,342912,2026-06-29 09:14:31.273000+00:00,129ac8c05b390f9eb7c4adcd9e5a3430,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_rab_items_flexible.parquet,83298,2026-06-29 09:14:31.346000+00:00,9bf25ff507859b823160146d7c0e5895,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_validation.csv,537,2026-06-29 09:14:31.381000+00:00,f35bd96891e46d0fa2a40dfe60075bf9,STANDARD,DATA_LOADED
+lakehouse,silver,silver/upload-2026-06-09-011818-37cc4d/silver_validation.parquet,4522,2026-06-29 09:14:31.401000+00:00,90c67f43287c726a704c4a6eaf4a709b,STANDARD,DATA_LOADED

@@ -1,0 +1,2 @@
+source_file,total_detail,total_rekap,selisih,validation_status,dataset_session_id
+fixture.xlsx,1000,1000,0,validated,fixture-release-session

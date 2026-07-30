@@ -1,0 +1,15 @@
+{
+  "measurement_type": "Waktu Eksekusi Pipeline Python End-to-End",
+  "run_count": 5,
+  "all_pass": true,
+  "statistics_seconds": {
+    "count": 5.0,
+    "mean": 64.7588,
+    "std": 7.766183663808112,
+    "min": 54.144,
+    "25%": 59.247,
+    "50%": 67.544,
+    "75%": 70.579,
+    "max": 72.28
+  }
+}

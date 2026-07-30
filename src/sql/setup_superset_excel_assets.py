@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
@@ -315,6 +316,9 @@ def _create_year_permalinks(session: requests.Session, dashboard_id: int) -> dic
 
 
 def main() -> None:
+    refresh_started_at = datetime.now(timezone.utc).isoformat()
+    dataset_session_id = os.getenv("DATASET_SESSION_ID") or None
+    pipeline_run_id = os.getenv("PIPELINE_RUN_ID") or None
     try:
         session = _login()
         database_id = _database_id(session)
@@ -358,6 +362,10 @@ def main() -> None:
             "dashboard_urls_by_year": dashboard_urls_by_year,
             "chart_ids": chart_ids,
             "chart_count": len(chart_ids),
+            "dataset_session_id": dataset_session_id,
+            "pipeline_run_id": pipeline_run_id,
+            "superset_refresh_started_at": refresh_started_at,
+            "superset_refresh_finished_at": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as exc:
         result = {
@@ -370,6 +378,29 @@ def main() -> None:
         }
     write_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json", result)
     write_json(OUTPUTS_DIR / "reports" / "superset_excel_assets.json", result)
+    if result.get("status") == "validated" and dataset_session_id and pipeline_run_id:
+        manifest_path = OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{pipeline_run_id}.json"
+        try:
+            manifest = __import__("json").loads(manifest_path.read_text(encoding="utf-8"))
+            if manifest.get("dataset_session_id") != dataset_session_id:
+                raise RuntimeError("Identitas manifest Superset tidak cocok.")
+            manifest.update({"superset_refresh_started_at": result["superset_refresh_started_at"], "superset_refresh_finished_at": result["superset_refresh_finished_at"]})
+            temporary = manifest_path.with_suffix(".tmp")
+            temporary.write_text(__import__("json").dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+            temporary.replace(manifest_path)
+        except (OSError, ValueError, RuntimeError) as exc:
+            result["status"] = "invalid"
+            result["message"] = str(exc)
+            write_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json", result)
+        if result.get("status") == "validated":
+            from portal_backend.services.superset_api import record_dashboard_verification
+
+            verification = record_dashboard_verification(dataset_session_id, pipeline_run_id)
+            result["dashboard_verification"] = verification
+            if verification.get("status") != "validated":
+                result["status"] = "invalid"
+                result["message"] = verification.get("message") or "Query Superset belum memverifikasi run aktif."
+            write_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json", result)
     print(result)
 
 

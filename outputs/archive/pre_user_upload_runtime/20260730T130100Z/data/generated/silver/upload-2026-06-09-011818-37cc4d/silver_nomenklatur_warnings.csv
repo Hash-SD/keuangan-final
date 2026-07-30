@@ -1,0 +1,5 @@
+source_file,source_sheet,source_row,warning_type,warning_message,raw_value,detected_color,dataset_session_id
+Nomenklatur.xlsx,Nomenklatur FS,2,UNKNOWN_COLOR,Baris memiliki isi tetapi warna tidak ada di konfigurasi nomenklatur.,Nomenklatur,FFCCCCCC,upload-2026-06-09-011818-37cc4d
+Nomenklatur.xlsx,Nomenklatur FS,128,UNKNOWN_COLOR,Baris memiliki isi tetapi warna tidak ada di konfigurasi nomenklatur.,Kelebihan Beban Kerja Dosen,FFFFFFFF,upload-2026-06-09-011818-37cc4d
+Nomenklatur.xlsx,Nomenklatur FS,239,UNKNOWN_COLOR,Baris memiliki isi tetapi warna tidak ada di konfigurasi nomenklatur.,Pelatihan Dasar ASN,FFFFFFFF,upload-2026-06-09-011818-37cc4d
+Nomenklatur.xlsx,Nomenklatur FS,254,UNKNOWN_COLOR,Baris memiliki isi tetapi warna tidak ada di konfigurasi nomenklatur.,Kegiatan Matching Fun Sawit,FFFFFFFF,upload-2026-06-09-011818-37cc4d

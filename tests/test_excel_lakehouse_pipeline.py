@@ -23,6 +23,7 @@ def test_excel_lakehouse_pipeline_writes_bronze_silver_gold_parquet(tmp_path, mo
     monkeypatch.setattr(excel_lakehouse_pipeline, "GENERATED_DIR", generated)
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_dataset_pointer", lambda: {"session_id": "test-session"})
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_period_metadata", lambda: {"target_tahun_anggaran": "2025", "target_prodi": "Sains Data"})
+    monkeypatch.setenv("PIPELINE_RUN_ID", "pipeline-test-run")
     sources = [
         ExcelSource(path=FILES[0], tahun_input=2025, prodi="Sains Data", jenis_dataset="rab"),
         ExcelSource(path=FILES[1], tahun_input=2026, prodi="Sains Data", jenis_dataset="nomenklatur"),
@@ -37,10 +38,11 @@ def test_excel_lakehouse_pipeline_writes_bronze_silver_gold_parquet(tmp_path, mo
     assert result["silver_rab_items"] > 0
     assert result["silver_nomenklatur_detail"] > 0
     assert result["fact_anggaran_rows"] > 0
-    assert (generated / "bronze" / "bronze_excel_cells.parquet").exists()
-    assert (generated / "silver" / "silver_rab_items_flexible.parquet").exists()
-    assert (generated / "silver" / "silver_nomenklatur_detail.parquet").exists()
-    assert (generated / "gold" / "fact_anggaran.parquet").exists()
+    run_root = generated / "bronze" / "test-session" / "pipeline-test-run"
+    assert (run_root / "bronze_excel_cells.parquet").exists()
+    assert (generated / "silver" / "test-session" / "pipeline-test-run" / "silver_rab_items_flexible.parquet").exists()
+    assert (generated / "silver" / "test-session" / "pipeline-test-run" / "silver_nomenklatur_detail.parquet").exists()
+    assert (generated / "gold" / "test-session" / "pipeline-test-run" / "fact_anggaran.parquet").exists()
 
 
 def test_discover_excel_sources_prefers_complete_uploaded_multiyear_bundle(tmp_path, monkeypatch):
@@ -57,6 +59,7 @@ def test_discover_excel_sources_prefers_complete_uploaded_multiyear_bundle(tmp_p
     for filename in filenames:
         (bundle / filename).write_bytes(b"placeholder")
     monkeypatch.delenv("FINANCE_EXCEL_FILES", raising=False)
+    monkeypatch.setenv("APP_ENV", "test")
     monkeypatch.setattr(excel_lakehouse_pipeline, "DATA_DIR", tmp_path / "data")
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_dataset_pointer", lambda: {"session_id": "test-session"})
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_period_metadata", lambda: {"target_tahun_anggaran": "2025", "target_prodi": "Sains Data"})
@@ -87,12 +90,13 @@ def test_discover_excel_sources_prefers_active_upload_over_old_bundle(tmp_path, 
     active_pointer = tmp_path / "outputs" / "reports" / "active_excel_lakehouse_dataset.json"
     active_pointer.parent.mkdir(parents=True)
     active_pointer.write_text(
-        '{"prodi":"Sains Data","tahun_input":"2024","files":[{"path":"data/raw/excel_lakehouse/2024/active-dataset/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx","jenis_dataset":"rab"}]}',
+        '{"status":"committed","prodi":"Sains Data","tahun_input":"2024","files":[{"path":"data/raw/excel_lakehouse/2024/active-dataset/Rencana Anggaran Prodi Sains Data Tahun 2024.xlsx","jenis_dataset":"rab"}]}',
         encoding="utf-8",
     )
     monkeypatch.delenv("FINANCE_EXCEL_FILES", raising=False)
     monkeypatch.setattr(excel_lakehouse_pipeline, "DATA_DIR", tmp_path / "data")
     monkeypatch.setattr(excel_lakehouse_pipeline, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(excel_lakehouse_pipeline, "ACTIVE_EXCEL_DATASET_PATH", active_pointer)
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_dataset_pointer", lambda: {"session_id": "test-session"})
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_period_metadata", lambda: {"target_tahun_anggaran": "2025", "target_prodi": "Sains Data"})
     monkeypatch.setattr(excel_lakehouse_pipeline, "raw_rab_path", lambda: tmp_path / "missing.xlsx")

@@ -22,13 +22,32 @@ from src.mapping.flexible_mapping import build_mapping_table
 from src.parser_flexible.nomenklatur_parser import parse_nomenklatur_workbook
 from src.parser_flexible.rab_parser import parse_rab_workbook
 from src.transformations.budget_cleaning import clean_and_enrich_budget_items
+from src.validation.production_quality_gate import evaluate_gold_quality
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EXCEL_EXTENSIONS = {".xlsx", ".xlsm", ".xltx", ".xltm"}
+ACTIVE_EXCEL_DATASET_PATH = REPO_ROOT / "outputs" / "reports" / "active_excel_lakehouse_dataset.json"
+
+
+def _active_excel_dataset() -> dict[str, object]:
+    try:
+        payload = json.loads(ACTIVE_EXCEL_DATASET_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if payload.get("status") == "committed" else {}
+
+
+def _sample_data_allowed() -> bool:
+    return os.getenv("APP_ENV", "production").lower() == "test" or os.getenv("ALLOW_SAMPLE_DATA", "").lower() == "true"
 
 
 def _session_id() -> str:
+    if os.getenv("DATASET_SESSION_ID"):
+        return Path(str(os.environ["DATASET_SESSION_ID"])).name
+    dataset = _active_excel_dataset()
+    if dataset.get("dataset_session_id") or dataset.get("dataset_id"):
+        return Path(str(dataset.get("dataset_session_id") or dataset.get("dataset_id"))).name
     pointer = active_dataset_pointer() or {}
     return Path(str(pointer.get("session_id") or "excel-lakehouse")).name or "excel-lakehouse"
 
@@ -58,7 +77,7 @@ def _infer_period_from_filename(path: Path, default: object = None) -> str | Non
         return "Jan-Jun"
     if "jul" in name or "des" in name or "dec" in name:
         return "Jul-Des"
-    return str(default) if default else None
+    return str(default) if default else "Tahunan"
 
 
 def _excel_source(path: Path, prodi: str, tahun_input: object = None, periode: object = None, jenis_dataset: object = None) -> ExcelSource:
@@ -119,7 +138,7 @@ def _discover_uploaded_multiyear_bundle() -> list[Path]:
 
 def discover_excel_sources() -> list[ExcelSource]:
     pointer = active_dataset_pointer() or {}
-    excel_pointer_path = REPO_ROOT / "outputs" / "reports" / "active_excel_lakehouse_dataset.json"
+    excel_pointer_path = ACTIVE_EXCEL_DATASET_PATH
     excel_pointer = {}
     if excel_pointer_path.exists():
         try:
@@ -130,7 +149,10 @@ def discover_excel_sources() -> list[ExcelSource]:
     prodi = excel_pointer.get("prodi") or pointer.get("target_prodi") or metadata.get("target_prodi") or "Sains Data"
     tahun_input = excel_pointer.get("tahun_input") or pointer.get("tahun_anggaran") or metadata.get("target_tahun_anggaran")
     paths: list[Path] = []
-    env_paths = _split_env_paths(os.getenv("FINANCE_EXCEL_FILES"))
+    if not excel_pointer and not _sample_data_allowed():
+        raise ValueError("Tidak ada dataset aktif berstatus COMMITTED; pipeline production dihentikan sebelum Bronze.")
+
+    env_paths = _split_env_paths(os.getenv("FINANCE_EXCEL_FILES")) if _sample_data_allowed() else []
     paths.extend(env_paths)
     if env_paths:
         return [_excel_source(path, prodi, tahun_input=tahun_input) for path in paths if _resolve_repo_path(path).exists()]
@@ -152,17 +174,19 @@ def discover_excel_sources() -> list[ExcelSource]:
         if pointer_sources:
             return pointer_sources
 
-    uploaded_bundle = _discover_uploaded_multiyear_bundle()
-    if uploaded_bundle:
-        return [_excel_source(path, prodi, tahun_input=tahun_input) for path in uploaded_bundle]
-    active_excel = pointer.get("active_excel")
-    if active_excel:
-        paths.append(Path(active_excel))
-    if raw_rab_path().exists():
-        paths.append(raw_rab_path())
-    raw_excel_dir = RAW_DIR / "excel"
-    if raw_excel_dir.exists():
-        paths.extend(sorted(raw_excel_dir.glob("*.xlsx")))
+    if _sample_data_allowed():
+        uploaded_bundle = _discover_uploaded_multiyear_bundle()
+        if uploaded_bundle:
+            return [_excel_source(path, prodi, tahun_input=tahun_input) for path in uploaded_bundle]
+    if _sample_data_allowed():
+        active_excel = pointer.get("active_excel")
+        if active_excel:
+            paths.append(Path(active_excel))
+        if raw_rab_path().exists():
+            paths.append(raw_rab_path())
+        raw_excel_dir = RAW_DIR / "excel"
+        if raw_excel_dir.exists():
+            paths.extend(sorted(raw_excel_dir.glob("*.xlsx")))
     unique: list[Path] = []
     seen = set()
     for path in paths:
@@ -173,6 +197,8 @@ def discover_excel_sources() -> list[ExcelSource]:
             if resolved not in seen:
                 unique.append(resolved)
                 seen.add(resolved)
+    if not unique:
+        raise ValueError("Dataset aktif tidak memiliki workbook tervalidasi; pipeline production dihentikan sebelum Bronze.")
     return [_excel_source(path, prodi, tahun_input=tahun_input) for path in unique]
 
 
@@ -196,23 +222,20 @@ def _write_parquet(path: Path, df: pd.DataFrame) -> None:
     parquet_df.to_parquet(path, index=False)
 
 
-def _write_session_and_combined(df: pd.DataFrame, layer: str, filename: str, session_id: str) -> dict[str, str]:
+def _write_run_output(df: pd.DataFrame, layer: str, filename: str, session_id: str, run_id: str) -> dict[str, str]:
     base = GENERATED_DIR / layer
-    session_path = base / session_id / filename
-    combined_path = base / filename
-    ensure_parent(session_path)
-    ensure_parent(combined_path)
+    run_path = base / session_id / run_id / filename
+    ensure_parent(run_path)
     current = df.copy()
     if "dataset_session_id" not in current.columns:
         current["dataset_session_id"] = session_id
-    current.to_csv(session_path, index=False)
-    current.to_csv(combined_path, index=False)
+    if "run_id" not in current.columns:
+        current["run_id"] = run_id
+    current.to_csv(run_path, index=False)
     parquet_name = f"{Path(filename).stem}.parquet"
-    session_parquet = base / session_id / parquet_name
-    combined_parquet = base / parquet_name
-    _write_parquet(session_parquet, df.assign(dataset_session_id=session_id) if "dataset_session_id" not in df.columns else df)
-    _write_parquet(combined_parquet, current)
-    return {"csv": str(combined_path), "parquet": str(combined_parquet), "session_csv": str(session_path), "session_parquet": str(session_parquet)}
+    run_parquet = run_path.with_name(parquet_name)
+    _write_parquet(run_parquet, current)
+    return {"csv": str(run_path), "parquet": str(run_parquet)}
 
 
 def _build_rab_reconciliation_report(silver_rab: pd.DataFrame, silver_validation: pd.DataFrame, fact: pd.DataFrame) -> dict[str, object]:
@@ -303,9 +326,15 @@ def _archive_raw_sources(sources: list[ExcelSource], run_id: str, session_id: st
 
 
 def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> dict[str, object]:
+    pipeline_started_at = utc_now_iso()
     sources = sources if sources is not None else discover_excel_sources()
     session_id = _session_id()
-    run_id = str(uuid.uuid4())
+    run_id = os.getenv("PIPELINE_RUN_ID") or str(uuid.uuid4())
+    active_dataset = _active_excel_dataset()
+    if active_dataset and str(active_dataset.get("dataset_session_id") or active_dataset.get("dataset_id")) != session_id:
+        raise ValueError("dataset_session_id pipeline tidak sama dengan dataset aktif.")
+    lifecycle = {"status": "RUNNING", "pipeline_run_id": run_id, "dataset_session_id": session_id, "airflow_dag_run_id": os.getenv("AIRFLOW_DAG_RUN_ID"), "pipeline_started_at": pipeline_started_at}
+    write_json(OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{run_id}.json", lifecycle)
     raw_archives = _archive_raw_sources(sources, run_id, session_id)
     bronze_frames: list[pd.DataFrame] = []
     rab_items: list[pd.DataFrame] = []
@@ -350,6 +379,11 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
             silver_rab["created_at"] = created_at
         silver_rab = clean_and_enrich_budget_items(silver_rab, silver_nomenklatur, bridge_nomenklatur)
     fact = build_fact_anggaran(silver_rab)
+    if not fact.empty:
+        fact["dataset_session_id"] = session_id
+        fact["run_id"] = run_id
+        fact["pipeline_run_id"] = run_id
+        fact["airflow_dag_run_id"] = os.getenv("AIRFLOW_DAG_RUN_ID")
     silver_rab_rows_classified = silver_rab.copy()
     silver_rab_formula_coverage = (
         silver_validation[silver_validation["validation_type"].eq("FORMULA_COVERAGE")].copy()
@@ -368,8 +402,8 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     )
     rab_reconciliation_report = _build_rab_reconciliation_report(silver_rab, silver_validation, fact)
     mapped_fact = fact[fact["kode_iku"].notna() & fact["kode_iku"].astype(str).str.strip().ne("")] if not fact.empty else fact
-    dashboard_iku = mapped_fact.groupby(["run_id", "tahun", "periode", "prodi", "fakultas", "iku", "kode_iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not mapped_fact.empty else pd.DataFrame()
-    dashboard_mapping = fact.groupby(["run_id", "mapping_status", "data_quality_flag"], dropna=False)["item_id"].nunique().reset_index(name="item_count") if not fact.empty else pd.DataFrame()
+    dashboard_iku = mapped_fact.groupby(["dataset_session_id", "run_id", "tahun", "periode", "prodi", "fakultas", "iku", "kode_iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not mapped_fact.empty else pd.DataFrame()
+    dashboard_mapping = fact.groupby(["dataset_session_id", "run_id", "mapping_status", "data_quality_flag"], dropna=False)["item_id"].nunique().reset_index(name="item_count") if not fact.empty else pd.DataFrame()
     dashboard_detail = fact.copy()
     dashboard_reconciliation = silver_validation.copy()
 
@@ -393,11 +427,20 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         ("gold", "vw_dashboard_reconciliation.csv", dashboard_reconciliation),
         ("gold", "vw_dashboard_detail_item.csv", dashboard_detail),
     ]:
-        outputs[filename] = _write_session_and_combined(df, layer, filename, session_id)
+        outputs[filename] = _write_run_output(df, layer, filename, session_id, run_id)
 
+    gold_finished_at = utc_now_iso()
+    quality_gate = evaluate_gold_quality(fact, session_id, run_id)
     metadata = {
         "run_id": run_id,
+        "pipeline_run_id": run_id,
         "dataset_session_id": session_id,
+        "airflow_dag_run_id": os.getenv("AIRFLOW_DAG_RUN_ID"),
+        "upload_committed_at": active_dataset.get("upload_committed_at") or active_dataset.get("created_at"),
+        "pipeline_started_at": pipeline_started_at,
+        "gold_finished_at": gold_finished_at,
+        "pipeline_finished_at": gold_finished_at,
+        "status": "READY_TO_PUBLISH" if quality_gate["status"] == "PASSED" else "FAILED",
         "source_files": [str(source.path) for source in sources],
         "raw_archives": raw_archives,
         "bronze_cells": int(len(bronze)),
@@ -407,8 +450,14 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         "rab_reconciliation_status": rab_reconciliation_report.get("status"),
         "rab_reconciliation_final_gold_total": rab_reconciliation_report.get("final_gold_total"),
         "outputs": outputs,
+        "quality_gate": quality_gate,
     }
-    write_json(GENERATED_DIR / "excel_lakehouse_metadata.json", metadata)
+    write_json(OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{run_id}.json", metadata)
+    if quality_gate["status"] != "PASSED":
+        raise ValueError(f"Quality gate blocking: {', '.join(quality_gate['blocking_errors'])}")
+    metadata["status"] = "PUBLISHED"
+    write_json(OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{run_id}.json", metadata)
+    write_json(OUTPUTS_DIR / "reports" / "active_gold_run.json", {"status": "PUBLISHED", "dataset_session_id": session_id, "pipeline_run_id": run_id, "outputs": outputs})
     write_json(OUTPUTS_DIR / "reports" / "rab_reconciliation_report.json", rab_reconciliation_report)
     return metadata
 

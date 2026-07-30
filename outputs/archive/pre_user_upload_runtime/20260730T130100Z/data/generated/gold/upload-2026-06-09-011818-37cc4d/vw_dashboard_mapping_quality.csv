@@ -1,0 +1,6 @@
+run_id,mapping_status,data_quality_flag,item_count,dataset_session_id
+344fb135-2995-427a-bd2d-84499890e1a7,mapped_by_context_rule,OK,40,upload-2026-06-09-011818-37cc4d
+344fb135-2995-427a-bd2d-84499890e1a7,mapped_by_context_rule,VALIDATED_WITH_RULE,49,upload-2026-06-09-011818-37cc4d
+344fb135-2995-427a-bd2d-84499890e1a7,mapped_from_nomenklatur,OK,100,upload-2026-06-09-011818-37cc4d
+344fb135-2995-427a-bd2d-84499890e1a7,mapped_from_nomenklatur,VALIDATED_WITH_RULE,54,upload-2026-06-09-011818-37cc4d
+344fb135-2995-427a-bd2d-84499890e1a7,review_queue,REVIEW_QUEUE,10,upload-2026-06-09-011818-37cc4d

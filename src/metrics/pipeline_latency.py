@@ -103,29 +103,21 @@ def _gold_ready_time(base_dir: Path, active_session_id: str | None) -> tuple[dat
 
 def compute_pipeline_latency(base_dir: Path | str | None = None, write_output: bool = True) -> dict[str, Any]:
     base = Path(base_dir) if base_dir is not None else ROOT_DIR
-    config = get_runtime_config()
-    source_ready, source_basis, session_id = _active_source_ready_time(base, config.source_event)
-    gold_ready, gold_message = _gold_ready_time(base, session_id)
-    computed_at = datetime.now(timezone.utc)
-    end_time = gold_ready or computed_at
-    seconds = max(int((end_time - source_ready).total_seconds()), 0)
-    status = "validated" if gold_ready else "running"
-    result = {
-        "batch_id": config.batch_id,
-        "target_prodi": config.target_prodi,
-        "target_tahun_akademik": config.target_tahun_akademik,
-        "target_label": config.target_label,
-        "source_arrival": source_ready.isoformat(),
-        "source_basis": source_basis,
-        "dataset_session_id": session_id,
-        "gold_ready": gold_ready.isoformat() if gold_ready else None,
-        "computed_at": computed_at.isoformat(),
-        "latency_seconds": seconds,
-        "pipeline_latency_seconds": seconds,
-        "elapsed_seconds": seconds,
-        "status": status,
-        "message": "Latency dihitung realtime dari sumber aktif ke Gold terbaru." if gold_ready else gold_message,
-    }
+    pointer = _read_json(base / "outputs" / "reports" / "active_excel_lakehouse_dataset.json") or {}
+    session_id = str(pointer.get("dataset_session_id") or pointer.get("dataset_id") or "")
+    manifests = base / "outputs" / "reports" / "pipeline_runs"
+    candidates = sorted(manifests.glob("*.json"), key=lambda path: path.stat().st_mtime, reverse=True) if manifests.exists() else []
+    manifest = next((_read_json(path) for path in candidates if (_read_json(path) or {}).get("dataset_session_id") == session_id), {}) or {}
+    required = ["dataset_session_id", "pipeline_run_id", "upload_committed_at", "gold_finished_at"]
+    missing = [key for key in required if not manifest.get(key)]
+    if missing:
+        result = {"status": "not_available", "dataset_session_id": session_id or None, "missing_fields": missing, "message": "Pipeline latency tidak dihitung tanpa manifest run terkorolasi."}
+    else:
+        t0 = _parse_datetime(manifest["upload_committed_at"]); t1 = _parse_datetime(manifest["gold_finished_at"])
+        if t0 is None or t1 is None or t1 < t0:
+            result = {"status": "invalid_timeline", "dataset_session_id": session_id, "message": "Timeline run tidak valid."}
+        else:
+            result = {"status": "validated", "dataset_session_id": session_id, "pipeline_run_id": manifest["pipeline_run_id"], "upload_committed_at": t0.isoformat(), "gold_finished_at": t1.isoformat(), "pipeline_latency_seconds": (t1-t0).total_seconds(), "latency_seconds": (t1-t0).total_seconds()}
     if write_output:
         output_dir = base / "outputs" / "metrics" if base_dir is not None else OUTPUTS_DIR / "metrics"
         write_json(output_dir / "pipeline_latency.json", result)

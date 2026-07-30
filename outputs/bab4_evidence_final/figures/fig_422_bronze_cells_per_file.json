@@ -1,0 +1,7 @@
+{
+  "title": "Jumlah Bronze Cells per File",
+  "source_csv": "figures/data/fig_422_bronze_cells_per_file.csv",
+  "observations": 5,
+  "generated_at": "2026-07-30T12:14:27.570669+00:00",
+  "script": "outputs/bab4_evidence_final/scripts/enrich_runtime_evidence.py"
+}

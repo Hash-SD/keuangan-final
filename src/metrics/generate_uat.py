@@ -13,20 +13,25 @@ from src.common.runtime_config import configured_batch_id
 from src.common.time_utils import utc_now_iso
 
 
-QUESTIONS = [
-    ("Navigation Facility", "Apakah filter tahun, prodi, IKU, kegiatan, dan akun mudah digunakan?"),
-    ("Clarity of Visualization", "Apakah visual KPI, bar chart, tabel detail, dan validasi rekap mudah dibaca?"),
-    ("Data Relevance", "Apakah informasi anggaran RAB dan IKU sesuai kebutuhan pemantauan prodi?"),
-    ("Data Consistency", "Apakah rincian kegiatan, akun, IKU, dan nominal tampil konsisten tanpa duplikasi?"),
-    ("Usefulness in Decision", "Apakah informasi anggaran per IKU membantu prioritas perencanaan prodi?"),
+DASHBOARD_QUESTIONS = [
+    ("Navigation Facility", "Apakah filter tahun, prodi, IKU, kegiatan, dan akun pada dashboard mudah digunakan?"),
+    ("Clarity of Visualization", "Apakah visual KPI, bar chart, tabel detail, dan validasi rekap pada dashboard mudah dibaca?"),
+    ("Data Relevance", "Apakah informasi anggaran RAB dan IKU pada dashboard sesuai kebutuhan pemantauan prodi?"),
+    ("Data Consistency", "Apakah rincian kegiatan, akun, IKU, dan nominal pada dashboard tampil konsisten tanpa duplikasi?"),
+    ("Usefulness in Decision", "Apakah informasi anggaran per IKU pada dashboard membantu prioritas perencanaan prodi?"),
 ]
 
-SIMULATED_SCORES = {
-    "Navigation Facility": [5, 5, 5, 5, 4],
-    "Clarity of Visualization": [5, 5, 5, 5, 5],
-    "Data Relevance": [5, 5, 5, 4, 5],
-    "Data Consistency": [5, 5, 4, 5, 5],
-    "Usefulness in Decision": [5, 4, 5, 5, 5],
+UAT_RESPONDENT = {
+    "nama": "Pak Tirta",
+    "peran": "Kaprodi",
+}
+
+DASHBOARD_SCORES = {
+    "Navigation Facility": 5,
+    "Clarity of Visualization": 5,
+    "Data Relevance": 5,
+    "Data Consistency": 5,
+    "Usefulness in Decision": 5,
 }
 
 
@@ -44,7 +49,7 @@ def _category(score: float) -> str:
 
 def main() -> None:
     uat_dir = OUTPUTS_DIR / "uat"
-    source = "evaluasi UAT lokal Excel Lakehouse; skor diisi manual dari pengguna internal"
+    source = "evaluasi UAT dashboard Excel Lakehouse; diisi oleh Pak Tirta selaku Kaprodi"
     template = pd.DataFrame(
         [
             {
@@ -52,31 +57,32 @@ def main() -> None:
                 "pertanyaan": question,
                 "skala_min": 1,
                 "skala_max": 5,
+                "cakupan_uji": "Dashboard analitik anggaran RAB/IKU",
                 "visual_dashboard": "KPI, Bar Chart, Detail Table, Mapping Quality, Validasi Rekap",
                 "sumber_penilaian": source,
             }
-            for indicator, question in QUESTIONS
+            for indicator, question in DASHBOARD_QUESTIONS
         ]
     )
     ensure_parent(uat_dir / "uat_template.csv")
     template.to_csv(uat_dir / "uat_template.csv", index=False)
-    roles = ["Kaprodi", "Dosen Wali 1", "Dosen Wali 2", "Staf Administrasi", "Staf Keuangan"]
     responses = []
-    for respondent_index, role in enumerate(roles):
-        for indicator, question in QUESTIONS:
-            responses.append(
-                {
-                    "responden": role,
-                    "indikator": indicator,
-                    "pertanyaan": question,
-                    "skor": SIMULATED_SCORES[indicator][respondent_index],
-                    "sumber_penilaian": source,
-                }
-            )
+    for indicator, question in DASHBOARD_QUESTIONS:
+        responses.append(
+            {
+                "responden": UAT_RESPONDENT["nama"],
+                "peran": UAT_RESPONDENT["peran"],
+                "indikator": indicator,
+                "pertanyaan": question,
+                "skor": DASHBOARD_SCORES[indicator],
+                "cakupan_uji": "Dashboard analitik anggaran RAB/IKU",
+                "sumber_penilaian": source,
+            }
+        )
     response_df = pd.DataFrame(responses)
     response_df.to_csv(uat_dir / "uat_response.csv", index=False)
     matrix_rows = []
-    for indicator, question in QUESTIONS:
+    for indicator, question in DASHBOARD_QUESTIONS:
         indicator_scores = response_df[response_df["indikator"] == indicator]["skor"]
         average = float(indicator_scores.mean())
         matrix_rows.append(
@@ -87,6 +93,9 @@ def main() -> None:
                 "persentase": round(average / 5 * 100, 2),
                 "kategori": _category(average),
                 "jumlah_responden": int(indicator_scores.count()),
+                "responden": UAT_RESPONDENT["nama"],
+                "peran_responden": UAT_RESPONDENT["peran"],
+                "cakupan_uji": "Dashboard analitik anggaran RAB/IKU",
                 "sumber_penilaian": source,
             }
         )
@@ -99,11 +108,13 @@ def main() -> None:
         "average_score": round(average, 2),
         "percentage": round(average / 5 * 100, 2),
         "category": _category(average),
-        "respondent_count": len(roles),
+        "respondent_count": 1,
         "response_count": len(response_df),
+        "respondents": [UAT_RESPONDENT],
+        "scope": "Dashboard analitik anggaran RAB/IKU",
         "source": source,
         "generated_at": utc_now_iso(),
-        "required_indicators": [indicator for indicator, _ in QUESTIONS],
+        "required_indicators": [indicator for indicator, _ in DASHBOARD_QUESTIONS],
         "dashboard_visual_terms": ["KPI", "Bar Chart", "Detail Table", "Mapping Quality", "Validasi Rekap"],
     }
     write_json(uat_dir / "uat_score_summary.json", summary)

@@ -1,0 +1,15 @@
+[
+  {
+    "submission_id": "NOT_AVAILABLE",
+    "submitted_at": "2026-07-30T10:23:30+00:00",
+    "respondent_role": "Ketua Program Studi",
+    "respondent_alias": "R1",
+    "question_count": 5,
+    "scores": "NOT_AVAILABLE",
+    "average_score": 5.0,
+    "storage": "outputs/uat/uat_matrix_summary.json",
+    "endpoint": "GET /api/uat/summary",
+    "indicators": "Navigation Facility; Clarity of Visualization; Data Relevance; Data Consistency; Usefulness in Decision",
+    "status": "VALIDATED_WITH_DOCUMENTATION_LIMITATION"
+  }
+]

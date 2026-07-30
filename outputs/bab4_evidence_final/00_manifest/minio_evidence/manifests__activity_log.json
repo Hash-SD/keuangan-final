@@ -1,0 +1,904 @@
+{
+  "activities": [
+    {
+      "time": "2026-06-09 08:14:49",
+      "actor": "system",
+      "action": "upload_session_commit",
+      "source": "upload",
+      "target": "upload-2026-06-09-011449-bbfed1",
+      "status": "failed",
+      "message": "Commit gagal. Lengkapi atau perbaiki file wajib sebelum commit."
+    },
+    {
+      "time": "2026-06-09 08:14:49",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011449-bbfed1",
+      "status": "success",
+      "message": "Semua file wajib tersedia. Data siap diunggah ke Data Lakehouse."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-6cc726",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-6cc726",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-e29b13",
+      "status": "success",
+      "message": "Semua file wajib tersedia. Data siap diunggah ke Data Lakehouse."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_commit",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-ff6fa9",
+      "status": "success",
+      "message": "Dataset berhasil di-commit ke Raw Layer. Quality Gate belum dijalankan."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-ff6fa9",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-ff6fa9",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-ff6fa9",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-ff6fa9",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_commit",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-261055",
+      "status": "failed",
+      "message": "Commit gagal. Lengkapi atau perbaiki file wajib sebelum commit."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011448-261055",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file_remove",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-7b896a",
+      "status": "success",
+      "message": "File dihapus dari sesi upload."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-7b896a",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-7b896a",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:48",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-7b896a",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-7b896a",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-308bfc",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-308bfc",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-308bfc",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-308bfc",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-008613",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "generate_data",
+      "source": "raw",
+      "target": "active_dataset_pointer",
+      "status": "skipped",
+      "message": "Generate dummy data dilewati karena DATASET_MODE=uploaded dan active_dataset_pointer committed tersedia."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_commit",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-7d72bc",
+      "status": "success",
+      "message": "Dataset berhasil di-commit ke Raw Layer. Quality Gate belum dijalankan."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011447-7d72bc",
+      "status": "success",
+      "message": "Semua file wajib tersedia. Data siap diunggah ke Data Lakehouse."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_commit",
+      "source": "upload",
+      "target": "upload-2026-06-09-011446-7dc16c",
+      "status": "failed",
+      "message": "Commit gagal. Lengkapi atau perbaiki file wajib sebelum commit."
+    },
+    {
+      "time": "2026-06-09 08:14:47",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011446-7dc16c",
+      "status": "success",
+      "message": "Sesi upload belum lengkap: Excel RAB belum tersedia."
+    },
+    {
+      "time": "2026-06-09 08:14:46",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011446-abd79d",
+      "status": "success",
+      "message": "Semua file wajib tersedia. Data siap diunggah ke Data Lakehouse."
+    },
+    {
+      "time": "2026-06-09 08:14:46",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011446-abd79d",
+      "status": "success",
+      "message": "Sesi upload belum lengkap: Excel RAB belum tersedia."
+    },
+    {
+      "time": "2026-06-09 08:14:46",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011446-abd79d",
+      "status": "success",
+      "message": "Sesi upload belum lengkap: CSV transaksi, Excel RAB belum tersedia."
+    },
+    {
+      "time": "2026-06-09 08:14:46",
+      "actor": "system",
+      "action": "upload_session_stage",
+      "source": "upload",
+      "target": "upload-2026-06-09-011446-ab72ff",
+      "status": "success",
+      "message": "Sesi upload belum lengkap: CSV transaksi, Excel RAB belum tersedia."
+    },
+    {
+      "time": "2026-06-09 08:14:02",
+      "actor": "system",
+      "action": "upload_session_file_remove",
+      "source": "upload",
+      "target": "upload-2026-06-09-011348-dd74cf",
+      "status": "success",
+      "message": "File dihapus dari sesi upload."
+    },
+    {
+      "time": "2026-06-09 08:14:02",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011348-dd74cf",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:01",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011348-dd74cf",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:01",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011348-dd74cf",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:14:01",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011348-dd74cf",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:13:48",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011348-dd74cf",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:13:36",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011336-f04cd0",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:13:36",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011324-6f9f15",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:36",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011324-6f9f15",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:35",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011324-6f9f15",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:35",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011324-6f9f15",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:13:24",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011324-6f9f15",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:13:24",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011312-a90359",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:24",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011312-a90359",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:24",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011312-a90359",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:23",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011312-a90359",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:13:12",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011312-a90359",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:13:11",
+      "actor": "system",
+      "action": "upload_session_commit",
+      "source": "upload",
+      "target": "upload-2026-06-09-011259-55a189",
+      "status": "success",
+      "message": "Dataset berhasil di-commit ke Raw Layer. Quality Gate belum dijalankan."
+    },
+    {
+      "time": "2026-06-09 08:13:11",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011259-55a189",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:11",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011259-55a189",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:11",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011259-55a189",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:13:10",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011259-55a189",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:12:59",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011259-55a189",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:12:29",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011217-50db10",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:12:17",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011217-50db10",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:12:17",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011206-f5bcf4",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:12:06",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011206-f5bcf4",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:11:41",
+      "actor": "system",
+      "action": "upload_session_file_remove",
+      "source": "upload",
+      "target": "upload-2026-06-09-011124-e51940",
+      "status": "success",
+      "message": "File dihapus dari sesi upload."
+    },
+    {
+      "time": "2026-06-09 08:11:41",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011124-e51940",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:11:40",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011124-e51940",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:11:40",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011124-e51940",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:11:40",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011124-e51940",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:11:24",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011124-e51940",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:10:23",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011023-2143c7",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:10:23",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011012-66202c",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:10:23",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011012-66202c",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:10:22",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-011012-66202c",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:10:22",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-011012-66202c",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:10:12",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-011012-66202c",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:10:12",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010959-d450c1",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:10:12",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010959-d450c1",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:10:12",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010959-d450c1",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:10:11",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-010959-d450c1",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:09:59",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-010959-d450c1",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:09:59",
+      "actor": "system",
+      "action": "upload_session_commit",
+      "source": "upload",
+      "target": "upload-2026-06-09-010947-a091a4",
+      "status": "success",
+      "message": "Dataset berhasil di-commit ke Raw Layer. Quality Gate belum dijalankan."
+    },
+    {
+      "time": "2026-06-09 08:09:58",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010947-a091a4",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:09:58",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010947-a091a4",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:09:58",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010947-a091a4",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:09:58",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-010947-a091a4",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:09:47",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-010947-a091a4",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:09:17",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-010903-6bb103",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:09:03",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-010903-6bb103",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:09:03",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-010851-e0fe9e",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:08:51",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-010851-e0fe9e",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:08:38",
+      "actor": "system",
+      "action": "upload_session_file_remove",
+      "source": "upload",
+      "target": "upload-2026-06-09-010822-ef99dd",
+      "status": "success",
+      "message": "File dihapus dari sesi upload."
+    },
+    {
+      "time": "2026-06-09 08:08:38",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010822-ef99dd",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:08:38",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010822-ef99dd",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:08:38",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010822-ef99dd",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:08:37",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-010822-ef99dd",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:08:23",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-010822-ef99dd",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:08:12",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-010812-a2fd8d",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:08:11",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010800-623673",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:08:11",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010800-623673",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:08:11",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010800-623673",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:08:11",
+      "actor": "system",
+      "action": "upload_session_context",
+      "source": "upload",
+      "target": "upload-2026-06-09-010800-623673",
+      "status": "success",
+      "message": "Konteks periode tersimpan sementara."
+    },
+    {
+      "time": "2026-06-09 08:08:00",
+      "actor": "system",
+      "action": "upload_session_reset",
+      "source": "upload",
+      "target": "upload-2026-06-09-010800-623673",
+      "status": "success",
+      "message": "Sesi upload direset."
+    },
+    {
+      "time": "2026-06-09 08:08:00",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010747-2f3bb1",
+      "status": "success",
+      "message": "Excel tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:07:59",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010747-2f3bb1",
+      "status": "success",
+      "message": "CSV tersimpan sementara di staging."
+    },
+    {
+      "time": "2026-06-09 08:07:59",
+      "actor": "system",
+      "action": "upload_session_file",
+      "source": "upload",
+      "target": "upload-2026-06-09-010747-2f3bb1",
+      "status": "success",
+      "message": "PDF tersimpan sementara di staging."
+    }
+  ]
+}

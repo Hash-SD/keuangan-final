@@ -1,0 +1,28 @@
+% Caption: Status Storage dan Query Layer
+% Label: tab:status-storage-query
+% Source: runtime dan laporan lokal
+% Definitions: 
+\begingroup
+\scriptsize
+\begin{longtable}{lll}
+\toprule
+component & status & evidence \\
+\midrule
+\endfirsthead
+\toprule
+component & status & evidence \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continued on next page} \\
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+MinIO & SERVICE\_RUNNING & HTTP health / storage\_manifest ditinjau; upload aktual harus dibuktikan object listing. \\
+PostgreSQL & QUERY\_VALIDATED & psql query tersedia dari runtime sebelumnya. \\
+Trino & SERVICE\_RUNNING & /v1/info HTTP 200; query table harus dibuktikan jika catalog/table tersedia. \\
+Iceberg & CONFIGURED\_ONLY & status load dari report harus diverifikasi terhadap snapshot. \\
+Superset & SERVICE\_RUNNING & /health HTTP 200; dataset/chart harus dibuktikan terpisah. \\
+\end{longtable}
+\endgroup

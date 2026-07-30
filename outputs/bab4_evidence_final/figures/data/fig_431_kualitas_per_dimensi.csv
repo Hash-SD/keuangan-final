@@ -1,0 +1,8 @@
+﻿component,numerator,denominator,score_percent,definition
+Kelengkapan atribut wajib,7891.0,7891.0,100.0,Nilai atribut wajib terisi dibagi seluruh nilai wajib.
+Validitas nilai,607.0,607.0,100.0,"Formula weighted, interval bobot, tahun, dan source_row valid."
+Konsistensi,607.0,607.0,100.0,Tidak ada duplicate grain item_id x kode_iku.
+Mapping item unik,243.0,253.0,96.04743083003953,"Unit ukur adalah item unik, bukan baris alokasi IKU."
+Rekonsiliasi lingkup sama,6.0,6.0,100.0,Hanya periode dengan kontrol sumber main_rab yang tersedia dibandingkan dengan Gold pada lingkup sama.
+Traceability,607.0,607.0,100.0,Kelengkapan atribut penelusuran.
+Skor Kualitas Data Turunan untuk Evaluasi Penelitian (parsial),,,99.34123847167325,Rata-rata aritmetika enam komponen artefak aktif; bobot sama karena tidak ditemukan bobot metodologis. Tidak merepresentasikan klaim kualitas menyeluruh karena kontrol 2023/2024 belum tersedia.
