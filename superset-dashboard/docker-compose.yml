@@ -1,0 +1,36 @@
+# ============================================================
+# superset-dashboard — dashboard lokal bertema portal SILARAS,
+# data ditarik langsung dari REST API Superset (bukan akses DB).
+#
+# Service ini sebaiknya menumpang network `lakehouse_net` dari
+# docker-compose.yml utama (folder keuangan-final) sehingga bisa
+# menjangkau container Superset via hostname `superset:8088`.
+# ============================================================
+
+services:
+  superset-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: keuangan-superset-dashboard:latest
+    container_name: keuangan-superset-dashboard
+    restart: unless-stopped
+    environment:
+      # Kredensial + base URL Superset (di dalam network compose utama
+      # gunakan http://superset:8088; untuk dev lokal http://localhost:8089)
+      SUPERSET_BASE_URL: ${SUPERSET_BASE_URL:-http://superset:8088}
+      SUPERSET_USERNAME: ${SUPERSET_USERNAME:-admin}
+      SUPERSET_PASSWORD: ${SUPERSET_PASSWORD:-admin}
+      SUPERSET_API_TIMEOUT_SECONDS: ${SUPERSET_API_TIMEOUT_SECONDS:-12}
+      SUPERSET_DASHBOARD_BIND_HOST: 0.0.0.0
+      SUPERSET_DASHBOARD_BIND_PORT: 8092
+    ports:
+      - "8092:8092"
+    networks:
+      - lakehouse_net
+
+networks:
+  # Dipakai dari docker-compose.yml utama (keuangan-final).
+  lakehouse_net:
+    external: true
+    name: lakehouse_net
