@@ -71,6 +71,11 @@ def run_command_group(name: str, timeout: int = 600, env_overrides: dict[str, st
     steps = []
     status = "success"
     env = {**os.environ, "DATASET_MODE": "uploaded_excel", **(env_overrides or {})}
+    if name == "superset-excel" and not env.get("SUPERSET_DASHBOARD_MODE"):
+        active = read_json(ACTIVE_EXCEL_DATASET_PATH) or {}
+        env["SUPERSET_DASHBOARD_MODE"] = str(
+            active.get("dashboard_mode") or "update"
+        )
     for args in commands:
         try:
             completed = subprocess.run(

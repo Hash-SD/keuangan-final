@@ -73,6 +73,9 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
     jenis_dataset = str(form.get("jenis_dataset") or "").strip().lower() or None
     catatan = str(form.get("catatan") or "").strip() or None
     append_to_active = str(form.get("append_to_active") or "").strip().lower() == "true"
+    dashboard_mode = str(form.get("dashboard_mode") or "update").strip().lower()
+    if dashboard_mode not in {"update", "new"}:
+        dashboard_mode = "update"
     dataset_id = f"excel-{utc_now_iso().replace(':', '').replace('-', '').split('.')[0]}-{uuid4().hex[:6]}"
     if len(uploads) > 20:
         raise ValueError("Jumlah workbook melebihi batas 20 file per dataset.")
@@ -160,6 +163,7 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
         "fakultas": fakultas,
         "jenis_dataset": jenis_dataset,
         "catatan": catatan,
+        "dashboard_mode": dashboard_mode,
         **scope,
         "files": saved,
         "upload_started_at": upload_started_at,

@@ -348,7 +348,11 @@ def create_app() -> Flask:
                     )
 
                 run_id = requested_run_id or create_pipeline_run_id()
-                res = trigger_dag(dataset_session_id=session_id, pipeline_run_id=run_id)
+                res = trigger_dag(
+                    dataset_session_id=session_id,
+                    pipeline_run_id=run_id,
+                    dashboard_mode=active_dataset.get("dashboard_mode") or "update",
+                )
                 append_activity(
                     action="trigger_dag",
                     source="airflow",

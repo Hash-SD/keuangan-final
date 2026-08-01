@@ -20,6 +20,29 @@ DATABASE_NAME = "Trino PostgreSQL Gold Keuangan"
 TABLE_NAME = "fact_anggaran"
 DASHBOARD_TITLE = "SILARAS SD - Dashboard Anggaran IKU"
 DASHBOARD_SLUG = "dashboard-anggaran-iku-prodi"
+DASHBOARD_MODE = os.getenv("SUPERSET_DASHBOARD_MODE", "update").strip().lower()
+
+
+def _dashboard_suffix() -> str:
+    return datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+
+
+def _dashboard_title() -> str:
+    if DASHBOARD_MODE == "new":
+        return f"{DASHBOARD_TITLE} {_dashboard_suffix()}"
+    return DASHBOARD_TITLE
+
+
+def _dashboard_slug() -> str:
+    if DASHBOARD_MODE == "new":
+        return f"{DASHBOARD_SLUG}-{_dashboard_suffix()}"
+    return DASHBOARD_SLUG
+
+
+def _chart_name(name: str) -> str:
+    if DASHBOARD_MODE == "new":
+        return f"{name} {_dashboard_suffix()}"
+    return name
 
 
 def _request_with_wait(session: requests.Session, method: str, url: str, attempts: int = 30, **kwargs) -> requests.Response:
@@ -56,6 +79,9 @@ def _get_items(session: requests.Session, resource: str) -> list[dict]:
 
 
 def _database_id(session: requests.Session) -> int:
+    for item in _get_items(session, "database"):
+        if item.get("database_name") == DATABASE_NAME:
+            return int(item["id"])
     payload = {
         "database_name": DATABASE_NAME,
         "sqlalchemy_uri": "trino://trino@trino:8080/postgres/gold",
@@ -78,10 +104,6 @@ def _database_id(session: requests.Session) -> int:
 
 
 def _dataset_id(session: requests.Session, database_id: int) -> int:
-    payload = {"database": database_id, "catalog": "postgres", "schema": "gold", "table_name": TABLE_NAME}
-    response = session.post(f"{BASE_URL}/api/v1/dataset/", json=payload, timeout=60)
-    if response.status_code not in {200, 201, 422}:
-        response.raise_for_status()
     datasets = session.get(f"{BASE_URL}/api/v1/dataset/?q=(filters:!((col:table_name,opr:eq,value:{TABLE_NAME})))", timeout=30)
     datasets.raise_for_status()
     result = datasets.json().get("result", [])
@@ -90,6 +112,10 @@ def _dataset_id(session: requests.Session, database_id: int) -> int:
         update = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}", json={"database_id": database_id, "catalog": "postgres", "schema": "gold", "table_name": TABLE_NAME}, timeout=60)
         update.raise_for_status()
     else:
+        payload = {"database": database_id, "catalog": "postgres", "schema": "gold", "table_name": TABLE_NAME}
+        response = session.post(f"{BASE_URL}/api/v1/dataset/", json=payload, timeout=60)
+        if response.status_code not in {200, 201, 422}:
+            response.raise_for_status()
         raw_dataset_id = response.json().get("id") or response.json().get("result", {}).get("id")
         if raw_dataset_id is None:
             raise RuntimeError(f"Superset dataset {TABLE_NAME!r} was not created or found")
@@ -224,9 +250,11 @@ def _native_filters(dataset_id: int, chart_ids: list[int]) -> list[dict]:
 def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: list[int]) -> int:
     import json
 
+    dashboard_title = _dashboard_title()
+    dashboard_slug = _dashboard_slug()
     payload = {
-        "dashboard_title": DASHBOARD_TITLE,
-        "slug": DASHBOARD_SLUG,
+        "dashboard_title": dashboard_title,
+        "slug": dashboard_slug,
         "published": True,
         "json_metadata": json.dumps({
             "native_filter_configuration": _native_filters(dataset_id, chart_ids),
@@ -240,7 +268,7 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
         }),
         "position_json": json.dumps(_position_json(chart_ids)),
     }
-    matches = [item for item in _get_items(session, "dashboard") if item.get("slug") == DASHBOARD_SLUG or item.get("dashboard_title") == DASHBOARD_TITLE]
+    matches = [item for item in _get_items(session, "dashboard") if item.get("slug") == dashboard_slug or item.get("dashboard_title") == dashboard_title]
     if matches:
         dashboard_id = int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
         response = session.put(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", json=payload, timeout=60)
@@ -329,35 +357,36 @@ def main() -> None:
         count_iku = _metric("Jumlah IKU", "COUNT_DISTINCT", "iku")
         count_kegiatan = _metric("Jumlah Kegiatan", "COUNT_DISTINCT", "kegiatan")
         chart_payloads = [
-            _chart_payload(dataset_id, "Executive KPI - Total Anggaran", "big_number_total", {"metric": total_anggaran, "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": []}),
-            _chart_payload(dataset_id, "Executive KPI - Total Weighted IKU", "big_number_total", {"metric": total_weighted, "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": []}),
-            _chart_payload(dataset_id, "Executive KPI - Jumlah Item", "big_number_total", {"metric": count_items, "y_axis_format": ",d"}, {"metrics": [count_items], "columns": []}),
-            _chart_payload(dataset_id, "Executive KPI - Jumlah IKU", "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": []}),
-            _chart_payload(dataset_id, "Executive KPI - Jumlah Kegiatan", "big_number_total", {"metric": count_kegiatan, "y_axis_format": ",d"}, {"metrics": [count_kegiatan], "columns": []}),
-            _chart_payload(dataset_id, "Ringkasan per Tahun", "table", {"groupby": ["tahun"], "metrics": [total_anggaran, count_items], "page_length": 10}, {"metrics": [total_anggaran, count_items], "columns": ["tahun"], "orderby": [["tahun", True]], "row_limit": 10}),
-            _chart_payload(dataset_id, "Anggaran per Tahun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "tahun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["tahun"], "orderby": [["tahun", True]]}),
-            _chart_payload(dataset_id, "Anggaran per IKU", "echarts_timeseries_bar", {"metrics": [total_weighted], "x_axis": "iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": ["iku"], "orderby": [[total_weighted, False]]}),
-            _chart_payload(dataset_id, "Cluster Kegiatan", "treemap_v2", {"metric": total_anggaran, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["iku", "kegiatan"]}),
-            _chart_payload(dataset_id, "Komposisi Akun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]], "row_limit": 25}),
-            _chart_payload(dataset_id, "Anggaran per Akun", "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]]}),
-            _chart_payload(dataset_id, "Mapping Quality", "pie", {"metric": count_items, "groupby": ["mapping_status"], "label_type": "key_percent"}, {"metrics": [count_items], "columns": ["mapping_status"]}),
-            _chart_payload(dataset_id, "Detail Item Biaya", "table", {"all_columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "page_length": 25}, {"columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "metrics": []}),
-            _chart_payload(dataset_id, "Validasi Rekap", "table", {"all_columns": ["tahun", "periode", "source_file", "source_sheet", "jumlah", "data_quality_flag"], "page_length": 25}, {"columns": ["tahun", "periode", "source_file", "source_sheet", "jumlah", "data_quality_flag"], "metrics": []}),
+            _chart_payload(dataset_id, _chart_name("Executive KPI - Total Anggaran"), "big_number_total", {"metric": total_anggaran, "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": []}),
+            _chart_payload(dataset_id, _chart_name("Executive KPI - Total Weighted IKU"), "big_number_total", {"metric": total_weighted, "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": []}),
+            _chart_payload(dataset_id, _chart_name("Executive KPI - Jumlah Item"), "big_number_total", {"metric": count_items, "y_axis_format": ",d"}, {"metrics": [count_items], "columns": []}),
+            _chart_payload(dataset_id, _chart_name("Executive KPI - Jumlah IKU"), "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": []}),
+            _chart_payload(dataset_id, _chart_name("Executive KPI - Jumlah Kegiatan"), "big_number_total", {"metric": count_kegiatan, "y_axis_format": ",d"}, {"metrics": [count_kegiatan], "columns": []}),
+            _chart_payload(dataset_id, _chart_name("Ringkasan per Tahun"), "table", {"groupby": ["tahun"], "metrics": [total_anggaran, count_items], "page_length": 10}, {"metrics": [total_anggaran, count_items], "columns": ["tahun"], "orderby": [["tahun", True]], "row_limit": 10}),
+            _chart_payload(dataset_id, _chart_name("Anggaran per Tahun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "tahun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["tahun"], "orderby": [["tahun", True]]}),
+            _chart_payload(dataset_id, _chart_name("Anggaran per IKU"), "echarts_timeseries_bar", {"metrics": [total_weighted], "x_axis": "iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": ["iku"], "orderby": [[total_weighted, False]]}),
+            _chart_payload(dataset_id, _chart_name("Cluster Kegiatan"), "treemap_v2", {"metric": total_anggaran, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["iku", "kegiatan"]}),
+            _chart_payload(dataset_id, _chart_name("Komposisi Akun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]], "row_limit": 25}),
+            _chart_payload(dataset_id, _chart_name("Anggaran per Akun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]]}),
+            _chart_payload(dataset_id, _chart_name("Mapping Quality"), "pie", {"metric": count_items, "groupby": ["mapping_status"], "label_type": "key_percent"}, {"metrics": [count_items], "columns": ["mapping_status"]}),
+            _chart_payload(dataset_id, _chart_name("Detail Item Biaya"), "table", {"all_columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "page_length": 25}, {"columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "metrics": []}),
+            _chart_payload(dataset_id, _chart_name("Validasi Rekap"), "table", {"all_columns": ["tahun", "periode", "source_file", "source_sheet", "jumlah", "data_quality_flag"], "page_length": 25}, {"columns": ["tahun", "periode", "source_file", "source_sheet", "jumlah", "data_quality_flag"], "metrics": []}),
         ]
         chart_ids = [_upsert_chart(session, payload) for payload in chart_payloads]
         dashboard_id = _upsert_dashboard(session, dataset_id, chart_ids)
         dashboard_urls_by_year = _create_year_permalinks(session, dashboard_id)
-        default_dashboard_url = dashboard_urls_by_year.get("Semua") or f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/"
+        default_dashboard_url = dashboard_urls_by_year.get("Semua") or f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/"
         result = {
             "status": "validated",
             "superset_api_status": "ready",
+            "dashboard_mode": DASHBOARD_MODE,
             "database_id": database_id,
             "dataset_id": dataset_id,
             "table_name": TABLE_NAME,
             "dashboard_id": dashboard_id,
-            "dashboard_title": DASHBOARD_TITLE,
+            "dashboard_title": _dashboard_title(),
             "dashboard_url": default_dashboard_url,
-            "dashboard_canonical_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
+            "dashboard_canonical_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/",
             "default_filter_state": "all_years",
             "dashboard_urls_by_year": dashboard_urls_by_year,
             "chart_ids": chart_ids,

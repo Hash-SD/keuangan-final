@@ -35,19 +35,24 @@ def _auth() -> tuple[str, str]:
     return username, password
 
 
-def trigger_dag(*, dataset_session_id: str, pipeline_run_id: str) -> dict[str, Any]:
+def trigger_dag(
+    *, dataset_session_id: str, pipeline_run_id: str, dashboard_mode: str | None = None
+) -> dict[str, Any]:
     dag_run_id = f"portal__{pipeline_run_id}"
     url = f"{_base_url()}/api/v1/dags/{quote(DAG_ID, safe='')}/dagRuns"
+    conf: dict[str, Any] = {
+        "dataset_session_id": dataset_session_id,
+        "pipeline_run_id": pipeline_run_id,
+    }
+    if dashboard_mode:
+        conf["dashboard_mode"] = dashboard_mode
     try:
         response = requests.post(
             url,
             auth=_auth(),
             json={
             "dag_run_id": dag_run_id,
-            "conf": {
-                "dataset_session_id": dataset_session_id,
-                "pipeline_run_id": pipeline_run_id,
-            },
+            "conf": conf,
             },
             timeout=float(os.getenv("AIRFLOW_REQUEST_TIMEOUT", "15")),
         )

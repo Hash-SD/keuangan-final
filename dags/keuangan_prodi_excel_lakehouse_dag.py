@@ -13,6 +13,7 @@ RUN_ENV = {
     "DATASET_SESSION_ID": "{{ dag_run.conf.get('dataset_session_id', '') }}",
     "PIPELINE_RUN_ID": "{{ dag_run.conf.get('pipeline_run_id', '') }}",
     "AIRFLOW_DAG_RUN_ID": "{{ dag_run.run_id }}",
+    "SUPERSET_DASHBOARD_MODE": "{{ dag_run.conf.get('dashboard_mode', 'update') }}",
 }
 DEFAULT_ARGS = {
     "owner": "data-team",

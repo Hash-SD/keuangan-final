@@ -1705,6 +1705,57 @@
                   </div>
                 </div>
 
+                <!-- Aturan Dashboard: update dashboard lama atau buat baru -->
+                <div class="form-group" style="margin-bottom: 1.25rem">
+                  <label class="form-label" style="font-weight: 600"
+                    >Aturan Dashboard</label
+                  >
+                  <div
+                    class="segmented-control"
+                    style="width: 100%; display: flex; max-width: 620px"
+                    role="radiogroup"
+                    aria-label="Aturan Dashboard"
+                  >
+                    <button
+                      type="button"
+                      class="segmented-btn active"
+                      id="btnDashUpdate"
+                      onclick="selectDashboardMode('update')"
+                      aria-pressed="true"
+                    >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-size: 16px"
+                        >refresh</span
+                      >
+                      Update Dashboard Lama
+                    </button>
+                    <button
+                      type="button"
+                      class="segmented-btn"
+                      id="btnDashNew"
+                      onclick="selectDashboardMode('new')"
+                      aria-pressed="false"
+                    >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-size: 16px"
+                        >add_chart</span
+                      >
+                      Buat Dashboard Baru
+                    </button>
+                  </div>
+                  <input type="hidden" name="dashboard_mode" value="update" />
+                  <p
+                    class="card-subtitle"
+                    id="dashboardModeHint"
+                    style="margin-top: 0.4rem"
+                  >
+                    Update Dashboard Lama: data baru dihitung ke dashboard yang
+                    sudah ada, tidak membuat database baru.
+                  </p>
+                </div>
+
                 <label class="dropzone-apple" id="dropzoneBox">
                   <span
                     class="material-symbols-outlined"
@@ -2642,6 +2693,24 @@
         document.getElementById("toastText").textContent = msg;
         toast.classList.add("show");
         setTimeout(() => toast.classList.remove("show"), 2500);
+      }
+
+      function selectDashboardMode(mode) {
+        document
+          .getElementById("btnDashUpdate")
+          ?.classList.toggle("active", mode === "update");
+        document
+          .getElementById("btnDashNew")
+          ?.classList.toggle("active", mode === "new");
+        const input = document.querySelector('input[name="dashboard_mode"]');
+        if (input) input.value = mode;
+        const hint = document.getElementById("dashboardModeHint");
+        if (hint) {
+          hint.textContent =
+            mode === "update"
+              ? "Update Dashboard Lama: data baru dihitung ke dashboard yang sudah ada, tidak membuat database baru."
+              : "Buat Dashboard Baru: dashboard baru dibuat terpisah, dashboard lama tidak diubah.";
+        }
       }
 
       function selectUploadCategory(category) {
