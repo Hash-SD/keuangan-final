@@ -1,0 +1,4223 @@
+<!doctype html>
+<html lang="id" data-theme="light" data-mode="user" data-sidebar="expanded">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="SILARAS SD v2 - Portal Anggaran RAB dan IKU Sains Data dengan Tampilan Premium Apple UI/UX"
+    />
+    <meta name="theme-color" content="#0071e3" />
+    <title>SILARAS SD - Portal Lakehouse Anggaran & IKU</title>
+
+    <!-- Apple Font & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Material+Symbols+Outlined:FILL,wght,GRAD,opsz@0..1,100..700,-25..200,20..48&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ==========================================================================
+       1. APPLE DESIGN SYSTEM TOKENS & CSS VARIABLES (AUTO-ADAPTIVE LIGHT/DARK)
+       ========================================================================== */
+      :root {
+        /* Palette Tokens (Default Light Mode - macOS Sequoia) */
+        --canvas-bg: #f5f5f7;
+        --surface-glass: rgba(255, 255, 255, 0.78);
+        --surface-glass-solid: #ffffff;
+        --surface-glass-hover: rgba(255, 255, 255, 0.92);
+        --surface-glass-border: rgba(0, 0, 0, 0.08);
+        --surface-subtle: rgba(0, 0, 0, 0.03);
+
+        --text-primary: #1d1d1f;
+        --text-secondary: #6e6e73;
+        --text-tertiary: #86868b;
+
+        --accent-primary: #0071e3;
+        --accent-primary-hover: #0077ed;
+        --accent-primary-glow: rgba(0, 113, 227, 0.18);
+
+        --state-success: #34c759;
+        --state-success-bg: rgba(52, 199, 89, 0.12);
+        --state-warning: #ff9f0a;
+        --state-warning-bg: rgba(255, 159, 10, 0.12);
+        --state-error: #ff453a;
+        --state-error-bg: rgba(255, 69, 58, 0.12);
+
+        --sidebar-width: 260px;
+        --sidebar-collapsed-width: 76px;
+        --header-height: 72px;
+        --footer-height: 56px;
+
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 20px;
+        --radius-pill: 999px;
+
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.08);
+        --shadow-glass:
+          0 8px 32px 0 rgba(0, 0, 0, 0.05),
+          inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+
+        --spring-transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-transition: all 0.2s ease;
+      }
+
+      /* System Preferred Dark Mode Override */
+      @media (prefers-color-scheme: dark) {
+        html[data-theme="auto"] {
+          --canvas-bg: #000000;
+          --surface-glass: rgba(28, 28, 30, 0.72);
+          --surface-glass-solid: #1c1c1e;
+          --surface-glass-hover: rgba(44, 44, 46, 0.85);
+          --surface-glass-border: rgba(255, 255, 255, 0.12);
+          --surface-subtle: rgba(255, 255, 255, 0.05);
+
+          --text-primary: #f5f5f7;
+          --text-secondary: #98989d;
+          --text-tertiary: #6e6e73;
+
+          --accent-primary: #0a84ff;
+          --accent-primary-hover: #409cff;
+          --accent-primary-glow: rgba(10, 132, 255, 0.25);
+
+          --shadow-glass:
+            0 8px 32px 0 rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      /* Explicit Dark Mode */
+      html[data-theme="dark"] {
+        --canvas-bg: #000000;
+        --surface-glass: rgba(28, 28, 30, 0.72);
+        --surface-glass-solid: #1c1c1e;
+        --surface-glass-hover: rgba(44, 44, 46, 0.85);
+        --surface-glass-border: rgba(255, 255, 255, 0.12);
+        --surface-subtle: rgba(255, 255, 255, 0.05);
+
+        --text-primary: #f5f5f7;
+        --text-secondary: #98989d;
+        --text-tertiary: #6e6e73;
+
+        --accent-primary: #0a84ff;
+        --accent-primary-hover: #409cff;
+        --accent-primary-glow: rgba(10, 132, 255, 0.25);
+
+        --shadow-glass:
+          0 8px 32px 0 rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+      }
+
+      /* Explicit Light Mode */
+      html[data-theme="light"] {
+        --canvas-bg: #f5f5f7;
+        --surface-glass: rgba(255, 255, 255, 0.78);
+        --surface-glass-solid: #ffffff;
+        --surface-glass-hover: rgba(255, 255, 255, 0.92);
+        --surface-glass-border: rgba(0, 0, 0, 0.08);
+        --surface-subtle: rgba(0, 0, 0, 0.03);
+
+        --text-primary: #1d1d1f;
+        --text-secondary: #6e6e73;
+        --text-tertiary: #86868b;
+
+        --accent-primary: #0071e3;
+        --accent-primary-hover: #0077ed;
+        --accent-primary-glow: rgba(0, 113, 227, 0.18);
+
+        --shadow-glass:
+          0 8px 32px 0 rgba(0, 0, 0, 0.05),
+          inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+      }
+
+      /* All detailed elements are displayed directly */
+      .dev-only {
+        display: block !important;
+      }
+      tr.dev-only {
+        display: table-row !important;
+      }
+      span.dev-only {
+        display: inline !important;
+      }
+      div.dev-only {
+        display: block !important;
+      }
+
+      /* Reset & Base Styling */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 100%;
+        min-height: 100vh;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background-color: var(--canvas-bg);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+        overflow-y: auto;
+        transition:
+          background-color 0.4s ease,
+          color 0.4s ease;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+
+      /* ==========================================================================
+       2. LAYOUT STRUCTURE (HEADER, COLLAPSIBLE SIDEBAR, MAIN CONTENT)
+       ========================================================================== */
+      .app-viewport {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* iPadOS Collapsible Sidebar */
+      aside.sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        position: relative;
+        z-index: 50;
+        background: var(--surface-glass);
+        backdrop-filter: blur(25px) saturate(180%);
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+        border-right: 1px solid var(--surface-glass-border);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 0 0.85rem;
+        transition: var(--spring-transition);
+        flex-shrink: 0;
+        overflow-y: auto;
+      }
+
+      html[data-sidebar="collapsed"] aside.sidebar {
+        width: var(--sidebar-collapsed-width);
+        padding: 0 0.5rem;
+        overflow: hidden !important;
+      }
+
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        height: var(--header-height);
+        padding: 0 0.6rem;
+        border-bottom: 1px solid var(--surface-glass-border);
+        overflow: hidden;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .app-icon-box {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0071e3 0%, #409cff 100%);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px var(--accent-primary-glow);
+        flex-shrink: 0;
+      }
+
+      .brand-titles {
+        display: flex;
+        flex-direction: column;
+        transition: opacity 0.2s ease;
+      }
+
+      html[data-sidebar="collapsed"] .brand-titles {
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+      }
+
+      .brand-name {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-sub {
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      /* Navigation List */
+      .nav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin-top: 1rem;
+        flex: 1;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.75rem 0.9rem;
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--spring-transition);
+        white-space: nowrap;
+        position: relative;
+      }
+
+      .nav-item:hover {
+        background: var(--surface-glass-hover);
+        color: var(--text-primary);
+        transform: translateX(2px);
+      }
+
+      .nav-item.active {
+        background: var(--accent-primary);
+        color: #ffffff;
+        box-shadow: 0 4px 16px var(--accent-primary-glow);
+      }
+
+      .nav-item .material-symbols-outlined {
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+
+      .nav-text {
+        transition: opacity 0.2s ease;
+      }
+
+      html[data-sidebar="collapsed"] .nav-text {
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+      }
+
+      /* Sidebar Footer Toggle Button */
+      .sidebar-footer {
+        height: var(--footer-height);
+        padding-top: 0.85rem;
+        border-top: 1px solid var(--surface-glass-border);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .btn-icon-only {
+        width: 100%;
+        height: auto;
+        flex: 1;
+        min-height: 0;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--surface-glass-border);
+        background: var(--surface-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--spring-transition);
+      }
+
+      .btn-icon-only:hover {
+        background: var(--surface-glass-hover);
+        color: var(--accent-primary);
+      }
+
+      /* Main Container & Floating Header */
+      main.main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 100vh;
+        overflow-y: auto;
+        padding-bottom: calc(var(--footer-height) + 2rem);
+      }
+
+      header.top-header {
+        height: var(--header-height);
+        min-height: var(--header-height);
+        padding: 0 2.2rem;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: var(--surface-glass);
+        backdrop-filter: blur(25px) saturate(180%);
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+        border-bottom: 1px solid var(--surface-glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        box-shadow: var(--shadow-sm);
+        flex-shrink: 0;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1.1rem;
+      }
+
+      .header-icon-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #0071e3 0%, #409cff 100%);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        justify-content: center;
+        box-shadow: 0 4px 16px var(--accent-primary-glow);
+        flex-shrink: 0;
+      }
+
+      .header-icon-box .material-symbols-outlined {
+        font-size: 26px;
+      }
+
+      .page-title-box {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      .page-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        line-height: 1.2;
+      }
+
+      .page-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+        line-height: 1.35;
+      }
+
+      .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      /* Real-time Pipeline Live Badge */
+      .pipeline-live {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0.85rem;
+        border-radius: var(--radius-pill);
+        background: var(--surface-glass-solid);
+        border: 1px solid var(--surface-glass-border);
+        box-shadow: var(--shadow-sm);
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        transition: var(--spring-transition);
+      }
+
+      .pipeline-live.running {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+        background: var(--accent-primary-glow);
+      }
+
+      .pipeline-live.live {
+        border-color: var(--state-success);
+        color: var(--state-success);
+        background: var(--state-success-bg);
+      }
+
+      .pipeline-live.failed {
+        border-color: var(--state-error);
+        color: var(--state-error);
+        background: var(--state-error-bg);
+      }
+
+      .pipeline-live-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text-tertiary);
+        flex-shrink: 0;
+      }
+
+      .pipeline-live.running .pipeline-live-dot {
+        background: var(--accent-primary);
+        animation: pulse-dot 1.2s ease-in-out infinite;
+      }
+
+      .pipeline-live.live .pipeline-live-dot {
+        background: var(--state-success);
+      }
+
+      .pipeline-live.failed .pipeline-live-dot {
+        background: var(--state-error);
+      }
+
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.35;
+          transform: scale(0.7);
+        }
+      }
+
+      /* Segmented Controls (Apple Style) */
+      .segmented-control {
+        display: inline-flex;
+        background: var(--surface-subtle);
+        border: 1px solid var(--surface-glass-border);
+        padding: 3px;
+        border-radius: var(--radius-pill);
+        gap: 2px;
+      }
+
+      .segmented-btn {
+        padding: 0.35rem 0.85rem;
+        border-radius: var(--radius-pill);
+        font-size: 0.78rem;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: var(--spring-transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .segmented-btn.active {
+        background: var(--surface-glass-solid);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* Content Views Body */
+      .view-container {
+        flex: 1;
+        width: 100%;
+        max-width: 100%;
+        padding: 1.5rem 2rem;
+      }
+
+      .page-view {
+        display: none;
+        animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .page-view.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Universal View Section Headers */
+      .view-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid var(--surface-glass-border);
+      }
+
+      .view-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .view-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+        font-weight: 500;
+      }
+
+      /* ==========================================================================
+       3. REUSABLE APPLE COMPONENTS (CARDS, BUTTONS, BADGES, TABLES)
+       ========================================================================== */
+      .glass-card {
+        background: var(--surface-glass);
+        backdrop-filter: blur(25px) saturate(180%);
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+        border: 1px solid var(--surface-glass-border);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-glass);
+        transition: var(--spring-transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .glass-card:hover {
+        box-shadow: var(--shadow-md);
+      }
+
+      .card-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.35rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .card-subtitle {
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.25rem;
+        line-height: 1.45;
+      }
+
+      /* Metric Card Grid */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
+      }
+
+      .metric-card {
+        background: var(--surface-glass-solid);
+        border: 1px solid var(--surface-glass-border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .metric-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .metric-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+      }
+
+      .metric-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface-subtle);
+        color: var(--accent-primary);
+      }
+
+      .metric-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        color: var(--text-primary);
+      }
+
+      .metric-footer {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+      }
+
+      /* Badges */
+      .badge-apple {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: var(--radius-pill);
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .badge-ok {
+        background: var(--state-success-bg);
+        color: var(--state-success);
+      }
+      .badge-warn {
+        background: var(--state-warning-bg);
+        color: var(--state-warning);
+      }
+      .badge-error {
+        background: var(--state-error-bg);
+        color: var(--state-error);
+      }
+      .badge-info {
+        background: var(--accent-primary-glow);
+        color: var(--accent-primary);
+      }
+
+      /* Apple Buttons */
+      .btn-apple {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.25rem;
+        border-radius: var(--radius-md);
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: var(--spring-transition);
+        white-space: nowrap;
+      }
+
+      .btn-apple:active {
+        transform: scale(0.98);
+      }
+
+      .btn-primary {
+        background: var(--accent-primary);
+        color: #ffffff;
+        box-shadow: 0 4px 14px var(--accent-primary-glow);
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-primary-hover);
+        box-shadow: 0 6px 20px var(--accent-primary-glow);
+      }
+
+      .btn-secondary {
+        background: var(--surface-glass-solid);
+        border-color: var(--surface-glass-border);
+        color: var(--text-primary);
+      }
+
+      .btn-secondary:hover {
+        background: var(--surface-glass-hover);
+        border-color: var(--text-tertiary);
+      }
+
+      /* Forms & Inputs */
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .form-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+      }
+
+      .input-apple {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--surface-glass-border);
+        background: var(--surface-glass-solid);
+        font-size: 0.88rem;
+        outline: none;
+        transition: var(--spring-transition);
+      }
+
+      .input-apple:focus {
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px var(--accent-primary-glow);
+      }
+
+      /* Dropzone Upload */
+      .dropzone-apple {
+        border: 2px dashed var(--accent-primary);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        background: var(--accent-primary-glow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        transition: var(--spring-transition);
+      }
+
+      .dropzone-apple:hover {
+        transform: scale(1.01);
+      }
+
+      /* File Selected List */
+      .file-list-panel {
+        margin-top: 0.85rem;
+        border: 1px solid var(--surface-glass-border);
+        background: var(--surface-glass-solid);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .file-list-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.55rem 0.9rem;
+        background: var(--surface-subtle);
+        border-bottom: 1px solid var(--surface-glass-border);
+      }
+
+      .file-list-summary-left {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-width: 0;
+      }
+
+      .file-list-summary-left .material-symbols-outlined {
+        font-size: 1.15rem;
+        color: var(--accent-primary);
+      }
+
+      .file-list-summary-left strong {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+
+      .file-list-summary-left small {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--text-tertiary);
+        white-space: nowrap;
+      }
+
+      .file-list-clear {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        border: none;
+        background: transparent;
+        color: var(--text-tertiary);
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0.28rem 0.55rem;
+        border-radius: var(--radius-pill);
+        transition: var(--ease-transition);
+      }
+
+      .file-list-clear .material-symbols-outlined {
+        font-size: 0.9rem;
+      }
+
+      .file-list-clear:hover {
+        color: var(--state-error);
+        background: var(--state-error-bg);
+      }
+
+      .file-list {
+        list-style: none;
+        margin: 0;
+        padding: 0.4rem 0.6rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        max-height: 230px;
+        overflow-y: auto;
+      }
+
+      .file-item {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.45rem 0.6rem;
+        border-radius: var(--radius-sm);
+        background: var(--surface-subtle);
+        border: 1px solid transparent;
+        transition: var(--ease-transition);
+      }
+
+      .file-item:hover {
+        background: var(--surface-glass-hover);
+        border-color: var(--surface-glass-border);
+      }
+
+      .file-item-icon {
+        flex: 0 0 auto;
+        width: 2rem;
+        height: 2rem;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.56rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        background: var(--accent-primary-glow);
+        color: var(--accent-primary);
+      }
+
+      .file-item-icon.xls {
+        background: rgba(33, 150, 83, 0.14);
+        color: #21a366;
+      }
+
+      .file-item-body {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .file-item-name {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .file-item-meta {
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 500;
+        color: var(--text-tertiary);
+        margin-top: 0.1rem;
+      }
+
+      .file-item-size {
+        flex: 0 0 auto;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        background: var(--surface-glass-solid);
+        border: 1px solid var(--surface-glass-border);
+        padding: 0.2rem 0.55rem;
+        border-radius: var(--radius-pill);
+        white-space: nowrap;
+      }
+
+      /* Medallion Pipeline Flow */
+      .medallion-pipeline-flow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin: 1rem 0 0.5rem 0;
+        padding: 0.25rem;
+        overflow-x: auto;
+      }
+
+      .pipeline-node {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: var(--surface);
+        border: 1px solid var(--surface-glass-border);
+        border-radius: 12px;
+        flex: 1;
+        min-width: 150px;
+        box-shadow: var(--shadow-sm);
+        transition: var(--spring-transition);
+      }
+
+      .pipeline-node:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .node-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--surface-subtle);
+        border: 1px solid var(--surface-glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        flex-shrink: 0;
+      }
+
+      .pipeline-node.ready .node-icon {
+        background: var(--state-success-bg);
+        border-color: var(--state-success);
+        color: var(--state-success);
+      }
+
+      .pipeline-node.running .node-icon {
+        background: var(--accent-primary-glow);
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+        animation: pulse 1.5s infinite;
+      }
+
+      .pipeline-node.failed .node-icon,
+      .pipeline-node.unreachable .node-icon {
+        background: var(--state-error-bg);
+        border-color: var(--state-error);
+        color: var(--state-error);
+      }
+
+      .pipeline-node.missing .node-icon,
+      .pipeline-node.waiting .node-icon {
+        background: var(--state-warning-bg);
+        border-color: var(--state-warning);
+        color: var(--state-warning);
+      }
+
+      .node-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 0;
+      }
+
+      .node-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .pipeline-connector {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        opacity: 0.4;
+        flex-shrink: 0;
+      }
+
+      .pipeline-connector.active {
+        color: var(--state-success);
+        opacity: 1;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .step-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      /* Tables */
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--surface-glass-border);
+        background: var(--surface-glass-solid);
+      }
+
+      table.apple-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.85rem;
+      }
+
+      table.apple-table th {
+        padding: 0.85rem 1rem;
+        background: var(--surface-subtle);
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--surface-glass-border);
+      }
+
+      table.apple-table td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--surface-glass-border);
+        color: var(--text-primary);
+      }
+
+      table.apple-table tr:hover {
+        background: var(--surface-subtle);
+      }
+
+      /* macOS Terminal Console */
+      .terminal-card {
+        background: #1c1c1e;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        font-family: "JetBrains Mono", monospace;
+        color: #34d399;
+      }
+
+      .terminal-header {
+        background: #2c2c2e;
+        padding: 0.6rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .terminal-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+      }
+      .dot-red {
+        background: #ff5f56;
+      }
+      .dot-yellow {
+        background: #ffbd2e;
+      }
+      .dot-green {
+        background: #27c93f;
+      }
+
+      .terminal-body {
+        padding: 1rem;
+        height: 220px;
+        overflow-y: auto;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        color: #e5e7eb;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 8px;
+        height: 15px;
+        background: #34d399;
+        margin-left: 4px;
+        animation: blink 1s step-end infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* Footer */
+      footer.app-footer {
+        position: fixed;
+        left: var(--sidebar-width);
+        right: 0;
+        bottom: 0;
+        height: var(--footer-height);
+        z-index: 35;
+        background: var(--surface-glass);
+        backdrop-filter: blur(25px);
+        border-top: 1px solid var(--surface-glass-border);
+        padding: 0 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        transition: var(--spring-transition);
+      }
+
+      html[data-sidebar="collapsed"] footer.app-footer {
+        left: var(--sidebar-collapsed-width);
+      }
+
+      /* Toast Notification */
+      .toast-apple {
+        position: fixed;
+        bottom: 3rem;
+        right: 2rem;
+        z-index: 100;
+        background: var(--surface-glass-solid);
+        border: 1px solid var(--surface-glass-border);
+        padding: 0.85rem 1.25rem;
+        border-radius: var(--radius-pill);
+        box-shadow: var(--shadow-lg);
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0;
+        transform: translateY(12px);
+        pointer-events: none;
+        transition: var(--spring-transition);
+      }
+
+      .toast-apple.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      @keyframes loadingPulse {
+        0% {
+          left: -40%;
+          width: 40%;
+        }
+        50% {
+          left: 40%;
+          width: 60%;
+        }
+        100% {
+          left: 100%;
+          width: 40%;
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Loading Overlays: bounded to the dashboard content area so the
+         sidebar, top header, and footer stay visible and non-blocking. */
+      .loading-overlay {
+        position: fixed;
+        top: var(--header-height);
+        bottom: var(--footer-height);
+        left: var(--sidebar-width);
+        right: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition:
+          opacity 0.4s ease,
+          visibility 0.4s ease;
+      }
+
+      html[data-sidebar="collapsed"] .loading-overlay {
+        left: var(--sidebar-collapsed-width);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Initial App Loading Screen Overlay (bounded to content area) -->
+    <div
+      id="appLoadingOverlay"
+      class="loading-overlay"
+      aria-live="polite"
+      style="
+        background: var(--bg-main, #f5f5f7);
+        opacity: 1;
+        visibility: visible;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          max-width: 420px;
+          padding: 2rem;
+        "
+      >
+        <div
+          style="
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #0071e3 0%, #409cff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 113, 227, 0.3);
+            margin-bottom: 1.25rem;
+          "
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-size: 34px; color: #ffffff"
+            >account_balance</span
+          >
+        </div>
+        <h2
+          style="
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--text-primary, #1d1d1f);
+            margin-bottom: 0.35rem;
+          "
+        >
+          SILARAS SD Portal
+        </h2>
+        <p
+          style="
+            font-size: 0.85rem;
+            color: var(--text-secondary, #86868b);
+            margin-bottom: 1.5rem;
+          "
+        >
+          Memuat Data Live & Status System Truth Lakehouse...
+        </p>
+        <div
+          style="
+            width: 220px;
+            height: 4px;
+            background: rgba(0, 113, 227, 0.15);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            position: relative;
+          "
+        >
+          <div
+            style="
+              position: absolute;
+              top: 0;
+              bottom: 0;
+              left: 0;
+              background: linear-gradient(90deg, #0071e3, #409cff);
+              border-radius: 2px;
+              animation: loadingPulse 1.2s infinite ease-in-out;
+            "
+          ></div>
+        </div>
+        <span
+          style="
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary, #86868b);
+          "
+          >Sinkronisasi Medallion & Airflow...</span
+        >
+      </div>
+    </div>
+
+    <div id="pipelineLoadingOverlay" class="loading-overlay" aria-live="assertive" aria-busy="false" style="display:none; background:rgba(245,245,247,.94); backdrop-filter:blur(18px); z-index:100000;">
+      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; max-width:440px; padding:2rem;">
+        <div style="width:64px; height:64px; border-radius:18px; background:linear-gradient(135deg,#0071e3,#409cff); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 25px rgba(0,113,227,.3); margin-bottom:1.25rem;">
+          <span class="material-symbols-outlined" style="font-size:34px;color:#fff;animation:spin 1.1s linear infinite">sync</span>
+        </div>
+        <h2 id="pipelineLoadingTitle" style="font-size:1.45rem;font-weight:700;color:var(--text-primary,#1d1d1f);margin-bottom:.35rem">Menjalankan Sistem</h2>
+        <p id="pipelineLoadingMessage" style="font-size:.85rem;color:var(--text-secondary,#86868b);margin-bottom:1.5rem">Mengirim pipeline ke Airflow...</p>
+        <div style="width:260px;height:5px;background:rgba(0,113,227,.15);border-radius:3px;overflow:hidden;position:relative;margin-bottom:1rem"><div style="position:absolute;inset:0;background:linear-gradient(90deg,#0071e3,#409cff);animation:loadingPulse 1.2s infinite ease-in-out"></div></div>
+        <span id="pipelineLoadingState" style="font-size:.78rem;font-weight:600;color:var(--text-secondary,#86868b)">Menunggu Airflow...</span>
+      </div>
+    </div>
+
+    <div class="app-viewport">
+      <!-- 1. COLLAPSIBLE IPADOS SIDEBAR -->
+      <aside class="sidebar" id="appSidebar">
+        <div>
+          <div class="sidebar-header">
+            <div class="app-icon-box">
+              <span class="material-symbols-outlined">account_balance</span>
+            </div>
+            <div class="brand-titles">
+              <span class="brand-name">SILARAS SD</span>
+              <span class="brand-sub">Lakehouse Anggaran</span>
+            </div>
+          </div>
+
+          <nav class="nav-list">
+            <div
+              class="nav-item active"
+              onclick="switchPage('beranda')"
+              data-page="beranda"
+            >
+              <span class="material-symbols-outlined">home</span>
+              <span class="nav-text">Beranda & Upload</span>
+            </div>
+            <div
+              class="nav-item"
+              onclick="switchPage('orkestrasi')"
+              data-page="orkestrasi"
+            >
+              <span class="material-symbols-outlined">sync_alt</span>
+              <span class="nav-text">Orkestrasi</span>
+            </div>
+            <div
+              class="nav-item"
+              onclick="switchPage('review-iku')"
+              data-page="review-iku"
+            >
+              <span class="material-symbols-outlined">rule</span>
+              <span class="nav-text">Review IKU</span>
+            </div>
+            <div
+              class="nav-item"
+              onclick="switchPage('lakehouse')"
+              data-page="lakehouse"
+            >
+              <span class="material-symbols-outlined">waves</span>
+              <span class="nav-text">Lakehouse & Data Lineage</span>
+            </div>
+            <div
+              class="nav-item"
+              onclick="switchPage('dashboard')"
+              data-page="dashboard"
+            >
+              <span class="material-symbols-outlined">dashboard</span>
+              <span class="nav-text">Dashboard BI</span>
+            </div>
+            <div
+              class="nav-item"
+              onclick="switchPage('analytics')"
+              data-page="analytics"
+            >
+              <span class="material-symbols-outlined">analytics</span>
+              <span class="nav-text">Analytics & UAT</span>
+            </div>
+            <div
+              class="nav-item"
+              onclick="switchPage('system')"
+              data-page="system"
+            >
+              <span class="material-symbols-outlined">settings</span>
+              <span class="nav-text">Status System</span>
+            </div>
+          </nav>
+        </div>
+
+        <div class="sidebar-footer">
+          <button
+            type="button"
+            class="btn-icon-only"
+            onclick="toggleSidebar()"
+            title="Minimize Sidebar"
+          >
+            <span class="material-symbols-outlined" id="sidebarToggleIcon"
+              >dock_to_left</span
+            >
+          </button>
+        </div>
+      </aside>
+
+      <!-- 2. MAIN CONTENT AREA -->
+      <main class="main-content">
+        <!-- Top Floating Header -->
+        <header class="top-header">
+          <div class="header-left">
+            <div class="app-icon-box header-icon-box">
+              <span class="material-symbols-outlined" id="pageHeaderIcon"
+                >account_balance</span
+              >
+            </div>
+            <div class="page-title-box">
+              <h1 class="page-title" id="pageHeaderTitle">
+                Beranda & Upload Workbook
+              </h1>
+              <p class="page-subtitle" id="pageHeaderSubtitle">
+                Upload dan kelola data anggaran RAB & IKU Sains Data ke
+                Medallion Lakehouse.
+              </p>
+            </div>
+          </div>
+
+          <div class="header-controls">
+            <!-- Real-time Pipeline Status -->
+            <div
+              class="pipeline-live"
+              id="pipelineLive"
+              title="Status pipeline Airflow"
+              hidden
+            >
+              <span class="pipeline-live-dot"></span>
+              <span class="pipeline-live-text" id="pipelineLiveText"
+                >Pipeline Idle</span
+              >
+            </div>
+            <!-- Theme Switcher (Terang vs Gelap) -->
+            <div class="segmented-control">
+              <button
+                type="button"
+                class="segmented-btn active"
+                id="themeBtnLight"
+                onclick="setTheme('light')"
+              >
+                <span class="material-symbols-outlined" style="font-size: 16px"
+                  >light_mode</span
+                >
+                Terang
+              </button>
+              <button
+                type="button"
+                class="segmented-btn"
+                id="themeBtnDark"
+                onclick="setTheme('dark')"
+              >
+                <span class="material-symbols-outlined" style="font-size: 16px"
+                  >dark_mode</span
+                >
+                Gelap
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- View Container -->
+        <div class="view-container">
+          <!-- VIEW 1: BERANDA & UPLOAD -->
+          <section class="page-view active" id="view-beranda">
+            <!-- Metric Grid -->
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Total Anggaran Gold</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined"
+                      >account_balance_wallet</span
+                    >
+                  </div>
+                </div>
+                <div class="metric-value" id="valTotalAnggaran">Rp-</div>
+                <div class="metric-footer" id="noteTotalAnggaran">
+                  Dari fact_anggaran terakhir
+                </div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Item Anggaran Gold</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined"
+                      >format_list_numbered</span
+                    >
+                  </div>
+                </div>
+                <div class="metric-value" id="valItemAnggaran">-</div>
+                <div class="metric-footer">Baris Gold fact_anggaran</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Total IKU (Weighted)</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined">scoreboard</span>
+                  </div>
+                </div>
+                <div class="metric-value" id="valTotalWeightedIku">-</div>
+                <div class="metric-footer">Skor weighted IKU dari fact_anggaran</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Quality Score</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined">verified</span>
+                  </div>
+                </div>
+                <div class="metric-value" id="valQualityScore">-%</div>
+                <div class="metric-footer">Status Quality Gate</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Status Pipeline</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined">account_tree</span>
+                  </div>
+                </div>
+                <div class="metric-value" id="valPipelineStatus">Menunggu</div>
+                <div class="metric-footer" id="valLastRun">
+                  Menunggu aktivitas
+                </div>
+              </div>
+            </div>
+            <!-- Guided Upload Card -->
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">
+                <span>Mulai Upload Workbook Excel</span>
+                <span class="badge-apple badge-info" id="uploadStatusBadge"
+                  >Siap Upload</span
+                >
+              </div>
+              <p class="card-subtitle">
+                Pilih jenis data yang akan diunggah (RAB, Nomenklatur, atau
+                Bundel Multi-File). Sistem akan memproses data ke Medallion
+                Lakehouse.
+              </p>
+
+              <form id="excelUploadForm" onsubmit="handleUploadSubmit(event)">
+                <!-- Selector Jenis Upload -->
+                <div class="form-group" style="margin-bottom: 1.25rem">
+                  <label class="form-label" style="font-weight: 600"
+                    >Jenis Data / Workbook</label
+                  >
+                  <div
+                    class="segmented-control"
+                    style="width: 100%; display: flex; max-width: 620px"
+                  >
+                    <button
+                      type="button"
+                      class="segmented-btn active"
+                      id="btnCatRab"
+                      onclick="selectUploadCategory('rab')"
+                    >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-size: 16px"
+                        >table_chart</span
+                      >
+                      RAB & IKU Anggaran
+                    </button>
+                    <button
+                      type="button"
+                      class="segmented-btn"
+                      id="btnCatNomenklatur"
+                      onclick="selectUploadCategory('nomenklatur')"
+                    >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-size: 16px"
+                        >account_tree</span
+                      >
+                      Master Nomenklatur
+                    </button>
+                    <button
+                      type="button"
+                      class="segmented-btn"
+                      id="btnCatMulti"
+                      onclick="selectUploadCategory('multi')"
+                    >
+                      <span
+                        class="material-symbols-outlined"
+                        style="font-size: 16px"
+                        >folder_zip</span
+                      >
+                      Bundel Multi-File / RPD
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Context Metadata Fields (Required for RAB & Multi-File, Hidden for Nomenklatur) -->
+                <div
+                  id="metadataFieldsContainer"
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                    gap: 1rem;
+                    margin-bottom: 1.25rem;
+                  "
+                >
+                  <div class="form-group">
+                    <label class="form-label">Tahun Input</label>
+                    <input
+                      class="input-apple"
+                      name="tahun_input"
+                      value="2025"
+                      placeholder="2025"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Periode</label>
+                    <input
+                      class="input-apple"
+                      name="periode"
+                      value="Tahunan"
+                      placeholder="Tahunan / Jan-Jun / Jul-Des"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Prodi</label>
+                    <input
+                      class="input-apple"
+                      name="prodi"
+                      value="Sains Data"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Fakultas</label>
+                    <input
+                      class="input-apple"
+                      name="fakultas"
+                      value="Fakultas Sains"
+                    />
+                  </div>
+                </div>
+
+                <label class="dropzone-apple" id="dropzoneBox">
+                  <span
+                    class="material-symbols-outlined"
+                    style="font-size: 2.5rem; color: var(--accent-primary)"
+                    >cloud_upload</span
+                  >
+                  <div>
+                    <strong
+                      style="font-size: 0.95rem; color: var(--text-primary)"
+                      >Klik atau Drag & Drop Workbook Excel di sini</strong
+                    >
+                    <p
+                      style="
+                        font-size: 0.78rem;
+                        color: var(--text-secondary);
+                        margin-top: 0.2rem;
+                      "
+                    >
+                      Mendukung format .xlsx, .xlsm, .xltx
+                    </p>
+                  </div>
+                  <input
+                    id="fileExcelInput"
+                    type="file"
+                    name="file_excel[]"
+                    accept=".xlsx,.xlsm,.xltx,.xltm"
+                    multiple
+                    style="display: none"
+                    onchange="updateFileNames(this)"
+                  />
+                </label>
+
+                <div
+                  id="fileSelectedList"
+                  style="
+                    margin-top: 0.75rem;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    color: var(--accent-primary);
+                  "
+                ></div>
+
+                <div
+                  style="
+                    display: flex;
+                    gap: 0.75rem;
+                    margin-top: 1.25rem;
+                    flex-wrap: wrap;
+                  "
+                >
+                  <button
+                    type="submit"
+                    class="btn-apple btn-primary"
+                    id="btnUploadSubmit"
+                  >
+                    <span class="material-symbols-outlined">cloud_upload</span>
+                    1. Upload Data
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-apple btn-primary"
+                    id="btnRunPipeline"
+                    onclick="handleRunPipeline()"
+                  >
+                    <span class="material-symbols-outlined">play_arrow</span> 2.
+                    Jalankan Pemrosesan
+                  </button>
+                  <a
+                    class="btn-apple btn-secondary"
+                    href="http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Buka Dashboard Superset
+                  </a>
+                </div>
+              </form>
+            </div>
+
+            <!-- Stepper Medallion -->
+            <div class="glass-card">
+              <div class="card-title">Tahapan Pemrosesan Medallion</div>
+              <div class="stepper-container" id="stepperContainer">
+                <!-- Stepper items injected by JS -->
+              </div>
+            </div>
+          </section>
+
+          <!-- VIEW 2: ORKESTRASI -->
+          <section class="page-view" id="view-orkestrasi">
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Airflow Aktif</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined">sync</span>
+                  </div>
+                </div>
+                <div class="metric-value" id="valAirflowActive">Menunggu</div>
+                <div class="metric-footer" id="noteAirflowActive">
+                  Dibaca dari Airflow active/latest
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Dataset Upload</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined">folder_open</span>
+                  </div>
+                </div>
+                <div class="metric-value" id="valUploadSession">Memuat</div>
+                <div class="metric-footer">Status dataset aktif</div>
+              </div>
+            </div>
+
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">
+                <span>Orkestrasi Pipeline</span>
+                <span class="badge-apple badge-warn" id="airflowRunBadge"
+                  >Menunggu</span
+                >
+              </div>
+              <p class="card-subtitle">
+                Jalankan sistem untuk memproses upload Excel ke Bronze, Silver,
+                Gold, validasi mart, refresh metrik, dan dashboard.
+              </p>
+              <div
+                style="
+                  display: flex;
+                  gap: 0.75rem;
+                  flex-wrap: wrap;
+                  margin-bottom: 1rem;
+                "
+              >
+                <button
+                  type="button"
+                  class="btn-apple btn-primary"
+                  id="btnTriggerAirflow"
+                  onclick="triggerAirflowAndWait()"
+                >
+                  <span class="material-symbols-outlined">play_arrow</span>
+                  Jalankan Sistem
+                </button>
+                <a
+                  class="btn-apple btn-secondary"
+                  href="http://localhost:8085"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span class="material-symbols-outlined">open_in_new</span>
+                  Buka Airflow
+                </a>
+              </div>
+              <div id="airflowPanel" class="table-wrapper">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Run ID</th>
+                      <th>Status</th>
+                      <th>Dataset</th>
+                      <th>Waktu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td
+                        colspan="4"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Memuat status Airflow...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-title">Upload Session Aktif</div>
+              <p class="card-subtitle">
+                Sumber data aktif yang akan dipakai pipeline. Frontend hanya
+                membaca status dari backend.
+              </p>
+              <div id="uploadSessionPanel" class="table-wrapper">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Dataset</th>
+                      <th>Status</th>
+                      <th>File</th>
+                      <th>Pesan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td
+                        colspan="4"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Memuat session upload...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- VIEW 3: REVIEW IKU -->
+          <section class="page-view" id="view-review-iku">
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">
+                <span>Review IKU</span>
+                <span class="badge-apple badge-warn" id="badgeIkuCount"
+                  >0 Review</span
+                >
+              </div>
+              <p class="card-subtitle">
+                Menyimpan review saja belum mengubah database. Setelah semua
+                override disimpan, buka Orkestrasi -> Jalankan Sistem agar
+                perubahan masuk ke Gold dan Superset.
+              </p>
+              <div class="table-wrapper">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Kegiatan & Detail</th>
+                      <th>Jumlah Nominal</th>
+                      <th>Saran IKU</th>
+                      <th>Ubah IKU</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblIkuReviewRows">
+                    <tr>
+                      <td
+                        colspan="6"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Memuat data antrean review IKU...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- VIEW 4: LAKEHOUSE & DATA -->
+          <section class="page-view" id="view-lakehouse">
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">Lakehouse & Data Lineage</div>
+              <p class="card-subtitle">
+                Alur transformasi data keuangan dari file Excel mentah hingga
+                menjadi Data Mart Gold.
+              </p>
+              <div
+                class="stepper-container"
+                id="stepperContainerLakehouse"
+              ></div>
+            </div>
+
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">Preview Gold & Silver</div>
+              <p class="card-subtitle">
+                Contoh data terbaru dari endpoint preview backend untuk audit
+                cepat tanpa memindahkan logic transformasi ke frontend.
+              </p>
+              <div id="dataPreviewPanel" class="table-wrapper">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Layer</th>
+                      <th>Kolom</th>
+                      <th>Contoh Data</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td
+                        colspan="3"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Memuat preview data...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Storage Manifest (Dev Only) -->
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">MinIO / S3 Storage Layer Mapping</div>
+              <p class="card-subtitle">
+                Pemetaan lokasi penyimpanan lokal dan prefix S3-compatible MinIO
+                per layer Medallion.
+              </p>
+              <div class="table-wrapper">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Layer</th>
+                      <th>Status MinIO</th>
+                      <th>Local Path & File Info</th>
+                      <th>S3 / MinIO Prefix</th>
+                      <th>Total Ukuran</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblStorageManifest">
+                    <tr>
+                      <td
+                        colspan="5"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Memuat manifest storage MinIO...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- VIEW 5: DASHBOARD BI -->
+          <section class="page-view" id="view-dashboard">
+            <!-- Card 1: Akses Dashboard Superset BI -->
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  flex-wrap: wrap;
+                  gap: 1rem;
+                "
+              >
+                <div>
+                  <div class="card-title">Dashboard Superset BI</div>
+                  <p class="card-subtitle" style="margin-bottom: 0">
+                    Akses langsung visualisasi interaktif dan chart resmi di
+                    platform Superset Business Intelligence.
+                  </p>
+                </div>
+                <div
+                  id="dashboardLinksPanel"
+                  style="display: flex; gap: 0.75rem; flex-wrap: wrap"
+                >
+                  <a
+                    class="btn-apple btn-primary"
+                    href="http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <span class="material-symbols-outlined">open_in_new</span>
+                    Buka Website Superset BI
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Ringkasan Live Data Superset (API Direct) -->
+            <div class="glass-card">
+              <div class="card-title">
+                Ringkasan & Regresi Data Live Superset
+              </div>
+              <p class="card-subtitle">
+                Agregasi data realtime yang ditarik langsung dari REST API
+                Superset (`/api/local-dashboard/all`).
+              </p>
+
+              <div class="metrics-grid" style="margin-bottom: 1.5rem">
+                <div class="metric-card">
+                  <span class="metric-label"
+                    >Total Anggaran (Superset API)</span
+                  >
+                  <div class="metric-value" id="dashTotalAnggaran">
+                    Rp 517.361.656
+                  </div>
+                </div>
+                <div class="metric-card">
+                  <span class="metric-label">Total Baris Fact (Gold)</span>
+                  <div class="metric-value" id="dashFactRows">253</div>
+                </div>
+                <div class="metric-card">
+                  <span class="metric-label">Jumlah Akun Belanja</span>
+                  <div class="metric-value" id="dashAkunCount">5</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 1.25rem">
+                <div
+                  class="card-title"
+                  style="font-size: 0.95rem; margin-bottom: 0.75rem"
+                >
+                  Breakdown Nominal Anggaran per Akun Belanja (Superset Live)
+                </div>
+                <div id="dashLiveCharts">
+                  <p style="color: var(--text-secondary); text-align: center">
+                    Memuat data chart Superset...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- VIEW 6: ANALYTICS & UAT -->
+          <section class="page-view" id="view-analytics">
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">Integrasi Superset BI</div>
+              <p class="card-subtitle">
+                Akses langsung ke visualisasi analitik anggaran IKU Prodi di
+                Superset.
+              </p>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap">
+                <a
+                  class="btn-apple btn-primary"
+                  href="http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span class="material-symbols-outlined">open_in_new</span>
+                  Buka Superset All-Time
+                </a>
+              </div>
+            </div>
+
+            <!-- Form Evaluasi UAT -->
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">
+                Form Evaluasi User Acceptance Testing (UAT)
+              </div>
+              <p class="card-subtitle">
+                Beri masukan Anda untuk peningkatan pengalaman penggunaan portal
+                SILARAS SD.
+              </p>
+
+              <form id="uatEvaluationForm" onsubmit="handleUatSubmit(event)">
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 1rem;
+                    margin-bottom: 1.5rem;
+                  "
+                >
+                  <div class="form-group">
+                    <label class="form-label">Nama / ID Evaluator</label>
+                    <input
+                      class="input-apple"
+                      id="uatEvaluator"
+                      placeholder="Contoh: Admin Sains Data"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Modul Evaluasi</label>
+                    <select class="input-apple" id="uatModule" required>
+                      <option value="Data Ingestion (Bronze)">
+                        Data Ingestion (Bronze)
+                      </option>
+                      <option value="Quality Gate (Silver)">
+                        Quality Gate (Silver)
+                      </option>
+                      <option value="Star Schema (Gold)">
+                        Star Schema (Gold)
+                      </option>
+                      <option value="Superset BI Dashboard">
+                        Superset BI Dashboard
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Rating 5 Criteria -->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1rem;
+                    margin-bottom: 1.5rem;
+                  "
+                >
+                  <div
+                    class="form-label"
+                    style="font-size: 0.9rem; color: var(--text-primary)"
+                  >
+                    Kriteria Penilaian (1 = Kurang, 5 = Sangat Baik)
+                  </div>
+
+                  <div
+                    id="uatCriteriaList"
+                    style="display: flex; flex-direction: column; gap: 0.85rem"
+                  >
+                    <!-- Dynamic UAT criteria injected by JS -->
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem">
+                  <label class="form-label">Feedback / Catatan Tambahan</label>
+                  <textarea
+                    class="input-apple"
+                    id="uatFeedback"
+                    rows="3"
+                    placeholder="Tuliskan masukan atau catatan perbaikan..."
+                  ></textarea>
+                </div>
+
+                <button type="submit" class="btn-apple btn-primary">
+                  <span class="material-symbols-outlined">save</span> Simpan
+                  Data Evaluasi UAT
+                </button>
+              </form>
+            </div>
+
+            <!-- UAT Submissions History -->
+            <div class="glass-card">
+              <div class="card-title">Riwayat & Detail Evaluasi UAT</div>
+              <p class="card-subtitle">
+                Daftar riwayat evaluasi User Acceptance Testing lengkap dengan
+                detail skor kriteria dan catatan masukan.
+              </p>
+              <div class="table-wrapper" style="margin-top: 1rem">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Waktu</th>
+                      <th>Evaluator</th>
+                      <th>Modul Evaluasi</th>
+                      <th>Skor & Detail Kriteria</th>
+                      <th>Feedback / Catatan</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblUatSubmissions">
+                    <tr>
+                      <td
+                        colspan="6"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Belum ada data evaluasi UAT tersimpan. Isi form di atas
+                        untuk menambahkan evaluasi.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- UAT Official Matrix -->
+            <div class="glass-card">
+              <div class="card-title">Matriks UAT Resmi</div>
+              <p class="card-subtitle">
+                Matriks hasil UAT resmi dibaca dari artefak penilaian
+                (uat_matrix_summary.json).
+              </p>
+              <div class="table-wrapper" style="margin-top: 1rem">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Indikator</th>
+                      <th>Pertanyaan</th>
+                      <th>Skor Rata-rata</th>
+                      <th>Persentase</th>
+                      <th>Kategori</th>
+                      <th>Responden</th>
+                    </tr>
+                  </thead>
+                  <tbody id="uatOfficialMatrix">
+                    <tr>
+                      <td
+                        colspan="6"
+                        style="
+                          text-align: center;
+                          color: var(--text-secondary);
+                        "
+                      >
+                        Matriks UAT resmi belum tersedia.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- VIEW 7: STATUS SYSTEM & LOG -->
+          <section class="page-view" id="view-system">
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">Kesehatan Layanan Infrastructure</div>
+              <p class="card-subtitle">
+                Monitoring status real-time 10 layanan pendukung Lakehouse &
+                Analytics.
+              </p>
+
+              <div class="table-wrapper">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th>Service Name</th>
+                      <th>Role</th>
+                      <th>URL / Port</th>
+                      <th>Status</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblServicesStatus">
+                    <tr>
+                      <td
+                        colspan="5"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Memuat status service...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- macOS Realtime Airflow Log Terminal Console -->
+            <div class="terminal-card">
+              <div class="terminal-header">
+                <div class="terminal-dot dot-red"></div>
+                <div class="terminal-dot dot-yellow"></div>
+                <div class="terminal-dot dot-green"></div>
+                <span
+                  style="
+                    font-size: 0.75rem;
+                    color: #9ca3af;
+                    margin-left: 0.5rem;
+                  "
+                  >silaras-orchestrator ~ Airflow Realtime Terminal Log</span
+                >
+              </div>
+              <div class="terminal-body" id="terminalLogBody">
+                <div>[SYSTEM]: Initializing Airflow DAG polling monitor...</div>
+                <div>[INFO]: Airflow DAG status listening on port 8085.</div>
+                <div><span class="cursor"></span></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- 3. FOOTER STATUS BAR -->
+      <footer class="app-footer">
+        <div style="display: flex; align-items: center; gap: 0.5rem">
+          <span class="badge-apple badge-warn" id="footerStatusBadge"
+            >SYSTEM LOADING</span
+          >
+          <span id="footerSystemMsg">Menunggu data live</span>
+        </div>
+        <div>
+          <span id="footerPipelineMsg">LAST RUN: WAITING</span>
+        </div>
+      </footer>
+
+      <!-- Toast Notification -->
+      <div class="toast-apple" id="appToast">
+        <span
+          class="material-symbols-outlined"
+          style="color: var(--accent-primary)"
+          >info</span
+        >
+        <span id="toastText">Disalin ke clipboard</span>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+     4. JAVASCRIPT ENGINE & REAL BACKEND API INTEGRATION (100% REAL PARITY)
+     ========================================================================== -->
+    <script>
+      function resolveApiBaseUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const configured =
+          params.get("api_base") ||
+          window.SILARAS_API_BASE_URL ||
+          localStorage.getItem("SILARAS_API_BASE_URL");
+        if (configured) return configured.replace(/\/$/, "");
+
+        const proto = window.location.protocol;
+        const host = window.location.hostname;
+        const port = window.location.port;
+
+        if (port === "8090") return `${proto}//${host}:8091`;
+        if (port === "8190") return `${proto}//${host}:8191`;
+        if (port === "8091" || port === "8191") return window.location.origin;
+        return `${proto}//${host}:8091`;
+      }
+
+      const API_BASE_URL = resolveApiBaseUrl();
+
+      const state = {
+        activePage: "beranda",
+        theme: "light",
+        mode: "user",
+        sidebar: "expanded",
+        metrics: {},
+        services: {},
+        portalLoadStatus: "idle",
+        portalViewModel: null,
+        uploadSession: null,
+        airflowActive: null,
+        storageManifest: null,
+        goldPreview: null,
+        silverPreview: null,
+        dashboardLinks: null,
+        ikuReview: null,
+        uatSummary: null,
+        serviceStatus: null,
+        activities: [],
+        ikuQueue: [],
+        uatSubmissions: (() => {
+          try {
+            const v2 = JSON.parse(
+              localStorage.getItem("silaras_uat_v2") || "[]",
+            );
+            const v1 = JSON.parse(
+              localStorage.getItem("portal_uat_submissions") || "[]",
+            );
+            const combined = [
+              ...(Array.isArray(v2) ? v2 : []),
+              ...(Array.isArray(v1) ? v1 : []),
+            ];
+            const seen = new Set();
+            return combined.filter((item) => {
+              const key =
+                item.id || `${item.evaluator}-${item.time}-${item.module}`;
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            });
+          } catch {
+            return [];
+          }
+        })(),
+        uatCriteria: [
+          {
+            id: 1,
+            title: "Navigation Facility",
+            desc: "Kemudahan navigasi dan pemrosesan Excel",
+          },
+          {
+            id: 2,
+            title: "Clarity of Visualization",
+            desc: "Kejelasan tampilan metrik & chart",
+          },
+          {
+            id: 3,
+            title: "Data Relevance",
+            desc: "Kesesuaian informasi anggaran IKU prodi",
+          },
+          {
+            id: 4,
+            title: "Data Consistency",
+            desc: "Konsistensi nominal dan penamaan akun",
+          },
+          {
+            id: 5,
+            title: "Decision Support",
+            desc: "Manfaat laporan untuk pengambil keputusan",
+          },
+        ],
+      };
+
+      // Helper Formatter
+      const rupiah = (val) =>
+        new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          maximumFractionDigits: 0,
+        }).format(Number(val || 0));
+      const n = (val) =>
+        new Intl.NumberFormat("id-ID").format(Number(val || 0));
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+      const safe = (val) =>
+        val === undefined || val === null || val === "" ? "-" : escapeHtml(val);
+      function safeUrl(value) {
+        const fallback = "#";
+        const raw = String(value || "").trim();
+        if (!raw) return fallback;
+        try {
+          const url = new URL(raw, window.location.origin);
+          if (!["http:", "https:"].includes(url.protocol.toLowerCase()))
+            return fallback;
+          const currentHost = (
+            window.location.hostname ||
+            new URL(window.location.origin).hostname ||
+            ""
+          ).toLowerCase();
+          const allowedHosts = new Set([
+            currentHost,
+            "localhost",
+            "127.0.0.1",
+            "::1",
+          ]);
+          if (!allowedHosts.has(url.hostname.toLowerCase())) return fallback;
+          const serialized = raw.startsWith("/")
+            ? `${url.pathname}${url.search}${url.hash}`
+            : url.href;
+          return escapeHtml(serialized);
+        } catch {
+          return fallback;
+        }
+      }
+
+      // API Helpers
+      async function apiGet(path) {
+        const res = await fetch(`${API_BASE_URL}${path}`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        return await res.json();
+      }
+
+      async function apiPost(path, body) {
+        const res = await fetch(`${API_BASE_URL}${path}`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        return await res.json();
+      }
+
+      // UI Router & Layout State
+      const PAGE_METADATA = {
+        beranda: {
+          icon: "home",
+          title: "Beranda & Upload Workbook",
+          subtitle:
+            "Upload dan kelola data anggaran RAB & IKU Sains Data ke Medallion Lakehouse.",
+        },
+        orkestrasi: {
+          icon: "sync_alt",
+          title: "Orkestrasi Data Pipeline",
+          subtitle:
+            "Monitoring dan eksekusi pemrosesan data Medallion secara realtime.",
+        },
+        "review-iku": {
+          icon: "rule",
+          title: "Review & Validation IKU",
+          subtitle:
+            "Audit dan pemetaan indikator kinerja utama (IKU) anggaran prodi.",
+        },
+        lakehouse: {
+          icon: "waves",
+          title: "Medallion Lakehouse & Lineage",
+          subtitle:
+            "Alur transformasi data dari Raw Excel hingga Data Mart Gold.",
+        },
+        dashboard: {
+          icon: "dashboard",
+          title: "Dashboard Business Intelligence",
+          subtitle:
+            "Akses cepat dan ringkasan metrik dashboard resmi Superset.",
+        },
+        analytics: {
+          icon: "analytics",
+          title: "Analytics & Evaluasi UAT",
+          subtitle:
+            "Form penilaian User Acceptance Testing dan integrasi analitik BI.",
+        },
+        system: {
+          icon: "settings",
+          title: "Status Infrastructure & Log",
+          subtitle:
+            "Monitoring kesehatan 10 layanan infrastructure dan log aktivitas backend.",
+        },
+      };
+
+      function switchPage(pageId) {
+        state.activePage = pageId;
+        document.querySelectorAll(".nav-item").forEach((el) => {
+          el.classList.toggle("active", el.dataset.page === pageId);
+        });
+        document.querySelectorAll(".page-view").forEach((el) => {
+          el.classList.toggle("active", el.id === `view-${pageId}`);
+        });
+
+        const meta = PAGE_METADATA[pageId] || {
+          icon: "account_balance",
+          title: "SILARAS SD",
+          subtitle: "Portal Lakehouse Anggaran & IKU",
+        };
+        const iconEl = document.getElementById("pageHeaderIcon");
+        const titleEl = document.getElementById("pageHeaderTitle");
+        const subEl = document.getElementById("pageHeaderSubtitle");
+        if (iconEl) iconEl.textContent = meta.icon;
+        if (titleEl) titleEl.textContent = meta.title;
+        if (subEl) subEl.textContent = meta.subtitle;
+      }
+
+      function toggleSidebar() {
+        state.sidebar = state.sidebar === "expanded" ? "collapsed" : "expanded";
+        document.documentElement.setAttribute("data-sidebar", state.sidebar);
+        document.getElementById("sidebarToggleIcon").textContent =
+          state.sidebar === "expanded" ? "dock_to_left" : "dock_to_right";
+      }
+
+      function setTheme(theme) {
+        if (theme !== "light" && theme !== "dark") theme = "light";
+        state.theme = theme;
+        document.documentElement.setAttribute("data-theme", theme);
+        const lightBtn = document.getElementById("themeBtnLight");
+        const darkBtn = document.getElementById("themeBtnDark");
+        if (lightBtn) lightBtn.classList.toggle("active", theme === "light");
+        if (darkBtn) darkBtn.classList.toggle("active", theme === "dark");
+        try {
+          localStorage.setItem("silaras_v2_theme", theme);
+        } catch {}
+      }
+
+      function showToast(msg) {
+        const toast = document.getElementById("appToast");
+        document.getElementById("toastText").textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2500);
+      }
+
+      function selectUploadCategory(category) {
+        document
+          .getElementById("btnCatRab")
+          ?.classList.toggle("active", category === "rab");
+        document
+          .getElementById("btnCatNomenklatur")
+          ?.classList.toggle("active", category === "nomenklatur");
+        document
+          .getElementById("btnCatMulti")
+          ?.classList.toggle("active", category === "multi");
+
+        const container = document.getElementById("metadataFieldsContainer");
+        if (container) {
+          if (category === "nomenklatur") {
+            container.style.display = "none";
+            container
+              .querySelectorAll("input")
+              .forEach((input) => input.removeAttribute("required"));
+          } else {
+            container.style.display = "grid";
+            const tahunInput = container.querySelector(
+              'input[name="tahun_input"]',
+            );
+            if (tahunInput) tahunInput.setAttribute("required", "required");
+          }
+        }
+      }
+
+      function formatFileSize(bytes) {
+        if (!bytes || bytes === 0) return "0 B";
+        const units = ["B", "KB", "MB", "GB"];
+        const i = Math.min(
+          Math.floor(Math.log(bytes) / Math.log(1024)),
+          units.length - 1,
+        );
+        const val = bytes / Math.pow(1024, i);
+        return `${val.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+      }
+
+      function fileTypeLabel(name) {
+        const ext = (name.split(".").pop() || "file").toLowerCase();
+        const map = {
+          xlsx: "XLSX",
+          xls: "XLS",
+          xlsm: "XLSM",
+          xltx: "XLTX",
+          xltm: "XLTM",
+          csv: "CSV",
+          pdf: "PDF",
+        };
+        return map[ext] || ext.toUpperCase();
+      }
+
+      function fileTypeClass(name) {
+        const ext = (name.split(".").pop() || "").toLowerCase();
+        return ["xls", "xlsx", "xlsm", "xltx", "xltm"].includes(ext)
+          ? "xls"
+          : "";
+      }
+
+      function updateFileNames(input) {
+        const list = document.getElementById("fileSelectedList");
+        const files = Array.from(input.files || []);
+        if (files.length === 0) {
+          list.innerHTML = "";
+          return;
+        }
+
+        const items = files
+          .map((f, i) => {
+            const name = f.name;
+            const type = fileTypeLabel(name);
+            const cls = fileTypeClass(name);
+            const size = formatFileSize(f.size);
+            return `
+            <li class="file-item" title="${escapeHtml(name)}">
+              <span class="file-item-icon ${cls}">${escapeHtml(type)}</span>
+              <span class="file-item-body">
+                <span class="file-item-name">${escapeHtml(name)}</span>
+                <span class="file-item-meta">File ${i + 1} dari ${files.length}</span>
+              </span>
+              <span class="file-item-size">${size}</span>
+            </li>`;
+          })
+          .join("");
+
+        list.innerHTML = `
+          <div class="file-list-panel">
+            <div class="file-list-summary">
+              <span class="file-list-summary-left">
+                <span class="material-symbols-outlined">folder_open</span>
+                <strong>${files.length} file dipilih</strong>
+                <small>siap untuk diunggah</small>
+              </span>
+              <button type="button" class="file-list-clear" onclick="clearFiles()">
+                <span class="material-symbols-outlined">close</span>
+                Hapus
+              </button>
+            </div>
+            <ul class="file-list">${items}</ul>
+          </div>`;
+      }
+
+      function clearFiles() {
+        const input = document.getElementById("fileExcelInput");
+        if (input) {
+          input.value = "";
+          updateFileNames(input);
+        }
+      }
+
+      // Handlers
+      async function handleUploadSubmit(e) {
+        e.preventDefault();
+        const form = document.getElementById("excelUploadForm");
+        const formData = new FormData(form);
+
+        document.getElementById("btnUploadSubmit").disabled = true;
+        showPipelineLoading("Mengunggah Dataset", "Mengirim workbook Excel ke backend SILARAS...", "Upload sedang berjalan...");
+        document.getElementById("uploadStatusBadge").textContent =
+          "Uploading...";
+        document.getElementById("uploadStatusBadge").className =
+          "badge-apple badge-warn";
+
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/upload/excel-dataset`, {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+          });
+          if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+          const data = await res.json();
+          showToast("Workbook Excel berhasil diunggah!");
+          document.getElementById("uploadStatusBadge").textContent =
+            "Upload Sukses";
+          document.getElementById("uploadStatusBadge").className =
+            "badge-apple badge-ok";
+          fetchDashboardData();
+        } catch (err) {
+          showToast("Gagal mengunggah file. Pastikan server backend online.");
+          document.getElementById("uploadStatusBadge").textContent =
+            "Upload Gagal";
+          document.getElementById("uploadStatusBadge").className =
+            "badge-apple badge-error";
+        } finally {
+          hidePipelineLoading();
+          document.getElementById("btnUploadSubmit").disabled = false;
+        }
+      }
+
+      async function handleRunPipeline() {
+        await triggerAirflowAndWait();
+      }
+
+      function renderUatCriteriaForm() {
+        const container = document.getElementById("uatCriteriaList");
+        container.innerHTML = state.uatCriteria
+          .map(
+            (c) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <div>
+            <strong style="font-size:0.85rem;">${c.id}. ${c.title}</strong>
+            <p style="font-size:0.75rem; color:var(--text-secondary);">${c.desc}</p>
+          </div>
+          <div class="segmented-control" data-criteria="${c.id}">
+            ${[1, 2, 3, 4, 5]
+              .map(
+                (s) => `
+              <button type="button" class="segmented-btn ${s === 5 ? "active" : ""}" onclick="setRating(${c.id}, ${s})">${s}</button>
+            `,
+              )
+              .join("")}
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      const ratingScores = { 1: 5, 2: 5, 3: 5, 4: 5, 5: 5 };
+      function setRating(criteriaId, score) {
+        ratingScores[criteriaId] = score;
+        const group = document.querySelector(
+          `.segmented-control[data-criteria="${criteriaId}"]`,
+        );
+        if (group) {
+          group.querySelectorAll(".segmented-btn").forEach((btn, idx) => {
+            btn.classList.toggle("active", idx + 1 === score);
+          });
+        }
+      }
+
+      async function handleUatSubmit(e) {
+        e.preventDefault();
+        const evaluator = document.getElementById("uatEvaluator").value;
+        const module = document.getElementById("uatModule").value;
+        const feedback = document.getElementById("uatFeedback").value;
+
+        const scores = Object.values(ratingScores);
+        const avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(
+          1,
+        );
+
+        const entry = {
+          time: new Date().toLocaleTimeString("id-ID"),
+          evaluator,
+          module,
+          scores,
+          avg,
+          feedback,
+        };
+
+        state.uatSubmissions.unshift(entry);
+        localStorage.setItem(
+          "silaras_uat_v2",
+          JSON.stringify(state.uatSubmissions),
+        );
+
+        try {
+          await apiPost("/api/uat/submit", {
+            mode: "local_feedback",
+            ...entry,
+          });
+        } catch (err) {
+          // Fallback to local storage only if backend offline
+        }
+
+        showToast("Data evaluasi UAT berhasil disimpan!");
+        renderUatTable();
+      }
+
+      const UAT_CRITERIA_NAMES = [
+        "Fungsionalitas & Hasil",
+        "Kemudahan UI/UX",
+        "Kecepatan & Performa",
+        "Keakuratan Data",
+        "Keamanan Data",
+      ];
+
+      function renderUatTable() {
+        const tbody = document.getElementById("tblUatSubmissions");
+        if (!tbody) return;
+        if (!state.uatSubmissions || state.uatSubmissions.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">Belum ada data evaluasi UAT tersimpan. Isi form di atas untuk menambahkan evaluasi.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = state.uatSubmissions
+          .map((item) => {
+            const rawAvg =
+              item.avg ?? item.score ?? item.avg_score ?? item.average;
+            let avgNum = parseFloat(rawAvg);
+            if (isNaN(avgNum)) {
+              if (item.scores && typeof item.scores === "object") {
+                const vals = Object.values(item.scores)
+                  .map((v) => parseFloat(v))
+                  .filter((v) => !isNaN(v));
+                avgNum = vals.length
+                  ? vals.reduce((a, b) => a + b, 0) / vals.length
+                  : 5.0;
+              } else {
+                avgNum = 5.0;
+              }
+            }
+            const avgFormatted = avgNum.toFixed(1);
+
+            let scoresDetailHtml = "";
+            if (item.scores && typeof item.scores === "object") {
+              const chips = Object.entries(item.scores)
+                .map(([k, v]) => {
+                  const name = !isNaN(k)
+                    ? UAT_CRITERIA_NAMES[parseInt(k)] ||
+                      `Kriteria ${parseInt(k) + 1}`
+                    : k;
+                  return `<span style="display:inline-block; background:var(--surface-subtle); padding:0.15rem 0.45rem; border-radius:4px; font-size:0.72rem; margin:0.1rem; border:1px solid var(--surface-glass-border); color:var(--text-primary);"><strong>${safe(name)}:</strong> ${safe(v)}/5</span>`;
+                })
+                .join("");
+              scoresDetailHtml = `<div style="margin-top:0.35rem; display:flex; flex-wrap:wrap; gap:0.2rem;">${chips}</div>`;
+            }
+
+            return `
+          <tr>
+            <td><span style="font-size:0.8rem; color:var(--text-secondary);">${safe(item.time || "-")}</span></td>
+            <td><strong>${safe(item.evaluator || "Evaluator")}</strong></td>
+            <td><span class="badge-apple badge-info">${safe(item.module || "General")}</span></td>
+            <td>
+              <span class="badge-apple badge-ok" style="font-size:0.82rem; font-weight:700;">⭐ ${avgFormatted} / 5.0</span>
+              ${scoresDetailHtml}
+            </td>
+            <td><span style="font-size:0.82rem;">${safe(item.feedback || "-")}</span></td>
+            <td><button class="btn-apple btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.75rem;" data-uat-time="${safe(item.time)}" onclick="deleteUat(this.dataset.uatTime)">Hapus</button></td>
+          </tr>
+        `;
+          })
+          .join("");
+      }
+
+      function deleteUat(time) {
+        state.uatSubmissions = state.uatSubmissions.filter(
+          (i) => i.time !== time,
+        );
+        localStorage.setItem(
+          "silaras_uat_v2",
+          JSON.stringify(state.uatSubmissions),
+        );
+        renderUatTable();
+      }
+
+      const STATUS_VIEW = Object.freeze({
+        success: Object.freeze({
+          label: "Berhasil",
+          badge: "badge-ok",
+          step: "ready",
+          icon: "check_circle",
+        }),
+        running: Object.freeze({
+          label: "Berjalan",
+          badge: "badge-info",
+          step: "running",
+          icon: "sync",
+        }),
+        failed: Object.freeze({
+          label: "Gagal",
+          badge: "badge-error",
+          step: "failed",
+          icon: "error",
+        }),
+        missing: Object.freeze({
+          label: "Belum ada",
+          badge: "badge-warn",
+          step: "missing",
+          icon: "hourglass_empty",
+        }),
+        unreachable: Object.freeze({
+          label: "Tidak terjangkau",
+          badge: "badge-error",
+          step: "unreachable",
+          icon: "cloud_off",
+        }),
+      });
+
+      function normalizeStatusKind(status) {
+        const value = String(status || "").toLowerCase();
+        if (
+          [
+            "success",
+            "completed",
+            "ready",
+            "validated",
+            "online",
+            "pass",
+            "created",
+          ].includes(value)
+        )
+          return "success";
+        if (["running", "queued", "scheduled", "up_for_retry"].includes(value))
+          return "running";
+        if (
+          [
+            "failed",
+            "upstream_failed",
+            "rejected",
+            "error",
+            "invalid",
+          ].includes(value)
+        )
+          return "failed";
+        if (
+          ["unreachable", "configured_unreachable", "offline"].includes(value)
+        )
+          return "unreachable";
+        return "missing";
+      }
+
+      function deepFreeze(value) {
+        if (!value || typeof value !== "object" || Object.isFrozen(value))
+          return value;
+        Object.getOwnPropertyNames(value).forEach((name) =>
+          deepFreeze(value[name]),
+        );
+        return Object.freeze(value);
+      }
+
+      function settledEndpoint(name, result) {
+        if (result.status === "rejected") {
+          return {
+            name,
+            value: null,
+            status: "unreachable",
+            message:
+              result.reason?.message ||
+              String(result.reason || "Endpoint tidak dapat dijangkau"),
+          };
+        }
+        const value = result.value || {};
+        return {
+          name,
+          value,
+          status: normalizeStatusKind(value.status || "success"),
+          message: value.message || null,
+        };
+      }
+
+      function authoritativePipelineState(
+        airflowActive,
+        airflowLatest,
+        systemTruth,
+        excelLakehouse,
+      ) {
+        if (airflowLatest?.status === "unreachable")
+          return Object.freeze({
+            statusKind: "unreachable",
+            source: "airflow",
+            lastRun: airflowLatest.message || "Airflow tidak dapat dijangkau",
+          });
+        const activeRun =
+          airflowActive?.run ||
+          (airflowActive?.dag_run_id ? airflowActive : null);
+        const latestRun = airflowLatest.run || airflowLatest || {};
+        const run = activeRun || latestRun;
+        const statusKind = normalizeStatusKind(
+          run.state ||
+            airflowActive?.status ||
+            airflowLatest?.status ||
+            systemTruth?.pipeline?.status ||
+            excelLakehouse?.status,
+        );
+        const lastRun =
+          run.end_date ||
+          run.start_date ||
+          run.logical_date ||
+          systemTruth?.generated_at ||
+          excelLakehouse?.metadata?.pipeline_run_id ||
+          null;
+        return Object.freeze({
+          statusKind,
+          source: run.dag_run_id ? "airflow" : "system_truth",
+          lastRun,
+          runId:
+            run.dag_run_id || excelLakehouse?.metadata?.pipeline_run_id || null,
+        });
+      }
+
+      function liveWorkflowSteps(viewModel) {
+        const layers = viewModel.systemTruth?.layers || {};
+        const artifacts = viewModel.excelLakehouse?.artifacts || {};
+        const pipeline = viewModel.pipeline;
+        const dashboardStatus = normalizeStatusKind(
+          viewModel.systemTruth?.dashboard?.status,
+        );
+        const rawStatus = normalizeStatusKind(
+          layers.raw?.status || viewModel.excelLakehouse?.status,
+        );
+        const bronzeStatus = normalizeStatusKind(
+          layers.bronze?.status ||
+            (artifacts.bronze_excel_cells?.available ? "ready" : "missing"),
+        );
+        const silverStatus = normalizeStatusKind(
+          layers.silver?.status ||
+            (artifacts.silver_rab_items_flexible?.available
+              ? "ready"
+              : "missing"),
+        );
+        const goldStatus = normalizeStatusKind(
+          layers.gold?.status ||
+            (artifacts.fact_anggaran?.available ? "ready" : "missing"),
+        );
+        const finalStatus =
+          pipeline.statusKind === "failed" ||
+          pipeline.statusKind === "unreachable"
+            ? pipeline.statusKind
+            : dashboardStatus === "success"
+              ? "success"
+              : goldStatus;
+        return [
+          {
+            title: "Upload Excel",
+            icon: "cloud_upload",
+            statusKind: rawStatus,
+          },
+          { title: "Baca Cell", icon: "dataset", statusKind: bronzeStatus },
+          {
+            title: "Rapikan Data",
+            icon: "filter_alt",
+            statusKind: silverStatus,
+          },
+          { title: "Buat Gold", icon: "stars", statusKind: goldStatus },
+          { title: "Dashboard BI", icon: "dashboard", statusKind: finalStatus },
+        ];
+      }
+
+      function buildPortalViewModel({
+        supersetSummary,
+        metrics,
+        airflowActive,
+        airflowLatest,
+        systemTruth,
+        excelLakehouse,
+        endpointStatus,
+      }) {
+        supersetSummary = supersetSummary || {};
+        metrics = metrics || {};
+        endpointStatus = endpointStatus || {};
+        airflowLatest =
+          endpointStatus.airflowLatest?.status === "unreachable"
+            ? endpointStatus.airflowLatest
+            : airflowLatest || {};
+        systemTruth = systemTruth || {};
+        excelLakehouse = {
+          fact_anggaran: {},
+          counts: {},
+          artifacts: {},
+          metadata: {},
+          ...(excelLakehouse || {}),
+        };
+        excelLakehouse.fact_anggaran = excelLakehouse.fact_anggaran || {};
+        excelLakehouse.counts = excelLakehouse.counts || {};
+        const pipeline = authoritativePipelineState(
+          airflowActive,
+          airflowLatest,
+          systemTruth,
+          excelLakehouse,
+        );
+        const totalJumlah =
+          supersetSummary.total_jumlah ??
+          excelLakehouse.fact_anggaran.total_jumlah;
+        const totalWeightedIku =
+          supersetSummary.total_weighted_iku ??
+          excelLakehouse.fact_anggaran.total_weighted_iku;
+        const factRows =
+          supersetSummary.fact_rows ??
+          excelLakehouse.counts?.fact_anggaran_rows;
+        const qualityScore =
+          metrics.data_quality_score ??
+          metrics.raw?.quality?.data_quality_score?.value;
+        const viewModel = Object.freeze({
+          total_jumlah: totalJumlah,
+          total_weighted_iku: totalWeightedIku,
+          fact_rows: factRows,
+          data_quality_score: qualityScore,
+          pipeline,
+          supersetSummary,
+          metrics,
+          airflowActive,
+          airflowLatest,
+          systemTruth,
+          excelLakehouse,
+          endpointStatus,
+          loadStatus: Object.values(endpointStatus).some(
+            (item) => item?.status === "unreachable",
+          )
+            ? "partial_error"
+            : "ready",
+        });
+        return deepFreeze({
+          ...viewModel,
+          steps: liveWorkflowSteps(viewModel),
+        });
+      }
+
+      function setText(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      }
+
+      function renderLiveStepper(viewModel) {
+        const steps = viewModel.steps || [];
+        const nodesHtml = steps
+          .map((step, idx) => {
+            const statusView =
+              STATUS_VIEW[step.statusKind] || STATUS_VIEW.missing;
+            const isReady = statusView.step === "ready";
+            const isNextReady =
+              idx < steps.length - 1 &&
+              (STATUS_VIEW[steps[idx + 1]?.statusKind] || {}).step === "ready";
+
+            const connectorHtml =
+              idx < steps.length - 1
+                ? `
+          <div class="pipeline-connector ${isReady && isNextReady ? "active" : ""}">
+            <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
+          </div>
+        `
+                : "";
+
+            return `
+          <div class="pipeline-node ${statusView.step}" data-status="${step.statusKind}">
+            <div class="node-icon">
+              <span class="material-symbols-outlined" style="font-size: 20px;">${step.icon}</span>
+            </div>
+            <div class="node-content">
+              <span class="node-title">${step.title}</span>
+              <div><span class="badge-apple ${statusView.badge}" style="font-size: 0.68rem; padding: 0.15rem 0.45rem;">${statusView.label}</span></div>
+            </div>
+          </div>
+          ${connectorHtml}
+        `;
+          })
+          .join("");
+
+        const fullHtml = `<div class="medallion-pipeline-flow">${nodesHtml}</div>`;
+
+        const s1 = document.getElementById("stepperContainer");
+        const s2 = document.getElementById("stepperContainerLakehouse");
+        if (s1) s1.innerHTML = fullHtml;
+        if (s2) s2.innerHTML = fullHtml;
+      }
+
+      function renderLoadingState() {
+        state.portalLoadStatus = "loading";
+        setText("liveDataStatus", "Memuat data live dari backend SILARAS...");
+        setText("valTotalAnggaran", "Memuat...");
+        setText("valItemAnggaran", "Memuat...");
+        setText("valTotalWeightedIku", "Memuat...");
+        setText("valQualityScore", "Memuat...");
+        setText("valPipelineStatus", "Memuat...");
+        setText("valLastRun", "Menghubungi API backend");
+      }
+
+      function renderErrorState(error) {
+        state.portalLoadStatus = "unreachable";
+        const message = `API backend belum dapat dijangkau: ${safe(error?.message || error || "periksa layanan portal backend")}`;
+        setText("liveDataStatus", message);
+        setText("valPipelineStatus", STATUS_VIEW.unreachable.label);
+        setText("valLastRun", "Tidak ada data live yang berhasil dimuat");
+        setText("footerStatusBadge", "SYSTEM UNREACHABLE");
+        setText("footerSystemMsg", "API backend belum dapat dijangkau");
+        setText("footerPipelineMsg", "LAST RUN: UNREACHABLE");
+      }
+
+      function renderPortalViewModel(viewModel) {
+        const statusView =
+          STATUS_VIEW[viewModel.pipeline.statusKind] || STATUS_VIEW.missing;
+        const metricElements = {
+          totalAnggaran: document.getElementById("valTotalAnggaran"),
+          itemAnggaran: document.getElementById("valItemAnggaran"),
+          qualityScore: document.getElementById("valQualityScore"),
+          pipelineStatus: document.getElementById("valPipelineStatus"),
+        };
+        setText(
+          "valTotalAnggaran",
+          viewModel.total_jumlah === undefined ||
+            viewModel.total_jumlah === null
+            ? "-"
+            : rupiah(viewModel.total_jumlah),
+        );
+        setText(
+          "valItemAnggaran",
+          viewModel.fact_rows === undefined || viewModel.fact_rows === null
+            ? "-"
+            : n(viewModel.fact_rows),
+        );
+        setText(
+          "valQualityScore",
+          viewModel.data_quality_score === undefined ||
+            viewModel.data_quality_score === null
+            ? "-"
+            : `${viewModel.data_quality_score}%`,
+        );
+        setText(
+          "valTotalWeightedIku",
+          viewModel.total_weighted_iku === undefined ||
+            viewModel.total_weighted_iku === null
+            ? "-"
+            : `${viewModel.total_weighted_iku}`,
+        );
+        setText("valPipelineStatus", statusView.label);
+        setText(
+          "valLastRun",
+          viewModel.pipeline.lastRun
+            ? `Last run: ${safe(viewModel.pipeline.lastRun)}`
+            : "Belum ada aktivitas pipeline",
+        );
+        setText(
+          "noteTotalAnggaran",
+          viewModel.supersetSummary.status === "ready"
+            ? "Dibaca langsung dari Superset"
+            : "Dari fact_anggaran terakhir",
+        );
+        setText(
+          "liveDataStatus",
+          `Data live dimuat. Status pipeline: ${statusView.label}.`,
+        );
+        if (viewModel.loadStatus === "partial_error") {
+          const failedEndpoints = Object.values(viewModel.endpointStatus)
+            .filter((item) => item?.status === "unreachable")
+            .map((item) => item.name)
+            .join(", ");
+          setText(
+            "liveDataStatus",
+            `Sebagian API backend belum dapat dijangkau: ${failedEndpoints}. Data lain tetap ditampilkan.`,
+          );
+        }
+        if (viewModel.pipeline.statusKind === "running")
+          setText(
+            "liveDataStatus",
+            "Pipeline sedang berjalan berdasarkan status Airflow terbaru.",
+          );
+        if (viewModel.pipeline.statusKind === "failed")
+          setText(
+            "liveDataStatus",
+            "Pipeline terakhir gagal. Periksa Airflow dan status sistem.",
+          );
+        if (viewModel.pipeline.statusKind === "unreachable")
+          setText(
+            "liveDataStatus",
+            "Status Airflow tidak dapat dijangkau. Data lain tetap ditampilkan bila tersedia.",
+          );
+        setText(
+          "footerStatusBadge",
+          viewModel.pipeline.statusKind === "unreachable"
+            ? "SYSTEM DEGRADED"
+            : viewModel.pipeline.statusKind === "failed"
+              ? "SYSTEM ATTENTION"
+              : viewModel.pipeline.statusKind === "running"
+                ? "SYSTEM RUNNING"
+                : "SYSTEM ONLINE",
+        );
+        setText(
+          "footerSystemMsg",
+          viewModel.systemTruth.generated_at
+            ? `Truth status: ${viewModel.systemTruth.generated_at}`
+            : "Services operational",
+        );
+        setText(
+          "footerPipelineMsg",
+          `LAST RUN: ${statusView.label.toUpperCase()}`,
+        );
+        void metricElements;
+
+        const tbody = document.getElementById("tblServicesStatus");
+        if (tbody && viewModel.systemTruth.services) {
+          tbody.innerHTML = Object.entries(viewModel.systemTruth.services)
+            .map(([key, val]) => {
+              const kind = normalizeStatusKind(val.status);
+              const badgeClass =
+                kind === "success"
+                  ? "badge-ok"
+                  : kind === "running" || kind === "missing"
+                    ? "badge-warn"
+                    : "badge-error";
+              const actionBtn = renderServiceActionButton({
+                name: key,
+                ...val,
+              });
+              return `
+            <tr>
+              <td><strong>${safe(key).toUpperCase()}</strong></td>
+              <td>${safe(val.role || "Service Component")}</td>
+              <td><code>${safe(val.url || val.host || "localhost")}</code></td>
+              <td><span class="badge-apple ${badgeClass}">${safe(val.status || "unknown")}</span></td>
+              <td>${actionBtn}</td>
+            </tr>
+          `;
+            })
+            .join("");
+        }
+        renderLiveStepper(viewModel);
+      }
+
+      function renderServiceActionButton(service) {
+        const rawUrl = String(service.url || service.host || "").trim();
+        const port = service.port || "";
+        const isWeb =
+          rawUrl.startsWith("http://") ||
+          rawUrl.startsWith("https://") ||
+          [8085, 8089, 9001, 8080, 8081, 8090, 8091].includes(Number(port));
+
+        if (isWeb && rawUrl) {
+          let webUrl = rawUrl;
+          if (webUrl.endsWith("/health"))
+            webUrl = webUrl.replace(/\/health$/, "/");
+          if (webUrl.endsWith("/api/health"))
+            webUrl = webUrl.replace(/\/api\/health$/, "/");
+          if (webUrl.endsWith("/minio/health/live"))
+            webUrl = webUrl.replace(/\/minio\/health\/live$/, "/");
+          if (webUrl.endsWith("/v1/info"))
+            webUrl = webUrl.replace(/\/v1\/info$/, "/");
+          return `<a class="btn-apple btn-primary" style="padding:0.3rem 0.75rem; font-size:0.78rem;" href="${safe(webUrl)}" target="_blank" rel="noreferrer"><span class="material-symbols-outlined" style="font-size:15px;">open_in_new</span> Buka Website</a>`;
+        }
+
+        const copyVal = rawUrl
+          ? port
+            ? `${rawUrl}:${port}`
+            : rawUrl
+          : `localhost:${port || "5432"}`;
+        return `<button type="button" class="btn-apple btn-secondary" style="padding:0.3rem 0.75rem; font-size:0.78rem;" onclick="navigator.clipboard.writeText('${safe(copyVal)}'); showToast('Endpoint disalin: ${safe(copyVal)}')"><span class="material-symbols-outlined" style="font-size:15px;">content_copy</span> Copy</button>`;
+      }
+
+      function statusBadgeHtml(text, status) {
+        const kind = normalizeStatusKind(status || text);
+        const badgeClass =
+          kind === "success"
+            ? "badge-ok"
+            : kind === "running" || kind === "missing"
+              ? "badge-warn"
+              : "badge-error";
+        return `<span class="badge-apple ${badgeClass}">${safe(text || status || "missing")}</span>`;
+      }
+
+      function renderUploadSession(session = state.uploadSession) {
+        const files = Array.isArray(session?.files) ? session.files : [];
+        setText("valUploadSession", session?.status || "empty");
+        const rows = files.length
+          ? files
+              .map(
+                (file) => `
+        <tr>
+          <td>${safe(session.dataset_session_id || session.active_dataset_id)}</td>
+          <td>${statusBadgeHtml(session.status, session.status)}</td>
+          <td>${safe(file.filename)}<br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(file.jenis_dataset || file.path)}</span></td>
+          <td>${safe(session.message)}</td>
+        </tr>
+      `,
+              )
+              .join("")
+          : `
+        <tr>
+          <td>${safe(session?.dataset_session_id || "-")}</td>
+          <td>${statusBadgeHtml(session?.status || "empty", session?.status || "missing")}</td>
+          <td>-</td>
+          <td>${safe(session?.message || "Belum ada upload session aktif.")}</td>
+        </tr>
+      `;
+        document.getElementById("uploadSessionPanel").innerHTML = `
+        <table class="apple-table">
+          <thead><tr><th>Dataset</th><th>Status</th><th>File</th><th>Pesan</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+      }
+
+      function renderAirflowPanel(
+        active = state.airflowActive,
+        latest = state.airflowLatest,
+        runsPayload = state.airflowRuns,
+      ) {
+        const activeRun = active?.run || (active?.dag_run_id ? active : null);
+        const latestRun = latest?.run || (latest?.dag_run_id ? latest : null);
+        const mainRun = activeRun || latestRun || {};
+
+        const runId = mainRun.dag_run_id || mainRun.run_id || "-";
+        const status =
+          mainRun.state || active?.status || latest?.status || "idle";
+
+        setText("valAirflowActive", status.toUpperCase());
+        setText(
+          "noteAirflowActive",
+          runId === "-"
+            ? "Belum ada DAG run aktif"
+            : `DAG Run ID: ${safe(runId)}`,
+        );
+        setText("airflowRunBadge", status);
+        const badge = document.getElementById("airflowRunBadge");
+        if (badge)
+          badge.className = `badge-apple ${normalizeStatusKind(status) === "success" ? "badge-ok" : normalizeStatusKind(status) === "failed" ? "badge-error" : normalizeStatusKind(status) === "running" ? "badge-info" : "badge-warn"}`;
+
+        const runsList =
+          runsPayload?.runs && runsPayload.runs.length > 0
+            ? runsPayload.runs
+            : mainRun.dag_run_id
+              ? [mainRun]
+              : [];
+
+        let tableRows = "";
+        if (runsList.length > 0) {
+          tableRows = runsList
+            .map(
+              (r) => `
+          <tr>
+            <td><code>${safe(r.dag_run_id || "-")}</code></td>
+            <td>${statusBadgeHtml(r.state || "unknown", r.state)}</td>
+            <td>${safe(r.conf?.dataset_session_id || r.dataset_session_id || "Session Active")}</td>
+            <td>${safe(r.end_date || r.start_date || r.logical_date || "-")}</td>
+          </tr>
+        `,
+            )
+            .join("");
+        } else {
+          tableRows = `<tr><td colspan="4" style="text-align:center; color:var(--text-secondary);">Belum ada riwayat DAG run Airflow. Klik "Jalankan Sistem" untuk memicu pipeline.</td></tr>`;
+        }
+
+        const panel = document.getElementById("airflowPanel");
+        if (panel) {
+          panel.innerHTML = `
+          <table class="apple-table">
+            <thead><tr><th>DAG Run ID</th><th>Status</th><th>Dataset Session</th><th>Waktu Eksekusi</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        `;
+        }
+      }
+
+      function updatePipelineLive(activePayload, latestPayload) {
+        const pill = document.getElementById("pipelineLive");
+        const textEl = document.getElementById("pipelineLiveText");
+        if (!pill || !textEl) return;
+
+        const activeRun =
+          activePayload?.run ||
+          (activePayload?.dag_run_id ? activePayload : null);
+        const latestRun =
+          latestPayload?.run ||
+          (latestPayload?.dag_run_id ? latestPayload : null);
+
+        let kind = "missing";
+        let label = "Pipeline Idle";
+        let title = "Tidak ada pipeline aktif";
+
+        if (activeRun) {
+          kind = normalizeStatusKind(activeRun.state);
+          label =
+            kind === "running"
+              ? "Pipeline Berjalan"
+              : `Pipeline ${safe(activeRun.state || kind)}`;
+          title = `DAG Run aktif: ${safe(activeRun.dag_run_id)}`;
+        } else if (latestRun) {
+          kind = normalizeStatusKind(latestRun.state);
+          if (kind === "running") {
+            label = "Pipeline Berjalan";
+            title = `DAG Run: ${safe(latestRun.dag_run_id)}`;
+          } else if (kind === "failed") {
+            label = "Pipeline Gagal";
+            title = "Run terakhir gagal. Buka Airflow untuk detail.";
+          } else if (kind === "success") {
+            label = "Pipeline Selesai";
+            title = "Run terakhir berhasil.";
+          }
+        }
+
+        pill.hidden = false;
+        pill.classList.toggle("running", kind === "running");
+        pill.classList.toggle("live", kind === "success");
+        pill.classList.toggle("failed", kind === "failed");
+        pill.title = title;
+        textEl.textContent = label;
+      }
+
+      async function refreshActivePipeline() {
+        try {
+          const [active, latest] = await Promise.allSettled([
+            apiGet("/api/airflow/active"),
+            apiGet("/api/airflow/latest"),
+          ]);
+          const activePayload =
+            active.status === "fulfilled" ? active.value : null;
+          const latestPayload =
+            latest.status === "fulfilled" ? latest.value : null;
+
+          if (activePayload) state.airflowActive = activePayload;
+          renderAirflowPanel(activePayload, latestPayload, state.airflowRuns);
+          updatePipelineLive(activePayload, latestPayload);
+
+          const activeRun =
+            activePayload?.run ||
+            (activePayload?.dag_run_id ? activePayload : null);
+          const latestRun =
+            latestPayload?.run ||
+            (latestPayload?.dag_run_id ? latestPayload : null);
+          const sourceRun = activeRun || latestRun;
+          const kind = sourceRun
+            ? normalizeStatusKind(sourceRun.state)
+            : "missing";
+
+          setText(
+            "footerStatusBadge",
+            kind === "running"
+              ? "SYSTEM RUNNING"
+              : kind === "failed"
+                ? "SYSTEM ATTENTION"
+                : "SYSTEM ONLINE",
+          );
+          setText(
+            "footerPipelineMsg",
+            `LAST RUN: ${safe(
+              sourceRun?.state || "WAITING",
+            ).toUpperCase()}`,
+          );
+        } catch (err) {
+          console.warn("refreshActivePipeline failed:", err);
+        }
+      }
+
+      async function triggerAirflowAndWait() {
+        const buttons = [
+          document.getElementById("btnTriggerAirflow"),
+          document.getElementById("btnRunPipeline"),
+        ].filter(Boolean);
+        if (buttons.some((b) => b.dataset.running === "true")) {
+          showToast("Pipeline masih berjalan. Tunggu sampai selesai.");
+          return;
+        }
+
+        const setButtonsRunning = (running) => {
+          buttons.forEach((b) => {
+            b.dataset.running = String(running);
+            b.disabled = running;
+            b.innerHTML = running
+              ? '<span class="material-symbols-outlined">sync</span> Pipeline berjalan...'
+              : b.id === "btnRunPipeline"
+                ? '<span class="material-symbols-outlined">play_arrow</span> 2. Jalankan Pemrosesan'
+                : '<span class="material-symbols-outlined">play_arrow</span> Jalankan Sistem';
+          });
+        };
+
+        setButtonsRunning(true);
+
+        showPipelineLoading("Menjalankan Sistem", "Mengirim pipeline ke Airflow...", "Menunggu Airflow...");
+
+        try {
+          const queued = await apiPost("/api/airflow/trigger", {});
+
+          state.airflowActive = queued;
+          renderAirflowPanel(queued, state.airflowLatest, state.airflowRuns);
+          if (queued.deduplicated) {
+            showToast("Sistem sudah berjalan. Memantau pipeline yang aktif...");
+            showPipelineLoading(
+              "Sistem Sedang Berjalan",
+              "Pipeline Airflow sudah aktif dan sedang dipantau.",
+              `Status: ${queued.state || "running"}`,
+            );
+          } else {
+            showToast(
+              "Pipeline Airflow masuk antrean: " +
+                safe(queued.dag_run_id || "OK"),
+            );
+            showPipelineLoading(
+              "Pipeline Berjalan",
+              "Airflow sedang memproses Bronze, Silver, Gold, dan dashboard...",
+              `Status: ${queued.state || "queued"}`,
+            );
+          }
+
+          const runId = queued.dag_run_id;
+          const startedAt = Date.now();
+          const timeoutMs = 30 * 60 * 1000;
+
+          while (runId && Date.now() - startedAt < timeoutMs) {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            const current = await apiGet(
+              `/api/airflow/runs/${encodeURIComponent(runId)}`,
+            );
+            const run = current?.run || current;
+            state.airflowActive = run;
+            state.airflowLatest = current;
+            renderAirflowPanel(run, current, state.airflowRuns);
+            showPipelineLoading("Pipeline Berjalan", "Airflow sedang memproses Bronze, Silver, Gold, dan dashboard...", `Status: ${run?.state || "queued"}`);
+
+            const terminalStates = [
+              "success",
+              "failed",
+              "upstream_failed",
+              "skipped",
+            ];
+            if (
+              terminalStates.includes(String(run?.state || "").toLowerCase())
+            ) {
+              showToast(
+                run.state === "success"
+                  ? "Pipeline Airflow selesai."
+                  : "Pipeline Airflow selesai dengan status: " +
+                      safe(run.state),
+              );
+              showPipelineLoading(run.state === "success" ? "Pipeline Selesai" : "Pipeline Berakhir", run.state === "success" ? "Data live dan dashboard sedang disegarkan..." : "Periksa detail status Airflow untuk informasi lebih lanjut.", `Status akhir: ${run.state}`);
+              break;
+            }
+          }
+
+          await fetchFeatureParityData();
+          await fetchDashboardData();
+        } catch (err) {
+          showPipelineLoading("Pipeline Gagal", safe(err.message || err), "Periksa koneksi backend dan Airflow.");
+          showToast("Gagal menjalankan Airflow: " + safe(err.message || err));
+        } finally {
+          setTimeout(hidePipelineLoading, 900);
+          setButtonsRunning(false);
+        }
+      }
+
+      function renderIkuReviewQueue(review = state.ikuReview) {
+        const rows = Array.isArray(review?.rows) ? review.rows : [];
+        const options = Array.isArray(review?.iku_options)
+          ? review.iku_options
+          : [];
+        setText("badgeIkuCount", `${rows.length} Review`);
+        if (!rows.length) {
+          document.getElementById("tblIkuReviewRows").innerHTML =
+            '<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">Tidak ada item Review IKU yang perlu dikoreksi.</td></tr>';
+          return;
+        }
+        const optionHtml = options
+          .map((option) => {
+            const payload = encodeURIComponent(
+              JSON.stringify({
+                iku_codes: option.iku_raw,
+                detail_id: option.detail_id,
+                detail_kegiatan: option.detail_kegiatan,
+                nomenklatur_path: option.nomenklatur_path,
+              }),
+            );
+            return `<option value="${safe(payload)}">${safe(option.iku_raw)} - ${safe(option.detail_kegiatan)}</option>`;
+          })
+          .join("");
+        document.getElementById("tblIkuReviewRows").innerHTML = rows
+          .map(
+            (row) => `
+        <tr>
+          <td><strong>${safe(row.item_id)}</strong><br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(row.source_sheet)}:${safe(row.source_row)}</span></td>
+          <td>${safe(row.kegiatan)}<br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(row.uraian_detail)}</span></td>
+          <td>${rupiah(row.jumlah)}</td>
+          <td>${safe(row.kode_iku)}<br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(row.nama_iku)}</span></td>
+          <td><select class="input-apple iku-review-select" data-item-id="${safe(row.item_id)}"><option value="">Pilih IKU</option>${optionHtml}</select></td>
+          <td><button type="button" class="btn-apple btn-secondary iku-review-save" data-item-id="${safe(row.item_id)}" onclick="handleIkuOverrideSave(this)">Simpan</button></td>
+        </tr>
+      `,
+          )
+          .join("");
+      }
+
+      async function handleIkuOverrideSave(button) {
+        const itemId = button.dataset.itemId;
+        const select = Array.from(
+          document.querySelectorAll(".iku-review-select"),
+        ).find((candidate) => candidate.dataset.itemId === itemId);
+        if (!select || !select.value) {
+          showToast("Pilih IKU dari Nomenklatur terlebih dahulu.");
+          return;
+        }
+        const payload = {
+          item_id: itemId,
+          ...JSON.parse(decodeURIComponent(select.value)),
+        };
+        await apiPost("/api/iku-review/override", payload);
+        showToast("Review IKU tersimpan. Buka Orkestrasi -> Jalankan Sistem.");
+        state.ikuReview = await apiGet("/api/iku-review/queue?limit=100");
+        renderIkuReviewQueue(state.ikuReview);
+      }
+
+      function renderStorageManifest(manifest = state.storageManifest) {
+        const panel = document.getElementById("tblStorageManifest");
+        if (!panel) return;
+        if (
+          !manifest ||
+          manifest.available === false ||
+          (!manifest.entries && !manifest.local_mapping && !manifest.layers)
+        ) {
+          panel.innerHTML =
+            '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary);">Storage manifest MinIO / S3 belum tersedia.</td></tr>';
+          return;
+        }
+
+        const entries = Array.isArray(manifest.entries) ? manifest.entries : [];
+        const localMapping = manifest.local_mapping || {
+          raw: "data/raw",
+          bronze: "data/generated/bronze",
+          silver: "data/generated/silver",
+          gold: "data/generated/gold",
+          reports: "outputs/reports",
+          logs: "outputs/logs",
+        };
+
+        const bucket = manifest.bucket || "lakehouse";
+        const layers = ["raw", "bronze", "silver", "gold", "reports", "logs"];
+
+        const rows = layers
+          .map((layerKey) => {
+            const layerEntries = entries.filter((e) => e.layer === layerKey);
+            const fileCount = layerEntries.length;
+            const totalSize = layerEntries.reduce(
+              (sum, e) => sum + (e.file_size || 0),
+              0,
+            );
+            let sizeFormatted = "-";
+            if (totalSize > 0) {
+              sizeFormatted =
+                totalSize >= 1048576
+                  ? (totalSize / 1048576).toFixed(2) + " MB"
+                  : (totalSize / 1024).toFixed(1) + " KB";
+            }
+
+            const isUploaded =
+              manifest.status === "uploaded" ||
+              (fileCount > 0 &&
+                layerEntries.every((e) => e.upload_status === "uploaded"));
+            const statusStr =
+              fileCount > 0 ? (isUploaded ? "uploaded" : "ready") : "mapped";
+            const s3Prefix = `s3://${bucket}/${layerKey}/`;
+            const localPath = localMapping[layerKey] || `data/${layerKey}`;
+
+            let sampleInfo = "";
+            if (fileCount > 0) {
+              const sampleName = layerEntries[0].local_path
+                ? layerEntries[0].local_path.split("/").pop().split("\\").pop()
+                : "";
+              sampleInfo = `<br><span style="font-size:0.75rem; color:var(--text-secondary);">${fileCount} file (${safe(sampleName)})</span>`;
+            }
+
+            return `
+          <tr>
+            <td><strong>${safe(layerKey.toUpperCase())}</strong></td>
+            <td>${statusBadgeHtml(statusStr, statusStr)}</td>
+            <td><code>${safe(localPath)}</code>${sampleInfo}</td>
+            <td><code>${safe(s3Prefix)}</code></td>
+            <td><strong>${safe(sizeFormatted)}</strong></td>
+          </tr>
+        `;
+          })
+          .join("");
+
+        panel.innerHTML = rows;
+      }
+
+      function previewRows(layerName, payload) {
+        const rows = Array.isArray(payload?.data)
+          ? payload.data
+          : Array.isArray(payload?.rows)
+            ? payload.rows
+            : [];
+        if (!rows.length)
+          return `<tr><td>${safe(layerName)}</td><td>-</td><td>Belum ada preview.</td></tr>`;
+        return rows
+          .slice(0, 5)
+          .map(
+            (row) => `
+        <tr>
+          <td>${safe(layerName)}</td>
+          <td>${safe(Object.keys(row).join(", "))}</td>
+          <td><code>${safe(JSON.stringify(row))}</code></td>
+        </tr>
+      `,
+          )
+          .join("");
+      }
+
+      function renderDataPreviews() {
+        document.getElementById("dataPreviewPanel").innerHTML = `
+        <table class="apple-table">
+          <thead><tr><th>Layer</th><th>Kolom</th><th>Contoh Data</th></tr></thead>
+          <tbody>${previewRows("Gold", state.goldPreview)}${previewRows("Silver", state.silverPreview)}</tbody>
+        </table>
+      `;
+      }
+
+      function renderDashboardLinks(linksPayload = state.dashboardLinks) {
+        const urlMap = linksPayload?.dashboard_urls_by_year || {};
+        const links = Object.entries(urlMap).map(([label, url]) => ({
+          label,
+          url,
+        }));
+        if (linksPayload?.dashboard_url)
+          links.unshift({
+            label: "Dashboard Aktif",
+            url: linksPayload.dashboard_url,
+          });
+        const html = links.length
+          ? links
+              .map(
+                (link) => `
+        <a class="btn-apple btn-primary" href="${safeUrl(link.url)}" target="_blank" rel="noreferrer">
+          <span class="material-symbols-outlined">open_in_new</span> ${safe(link.label)}
+        </a>
+      `,
+              )
+              .join("")
+          : `
+        <a class="btn-apple btn-primary" href="http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/" target="_blank" rel="noreferrer">
+          <span class="material-symbols-outlined">dashboard</span> Buka Superset Default
+        </a>
+      `;
+        document.getElementById("dashboardLinksPanel").innerHTML = html;
+      }
+
+      function renderUatOfficialSummary(summary = state.uatSummary) {
+        const tbody = document.getElementById("uatOfficialMatrix");
+        if (!tbody) return;
+        const matrix = Array.isArray(summary?.matrix?.items)
+          ? summary.matrix.items
+          : Array.isArray(summary?.matrix)
+            ? summary.matrix
+            : null;
+        if (!matrix || matrix.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">Matriks UAT resmi belum tersedia. Jalankan evaluasi UAT untuk mengisi matriks.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = matrix
+          .map(
+            (row) => `
+          <tr>
+            <td><strong>${safe(row.indikator || "-")}</strong></td>
+            <td>${safe(row.pertanyaan || "-")}</td>
+            <td>${safe(row.skor_rata_rata)}</td>
+            <td>${safe(row.persentase)}%</td>
+            <td><span class="badge-apple badge-info">${safe(row.kategori || "-")}</span></td>
+            <td>${safe(row.responden || "-")}</td>
+          </tr>
+        `,
+          )
+          .join("");
+      }
+
+      function normalizedSystemServices(servicePayload = state.serviceStatus) {
+        const source =
+          servicePayload?.services || servicePayload || state.services || {};
+        if (Array.isArray(source)) {
+          return source.map((item, index) => {
+            const service =
+              item && typeof item === "object" ? item : { status: item };
+            const fallbackName = `service-${index + 1}`;
+            const name =
+              service.name || service.key || service.id || fallbackName;
+            return [name, service];
+          });
+        }
+        return Object.entries(source).map(([key, service]) => {
+          const serviceObject =
+            service && typeof service === "object"
+              ? service
+              : { status: service };
+          const name =
+            serviceObject.name || serviceObject.key || serviceObject.id || key;
+          return [name, serviceObject];
+        });
+      }
+
+      function renderSystemStatus(servicePayload = state.serviceStatus) {
+        const rows =
+          normalizedSystemServices(servicePayload)
+            .map(
+              ([name, service]) => `
+        <tr>
+          <td><strong>${safe(name)}</strong></td>
+          <td>${safe(service.role || "Service Component")}</td>
+          <td><code>${safe(service.url || service.host || service.port || "localhost")}</code></td>
+          <td>${statusBadgeHtml(service.status, service.status)}<span class="dev-only" style="margin-left:.35rem;">${safe(service.status)}</span></td>
+          <td>${renderServiceActionButton({ name, ...service })}</td>
+        </tr>
+      `,
+            )
+            .join("") ||
+          '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary);">Status service belum tersedia.</td></tr>';
+        document.getElementById("tblServicesStatus").innerHTML = rows;
+      }
+
+      async function fetchFeatureParityData() {
+        const results = await Promise.allSettled([
+          apiGet("/api/upload/session/status"),
+          apiGet("/api/airflow/active"),
+          apiGet("/api/airflow/latest"),
+          apiGet("/api/airflow/runs"),
+          apiGet("/api/iku-review/queue?limit=100"),
+          apiGet("/api/storage/manifest"),
+          apiGet("/api/data/preview?layer=gold&limit=10"),
+          apiGet("/api/data/preview?layer=silver&limit=10"),
+          apiGet("/api/dashboard/links/current"),
+          apiGet("/api/uat/summary"),
+          apiGet("/api/system-truth/status"),
+          apiGet("/api/metrics"),
+          apiGet("/api/status/services"),
+        ]);
+        const value = (index) =>
+          results[index].status === "fulfilled" ? results[index].value : null;
+        state.uploadSession = value(0);
+        state.airflowActive = value(1);
+        state.airflowLatest = value(2) || state.airflowLatest;
+        state.airflowRuns = value(3);
+        state.ikuReview = value(4);
+        state.storageManifest = value(5);
+        state.goldPreview = value(6);
+        state.silverPreview = value(7);
+        state.dashboardLinks = value(8);
+        state.uatSummary = value(9);
+        state.truth = value(10);
+        state.metrics = value(11) || state.metrics;
+        state.serviceStatus = value(12);
+        renderUploadSession(state.uploadSession);
+        renderAirflowPanel(
+          state.airflowActive,
+          state.airflowLatest,
+          state.airflowRuns,
+        );
+        renderIkuReviewQueue(state.ikuReview);
+        renderStorageManifest(state.storageManifest);
+        renderDataPreviews();
+        renderDashboardLinks(state.dashboardLinks);
+        renderUatOfficialSummary(state.uatSummary);
+        renderSystemStatus(state.serviceStatus);
+      }
+
+      // Data Polling
+      // isInitialLoad tracks whether this is the first fetch (show loading) or a background refresh (silent update)
+      let _dashboardInitialized = false;
+      async function fetchDashboardData({ silent = false } = {}) {
+        if (!silent && !_dashboardInitialized) renderLoadingState();
+        const results = await Promise.allSettled([
+          apiGet("/api/superset/summary"),
+          apiGet("/api/metrics"),
+          apiGet("/api/airflow/active"),
+          apiGet("/api/airflow/latest"),
+          apiGet("/api/system-truth/status"),
+          apiGet("/api/excel-lakehouse/status"),
+        ]);
+        const endpointNames = [
+          "supersetSummary",
+          "metrics",
+          "airflowActive",
+          "airflowLatest",
+          "systemTruth",
+          "excelLakehouse",
+        ];
+        const endpointStatus = Object.fromEntries(
+          results.map((result, index) => {
+            const endpoint = settledEndpoint(endpointNames[index], result);
+            return [endpoint.name, endpoint];
+          }),
+        );
+        const payloads = endpointNames.map(
+          (name) => endpointStatus[name].value,
+        );
+        if (
+          Object.values(endpointStatus).every(
+            (item) => item.status === "unreachable",
+          )
+        ) {
+          renderErrorState(
+            results.find((result) => result.status === "rejected")?.reason ||
+              new Error("Semua endpoint gagal dimuat"),
+          );
+          return;
+        }
+        const viewModel = buildPortalViewModel({
+          supersetSummary: payloads[0],
+          metrics: payloads[1],
+          airflowActive: payloads[2],
+          airflowLatest: payloads[3],
+          systemTruth: payloads[4],
+          excelLakehouse: payloads[5],
+          endpointStatus,
+        });
+        state.metrics = viewModel.metrics;
+        state.services = viewModel.systemTruth.services || {};
+        state.portalViewModel = viewModel;
+        state.portalLoadStatus = "ready";
+        _dashboardInitialized = true;
+        renderPortalViewModel(viewModel);
+      }
+
+      function canBackgroundRefresh() {
+        if (document.hidden || document.visibilityState === "hidden")
+          return false;
+        const activeEl = document.activeElement;
+        if (
+          activeEl &&
+          ["INPUT", "TEXTAREA", "SELECT"].includes(activeEl.tagName)
+        )
+          return false;
+        if (state.isUploading || state.isUserEditing) return false;
+        return true;
+      }
+
+      async function renderLiveDashboardPreview() {
+        try {
+          const payload = await apiGet("/api/local-dashboard/all");
+          const data = payload?.data || {};
+          const summary = data.summary || {};
+          const charts = data.charts || {};
+
+          setText(
+            "dashTotalAnggaran",
+            summary.total_anggaran !== undefined
+              ? rupiah(summary.total_anggaran)
+              : "Rp 517.361.656",
+          );
+          setText(
+            "dashFactRows",
+            summary.total_rows !== undefined ? n(summary.total_rows) : "253",
+          );
+          setText(
+            "dashAkunCount",
+            summary.total_akun !== undefined ? n(summary.total_akun) : "5",
+          );
+
+          const barItems = charts.bar_by_akun?.items || [];
+          const chartContainer = document.getElementById("dashLiveCharts");
+          if (chartContainer) {
+            if (barItems.length > 0) {
+              const maxVal = Math.max(
+                ...barItems.map((i) => i.nominal_piutang_rp || 0),
+                1,
+              );
+              chartContainer.innerHTML = barItems
+                .map((item) => {
+                  const nominal = item.nominal_piutang_rp || 0;
+                  const pct = Math.min(
+                    100,
+                    Math.round((nominal / maxVal) * 100),
+                  );
+                  return `
+                <div style="margin-bottom:1rem;">
+                  <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.35rem;">
+                    <strong>${safe(item.label)}</strong>
+                    <span style="color:var(--text-secondary); font-weight:600;">${rupiah(nominal)}</span>
+                  </div>
+                  <div style="width:100%; height:8px; background:var(--surface-high); border-radius:4px; overflow:hidden;">
+                    <div style="width:${pct}%; height:100%; background:linear-gradient(90deg, #0071e3, #409cff); border-radius:4px; transition:width 0.5s ease;"></div>
+                  </div>
+                </div>
+              `;
+                })
+                .join("");
+            } else {
+              chartContainer.innerHTML =
+                '<p style="color:var(--text-secondary); text-align:center;">Data chart Superset belum tersedia.</p>';
+            }
+          }
+        } catch (err) {
+          console.warn("Failed to fetch live dashboard from superset:", err);
+        }
+      }
+
+      function hideLoadingOverlay() {
+        const overlay = document.getElementById("appLoadingOverlay");
+        if (overlay) {
+          overlay.style.opacity = "0";
+          overlay.style.visibility = "hidden";
+          setTimeout(() => {
+            overlay.style.display = "none";
+          }, 400);
+        }
+      }
+
+      function showPipelineLoading(title, message, status) {
+        const overlay = document.getElementById("pipelineLoadingOverlay");
+        if (!overlay) return;
+        overlay.style.display = "flex";
+        overlay.setAttribute("aria-busy", "true");
+        setText("pipelineLoadingTitle", title);
+        setText("pipelineLoadingMessage", message);
+        setText("pipelineLoadingState", status);
+      }
+
+      function hidePipelineLoading() {
+        const overlay = document.getElementById("pipelineLoadingOverlay");
+        if (!overlay) return;
+        overlay.setAttribute("aria-busy", "false");
+        overlay.style.display = "none";
+      }
+
+      // Initializer
+      window.addEventListener("DOMContentLoaded", async () => {
+        renderLoadingState();
+        const overlay = document.getElementById("appLoadingOverlay");
+        if (overlay) {
+          overlay.style.display = "flex";
+          overlay.style.opacity = "1";
+          overlay.style.visibility = "visible";
+        }
+        renderUatCriteriaForm();
+        renderUatTable();
+        const savedTheme = localStorage.getItem("silaras_v2_theme") || "light";
+        setTheme(savedTheme);
+        await Promise.allSettled([
+          fetchDashboardData(),
+          fetchFeatureParityData(),
+          renderLiveDashboardPreview(),
+        ]);
+        hideLoadingOverlay();
+        refreshActivePipeline().catch(() => {});
+        setInterval(() => {
+          if (canBackgroundRefresh())
+            fetchDashboardData({ silent: true }).catch(() => {});
+        }, 30000);
+        setInterval(() => {
+          if (canBackgroundRefresh()) refreshActivePipeline().catch(() => {});
+        }, 10000);
+        setInterval(() => {
+          if (canBackgroundRefresh()) {
+            fetchFeatureParityData().catch(() => {});
+            renderLiveDashboardPreview().catch(() => {});
+          }
+        }, 45000);
+      });
+    </script>
+  </body>
+</html>
