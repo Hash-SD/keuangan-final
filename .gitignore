@@ -34,3 +34,12 @@ docs/brainstorming/pipeline_count_validation.md
 # IDE and Editor folders
 .agents/
 .windsurf/
+
+# ECC agent configs (project-local, machine-specific)
+.agent/
+.codex/
+.opencode/
+.kilo/
+kilo.json
+AGENTS.md
+docs/ECC-PROMPT-ROUTING.md
