@@ -303,7 +303,7 @@
       const card = document.createElement("article");
       const isTreemap = spec.viz_type === "treemap_v2";
       const isPie = spec.viz_type === "pie";
-      card.className = "glass-card chart-card" + (isTreemap ? " span-2" : "");
+      card.className = "glass-card chart-card" + (isTreemap || isPie ? " span-2" : "");
       card.dataset.chartId = String(spec.id);
       const description = `Source: Superset chart #${spec.id} · ${spec.viz_type}`;
       if (isPie) {
@@ -377,14 +377,45 @@
     let chart = echarts.getInstanceByDom(el);
     if (!chart) chart = echarts.init(el, null, { renderer: "canvas" });
     state.echarts[elId] = chart;
+    // Canvas ECharts tidak menyesuaikan diri otomatis saat flexbox/grid
+    // mengubah ukuran kontainer (mis. kartu diregangkan ke tinggi baris) —
+    // pantau ukuran kontainer dan panggil resize() agar chart selalu mengisi kartu.
+    if (!el.dataset.observerAttached) {
+      el.dataset.observerAttached = "1";
+      if (typeof ResizeObserver !== "undefined") {
+        const ro = new ResizeObserver(() => {
+          const c = state.echarts[elId];
+          if (c) c.resize();
+        });
+        ro.observe(el);
+      }
+    }
     return chart;
   }
 
   function makeChart(elId, option) {
     const chart = getChart(elId);
     if (!chart) return;
-    chart.setOption(option, true);
+    chart.setOption(resolveTokens(option), true);
     return chart;
+  }
+
+  // ECharts canvas tidak mendukung CSS custom properties — resolve "var(--x)"
+  // ke nilai nyata dari computed style agar tooltip/label mengikuti tema aktif.
+  function resolveTokens(node) {
+    if (typeof node === "string") {
+      return node.replace(/var\(\s*(--[a-z0-9-]+)\s*\)/gi, (m, name) => {
+        const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return value || m;
+      });
+    }
+    if (Array.isArray(node)) return node.map(resolveTokens);
+    if (node && typeof node === "object") {
+      const out = {};
+      for (const key of Object.keys(node)) out[key] = resolveTokens(node[key]);
+      return out;
+    }
+    return node;
   }
 
   function baseTooltip(currency) {
@@ -707,6 +738,28 @@
   }
 
   // -------------------------------------------------------------------------
+  // Theme (Terang / Gelap — mengikuti pola portal v2)
+  // -------------------------------------------------------------------------
+  function applyThemeUI(theme) {
+    const lightBtn = $("themeBtnLight");
+    const darkBtn = $("themeBtnDark");
+    if (lightBtn) lightBtn.classList.toggle("active", theme === "light");
+    if (darkBtn) darkBtn.classList.toggle("active", theme === "dark");
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+
+  function setTheme(theme) {
+    if (theme !== "light" && theme !== "dark") theme = "light";
+    state.theme = theme;
+    applyThemeUI(theme);
+    try {
+      localStorage.setItem("silaras_dash_theme", theme);
+    } catch {}
+    // Re-render chart supaya warna ECharts mengikuti tema (tanpa re-fetch data).
+    renderDashboard([]);
+  }
+
+  // -------------------------------------------------------------------------
   // Toast
   // -------------------------------------------------------------------------
   let toastTimer = null;
@@ -724,12 +777,20 @@
   function bindEvents() {
     $("refreshDashboard").addEventListener("click", () => refreshDashboard(true));
     $("dashboardSelect").addEventListener("change", (e) => selectDashboard(e.target.value));
+    $("themeBtnLight").addEventListener("click", () => setTheme("light"));
+    $("themeBtnDark").addEventListener("click", () => setTheme("dark"));
     window.addEventListener("resize", () => {
       Object.values(state.echarts).forEach((ch) => ch.resize());
     });
   }
 
   async function init() {
+    state.theme = "light";
+    try {
+      const saved = localStorage.getItem("silaras_dash_theme");
+      if (saved === "dark" || saved === "light") state.theme = saved;
+    } catch {}
+    applyThemeUI(state.theme);
     bindEvents();
     try {
       await loadDashboards();
