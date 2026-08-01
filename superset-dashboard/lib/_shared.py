@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import base64
 import json
 import os
+import threading
 import time
 from typing import Any
 
@@ -107,31 +109,69 @@ def _spec_from_chart(chart: dict[str, Any]) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# Session + login (token cached 6h)
+# Session + login (token cached until JWT expiry, re-login on 401)
 # ---------------------------------------------------------------------------
 _session: requests.Session | None = None
 _session_at: float = 0.0
+_session_exp: float = 0.0
+_session_lock = threading.Lock()
 _TOKEN_TTL = 6 * 60 * 60
 
 
+def _token_expiry(token: str) -> float:
+    try:
+        _, payload, _ = token.split(".")
+        payload += "=" * (-len(payload) % 4)
+        claims = json.loads(base64.urlsafe_b64decode(payload))
+        return float(claims.get("exp") or 0.0)
+    except Exception:  # noqa: BLE001
+        return 0.0
+
+
+def _reset_session() -> None:
+    global _session, _session_at, _session_exp
+    with _session_lock:
+        _session, _session_at, _session_exp = None, 0.0, 0.0
+
+
 def _login() -> requests.Session:
-    global _session, _session_at
-    if _session is not None and time.time() - _session_at < _TOKEN_TTL:
+    global _session, _session_at, _session_exp
+    if _session is not None and time.time() - _session_at < _TOKEN_TTL and (_session_exp == 0.0 or time.time() < _session_exp):
         return _session
-    base = superset_base_url()
-    session = requests.Session()
-    login = session.post(
-        f"{base}/api/v1/security/login",
-        json={"username": USERNAME, "password": PASSWORD, "provider": "db", "refresh": True},
-        timeout=_timeout(),
-    )
-    login.raise_for_status()
-    session.headers.update({"Authorization": f"Bearer {login.json()['access_token']}"})
-    csrf = session.get(f"{base}/api/v1/security/csrf_token/", timeout=_timeout())
-    csrf.raise_for_status()
-    session.headers.update({"X-CSRFToken": csrf.json()["result"]})
-    _session, _session_at = session, time.time()
-    return session
+    with _session_lock:
+        if _session is not None and time.time() - _session_at < _TOKEN_TTL and (_session_exp == 0.0 or time.time() < _session_exp):
+            return _session
+        base = superset_base_url()
+        session = requests.Session()
+        login = session.post(
+            f"{base}/api/v1/security/login",
+            json={"username": USERNAME, "password": PASSWORD, "provider": "db", "refresh": True},
+            timeout=_timeout(),
+        )
+        login.raise_for_status()
+        token = login.json()["access_token"]
+        session.headers.update({"Authorization": f"Bearer {token}"})
+        csrf = session.get(f"{base}/api/v1/security/csrf_token/", timeout=_timeout())
+        csrf.raise_for_status()
+        session.headers.update({"X-CSRFToken": csrf.json()["result"]})
+        _session, _session_at, _session_exp = session, time.time(), _token_expiry(token)
+        return session
+
+
+def _api_call(method: str, url: str, **kwargs: Any) -> requests.Response:
+    resp = getattr(_login(), method)(url, **kwargs)
+    if resp.status_code == 401:
+        _reset_session()
+        resp = getattr(_login(), method)(url, **kwargs)
+    return resp
+
+
+def _api_get(url: str, **kwargs: Any) -> requests.Response:
+    return _api_call("get", url, **kwargs)
+
+
+def _api_post(url: str, **kwargs: Any) -> requests.Response:
+    return _api_call("post", url, **kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -154,8 +194,7 @@ def _dashboard_cache_set(dashboard_id: int, payload: dict[str, Any]) -> None:
 
 def _fetch_dashboard_charts(dashboard_id: int) -> list[dict[str, Any]]:
     base = superset_base_url()
-    session = _login()
-    detail = session.get(f"{base}/api/v1/dashboard/{dashboard_id}", timeout=_timeout())
+    detail = _api_get(f"{base}/api/v1/dashboard/{dashboard_id}", timeout=_timeout())
     detail.raise_for_status()
     result = detail.json()["result"]
     position = json.loads(result.get("position_json") or "{}")
@@ -170,7 +209,7 @@ def _fetch_dashboard_charts(dashboard_id: int) -> list[dict[str, Any]]:
     ordered_ids = [cid for _, cid in chart_comps]
     specs = []
     for cid in ordered_ids:
-        c = session.get(f"{base}/api/v1/chart/{cid}", timeout=_timeout())
+        c = _api_get(f"{base}/api/v1/chart/{cid}", timeout=_timeout())
         c.raise_for_status()
         specs.append(_spec_from_chart(c.json()["result"]))
     return specs
@@ -178,8 +217,7 @@ def _fetch_dashboard_charts(dashboard_id: int) -> list[dict[str, Any]]:
 
 def fetch_dashboards() -> list[dict[str, Any]]:
     base = superset_base_url()
-    session = _login()
-    resp = session.get(f"{base}/api/v1/dashboard/", timeout=_timeout())
+    resp = _api_get(f"{base}/api/v1/dashboard/", timeout=_timeout())
     resp.raise_for_status()
     return [
         {"id": d.get("id"), "title": d.get("dashboard_title"), "url": d.get("url")}
@@ -205,8 +243,7 @@ def fetch_dashboard_meta(dashboard_id: int) -> dict[str, Any]:
         meta["dashboard_title"] = specs[0].get("slice_name") and f"Dashboard #{dashboard_id}" or meta["dashboard_title"]
         base = superset_base_url()
         try:
-            session = _login()
-            detail = session.get(f"{base}/api/v1/dashboard/{dashboard_id}", timeout=_timeout())
+            detail = _api_get(f"{base}/api/v1/dashboard/{dashboard_id}", timeout=_timeout())
             if detail.ok:
                 meta["dashboard_title"] = detail.json()["result"].get("dashboard_title") or meta["dashboard_title"]
         except Exception:  # noqa: BLE001
@@ -224,8 +261,7 @@ def resolve_chart_spec(chart_id: int, dashboard_id: int | None = None) -> dict[s
                     return json.loads(json.dumps(spec))
     base = superset_base_url()
     try:
-        session = _login()
-        c = session.get(f"{base}/api/v1/chart/{chart_id}", timeout=_timeout())
+        c = _api_get(f"{base}/api/v1/chart/{chart_id}", timeout=_timeout())
         if not c.ok:
             return None
         return _spec_from_chart(c.json()["result"])
@@ -350,7 +386,6 @@ def fetch_chart_data(chart_id: int, year: str | None = None, dashboard_id: int |
             return cached
     base = superset_base_url()
     try:
-        session = _login()
         body = {
             "datasource": {"id": spec["datasource"]["id"], "type": spec["datasource"]["type"]},
             "force": True,
@@ -359,7 +394,7 @@ def fetch_chart_data(chart_id: int, year: str | None = None, dashboard_id: int |
             "result_format": "json",
             "result_type": "full",
         }
-        response = session.post(f"{base}/api/v1/chart/data", json=body, timeout=_timeout())
+        response = _api_post(f"{base}/api/v1/chart/data", json=body, timeout=_timeout())
         response.raise_for_status()
         payload = _extract(response.json())
         payload["chart_id"] = int(chart_id)

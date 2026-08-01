@@ -518,7 +518,7 @@ button svg, a svg { flex: none; display: block; }
 /* ---------- KPI grid ---------- */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: 1rem;
 }
 .metric-card {
@@ -552,11 +552,11 @@ button svg, a svg { flex: none; display: block; }
 /* ---------- Analytics grid ---------- */
 .analytics-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), max(460px, calc((100% - 1.25rem)/2))));
   gap: 1.25rem;
   align-items: stretch;
 }
-.span-2 { grid-column: span 2; }
+.span-2 { grid-column: 1 / -1; }
 
 .glass-card.chart-card {
   display: flex;
@@ -574,7 +574,8 @@ button svg, a svg { flex: none; display: block; }
 .chart-card .donut-layout { flex: 1; align-items: center; min-width: 0; }
 .chart-card .donut-chart { height: auto; min-height: 220px; align-self: stretch; }
 
-.card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+.card-heading { display: flex; align-items: flex-start; justify-content: flex-start; gap: 0.75rem; }
+.card-heading .sort-btn { margin-left: auto; }
 .card-heading-icon {
   width: 34px; height: 34px;
   flex: none;
@@ -774,10 +775,6 @@ button svg, a svg { flex: none; display: block; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1100px) {
-  .analytics-grid { grid-template-columns: minmax(0, 1fr); }
-  .span-2 { grid-column: span 1; }
-}
 @media (max-width: 640px) {
   .dashboard-shell { padding: 1.25rem 0.85rem 2.5rem; }
   .topbar { padding: 0 0.85rem; }
