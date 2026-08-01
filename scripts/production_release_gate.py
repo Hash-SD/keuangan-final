@@ -10,6 +10,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = ROOT / "outputs" / "reports"
 
+DEFAULT_CREDENTIALS = {
+    "POSTGRES_PASSWORD": "lakehouse",
+    "MINIO_ROOT_PASSWORD": "minioadmin",
+    "AIRFLOW_ADMIN_PASSWORD": "airflow",
+    "SUPERSET_SECRET_KEY": "change_this_secret",
+}
+
+
+def credential_errors() -> list[str]:
+    """Return release-blocking errors for known development credentials."""
+    import os
+
+    return [
+        f"default_credential:{name}"
+        for name, default in DEFAULT_CREDENTIALS.items()
+        if os.getenv(name, "").strip() == default
+    ]
+
 
 def _json(name: str) -> dict:
     path = REPORTS / name
@@ -25,6 +43,7 @@ def main() -> None:
     health = _json("service_health_report.json")
     smoke = _json("release_fixture_smoke.json")
     errors = []
+    errors.extend(credential_errors())
     if cleanup.get("status") != "CLEAN": errors.append("runtime_workspace_not_clean")
     if test.get("status") != "PASSED": errors.append("mandatory_tests_not_passed")
     if smoke.get("status") != "PASSED": errors.append("postgres_superset_fixture_smoke_not_passed")

@@ -12,7 +12,11 @@ services:
     volumes:
       - postgres_metastore_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lakehouse} -d ${POSTGRES_DB:-metastore}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-lakehouse} -d ${POSTGRES_DB:-metastore}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -65,7 +69,13 @@ services:
       AWS_REGION: us-east-1
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
-    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master", "--host", "spark-master"]
+    command:
+      [
+        "/opt/spark/bin/spark-class",
+        "org.apache.spark.deploy.master.Master",
+        "--host",
+        "spark-master",
+      ]
     ports:
       - "8080:8080"
       - "7077:7077"
@@ -73,7 +83,11 @@ services:
       - ./:/opt/lakehouse
       - spark_warehouse:/opt/spark/warehouse
     healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8080', timeout=3)\""]
+      test:
+        [
+          "CMD-SHELL",
+          'python3 -c "import urllib.request; urllib.request.urlopen(''http://localhost:8080'', timeout=3)"',
+        ]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -91,7 +105,16 @@ services:
     depends_on:
       spark-master:
         condition: service_healthy
-    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077", "--memory", "2G", "--cores", "2"]
+    command:
+      [
+        "/opt/spark/bin/spark-class",
+        "org.apache.spark.deploy.worker.Worker",
+        "spark://spark-master:7077",
+        "--memory",
+        "2G",
+        "--cores",
+        "2",
+      ]
     ports:
       - "8081:8081"
     volumes:
@@ -108,8 +131,11 @@ services:
         condition: service_healthy
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__PARALLELISM: ${AIRFLOW_PARALLELISM:-4}
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: ${AIRFLOW_MAX_ACTIVE_TASKS_PER_DAG:-4}
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-lakehouse}:${POSTGRES_PASSWORD:-lakehouse}@postgres-metastore:5432/${POSTGRES_DB:-metastore}
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
       _PIP_ADDITIONAL_REQUIREMENTS: "-r /opt/airflow/requirements.txt"
       _AIRFLOW_DB_MIGRATE: "true"
       _AIRFLOW_WWW_USER_CREATE: "true"
@@ -151,8 +177,11 @@ services:
         condition: service_completed_successfully
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__PARALLELISM: ${AIRFLOW_PARALLELISM:-4}
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: ${AIRFLOW_MAX_ACTIVE_TASKS_PER_DAG:-4}
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-lakehouse}:${POSTGRES_PASSWORD:-lakehouse}@postgres-metastore:5432/${POSTGRES_DB:-metastore}
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
       PYTHONPATH: /opt/airflow
       _PIP_ADDITIONAL_REQUIREMENTS: "-r /opt/airflow/requirements.txt"
       PORTAL_TARGET_PRODI: ${PORTAL_TARGET_PRODI:-Sains Data}
@@ -181,7 +210,11 @@ services:
       - airflow_logs:/opt/airflow/logs
     command: webserver
     healthcheck:
-      test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob --hostname \"$${HOSTNAME}\" || curl --fail http://localhost:8080/health"]
+      test:
+        [
+          "CMD-SHELL",
+          'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}" || curl --fail http://localhost:8080/health',
+        ]
       interval: 20s
       timeout: 10s
       retries: 12
@@ -197,6 +230,8 @@ services:
         condition: service_completed_successfully
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__PARALLELISM: ${AIRFLOW_PARALLELISM:-4}
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: ${AIRFLOW_MAX_ACTIVE_TASKS_PER_DAG:-4}
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-lakehouse}:${POSTGRES_PASSWORD:-lakehouse}@postgres-metastore:5432/${POSTGRES_DB:-metastore}
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       PYTHONPATH: /opt/airflow
@@ -353,7 +388,13 @@ services:
       --access-logfile -
       --error-logfile -"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8091/api/health', timeout=5)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8091/api/health', timeout=5)",
+        ]
       interval: 20s
       timeout: 10s
       retries: 12
@@ -401,9 +442,15 @@ services:
       - ./:/opt/lakehouse
     working_dir: /opt/lakehouse
     entrypoint: python
-    command: -m http.server 8090 --bind 0.0.0.0 --directory portal
+    command: -m portal.server
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090', timeout=5)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8090', timeout=5)",
+        ]
       interval: 20s
       timeout: 10s
       retries: 12

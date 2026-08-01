@@ -351,20 +351,16 @@ def fetch_chart_data(chart_id: int, year: str | None = None, dashboard_id: int |
     base = superset_base_url()
     try:
         session = _login()
-        if year or refresh:
-            body = {
-                "datasource": {"id": spec["datasource"]["id"], "type": spec["datasource"]["type"]},
-                "force": True,
-                "queries": [_query_context(spec, year)],
-                "form_data": _form_data(spec, year),
-                "result_format": "json",
-                "result_type": "full",
-            }
-            response = session.post(f"{base}/api/v1/chart/data", json=body, timeout=_timeout())
-            response.raise_for_status()
-        else:
-            response = session.get(f"{base}/api/v1/chart/{chart_id}/data/", timeout=_timeout())
-            response.raise_for_status()
+        body = {
+            "datasource": {"id": spec["datasource"]["id"], "type": spec["datasource"]["type"]},
+            "force": True,
+            "queries": [_query_context(spec, year)],
+            "form_data": _form_data(spec, year),
+            "result_format": "json",
+            "result_type": "full",
+        }
+        response = session.post(f"{base}/api/v1/chart/data", json=body, timeout=_timeout())
+        response.raise_for_status()
         payload = _extract(response.json())
         payload["chart_id"] = int(chart_id)
         payload["year"] = year

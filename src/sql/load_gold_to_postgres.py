@@ -120,7 +120,16 @@ def _active_run_outputs(pipeline_run_id: str, dataset_session_id: str) -> dict[s
         raise RuntimeError("Gold aktif belum tersedia untuk publish PostgreSQL.") from exc
     if pointer.get("dataset_session_id") != dataset_session_id or pointer.get("pipeline_run_id") != pipeline_run_id:
         raise RuntimeError("Identitas Gold aktif tidak cocok dengan request PostgreSQL.")
+    if pointer.get("status") != "PUBLISHED":
+        raise RuntimeError("Gold aktif belum berstatus PUBLISHED.")
     return pointer.get("outputs") or {}
+
+
+def _safe_sql_identifier(value: str) -> str:
+    cleaned = "".join(ch for ch in value if ch.isalnum() or ch == "_")
+    if not cleaned or cleaned != value.replace("-", ""):
+        raise ValueError("SQL identifier tidak valid")
+    return cleaned
 
 
 def _update_manifest(pipeline_run_id: str, updates: dict[str, object]) -> None:

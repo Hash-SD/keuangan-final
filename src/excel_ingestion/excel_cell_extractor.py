@@ -148,6 +148,23 @@ def merged_range_for(ws: Worksheet, row_number: int, column_number: int) -> str 
     return None
 
 
+def merged_range_lookup(ws: Worksheet) -> dict[int, list[tuple[int, int, str]]]:
+    """Index merged ranges by row without expanding potentially huge ranges."""
+    lookup: dict[int, list[tuple[int, int, str]]] = {}
+    for merged in ws.merged_cells.ranges:
+        merged_name = str(merged)
+        for row_number in range(merged.min_row, merged.max_row + 1):
+            lookup.setdefault(row_number, []).append((merged.min_col, merged.max_col, merged_name))
+    return lookup
+
+
+def merged_range_from_lookup(lookup: dict[int, list[tuple[int, int, str]]], row: int, column: int) -> str | None:
+    for min_col, max_col, merged_name in lookup.get(row, []):
+        if min_col <= column <= max_col:
+            return merged_name
+    return None
+
+
 def detect_year_from_workbook(path: Path, fallback: str | int | None = None) -> str | None:
     years: dict[str, int] = {}
     try:
@@ -179,12 +196,13 @@ def extract_excel_cells(source: ExcelSource, run_id: str) -> pd.DataFrame:
     for sheet_name in wb_formula.sheetnames:
         ws_formula = wb_formula[sheet_name]
         ws_values = wb_values[sheet_name]
+        merged_lookup = merged_range_lookup(ws_formula)
         for row in ws_formula.iter_rows():
             for cell in row:
                 value = ws_values.cell(row=cell.row, column=cell.column).value
                 formula = cell.value if isinstance(cell.value, str) and cell.value.startswith("=") else None
                 fill_color = cell_fill_color(cell)
-                merged_range = merged_range_for(ws_formula, cell.row, cell.column)
+                merged_range = merged_range_from_lookup(merged_lookup, cell.row, cell.column)
                 if value is None and formula is None and fill_color is None and merged_range is None:
                     continue
                 rows.append(

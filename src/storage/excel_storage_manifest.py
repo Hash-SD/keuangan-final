@@ -14,6 +14,8 @@ from src.common.time_utils import utc_now_iso
 
 BUCKET = os.getenv("MINIO_BUCKET", "lakehouse")
 UPLOAD_ENABLED = os.getenv("MINIO_UPLOAD_ENABLED", "false").strip().lower() == "true"
+PIPELINE_RUN_ID = os.getenv("PIPELINE_RUN_ID")
+DATASET_SESSION_ID = os.getenv("DATASET_SESSION_ID")
 
 
 LAYERS = {
@@ -84,6 +86,8 @@ def _upload_file(path: Path, layer: str) -> str:
 
 
 def build_excel_storage_manifest() -> dict[str, Any]:
+    if not PIPELINE_RUN_ID or not DATASET_SESSION_ID:
+        return {"status": "not_ready", "entries": [], "run_id": PIPELINE_RUN_ID, "dataset_session_id": DATASET_SESSION_ID}
     run_summary_path = OUTPUTS_DIR / "reports" / "pipeline_run_summary.json"
     run_summary = {}
     if run_summary_path.exists():
@@ -114,7 +118,8 @@ def build_excel_storage_manifest() -> dict[str, Any]:
         "upload_enabled": UPLOAD_ENABLED,
         "required_prefixes": [f"s3://{BUCKET}/{layer}/" for layer in ["raw", "bronze", "silver", "gold", "reports", "logs"]],
         "local_mapping": {layer: _rel(path) for layer, path in LAYERS.items()},
-        "run_id": run_summary.get("run_id"),
+        "run_id": PIPELINE_RUN_ID,
+        "dataset_session_id": DATASET_SESSION_ID,
         "status": "uploaded" if entries and all(item["upload_status"] == "uploaded" for item in entries if item["upload_status"] != "skipped") else "mapped_not_uploaded",
         "entries": entries,
     }

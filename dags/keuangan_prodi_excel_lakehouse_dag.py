@@ -57,6 +57,7 @@ with DAG(
             "RAB_MAIN_SHEET_NAME": "RAB",
             "RAB_STRICT_RECONCILIATION": "true",
         },
+        execution_timeout=timedelta(minutes=15),
     )
     detect_year_and_format = EmptyOperator(task_id="detect_year_and_format")
     parse_flexible = EmptyOperator(task_id="parse_flexible")

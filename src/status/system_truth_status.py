@@ -172,21 +172,38 @@ def _fact_anggaran_status(base_dir: Path) -> dict[str, Any]:
             "source": None,
         }
     source_path = path if path.exists() else csv_path
-    try:
-        fact = pd.read_parquet(path) if path.exists() else pd.read_csv(csv_path, low_memory=False)
-    except ImportError:
-        if not csv_path.exists():
-            raise
+    fact = None
+    if path.exists():
+        try:
+            fact = pd.read_parquet(path)
+        except Exception:
+            fact = None
+
+    if fact is None and csv_path.exists():
         source_path = csv_path
-        fact = pd.read_csv(csv_path, low_memory=False)
+        try:
+            fact = pd.read_csv(csv_path, low_memory=False)
+        except Exception:
+            fact = None
+
+    if fact is None or fact.empty:
+        return {
+            "status": "missing",
+            "total_anggaran": _value(None, "missing", None, "fact_anggaran tidak dapat dibaca."),
+            "total_weighted_iku": _value(None, "missing", None, "fact_anggaran tidak dapat dibaca."),
+            "fact_rows": _value(None, "missing", None, "fact_anggaran tidak dapat dibaca."),
+            "source": None,
+        }
     source = _rel(source_path, base_dir)
-    jumlah = pd.to_numeric(fact.get("jumlah"), errors="coerce").fillna(0)
+    distinct_fact = fact.drop_duplicates(subset=["item_id"]) if "item_id" in fact.columns else fact
+    distinct_jumlah = pd.to_numeric(distinct_fact.get("jumlah"), errors="coerce").fillna(0)
     weighted = pd.to_numeric(fact.get("jumlah_weighted_iku"), errors="coerce").fillna(0)
     status = "validated"
     message = "Nilai dibaca langsung dari fact_anggaran."
+    total_val = float(distinct_jumlah.sum()) if not distinct_jumlah.empty else float(weighted.sum())
     return {
         "status": status,
-        "total_anggaran": _value(float(jumlah.sum()), status, source, message),
+        "total_anggaran": _value(total_val, status, source, message),
         "total_weighted_iku": _value(float(weighted.sum()), status, source, message),
         "fact_rows": _value(int(len(fact)), status, source, message),
         "source": source,
@@ -339,14 +356,14 @@ def _superset_dashboard_status(base_dir: Path, services: dict[str, Any]) -> dict
     assets_path = base_dir / "outputs" / "reports" / "superset_excel_assets.json"
     dashboard = _read_json(dashboard_path)
     assets = _read_json(assets_path)
-    if dashboard and assets:
+    if dashboard and assets and services.get("superset", {}).get("status") == "healthy":
         return {
             "status": "created",
             "source": _rel(dashboard_path, base_dir),
             "message": "Artefak dashboard Excel Lakehouse tersedia.",
             "dashboard_url": dashboard.get("dashboard_url"),
         }
-    return {"status": "configured" if assets else "not_started", "source": None, "message": "Dashboard Superset belum divalidasi."}
+    return {"status": "not_ready" if assets else "not_started", "query_verified": False, "source": None, "message": "Dashboard Superset belum divalidasi."}
 
 
 def _bab4_evidence(truth: dict[str, Any]) -> dict[str, Any]:

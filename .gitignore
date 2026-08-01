@@ -22,6 +22,8 @@ outputs/reports/
 outputs/evidence/
 outputs/logs/
 outputs/screenshots/
+outputs/bab4_evidence_final/
+outputs/bab4_evidence_finalllllll.zip
 outputs/uat/*.csv
 outputs/uat/*.json
 config/spark/jars/*.jar
