@@ -76,6 +76,14 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
     dashboard_mode = str(form.get("dashboard_mode") or "update").strip().lower()
     if dashboard_mode not in {"update", "new"}:
         dashboard_mode = "update"
+    dashboard_database_id = str(form.get("dashboard_database_id") or "").strip()
+    if dashboard_database_id and not dashboard_database_id.isdigit():
+        raise ValueError("Database target Superset tidak valid.")
+    dashboard_database_id = dashboard_database_id or None
+    dashboard_dashboard_id = str(form.get("dashboard_dashboard_id") or "").strip()
+    if dashboard_dashboard_id and not dashboard_dashboard_id.isdigit():
+        raise ValueError("Dashboard target Superset tidak valid.")
+    dashboard_dashboard_id = dashboard_dashboard_id or None
     dataset_id = f"excel-{utc_now_iso().replace(':', '').replace('-', '').split('.')[0]}-{uuid4().hex[:6]}"
     if len(uploads) > 20:
         raise ValueError("Jumlah workbook melebihi batas 20 file per dataset.")
@@ -164,6 +172,8 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
         "jenis_dataset": jenis_dataset,
         "catatan": catatan,
         "dashboard_mode": dashboard_mode,
+        "dashboard_database_id": dashboard_database_id,
+        "dashboard_dashboard_id": dashboard_dashboard_id,
         **scope,
         "files": saved,
         "upload_started_at": upload_started_at,

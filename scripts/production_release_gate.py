@@ -22,11 +22,14 @@ def credential_errors() -> list[str]:
     """Return release-blocking errors for known development credentials."""
     import os
 
-    return [
+    errors = [
         f"default_credential:{name}"
         for name, default in DEFAULT_CREDENTIALS.items()
         if os.getenv(name, "").strip() == default
     ]
+    if not os.getenv("SUPERSET_SECRET_KEY", "").strip():
+        errors.append("missing_credential:SUPERSET_SECRET_KEY")
+    return errors
 
 
 def _json(name: str) -> dict:

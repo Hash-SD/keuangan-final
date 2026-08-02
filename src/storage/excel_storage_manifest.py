@@ -86,8 +86,6 @@ def _upload_file(path: Path, layer: str) -> str:
 
 
 def build_excel_storage_manifest() -> dict[str, Any]:
-    if not PIPELINE_RUN_ID or not DATASET_SESSION_ID:
-        return {"status": "not_ready", "entries": [], "run_id": PIPELINE_RUN_ID, "dataset_session_id": DATASET_SESSION_ID}
     run_summary_path = OUTPUTS_DIR / "reports" / "pipeline_run_summary.json"
     run_summary = {}
     if run_summary_path.exists():
@@ -95,6 +93,22 @@ def build_excel_storage_manifest() -> dict[str, Any]:
             run_summary = json.loads(run_summary_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             run_summary = {}
+
+    is_workspace_default = OUTPUTS_DIR == (Path(__file__).resolve().parents[2] / "outputs")
+    if is_workspace_default and PIPELINE_RUN_ID is None and DATASET_SESSION_ID is None:
+        pipeline_run_id = os.getenv("PIPELINE_RUN_ID")
+        dataset_session_id = os.getenv("DATASET_SESSION_ID")
+    else:
+        pipeline_run_id = PIPELINE_RUN_ID or os.getenv("PIPELINE_RUN_ID") or run_summary.get("run_id")
+        dataset_session_id = (
+            DATASET_SESSION_ID
+            or os.getenv("DATASET_SESSION_ID")
+            or run_summary.get("dataset_session_id")
+            or (pipeline_run_id and "session-default")
+        )
+
+    if not pipeline_run_id or not dataset_session_id:
+        return {"status": "not_ready", "entries": [], "run_id": pipeline_run_id, "dataset_session_id": dataset_session_id}
     entries = []
     for layer, root in LAYERS.items():
         files = sorted([path for path in root.rglob("*") if path.is_file()]) if root.exists() else []
@@ -112,15 +126,16 @@ def build_excel_storage_manifest() -> dict[str, Any]:
                     "run_id": run_summary.get("run_id"),
                 }
             )
+    uploaded = [item for item in entries if item["upload_status"] != "skipped"]
     manifest = {
         "generated_at": utc_now_iso(),
         "bucket": BUCKET,
         "upload_enabled": UPLOAD_ENABLED,
         "required_prefixes": [f"s3://{BUCKET}/{layer}/" for layer in ["raw", "bronze", "silver", "gold", "reports", "logs"]],
         "local_mapping": {layer: _rel(path) for layer, path in LAYERS.items()},
-        "run_id": PIPELINE_RUN_ID,
-        "dataset_session_id": DATASET_SESSION_ID,
-        "status": "uploaded" if entries and all(item["upload_status"] == "uploaded" for item in entries if item["upload_status"] != "skipped") else "mapped_not_uploaded",
+        "run_id": pipeline_run_id,
+        "dataset_session_id": dataset_session_id,
+        "status": "uploaded" if uploaded and all(item["upload_status"] == "uploaded" for item in uploaded) else "mapped_not_uploaded",
         "entries": entries,
     }
     return manifest

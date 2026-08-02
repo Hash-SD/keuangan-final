@@ -356,7 +356,7 @@ def _superset_dashboard_status(base_dir: Path, services: dict[str, Any]) -> dict
     assets_path = base_dir / "outputs" / "reports" / "superset_excel_assets.json"
     dashboard = _read_json(dashboard_path)
     assets = _read_json(assets_path)
-    if dashboard and assets and services.get("superset", {}).get("status") == "healthy":
+    if dashboard and assets and services.get("superset", {}).get("status") == "ready":
         return {
             "status": "created",
             "source": _rel(dashboard_path, base_dir),

@@ -42,7 +42,11 @@ from .services.metrics import metrics_payload
 from .services.paths import OUTPUTS_DIR, PORTAL_DIR
 from .services.pipeline import run_command_group, run_full
 from .services.production_state import production_readiness
-from .services.superset_api import fetch_superset_fact_rows
+from .services.superset_api import (
+    fetch_superset_fact_rows,
+    list_superset_dashboards,
+    list_superset_databases,
+)
 from .services.system_status import service_statuses
 
 _airflow_trigger_lock = Lock()
@@ -201,6 +205,30 @@ def create_app() -> Flask:
     def superset_assets():
         return jsonify(read_superset_reference())
 
+    @app.get("/api/superset/databases")
+    def superset_databases():
+        try:
+            databases = list_superset_databases()
+            return jsonify(
+                {"status": "ready", "databases": databases, "count": len(databases)}
+            )
+        except Exception as exc:
+            return jsonify(
+                {"status": "unreachable", "databases": [], "message": str(exc)}
+            )
+
+    @app.get("/api/superset/dashboards")
+    def superset_dashboards():
+        try:
+            dashboards = list_superset_dashboards()
+            return jsonify(
+                {"status": "ready", "dashboards": dashboards, "count": len(dashboards)}
+            )
+        except Exception as exc:
+            return jsonify(
+                {"status": "unreachable", "dashboards": [], "message": str(exc)}
+            )
+
     @app.get("/api/superset/chart-data")
     def superset_chart_data():
         limit = request.args.get("limit", 100, type=int)
@@ -352,6 +380,8 @@ def create_app() -> Flask:
                     dataset_session_id=session_id,
                     pipeline_run_id=run_id,
                     dashboard_mode=active_dataset.get("dashboard_mode") or "update",
+                    dashboard_database_id=active_dataset.get("dashboard_database_id"),
+                    dashboard_dashboard_id=active_dataset.get("dashboard_dashboard_id"),
                 )
                 append_activity(
                     action="trigger_dag",
@@ -753,6 +783,22 @@ def create_app() -> Flask:
                 "item": item,
             }
         )
+
+    @app.post("/api/system/shutdown")
+    def system_shutdown_endpoint():
+        append_activity(
+            "system_shutdown",
+            "system",
+            "failed",
+            "Penghentian layanan container tidak tersedia pada backend lokal.",
+            "outputs/logs",
+        )
+        return jsonify(
+            {
+                "status": "not_implemented",
+                "message": "Penghentian layanan container belum diimplementasikan pada backend lokal.",
+            }
+        ), 501
 
     return app
 

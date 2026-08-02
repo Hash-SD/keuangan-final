@@ -21,6 +21,26 @@ def test_trigger_dag_sends_dataset_and_pipeline_identity():
     assert result["state"] == "queued"
 
 
+def test_trigger_dag_sends_dashboard_target_conf():
+    response = Mock(status_code=201, json=lambda: {"dag_run_id": "portal__run-1", "state": "queued"})
+    with patch("portal_backend.services.airflow.requests.post", return_value=response) as post:
+        trigger_dag(
+            dataset_session_id="dataset-1",
+            pipeline_run_id="run-1",
+            dashboard_mode="update",
+            dashboard_database_id="3",
+            dashboard_dashboard_id="2",
+        )
+    post.assert_called_once()
+    assert post.call_args.kwargs["json"]["conf"] == {
+        "dataset_session_id": "dataset-1",
+        "pipeline_run_id": "run-1",
+        "dashboard_mode": "update",
+        "dashboard_database_id": "3",
+        "dashboard_dashboard_id": "2",
+    }
+
+
 def test_trigger_dag_reports_airflow_rejection():
     response = Mock(status_code=409, text="DAG is paused")
     with patch("portal_backend.services.airflow.requests.post", return_value=response):

@@ -203,7 +203,10 @@ def _fetch_dashboard_charts(dashboard_id: int) -> list[dict[str, Any]]:
         if isinstance(comp, dict) and comp.get("type") == "CHART":
             meta = comp.get("meta") or {}
             if meta.get("chartId"):
-                order = int(key.split("-")[-1]) if "-" in key else len(chart_comps)
+                try:
+                    order = int(key.split("-")[-1]) if "-" in key else len(chart_comps)
+                except ValueError:
+                    order = len(chart_comps)
                 chart_comps.append((order, int(meta["chartId"])))
     chart_comps.sort(key=lambda t: t[0])
     ordered_ids = [cid for _, cid in chart_comps]
@@ -240,7 +243,7 @@ def fetch_dashboard_meta(dashboard_id: int) -> dict[str, Any]:
         "charts": specs,
     }
     if specs:
-        meta["dashboard_title"] = specs[0].get("slice_name") and f"Dashboard #{dashboard_id}" or meta["dashboard_title"]
+        meta["dashboard_title"] = specs[0].get("slice_name") or meta["dashboard_title"]
         base = superset_base_url()
         try:
             detail = _api_get(f"{base}/api/v1/dashboard/{dashboard_id}", timeout=_timeout())

@@ -14,6 +14,8 @@ RUN_ENV = {
     "PIPELINE_RUN_ID": "{{ dag_run.conf.get('pipeline_run_id', '') }}",
     "AIRFLOW_DAG_RUN_ID": "{{ dag_run.run_id }}",
     "SUPERSET_DASHBOARD_MODE": "{{ dag_run.conf.get('dashboard_mode', 'update') }}",
+    "SUPERSET_DATABASE_ID": "{{ dag_run.conf.get('dashboard_database_id', '') }}",
+    "SUPERSET_DASHBOARD_ID": "{{ dag_run.conf.get('dashboard_dashboard_id', '') }}",
 }
 DEFAULT_ARGS = {
     "owner": "data-team",
@@ -88,14 +90,7 @@ with DAG(
     )
     validate_trino_postgres_catalog = BashOperator(
         task_id="validate_trino_postgres_catalog",
-        bash_command=(
-            "python -c \"from pathlib import Path; import json; "
-            "p=Path('/opt/airflow/outputs/reports/trino_postgres_catalog_status.json'); "
-            "p.parent.mkdir(parents=True, exist_ok=True); "
-            "p.write_text(json.dumps({'status':'PASS',"
-            "'reason':'Gold fact_anggaran is loaded to PostgreSQL and exposed to Trino through the postgres catalog.'}, indent=2), encoding='utf-8'); "
-            "print('PASS: Gold fact_anggaran is available through PostgreSQL/Trino catalog path')\""
-        ),
+        bash_command=f"{PY} /opt/airflow/src/validation/runtime_cross_engine.py",
         append_env=True,
         env=RUN_ENV,
     )

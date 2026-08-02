@@ -21,6 +21,7 @@ TABLE_NAME = "fact_anggaran"
 DASHBOARD_TITLE = "SILARAS SD - Dashboard Anggaran IKU"
 DASHBOARD_SLUG = "dashboard-anggaran-iku-prodi"
 DASHBOARD_MODE = os.getenv("SUPERSET_DASHBOARD_MODE", "update").strip().lower()
+TARGET_DASHBOARD_ID = os.getenv("SUPERSET_DASHBOARD_ID", "").strip()
 
 
 def _dashboard_suffix() -> str:
@@ -79,8 +80,15 @@ def _get_items(session: requests.Session, resource: str) -> list[dict]:
 
 
 def _database_id(session: requests.Session) -> int:
+    requested_id = os.getenv("SUPERSET_DATABASE_ID", "").strip()
+    if requested_id.isdigit():
+        for item in _get_items(session, "database"):
+            if str(item.get("id")) == requested_id:
+                return int(item["id"])
+        raise RuntimeError(f"Superset database id {requested_id} tidak ditemukan.")
+    requested_name = os.getenv("SUPERSET_DATABASE_NAME", "").strip() or DATABASE_NAME
     for item in _get_items(session, "database"):
-        if item.get("database_name") == DATABASE_NAME:
+        if item.get("database_name") == requested_name:
             return int(item["id"])
     payload = {
         "database_name": DATABASE_NAME,
@@ -247,6 +255,14 @@ def _native_filters(dataset_id: int, chart_ids: list[int]) -> list[dict]:
     ]
 
 
+def _target_dashboard_id(session: requests.Session) -> int | None:
+    if not TARGET_DASHBOARD_ID.isdigit():
+        return None
+    target = int(TARGET_DASHBOARD_ID)
+    existing = {int(item["id"]) for item in _get_items(session, "dashboard")}
+    return target if target in existing else None
+
+
 def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: list[int]) -> int:
     import json
 
@@ -268,15 +284,21 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
         }),
         "position_json": json.dumps(_position_json(chart_ids)),
     }
-    matches = [item for item in _get_items(session, "dashboard") if item.get("slug") == dashboard_slug or item.get("dashboard_title") == dashboard_title]
-    if matches:
-        dashboard_id = int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
+    target = _target_dashboard_id(session)
+    if target is not None:
+        dashboard_id = target
         response = session.put(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", json=payload, timeout=60)
+        response.raise_for_status()
     else:
-        response = session.post(f"{BASE_URL}/api/v1/dashboard/", json=payload, timeout=60)
-        dashboard_id = None
-    response.raise_for_status()
-    dashboard_id = int(response.json().get("id") or response.json().get("result", {}).get("id") or dashboard_id)
+        matches = [item for item in _get_items(session, "dashboard") if item.get("slug") == dashboard_slug or item.get("dashboard_title") == dashboard_title]
+        if matches:
+            dashboard_id = int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
+            response = session.put(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", json=payload, timeout=60)
+        else:
+            response = session.post(f"{BASE_URL}/api/v1/dashboard/", json=payload, timeout=60)
+            dashboard_id = None
+        response.raise_for_status()
+        dashboard_id = int(response.json().get("id") or response.json().get("result", {}).get("id") or dashboard_id)
     for chart_id in chart_ids:
         attach = session.put(f"{BASE_URL}/api/v1/chart/{chart_id}", json={"dashboards": [dashboard_id]}, timeout=60)
         attach.raise_for_status()
@@ -384,6 +406,7 @@ def main() -> None:
             "dataset_id": dataset_id,
             "table_name": TABLE_NAME,
             "dashboard_id": dashboard_id,
+            "dashboard_target": "explicit_id" if TARGET_DASHBOARD_ID.isdigit() and str(dashboard_id) == TARGET_DASHBOARD_ID else "slug_or_create",
             "dashboard_title": _dashboard_title(),
             "dashboard_url": default_dashboard_url,
             "dashboard_canonical_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/",

@@ -19,13 +19,14 @@
     sortOrder: {},              // chart_id -> "desc" | "asc" | null (default)
   };
 
-  // Chart yang tidak relevan untuk tampilan bisnis (teknis pipeline/QA) —
+  // Chart yang tidak relevan untuk tampilan bisnis (teknis pipeline/QA/redundant KPI) —
   // disaring dari grid, fetch, dan render. ID berlaku untuk dashboard #2 dan #3.
   const HIDDEN_CHART_IDS = new Set([
+    19, // "Total Weighted IKU" — disembunyikan sesuai arahan pengguna
     27, // "Mapping Quality" — distribusi mapping_status (mapped_from_nomenklatur, review_queue, dll)
     29, // "Validasi Rekap" — rekap validasi file sumber & data_quality_flag
   ]);
-  const isVisible = (spec) => !HIDDEN_CHART_IDS.has(spec.id);
+  const isVisible = (spec) => !HIDDEN_CHART_IDS.has(spec.id) && !spec.title?.toLowerCase().includes("weighted iku");
 
   // Kolom yang ditampilkan untuk tabel line-item — hanya atribut bisnis,
   // urut disusun ulang (tanpa kolom teknis mapping_status/source_*).
@@ -176,18 +177,20 @@
     });
   }
 
-  // Subjudul ramah-bisnis per chart (tanpa istilah teknis Superset/chart #id).
+  // Subjudul ramah-bisnis per chart (penjelasan informatif & bebas pengulangan kata).
   function chartSubtitle(spec) {
     switch (spec.viz_type) {
-      case "treemap_v2": return "Komposisi anggaran per IKU dan kegiatan";
-      case "pie": return "Distribusi jumlah item";
+      case "treemap_v2": return "Proporsi besaran anggaran berdasarkan rumpun kegiatan dan target IKU";
+      case "pie": return "Persentase pembagian pos item biaya dalam struktur anggaran";
       case "echarts_timeseries_bar":
       case "bar":
-        if (spec.dimension === "tahun") return "Anggaran per tahun anggaran";
-        if (spec.dimension === "iku") return "Anggaran per IKU";
-        return spec.orientation === "horizontal" ? "Akun dengan anggaran terbesar" : "Anggaran per akun";
+        if (spec.dimension === "tahun") return "Tren alokasi dana dan estimasi proyeksi anggaran tahunan prodi";
+        if (spec.dimension === "iku") return "Distribusi alokasi biaya berdasarkan Indikator Kinerja Utama (IKU)";
+        return spec.orientation === "horizontal"
+          ? "Peringkat akun belanja dengan penyerapan dana terbesar"
+          : "Rincian alokasi dana per kategori jenis belanja & kode akun";
       case "big_number_total": return "";
-      case "table": return spec.id === 28 ? "Rincian item biaya" : "Ringkasan agregat";
+      case "table": return spec.id === 28 ? "Daftar item biaya transaksional lengkap dengan filter & pencarian" : "Ringkasan agregat data keuangan prodi";
       default: return "";
     }
   }
@@ -381,16 +384,19 @@
     }
   }
 
+  let selectSeq = 0;
   async function selectDashboard(id) {
+    const seq = ++selectSeq;
     state.activeDashboardId = Number(id);
     state.activeYear = null;
     $("dashboardSelect").value = String(id);
     state.meta = await fetchJson(`/api/dashboard/${id}/meta`);
+    if (seq !== selectSeq) return;
     renderSourceInline();
     renderYearTabs();
     renderActiveFilters();
     buildDashboardGrid();
-    await refreshDashboard(false);
+    await refreshDashboard(false, seq);
   }
 
   // -------------------------------------------------------------------------
@@ -419,10 +425,11 @@
   }
 
   async function selectYear(year) {
+    const seq = ++selectSeq;
     state.activeYear = year;
     renderYearTabs();
     renderActiveFilters();
-    await refreshDashboard(false);
+    await refreshDashboard(false, seq);
   }
 
   // -------------------------------------------------------------------------
@@ -1022,16 +1029,18 @@
     $("footerStatus").textContent = anyFail ? `${errors.length} visualisasi bermasalah` : "Semua data berhasil dimuat";
   }
 
-  async function refreshDashboard(force) {
+  async function refreshDashboard(force, seq = selectSeq) {
     const btn = $("refreshDashboard");
     btn.classList.add("spinning");
     btn.disabled = true;
     try {
       if (force) chartCacheClear();
       const errors = await loadAll(state.activeYear, force);
+      if (seq !== selectSeq) return;
       renderDashboard(errors);
       if (force) showToast("Data berhasil dimuat ulang");
     } catch (err) {
+      if (seq !== selectSeq) return;
       setSourceStatus("err", "Gagal memuat data");
       $("footerStatus").textContent = "Gagal memuat data";
       renderStatusPanel([err.message]);

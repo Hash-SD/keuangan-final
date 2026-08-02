@@ -88,7 +88,9 @@ function dashboardQuery() {
   return params.toString();
 }
 
+let loadSeq = 0;
 async function loadDashboard() {
+  let seq = ++loadSeq;
   let refreshButton = document.getElementById("refreshDashboard");
   refreshButton?.classList.add("loading");
   state.payload = await apiGet(`/api/local-dashboard/all?${dashboardQuery()}`).catch((error) => ({
@@ -97,11 +99,13 @@ async function loadDashboard() {
     message: error.message,
     data: null,
   }));
+  if (seq !== loadSeq) return;
 
   let availableProdi = state.payload?.data?.filters?.nama_prodi || [];
   if (!state.filters.nama_prodi && availableProdi.includes(DEFAULT_PRODI)) {
     state.filters.nama_prodi = DEFAULT_PRODI;
     state.payload = await apiGet(`/api/local-dashboard/all?${dashboardQuery()}`).catch(() => state.payload);
+    if (seq !== loadSeq) return;
   }
   render();
   refreshButton?.classList.remove("loading");

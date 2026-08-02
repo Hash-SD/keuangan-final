@@ -34,9 +34,13 @@ def _auth() -> tuple[str, str]:
     password = os.getenv("AIRFLOW_PASSWORD", "").strip() or "airflow"
     return username, password
 
-
 def trigger_dag(
-    *, dataset_session_id: str, pipeline_run_id: str, dashboard_mode: str | None = None
+    *,
+    dataset_session_id: str,
+    pipeline_run_id: str,
+    dashboard_mode: str | None = None,
+    dashboard_database_id: str | int | None = None,
+    dashboard_dashboard_id: str | int | None = None,
 ) -> dict[str, Any]:
     dag_run_id = f"portal__{pipeline_run_id}"
     url = f"{_base_url()}/api/v1/dags/{quote(DAG_ID, safe='')}/dagRuns"
@@ -46,6 +50,10 @@ def trigger_dag(
     }
     if dashboard_mode:
         conf["dashboard_mode"] = dashboard_mode
+    if dashboard_database_id not in {None, "", "auto"}:
+        conf["dashboard_database_id"] = str(dashboard_database_id)
+    if dashboard_dashboard_id not in {None, "", "auto"}:
+        conf["dashboard_dashboard_id"] = str(dashboard_dashboard_id)
     try:
         response = requests.post(
             url,
@@ -76,6 +84,44 @@ def create_pipeline_run_id() -> str:
     return str(uuid4())
 
 
+def _dag_run_progress(dag_run_id: str) -> dict[str, Any]:
+    """Fetch task-instance progress for a DAG run from the Airflow REST API."""
+    url = (
+        f"{_base_url()}/api/v1/dags/{quote(DAG_ID, safe='')}"
+        f"/dagRuns/{quote(dag_run_id, safe='')}/taskInstances"
+    )
+    try:
+        response = requests.get(
+            url,
+            auth=_auth(),
+            params={"limit": 100},
+            timeout=float(os.getenv("AIRFLOW_REQUEST_TIMEOUT", "15")),
+        )
+    except requests.RequestException as exc:
+        raise RuntimeError(f"Airflow tidak dapat dihubungi: {exc}") from exc
+    if not response.ok:
+        return {"available": False}
+    tasks = _json(response).get("task_instances") or []
+    if not tasks:
+        return {"available": False}
+    active_states = {"running", "queued", "scheduled", "up_for_retry", "up_for_reschedule"}
+    total = len(tasks)
+    done = sum(1 for task in tasks if task.get("state") in TERMINAL_STATES)
+    current = next((task for task in tasks if task.get("state") in active_states), None)
+    starts = [task.get("start_date") for task in tasks if task.get("start_date")]
+    ends = [task.get("end_date") for task in tasks if task.get("end_date")]
+    return {
+        "available": True,
+        "total_tasks": total,
+        "completed_tasks": done,
+        "progress_pct": round(done * 100 / total) if total else 0,
+        "current_task": current.get("task_id") if current else None,
+        "current_state": current.get("state") if current else None,
+        "started_at": min(starts) if starts else None,
+        "ended_at": max(ends) if ends else None,
+    }
+
+
 def get_dag_run(dag_run_id: str) -> dict[str, Any]:
     url = f"{_base_url()}/api/v1/dags/{quote(DAG_ID, safe='')}/dagRuns/{quote(dag_run_id, safe='')}"
     try:
@@ -88,6 +134,11 @@ def get_dag_run(dag_run_id: str) -> dict[str, Any]:
         detail = response.text[:500].strip() or f"HTTP {response.status_code}"
         raise RuntimeError(f"Status Airflow tidak dapat dibaca: {detail}")
     payload = _json(response)
+    progress: dict[str, Any] = {"available": False}
+    try:
+        progress = _dag_run_progress(dag_run_id)
+    except (RuntimeError, LookupError):
+        progress = {"available": False}
     return {
         "dag_id": DAG_ID,
         "dag_run_id": payload.get("dag_run_id", dag_run_id),
@@ -97,6 +148,7 @@ def get_dag_run(dag_run_id: str) -> dict[str, Any]:
         "end_date": payload.get("end_date"),
         "conf": payload.get("conf") or {},
         "terminal": payload.get("state") in TERMINAL_STATES,
+        "progress": progress,
     }
 
 

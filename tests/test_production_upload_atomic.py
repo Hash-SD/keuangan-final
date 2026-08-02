@@ -60,6 +60,36 @@ def test_committed_upload_records_hashes_and_validation_status(tmp_path, monkeyp
     assert result["files"][0]["workbook_openable"] is True
 
 
+def test_committed_upload_records_dashboard_target_choice(tmp_path, monkeypatch):
+    monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")
+    monkeypatch.setattr(excel_upload, "ACTIVE_EXCEL_DATASET_PATH", tmp_path / "outputs/reports/active.json")
+    monkeypatch.setattr(excel_upload, "EXCEL_DATASET_REGISTRY_PATH", tmp_path / "outputs/reports/registry.json")
+    monkeypatch.setattr(excel_upload, "relative_path", lambda path: str(path))
+
+    result = excel_upload.commit_excel_lakehouse_dataset(
+        MultiDict({"tahun_input": "2025", "dashboard_mode": "update", "dashboard_database_id": "3", "dashboard_dashboard_id": "2"}),
+        _files(("rab.xlsx", _workbook_bytes())),
+    )
+
+    assert result["dashboard_mode"] == "update"
+    assert result["dashboard_database_id"] == "3"
+    assert result["dashboard_dashboard_id"] == "2"
+    stored = json.loads((tmp_path / "outputs/reports/active.json").read_text(encoding="utf-8"))
+    assert stored["dashboard_dashboard_id"] == "2"
+
+
+def test_committed_upload_rejects_invalid_dashboard_target(tmp_path, monkeypatch):
+    monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")
+
+    with pytest.raises(ValueError, match="Dashboard target Superset tidak valid"):
+        excel_upload.commit_excel_lakehouse_dataset(
+            MultiDict({"tahun_input": "2025", "dashboard_dashboard_id": "abc"}),
+            _files(("rab.xlsx", _workbook_bytes())),
+        )
+
+
 def test_nomenklatur_append_keeps_existing_rab_in_active_session(tmp_path, monkeypatch):
     monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
     monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")

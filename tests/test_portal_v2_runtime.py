@@ -37,7 +37,14 @@ function makeNode(id) {{
     setAttribute() {{}},
     getAttribute() {{ return null; }},
     classList: {{ add() {{}}, remove() {{}}, toggle() {{}} }},
-    querySelectorAll() {{ return []; }}
+    querySelector() {{ return null; }},
+    querySelectorAll() {{ return []; }},
+    appendChild() {{}},
+    insertBefore() {{}},
+    removeChild() {{}},
+    firstChild: null,
+    scrollTop: 0,
+    children: {{ length: 0 }}
   }};
 }}
 
@@ -69,6 +76,9 @@ const context = {{
       if (!nodes[id]) nodes[id] = makeNode(id);
       return nodes[id];
     }},
+    addEventListener() {{}},
+    createElement() {{ return makeNode(""); }},
+    querySelector() {{ return null; }},
     querySelectorAll() {{ return []; }}
   }},
   fetch: async () => ({{ ok: true, status: 200, json: async () => ({{}}) }})
@@ -238,7 +248,7 @@ const testCode = `
   assert.match(document.getElementById("uploadSessionPanel").innerHTML, /&lt;rab&gt;\\.xlsx/);
   assert.match(document.getElementById("tblIkuReviewRows").innerHTML, /&lt;script&gt;/);
   assert.ok(document.getElementById("dashboardLinksPanel").innerHTML.includes('href="#"'));
-  assert.ok(document.getElementById("dashboardLinksPanel").innerHTML.includes("http://localhost:8089/superset/dashboard/1"));
+  assert.ok(document.getElementById("dashboardLinksPanel").innerHTML.includes("http://localhost:8092/"));
   assert.ok(!document.getElementById("dashboardLinksPanel").innerHTML.includes("https://evil.example"));
   const listServiceHtml = document.getElementById("tblServicesStatus").innerHTML;
   assert.ok(listServiceHtml.includes("Apache Superset"));

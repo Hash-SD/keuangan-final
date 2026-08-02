@@ -238,6 +238,38 @@ def _write_run_output(df: pd.DataFrame, layer: str, filename: str, session_id: s
     return {"csv": str(run_path), "parquet": str(run_parquet)}
 
 
+def _write_session_and_combined(df: pd.DataFrame, layer: str, filename: str, session_id: str) -> None:
+    """Write session-scoped and combined top-level copies consumers rely on.
+
+    Consumers (system_truth_status, superset assets, metrics, local dashboard)
+    read `data/generated/{layer}/{filename}.parquet` and the session-scoped copy,
+    not the run-scoped paths only `_write_run_output` produces.
+    """
+    base = GENERATED_DIR / layer
+    session_path = base / session_id / filename
+    combined_path = base / filename
+    ensure_parent(session_path)
+    ensure_parent(combined_path)
+    session_df = df.copy()
+    if "dataset_session_id" not in session_df.columns:
+        session_df["dataset_session_id"] = session_id
+    session_df.to_csv(session_path, index=False)
+    combined = session_df
+    if combined_path.exists():
+        try:
+            existing = pd.read_csv(combined_path)
+            if "dataset_session_id" in existing.columns:
+                existing = existing[
+                    existing["dataset_session_id"].fillna("").astype(str) != session_id
+                ]
+                combined = pd.concat([existing, session_df], ignore_index=True, sort=False)
+        except (OSError, pd.errors.ParserError, ValueError):
+            pass
+    combined.to_csv(combined_path, index=False)
+    _write_parquet(session_path.with_name(f"{Path(filename).stem}.parquet"), session_df)
+    _write_parquet(combined_path.with_name(f"{Path(filename).stem}.parquet"), combined)
+
+
 def _build_rab_reconciliation_report(silver_rab: pd.DataFrame, silver_validation: pd.DataFrame, fact: pd.DataFrame) -> dict[str, object]:
     if silver_rab.empty:
         return {
@@ -329,7 +361,7 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     pipeline_started_at = utc_now_iso()
     sources = sources if sources is not None else discover_excel_sources()
     session_id = _session_id()
-    run_id = os.getenv("PIPELINE_RUN_ID") or str(uuid.uuid4())
+    run_id = Path(str(os.getenv("PIPELINE_RUN_ID") or uuid.uuid4())).name
     active_dataset = _active_excel_dataset()
     if active_dataset and str(active_dataset.get("dataset_session_id") or active_dataset.get("dataset_id")) != session_id:
         raise ValueError("dataset_session_id pipeline tidak sama dengan dataset aktif.")
@@ -428,6 +460,7 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         ("gold", "vw_dashboard_detail_item.csv", dashboard_detail),
     ]:
         outputs[filename] = _write_run_output(df, layer, filename, session_id, run_id)
+        _write_session_and_combined(df, layer, filename, session_id)
 
     gold_finished_at = utc_now_iso()
     quality_gate = evaluate_gold_quality(fact, session_id, run_id)
@@ -452,6 +485,7 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         "outputs": outputs,
         "quality_gate": quality_gate,
     }
+    write_json(GENERATED_DIR / "excel_lakehouse_metadata.json", metadata)
     write_json(OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{run_id}.json", metadata)
     if quality_gate["status"] != "PASSED":
         raise ValueError(f"Quality gate blocking: {', '.join(quality_gate['blocking_errors'])}")

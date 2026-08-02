@@ -43,8 +43,8 @@ def _get_cached_fact_summary(fact_parquet: Path, fact_csv: Path) -> dict[str, An
     if fact_df is not None and not fact_df.empty:
         distinct_fact = fact_df.drop_duplicates(subset=["item_id"]) if "item_id" in fact_df.columns else fact_df
         fact_summary = {
-            "total_jumlah": float(pd.to_numeric(distinct_fact["jumlah"], errors="coerce").fillna(0).sum()),
-            "total_weighted_iku": float(pd.to_numeric(fact_df["jumlah_weighted_iku"], errors="coerce").fillna(0).sum()),
+            "total_jumlah": float(pd.to_numeric(distinct_fact.get("jumlah", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()),
+            "total_weighted_iku": float(pd.to_numeric(fact_df.get("jumlah_weighted_iku", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()),
         }
 
     _fact_summary_cache = (current_mtime, fact_summary)

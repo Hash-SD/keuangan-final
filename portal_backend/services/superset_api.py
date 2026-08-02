@@ -136,17 +136,59 @@ def _chart_data_payload(dataset_id: int, filters: dict[str, list[str]] | None = 
     }
 
 
+def list_superset_databases() -> list[dict[str, Any]]:
+    """List databases registered in Superset so the portal can target one."""
+    with _login() as session:
+        response = session.get(
+            f"{_base_url()}/api/v1/database/?page_size=100",
+            timeout=_timeout_seconds(),
+        )
+        response.raise_for_status()
+        databases = []
+        for item in response.json().get("result") or []:
+            databases.append(
+                {
+                    "id": item.get("id"),
+                    "database_name": item.get("database_name"),
+                    "expose_in_sqllab": item.get("expose_in_sqllab"),
+                    "backend": item.get("backend"),
+                }
+            )
+        return databases
+
+
+def list_superset_dashboards() -> list[dict[str, Any]]:
+    """List dashboards registered in Superset so the portal can target one."""
+    with _login() as session:
+        response = session.get(
+            f"{_base_url()}/api/v1/dashboard/?page_size=100",
+            timeout=_timeout_seconds(),
+        )
+        response.raise_for_status()
+        dashboards = []
+        for item in response.json().get("result") or []:
+            dashboards.append(
+                {
+                    "id": item.get("id"),
+                    "dashboard_title": item.get("dashboard_title"),
+                    "url": item.get("url"),
+                    "published": item.get("published"),
+                }
+            )
+        return dashboards
+
+
 def fetch_superset_fact_rows(filters: dict[str, list[str]] | None = None, limit: int = 10000) -> tuple[pd.DataFrame | None, dict[str, Any]]:
     reference = read_superset_reference()
     dataset_id = reference.get("dataset_id")
     if not dataset_id:
         return None, {"status": "not_available", "message": "Superset dataset_id belum tersedia.", "superset_reference": reference}
     try:
-        session = _login()
-        response = session.post(f"{_base_url()}/api/v1/chart/data", json=_chart_data_payload(int(dataset_id), filters=filters, limit=limit), timeout=_timeout_seconds())
-        response.raise_for_status()
-        result = response.json().get("result") or []
-        data = result[0].get("data") if result and isinstance(result[0], dict) else []
+        with _login() as session:
+            response = session.post(f"{_base_url()}/api/v1/chart/data", json=_chart_data_payload(int(dataset_id), filters=filters, limit=limit), timeout=_timeout_seconds())
+            response.raise_for_status()
+            result = response.json().get("result") or []
+            data = result[0].get("data") if result and isinstance(result[0], dict) else []
         frame = pd.DataFrame(data or [])
         return frame, {"status": "ready", "source_kind": "superset_api", "source_dataset": "fact_anggaran", "superset_reference": reference}
     except Exception as exc:

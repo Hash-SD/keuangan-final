@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const GOLD_VIEW = resolve("data/generated/gold/vw_dashboard_piutang_ukt.csv");
+const hadOriginal = existsSync(GOLD_VIEW);
+const originalContent = hadOriginal ? readFileSync(GOLD_VIEW, "utf-8") : null;
 
 const CSV = [
   "tahun_akademik,tahun_anggaran,semester,nama_prodi,nama_fakultas,kualitas,nominal_piutang_rp,jumlah_mhs_penunggak,nim,nama_debitur",
@@ -17,7 +19,11 @@ test.beforeAll(() => {
 });
 
 test.afterAll(() => {
-  rmSync(GOLD_VIEW, { force: true });
+  if (hadOriginal && originalContent !== null) {
+    writeFileSync(GOLD_VIEW, originalContent, "utf-8");
+  } else {
+    rmSync(GOLD_VIEW, { force: true });
+  }
 });
 
 test("local dashboard filters, charts, cross-filter, and detail table update", async ({ page }) => {

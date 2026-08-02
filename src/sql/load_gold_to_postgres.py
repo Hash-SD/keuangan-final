@@ -157,7 +157,7 @@ def main() -> None:
         password=os.getenv("POSTGRES_PASSWORD", "lakehouse"),
     )
     conn.autocommit = False
-    stage_schema = f"gold_stage_{pipeline_run_id.replace('-', '')[:16]}"
+    stage_schema = "gold_stage_" + _safe_sql_identifier(pipeline_run_id)[:16]
     try:
       with conn.cursor() as cur:
         cur.execute("CREATE SCHEMA IF NOT EXISTS gold")
@@ -191,7 +191,8 @@ def main() -> None:
       conn.rollback()
       _update_manifest(pipeline_run_id, {"postgres_validation_status": "failed"})
       raise
-    conn.close()
+    finally:
+      conn.close()
     loaded_at = datetime.now(timezone.utc).isoformat()
     _update_manifest(pipeline_run_id, {"postgres_loaded_at": loaded_at, "postgres_row_count": row_count, "postgres_weighted_total": float(weighted_total), "postgres_validation_status": "validated"})
     print("loaded gold tables to postgres")

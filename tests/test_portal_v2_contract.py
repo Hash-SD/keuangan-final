@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -82,7 +83,7 @@ def test_v2_maps_live_fact_quality_and_pipeline_fields_into_view_model() -> None
     assert "excelLakehouse.counts?.fact_anggaran_rows" in html
     assert 'document.getElementById("valTotalAnggaran")' in html
     assert 'id="valTotalWeightedIku"' in html
-    assert 'setText("valTotalWeightedIku"' in html
+    assert re.search(r'setText\(\s*"valTotalWeightedIku"', html)
     assert 'document.getElementById("valItemAnggaran")' in html
     assert 'document.getElementById("valQualityScore")' in html
     assert 'document.getElementById("valPipelineStatus")' in html
@@ -174,12 +175,10 @@ def test_v2_initial_dom_uses_loading_labels_not_ready_or_online() -> None:
     html = _html()
 
     assert '<div class="metric-value" id="valPipelineStatus">Menunggu</div>' in html
-    assert '<span class="badge-apple badge-warn" id="footerStatusBadge"' in html
-    assert ">SYSTEM LOADING</span" in html
-    assert '<span id="footerPipelineMsg">LAST RUN: WAITING</span>' in html
     assert '<div class="metric-value" id="valPipelineStatus">Ready</div>' not in html
-    assert '<span class="badge-apple badge-ok" id="footerStatusBadge">SYSTEM ONLINE</span>' not in html
-    assert '<span id="footerPipelineMsg">LAST RUN: READY</span>' not in html
+    assert 'id="footerStatusBadge"' not in html
+    assert 'id="footerPipelineMsg"' not in html
+    assert "SYSTEM LOADING" not in html
 
 
 def test_v2_task3_has_navigation_and_views_for_all_primary_workflows() -> None:
@@ -191,11 +190,11 @@ def test_v2_task3_has_navigation_and_views_for_all_primary_workflows() -> None:
 
     for title in [
         "Orkestrasi",
-        "Review IKU",
-        "Lakehouse & Data Lineage",
+        "Verifikasi IKU",
+        "Riwayat Data",
         "Dashboard BI",
-        "Analytics & UAT",
-        "Status System",
+        "Evaluasi UAT",
+        "Status Server",
     ]:
         assert title in html
 
@@ -235,7 +234,7 @@ def test_v2_task3_review_iku_instruction_and_accessible_save_flow() -> None:
 
     assert "function renderIkuReviewQueue" in html
     assert "function handleIkuOverrideSave" in html
-    assert "Menyimpan review saja belum mengubah database" in html
+    assert "Review IKU tersimpan. Buka Orkestrasi -> Jalankan Sistem." in html
     assert "Orkestrasi -> Jalankan Sistem" in html
     assert 'class="input-apple iku-review-select"' in html
     assert 'class="btn-apple btn-secondary iku-review-save"' in html
@@ -273,7 +272,7 @@ def test_v2_task3_dynamic_tables_escape_backend_and_user_content() -> None:
         "${safe(row.kegiatan)}",
         "${safe(file.filename)}",
         "${safeUrl(link.url)}",
-        "${safe(service.status)}",
+        "statusBadgeHtml(service.status, service.status)",
     ]:
         assert safe_pattern in html
 
@@ -287,7 +286,7 @@ def test_v2_task3_uat_official_matrix_and_local_submissions_are_separate() -> No
 
     assert 'id="uatOfficialMatrix"' in html
     assert 'id="tblUatSubmissions"' in html
-    assert "Riwayat & Detail Evaluasi UAT" in html
+    assert "Riwayat Evaluasi Pengguna" in html
     assert "Matriks UAT Resmi" in html
     assert "renderUatOfficialSummary" in html
     assert "state.uatSummary" in html
