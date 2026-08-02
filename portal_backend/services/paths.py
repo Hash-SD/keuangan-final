@@ -7,7 +7,9 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 PORTAL_DIR = ROOT_DIR / "portal"
 DATA_DIR = ROOT_DIR / "data"
 OUTPUTS_DIR = ROOT_DIR / "outputs"
+LOGS_DIR = OUTPUTS_DIR / "logs"
 ACTIVITY_LOG_PATH = OUTPUTS_DIR / "reports" / "activity_log.json"
+PORTAL_LOG_PATH = LOGS_DIR / "portal_activity.log"
 
 PREVIEW_LAYER_DIRS = {
     "raw": DATA_DIR / "raw" / "excel_lakehouse",

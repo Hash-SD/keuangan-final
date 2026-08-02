@@ -21,6 +21,7 @@ from .services.airflow import (
     get_all_dag_runs,
     get_dag_run,
     get_latest_dag_run,
+    get_runtime_snapshot,
     purge_stale_queued_runs,
     trigger_dag,
 )
@@ -50,6 +51,13 @@ from .services.superset_api import (
 from .services.system_status import service_statuses
 
 _airflow_trigger_lock = Lock()
+
+
+def _no_store_json(payload):
+    response = jsonify(payload)
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    return response
 
 
 def _safe_relative_path(path):
@@ -184,7 +192,7 @@ def create_app() -> Flask:
 
         Uses item_id deduplication so total_jumlah matches Superset:
         - total_jumlah  = sum(jumlah) after drop_duplicates(item_id)  -> 517,361,656
-        - total_weighted_iku = sum(jumlah_weighted_iku) across all IKU rows
+        - total_weighted_iku = sum(jumlah_weighted_iku) across active dataset/run IKU rows
         - fact_rows = total raw rows in fact_anggaran (before dedup)
         """
         lakehouse = excel_lakehouse_status()
@@ -433,6 +441,23 @@ def create_app() -> Flask:
                     "status": "unreachable",
                     "message": str(exc),
                     "fallback_generated_at": truth.get("generated_at"),
+                }
+            )
+
+    @app.get("/api/airflow/runtime")
+    def airflow_runtime():
+        try:
+            return _no_store_json(get_runtime_snapshot())
+        except Exception as exc:
+            return _no_store_json(
+                {
+                    "status": "unreachable",
+                    "active": False,
+                    "active_run": None,
+                    "latest_run": None,
+                    "runtime_run": None,
+                    "source": "none",
+                    "message": str(exc),
                 }
             )
 

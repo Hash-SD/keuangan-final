@@ -58,7 +58,11 @@ const context = {{
   setTimeout() {{ return 0; }},
   clearTimeout() {{}},
   FormData: class FormData {{
-    constructor(form) {{ this.form = form; }}
+    constructor(form) {{ this.form = form; this._map = {{}}; }}
+    set(key, value) {{ this._map[key] = value; }}
+    append(key, value) {{ this._map[key] = value; }}
+    delete(key) {{ delete this._map[key]; }}
+    get(key) {{ return this._map[key]; }}
   }},
   localStorage: {{
     store: {{}},
@@ -87,10 +91,22 @@ context.window.localStorage = context.localStorage;
 context.window.document = context.document;
 context.globalThis = context;
 
-const script = {json.dumps(_v2_script())};
-const testCode = `
+  const script = {json.dumps(_v2_script())};
+  const testCode = `
 "use strict";
 (async () => {{
+  const activeRun = {{ dag_run_id: "active-run", state: "running" }};
+  const selectedRun = {{ dag_run_id: "selected-run", state: "success" }};
+  const latestRun = {{ dag_run_id: "latest-run", state: "success" }};
+  assert.strictEqual(
+    resolveRuntimeRun({{ run: activeRun }}, selectedRun, {{ run: latestRun }}).dag_run_id,
+    "active-run",
+  );
+  assert.strictEqual(
+    resolveRuntimeRun({{ run: null }}, selectedRun, {{ run: latestRun }}).dag_run_id,
+    "selected-run",
+  );
+
   const viewModel = buildPortalViewModel({{
     supersetSummary: {{
       status: "ready",
@@ -180,6 +196,21 @@ const testCode = `
   assert.strictEqual(apiCalls[1].options.headers["Content-Type"], "application/json");
   assert.strictEqual(apiCalls[1].options.body, JSON.stringify({{ hello: "world" }}));
 
+  state.airflowRuntime = null;
+  state.airflowRuntimeUpdatedAt = 0;
+  state.airflowRuntimeRequest = null;
+  let runtimeRequestOptions = null;
+  fetch = async (url, options = {{}}) => {{
+    runtimeRequestOptions = options;
+    return {{
+      ok: true,
+      status: 200,
+      json: async () => ({{ status: "idle", active: false, active_run: null, latest_run: null }}),
+    }};
+  }};
+  await fetchAirflowRuntime({{ force: true }});
+  assert.strictEqual(runtimeRequestOptions.cache, "no-store");
+
   const uploadCalls = [];
   fetch = async (url, options = {{}}) => {{
     uploadCalls.push({{ url: String(url), options }});
@@ -190,9 +221,13 @@ const testCode = `
   document.getElementById("uploadStatusBadge");
   document.getElementById("appToast");
   document.getElementById("toastText");
+  state.selectedFiles.push({{ name: "RAB-2025.xlsx", size: 1024 }});
+  state.selectedFiles.push({{ name: "RAB-2026.xlsx", size: 2048 }});
   await handleUploadSubmit({{ preventDefault() {{}} }});
   assert.strictEqual(uploadCalls[0].options.credentials, "include");
   assert.strictEqual(uploadCalls[0].options.method, "POST");
+  assert.strictEqual(uploadCalls[0].options.body.get("append_to_active"), "true");
+  assert.strictEqual(uploadCalls[0].options.body._map["file_excel[]"].name, "RAB-2026.xlsx");
   assert.strictEqual(document.getElementById("uploadStatusBadge").textContent, "Upload Gagal");
   assert.notStrictEqual(document.getElementById("uploadStatusBadge").textContent, "Upload Sukses");
   assert.match(document.getElementById("toastText").textContent, /Gagal mengunggah/);
@@ -220,8 +255,6 @@ const testCode = `
 
   const payloadByPath = {{
     "/api/upload/session/status": {{ status: "committed", dataset_session_id: "dataset-1", files: [{{ filename: "<rab>.xlsx", jenis_dataset: "rab" }}], message: "ready" }},
-    "/api/airflow/active": {{ status: "running", active: true, dag_run_id: "dag-1", dataset_session_id: "dataset-1" }},
-    "/api/airflow/latest": {{ status: "success", run: {{ state: "success", dag_run_id: "dag-old" }} }},
     "/api/iku-review/queue?limit=100": {{ rows: [{{ item_id: "item-1", kegiatan: "<script>", uraian_detail: "detail", jumlah: 10, kode_iku: "IKU", nama_iku: "Nama" }}], iku_options: [{{ iku_raw: "IKU", detail_id: "d1", detail_kegiatan: "Kegiatan" }}] }},
     "/api/storage/manifest": {{ layers: {{ gold: {{ status: "ready", local_path: "data/gold", s3_prefix: "s3://bucket/gold" }} }} }},
     "/api/data/preview?layer=gold&limit=10": {{ data: [{{ item_id: "gold-1", kegiatan: "<gold>" }}] }},
@@ -254,6 +287,100 @@ const testCode = `
   assert.ok(listServiceHtml.includes("Apache Superset"));
   assert.ok(listServiceHtml.includes("Apache Airflow"));
   assert.ok(!listServiceHtml.includes("<strong>0</strong>"));
+
+  state.selectedAirflowRun = null;
+  state.airflowActive = null;
+  state.airflowLatest = {{
+    run: {{
+      dag_run_id: "latest-with-runtime",
+      state: "success",
+      progress: {{
+        available: true,
+        total_tasks: 18,
+        completed_tasks: 18,
+        progress_pct: 100,
+        started_at: "2026-08-01T01:00:00Z",
+        ended_at: "2026-08-01T01:01:00Z",
+        stages: {{
+          raw: {{ total: 3, done: 3, duration_seconds: 0.3 }},
+          bronze: {{ total: 3, done: 3, duration_seconds: 0.4 }},
+          silver: {{ total: 3, done: 3, duration_seconds: 1.0 }},
+          gold: {{ total: 4, done: 4, duration_seconds: 0.8 }},
+          bi: {{ total: 5, done: 5, duration_seconds: 0.5 }},
+        }},
+        task_instances: [],
+      }},
+    }},
+  }};
+  renderLiveStepper();
+  const latestStepperHtml = document.getElementById("stepperContainer").innerHTML;
+  assert.match(latestStepperHtml, /Sumber waktu:.*Run terakhir Airflow/);
+  assert.match(latestStepperHtml, /Pipeline selesai/);
+  assert.ok(latestStepperHtml.includes("18/18 task diproses"));
+  const latestSummaryValue = latestStepperHtml.match(new RegExp('<span class="pipeline-progress-value">([^<]*)</span>'))?.[1] || "";
+  assert.ok(!latestSummaryValue.includes("18/18 task"));
+  assert.ok(!latestSummaryValue.includes("Â"));
+  assert.match(latestStepperHtml, /100%/);
+  assert.match(latestStepperHtml, /pipeline-progress-fill/);
+  assert.match(latestStepperHtml, /0\.3s/);
+  assert.match(latestStepperHtml, /0\.4s/);
+  assert.match(latestStepperHtml, />1s</);
+  assert.match(latestStepperHtml, /0\.8s/);
+  assert.match(latestStepperHtml, /0\.5s/);
+  assert.ok(!latestStepperHtml.includes("node-task-detail"));
+
+  state.selectedAirflowRun = {{
+    dag_run_id: "historical-selected",
+    state: "success",
+    progress: {{ stages: {{ raw: {{ total: 3, done: 3, duration_seconds: 9.9 }} }}, task_instances: [] }},
+  }};
+  state.airflowActive = {{
+    run: {{
+      dag_run_id: "active-now",
+      state: "running",
+      progress: {{
+        available: true,
+        total_tasks: 18,
+        completed_tasks: 1,
+        progress_pct: 6,
+        started_at: "2026-08-01T01:00:00Z",
+        stages: {{ raw: {{ total: 3, done: 1, running: 1, duration_seconds: 0.3 }} }},
+        task_instances: [{{ task_id: "validate_upload_context", state: "running" }}],
+      }},
+    }},
+  }};
+  renderLiveStepper();
+  const activeStepperHtml = document.getElementById("stepperContainer").innerHTML;
+  assert.match(activeStepperHtml, /Sumber waktu:.*Runtime aktif Airflow/);
+  assert.match(activeStepperHtml, /0\.3s/);
+  assert.ok(!activeStepperHtml.includes("9.9s"));
+  assert.match(activeStepperHtml, /stage-spinner/);
+  assert.match(activeStepperHtml, /Pipeline sedang berjalan/);
+  assert.ok(activeStepperHtml.includes("1/18 task"));
+  assert.match(activeStepperHtml, /Task aktif: validate_upload_context/);
+  assert.match(activeStepperHtml, /Menunggu 3 task Airflow/);
+
+  state.selectedAirflowRun = null;
+  state.airflowActive = {{
+    run: {{
+      dag_run_id: "failed-run",
+      state: "failed",
+      progress: {{
+        available: true,
+        total_tasks: 18,
+        completed_tasks: 8,
+        progress_pct: 44,
+        task_instances: [{{ task_id: "normalize_silver", state: "failed" }}],
+        stages: {{ silver: {{ total: 3, done: 1, failed: 1 }} }},
+      }},
+    }},
+  }};
+  state.airflowLatest = null;
+  renderLiveStepper();
+  const failedStepperHtml = document.getElementById("stepperContainer").innerHTML;
+  assert.match(failedStepperHtml, /Pipeline gagal/);
+  assert.match(failedStepperHtml, /material-symbols-outlined[^>]*>error/);
+  assert.match(failedStepperHtml, /class="pipeline-node failed" data-stage="silver"/);
 
   renderSystemStatus({{ services: {{ trino: {{ name: "Trino Coordinator", role: "SQL Engine", status: "ready", url: "http://localhost:8080" }} }} }});
   const objectServiceHtml = document.getElementById("tblServicesStatus").innerHTML;

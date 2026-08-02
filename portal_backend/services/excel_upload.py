@@ -129,17 +129,14 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
             )
         active = read_json(ACTIVE_EXCEL_DATASET_PATH) if append_to_active else None
         active_files = active.get("files", []) if isinstance(active, dict) and active.get("status") == "committed" else []
-        active_kinds = {str(item.get("jenis_dataset") or "") for item in active_files if isinstance(item, dict)}
-        incoming_kinds = {str(item.get("jenis_dataset") or "") for item in saved}
-        complementary_bundle = bool(active_files) and ((incoming_kinds == {"nomenklatur"} and "rab" in active_kinds) or (incoming_kinds == {"rab"} and "nomenklatur" in active_kinds))
-        if complementary_bundle:
+        if active_files:
             first_path = Path(str(active_files[0].get("path") or ""))
             existing_dir = first_path.parent if first_path.is_absolute() else (ROOT_DIR / first_path).parent
             if not existing_dir.exists():
                 raise ValueError("Dataset aktif tidak dapat ditambah karena direktori sumber tidak tersedia.")
             for item in saved:
                 if (existing_dir / str(item["filename"])).exists():
-                    raise ValueError("Nama workbook Nomenklatur sudah ada pada dataset aktif.")
+                    raise ValueError(f"Nama workbook {item['filename']} sudah ada pada dataset aktif.")
             for item in saved:
                 shutil.move(str(staging_dir / str(item["filename"])), str(existing_dir / str(item["filename"])))
             staging_dir.rmdir()

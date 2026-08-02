@@ -102,3 +102,43 @@ def test_nomenklatur_append_keeps_existing_rab_in_active_session(tmp_path, monke
 
     assert second["dataset_session_id"] == first["dataset_session_id"]
     assert {item["jenis_dataset"] for item in second["files"]} == {"rab", "nomenklatur"}
+
+
+def test_same_kind_append_keeps_previous_files_when_uploading_one_by_one(tmp_path, monkeypatch):
+    monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")
+    monkeypatch.setattr(excel_upload, "ACTIVE_EXCEL_DATASET_PATH", tmp_path / "outputs/reports/active.json")
+    monkeypatch.setattr(excel_upload, "EXCEL_DATASET_REGISTRY_PATH", tmp_path / "outputs/reports/registry.json")
+    monkeypatch.setattr(excel_upload, "relative_path", lambda path: str(path))
+
+    first = excel_upload.commit_excel_lakehouse_dataset(
+        MultiDict({"tahun_input": "2026", "append_to_active": "true"}),
+        _files(("RAB-Anggaran-2026.xlsx", _workbook_bytes())),
+    )
+    second = excel_upload.commit_excel_lakehouse_dataset(
+        MultiDict({"tahun_input": "2027", "append_to_active": "true"}),
+        _files(("RAB-Anggaran-2027.xlsx", _workbook_bytes())),
+    )
+
+    assert second["dataset_session_id"] == first["dataset_session_id"]
+    assert [item["filename"] for item in second["files"]] == ["RAB-Anggaran-2026.xlsx", "RAB-Anggaran-2027.xlsx"]
+    assert second["detected_years"] == ["2026", "2027"]
+    assert second["upload_scope"] == "multi_year_bundle"
+
+
+def test_same_kind_append_rejects_duplicate_filename(tmp_path, monkeypatch):
+    monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")
+    monkeypatch.setattr(excel_upload, "ACTIVE_EXCEL_DATASET_PATH", tmp_path / "outputs/reports/active.json")
+    monkeypatch.setattr(excel_upload, "EXCEL_DATASET_REGISTRY_PATH", tmp_path / "outputs/reports/registry.json")
+    monkeypatch.setattr(excel_upload, "relative_path", lambda path: str(path))
+
+    excel_upload.commit_excel_lakehouse_dataset(
+        MultiDict({"tahun_input": "2026", "append_to_active": "true"}),
+        _files(("rab.xlsx", _workbook_bytes())),
+    )
+    with pytest.raises(ValueError, match="sudah ada pada dataset aktif"):
+        excel_upload.commit_excel_lakehouse_dataset(
+            MultiDict({"tahun_input": "2027", "append_to_active": "true"}),
+            _files(("rab.xlsx", _workbook_bytes())),
+        )

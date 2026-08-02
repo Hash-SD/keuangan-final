@@ -4,7 +4,13 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from portal_backend.services.airflow import DAG_ID, get_active_dag_run, get_dag_run, trigger_dag
+from portal_backend.services.airflow import (
+    DAG_ID,
+    get_active_dag_run,
+    get_dag_run,
+    get_runtime_snapshot,
+    trigger_dag,
+)
 
 
 def test_trigger_dag_sends_dataset_and_pipeline_identity():
@@ -104,6 +110,102 @@ def test_upload_session_status_ignores_gitkeep_staging_marker(monkeypatch, tmp_p
     assert response.get_json()["staging_status"] == "empty"
 
 
+def test_dag_run_progress_groups_tasks_into_stages():
+    from portal_backend.services.airflow import _dag_run_progress
+
+    payload = {
+        "task_instances": [
+            {"task_id": "validate_upload_context", "state": "success", "start_date": "2026-01-01T00:00:00Z", "end_date": "2026-01-01T00:01:00Z"},
+            {"task_id": "extract_excel_to_bronze", "state": "success", "start_date": "2026-01-01T00:01:00Z", "end_date": "2026-01-01T00:02:00Z"},
+            {"task_id": "merge_multi_file", "state": "success", "start_date": "2026-01-01T00:02:00Z", "end_date": "2026-01-01T00:03:00Z"},
+            {"task_id": "normalize_silver", "state": "running", "start_date": "2026-01-01T00:03:00Z"},
+            {"task_id": "refresh_superset_dashboard", "state": "queued"},
+            {"task_id": "start", "state": "success"},
+        ]
+    }
+    response = Mock(ok=True, status_code=200, json=lambda: payload)
+    with patch("portal_backend.services.airflow.requests.get", return_value=response):
+        progress = _dag_run_progress("portal__run-1")
+
+    assert progress["stages"]["raw"]["done"] == 3
+    assert progress["stages"]["bronze"]["done"] == 1
+    assert progress["stages"]["silver"]["running"] == 1
+    assert progress["stages"]["bi"]["total"] == 1
+    assert "other" not in progress["stages"]
+
+
+def test_dag_run_progress_uses_airflow_duration_or_airflow_timestamps():
+    from portal_backend.services.airflow import _dag_run_progress
+
+    payload = {
+        "task_instances": [
+            {"task_id": "start", "state": "success", "duration": 0.1},
+            {"task_id": "validate_upload_context", "state": "success", "duration": 0.2},
+            {
+                "task_id": "extract_excel_to_bronze",
+                "state": "success",
+                "start_date": "2026-01-01T00:00:00Z",
+                "end_date": "2026-01-01T00:00:01Z",
+            },
+            {"task_id": "detect_year_and_format", "state": "success", "duration": 0.4},
+            {
+                "task_id": "parse_flexible",
+                "state": "success",
+                "duration": 0.0,
+                "start_date": "2026-01-01T00:00:02Z",
+                "end_date": "2026-01-01T00:00:02.1Z",
+            },
+            {"task_id": "merge_multi_file", "state": "running", "start_date": "2026-01-01T00:00:03Z"},
+        ]
+    }
+    response = Mock(ok=True, status_code=200, json=lambda: payload)
+    with patch("portal_backend.services.airflow.requests.get", return_value=response):
+        progress = _dag_run_progress("portal__run-1")
+
+    assert progress["stages"]["raw"]["duration_seconds"] == 1.3
+    assert progress["stages"]["bronze"]["duration_seconds"] == 0.5
+    assert progress["stages"]["bronze"]["running"] == 1
+
+
+def test_dag_run_progress_uses_stage_airflow_timestamp_span_for_zero_duration_tasks():
+    from portal_backend.services.airflow import _dag_run_progress
+
+    payload = {
+        "task_instances": [
+            {"task_id": "detect_year_and_format", "state": "success", "duration": 0.0,
+             "start_date": "2026-01-01T00:00:00Z", "end_date": "2026-01-01T00:00:00.000001Z"},
+            {"task_id": "parse_flexible", "state": "success", "duration": 0.0,
+             "start_date": "2026-01-01T00:00:00.2Z", "end_date": "2026-01-01T00:00:00.200001Z"},
+            {"task_id": "merge_multi_file", "state": "success", "duration": 0.0,
+             "start_date": "2026-01-01T00:00:00.4Z", "end_date": "2026-01-01T00:00:00.400001Z"},
+        ]
+    }
+    response = Mock(ok=True, status_code=200, json=lambda: payload)
+    with patch("portal_backend.services.airflow.requests.get", return_value=response):
+        progress = _dag_run_progress("portal__run-1")
+
+    assert progress["stages"]["bronze"]["duration_seconds"] == 0.4
+
+
+def test_dag_run_progress_counts_failed_tasks_per_stage():
+    from portal_backend.services.airflow import _dag_run_progress
+
+    response = Mock(
+        ok=True,
+        status_code=200,
+        json=lambda: {
+            "task_instances": [
+                {"task_id": "normalize_silver", "state": "failed"},
+                {"task_id": "map_iku_and_nomenklatur", "state": "upstream_failed"},
+            ]
+        },
+    )
+    with patch("portal_backend.services.airflow.requests.get", return_value=response):
+        progress = _dag_run_progress("portal__failed")
+
+    assert progress["stages"]["silver"]["failed"] == 2
+
+
 def test_get_active_dag_run_matches_dataset_identity():
     response = Mock(ok=True, status_code=200, text="", json=lambda: {"dag_runs": [
         {"dag_run_id": "portal__run-1", "state": "running", "logical_date": "now", "conf": {"dataset_session_id": "dataset-1"}},
@@ -112,6 +214,74 @@ def test_get_active_dag_run_matches_dataset_identity():
         result = get_active_dag_run("dataset-1")
     assert result["dag_run_id"] == "portal__run-1"
     assert result["state"] == "running"
+
+
+def test_runtime_snapshot_uses_one_list_request_and_prioritizes_active_run():
+    list_response = Mock(
+        ok=True,
+        status_code=200,
+        text="",
+        json=lambda: {
+            "dag_runs": [
+                {
+                    "dag_run_id": "portal__active",
+                    "state": "running",
+                    "conf": {"dataset_session_id": "dataset-1"},
+                },
+                {
+                    "dag_run_id": "portal__latest",
+                    "state": "success",
+                    "conf": {"dataset_session_id": "dataset-1"},
+                },
+            ]
+        },
+    )
+    tasks_response = Mock(
+        ok=True,
+        status_code=200,
+        json=lambda: {
+            "task_instances": [
+                {
+                    "task_id": "start",
+                    "state": "success",
+                    "duration": 0.3,
+                }
+            ]
+        },
+    )
+    with patch(
+        "portal_backend.services.airflow.requests.get",
+        side_effect=[list_response, tasks_response],
+    ) as get:
+        snapshot = get_runtime_snapshot("dataset-1")
+
+    assert get.call_count == 2
+    assert snapshot["source"] == "active"
+    assert snapshot["active"] is True
+    assert snapshot["runtime_run"]["dag_run_id"] == "portal__active"
+    assert snapshot["runtime_run"]["progress"]["stages"]["raw"]["duration_seconds"] == 0.3
+
+
+def test_runtime_endpoint_disables_http_caching(monkeypatch):
+    from portal_backend.app import create_app
+
+    monkeypatch.setattr(
+        "portal_backend.app.get_runtime_snapshot",
+        lambda: {
+            "status": "ready",
+            "active": True,
+            "active_run": {"dag_run_id": "portal__active", "state": "running"},
+            "latest_run": None,
+            "runtime_run": {"dag_run_id": "portal__active", "state": "running"},
+            "source": "active",
+        },
+    )
+
+    response = create_app().test_client().get("/api/airflow/runtime")
+
+    assert response.status_code == 200
+    assert response.headers["Cache-Control"] == "no-store, no-cache, must-revalidate"
+    assert response.headers["Pragma"] == "no-cache"
 
 
 def test_portal_trigger_endpoint_queues_active_dataset(monkeypatch, tmp_path):

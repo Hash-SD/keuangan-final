@@ -49,6 +49,48 @@ def test_status_falls_back_to_gold_csv_for_fact_totals(tmp_path, monkeypatch):
     assert result["fact_anggaran"] == {"total_jumlah": 300.0, "total_weighted_iku": 100.0}
 
 
+def test_status_summarizes_active_dataset_session_only(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    outputs_dir = tmp_path / "outputs"
+    generated = data_dir / "generated"
+    gold = generated / "gold"
+    gold.mkdir(parents=True)
+    (generated / "excel_lakehouse_metadata.json").write_text(
+        json.dumps(
+            {
+                "dataset_session_id": "current-session",
+                "run_id": "current-run",
+                "fact_anggaran_rows": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+    for name in (
+        "bronze_excel_cells",
+        "silver_rab_items_flexible",
+        "silver_nomenklatur_detail",
+        "silver_mapping",
+        "silver_validation",
+    ):
+        path = generated / ("bronze" if name.startswith("bronze") else "silver") / f"{name}.parquet"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"placeholder")
+    (gold / "fact_anggaran.parquet").write_bytes(b"placeholder")
+    (gold / "fact_anggaran.csv").write_text(
+        "item_id,jumlah,jumlah_weighted_iku,dataset_session_id,run_id\n"
+        "old-item,100,100,old-session,old-run\n"
+        "current-item,200,200,current-session,current-run\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(excel_lakehouse, "DATA_DIR", data_dir)
+    monkeypatch.setattr(excel_lakehouse, "OUTPUTS_DIR", outputs_dir)
+    monkeypatch.setattr(excel_lakehouse, "ROOT_DIR", tmp_path)
+
+    result = excel_lakehouse.excel_lakehouse_status()
+
+    assert result["fact_anggaran"] == {"total_jumlah": 200.0, "total_weighted_iku": 200.0}
+
+
 def test_status_reads_gold_csv_when_parquet_is_absent(tmp_path, monkeypatch):
     data_dir = tmp_path / "data"
     outputs_dir = tmp_path / "outputs"

@@ -268,9 +268,7 @@
       }
 
       html[data-sidebar="collapsed"] .brand-titles {
-        opacity: 0;
-        pointer-events: none;
-        width: 0;
+        display: none;
       }
 
       .brand-name {
@@ -312,7 +310,6 @@
       .nav-item:hover {
         background: var(--surface-glass-hover);
         color: var(--text-primary);
-        transform: translateX(2px);
       }
 
       .nav-item.active {
@@ -326,30 +323,28 @@
         flex-shrink: 0;
       }
 
-      .nav-text {
-        transition: opacity 0.2s ease;
-      }
-
       html[data-sidebar="collapsed"] .nav-item {
         justify-content: center;
-        padding-left: 0;
-        padding-right: 0;
+        padding: 0.75rem 0;
       }
 
       html[data-sidebar="collapsed"] .nav-text {
         display: none;
       }
 
-      /* Sidebar Footer Shutdown Button */
       .sidebar-footer {
-        margin-top: 1.5rem;
-        margin-bottom: 2rem;
-        padding-top: 1rem;
+        margin-top: auto;
+        margin-bottom: 1rem;
+        padding-top: 0.85rem;
         border-top: 1px solid var(--surface-glass-border);
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.3rem;
         flex-shrink: 0;
+      }
+
+      html[data-sidebar="collapsed"] .sidebar-footer {
+        display: none;
       }
 
       .btn-icon-only {
@@ -378,9 +373,8 @@
         display: flex;
         flex-direction: column;
         min-width: 0;
-        min-height: 100vh;
-        overflow-y: auto;
-        padding-bottom: 2rem;
+        height: 100vh;
+        overflow: hidden;
       }
 
       header.top-header {
@@ -469,13 +463,13 @@
       .pipeline-live {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.45rem 0.85rem;
+        gap: 0.55rem;
+        padding: 0.45rem 0.95rem;
         border-radius: var(--radius-pill);
         background: var(--surface-glass-solid);
         border: 1px solid var(--surface-glass-border);
         box-shadow: var(--shadow-sm);
-        font-size: 0.75rem;
+        font-size: 0.78rem;
         font-weight: 700;
         color: var(--text-secondary);
         white-space: nowrap;
@@ -483,21 +477,23 @@
       }
 
       .pipeline-live.running {
-        border-color: var(--accent-primary);
-        color: var(--accent-primary);
-        background: var(--accent-primary-glow);
+        border-color: rgba(0, 113, 227, 0.45);
+        color: #0071e3;
+        background: rgba(0, 113, 227, 0.12);
+        box-shadow: 0 0 14px rgba(0, 113, 227, 0.25);
+        animation: pulse-badge 1.8s ease-in-out infinite;
       }
 
       .pipeline-live.live {
-        border-color: var(--state-success);
-        color: var(--state-success);
-        background: var(--state-success-bg);
+        border-color: rgba(52, 199, 89, 0.35);
+        color: #34c759;
+        background: rgba(52, 199, 89, 0.12);
       }
 
       .pipeline-live.failed {
-        border-color: var(--state-error);
-        color: var(--state-error);
-        background: var(--state-error-bg);
+        border-color: rgba(255, 59, 48, 0.35);
+        color: #ff3b30;
+        background: rgba(255, 59, 48, 0.12);
       }
 
       .pipeline-live-dot {
@@ -509,16 +505,19 @@
       }
 
       .pipeline-live.running .pipeline-live-dot {
-        background: var(--accent-primary);
-        animation: pulse-dot 1.2s ease-in-out infinite;
+        background: #0071e3;
+        box-shadow: 0 0 8px #0071e3;
+        animation: pulse-dot 0.85s ease-in-out infinite;
       }
 
       .pipeline-live.live .pipeline-live-dot {
-        background: var(--state-success);
+        background: #34c759;
+        box-shadow: 0 0 6px rgba(52, 199, 89, 0.4);
       }
 
       .pipeline-live.failed .pipeline-live-dot {
-        background: var(--state-error);
+        background: #ff3b30;
+        animation: pulse-dot 1.2s ease-in-out infinite;
       }
 
       @keyframes pulse-dot {
@@ -528,8 +527,17 @@
           transform: scale(1);
         }
         50% {
-          opacity: 0.35;
-          transform: scale(0.7);
+          opacity: 0.3;
+          transform: scale(0.65);
+        }
+      }
+
+      @keyframes pulse-badge {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(0, 113, 227, 0.18);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(0, 113, 227, 0.45);
         }
       }
 
@@ -680,6 +688,22 @@
         width: 100%;
         max-width: 100%;
         padding: 2.75rem 2.5rem;
+        overflow-y: auto;
+        box-sizing: border-box;
+      }
+
+      .view-container::-webkit-scrollbar {
+        width: 6px;
+      }
+      .view-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .view-container::-webkit-scrollbar-thumb {
+        background: rgba(134, 134, 139, 0.25);
+        border-radius: 999px;
+      }
+      .view-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(134, 134, 139, 0.45);
       }
 
       .page-view {
@@ -926,6 +950,50 @@
         box-shadow: 0 0 0 3px var(--accent-primary-glow);
       }
 
+      .iku-review-select,
+      select.input-apple {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 100%;
+        min-width: 170px;
+        padding: 0.55rem 2.2rem 0.55rem 0.85rem;
+        border-radius: var(--radius-md, 10px);
+        border: 1px solid var(--surface-glass-border, rgba(0, 0, 0, 0.12));
+        background: var(--surface-glass-solid, rgba(255, 255, 255, 0.85));
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230071e3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 0.95rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--text-primary, #1d1d1f);
+        outline: none;
+        cursor: pointer;
+        transition: var(--spring-transition, all 0.2s ease);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      }
+
+      .iku-review-select:hover,
+      select.input-apple:hover {
+        border-color: var(--accent-primary, #0071e3);
+        box-shadow: 0 0 0 3px var(--accent-primary-glow, rgba(0, 113, 227, 0.15));
+      }
+
+      .iku-review-select:focus,
+      select.input-apple:focus {
+        border-color: var(--accent-primary, #0071e3);
+        box-shadow: 0 0 0 3px var(--accent-primary-glow, rgba(0, 113, 227, 0.25));
+      }
+
+      .iku-review-select option,
+      select.input-apple option {
+        background-color: var(--surface, #ffffff);
+        color: var(--text-primary, #1d1d1f);
+        padding: 0.6rem;
+        font-size: 0.82rem;
+      }
+
       /* Custom Floating Glass Dropdown */
       .apple-custom-select {
         position: relative;
@@ -977,15 +1045,42 @@
         border: 1px solid var(--surface-glass-border);
         border-radius: var(--radius-md);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-        padding: 0.35rem;
+        padding: 0.4rem;
         display: none;
         flex-direction: column;
-        gap: 2px;
+        gap: 3px;
+        max-height: 220px;
+        overflow-y: auto;
         animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
-      .apple-custom-select.open .apple-custom-select-menu {
+      .apple-custom-select.open .apple-custom-select-menu,
+      .apple-custom-select-menu.floating-open {
         display: flex;
+        /* reset CSS values that conflict when teleported to body */
+        top: unset;
+        left: unset;
+        right: unset;
+        bottom: unset;
+        position: fixed;
+      }
+
+      .apple-custom-select-menu::-webkit-scrollbar,
+      .custom-select-options-scroll::-webkit-scrollbar {
+        width: 5px;
+      }
+      .apple-custom-select-menu::-webkit-scrollbar-track,
+      .custom-select-options-scroll::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .apple-custom-select-menu::-webkit-scrollbar-thumb,
+      .custom-select-options-scroll::-webkit-scrollbar-thumb {
+        background: rgba(134, 134, 139, 0.25);
+        border-radius: 999px;
+      }
+      .apple-custom-select-menu::-webkit-scrollbar-thumb:hover,
+      .custom-select-options-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(134, 134, 139, 0.45);
       }
 
       .apple-custom-select-item {
@@ -1776,17 +1871,16 @@
           </nav>
         </div>
 
-        <div class="sidebar-footer">
-          <button
-            type="button"
-            class="btn-apple-danger-icon"
-            onclick="confirmShutdownSystem()"
-            title="Matikan Seluruh Sistem & Container"
-            style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.65rem 0.75rem; border-radius: var(--radius-md); background: rgba(255, 69, 58, 0.14); color: #ff453a; border: 1px solid rgba(255, 69, 58, 0.35); font-weight: 700; cursor: pointer; transition: all 0.22s ease;"
-          >
-            <span class="material-symbols-outlined" style="font-size: 20px;">power_settings_new</span>
-            <span class="nav-text" style="font-size: 0.82rem; white-space: nowrap;">Matikan Sistem</span>
-          </button>
+        <div class="sidebar-footer" style="padding-top: 0.85rem; border-top: 1px solid var(--surface-glass-border, rgba(0,0,0,0.06)); margin-top: auto; margin-bottom: 1rem; transition: var(--spring-transition);">
+          <div class="sidebar-footer-content" style="display: flex; flex-direction: column; gap: 0.25rem;">
+            <p class="nav-text" style="font-size: 0.68rem; color: var(--text-secondary,#86868b); margin: 0; line-height: 1.35; font-weight: 500;">
+              Medallion Data Lakehouse & BI Portal
+            </p>
+            <div class="nav-text" style="font-size: 0.64rem; color: var(--text-tertiary,#a1a1a6); margin-top: 0.2rem; display: flex; align-items: center; justify-content: space-between;">
+              <span>© 2026 TA HM</span>
+              <span class="badge-apple badge-ok" style="font-size: 0.58rem; padding: 0.1rem 0.35rem; font-weight: 700;">v2.5 Live</span>
+            </div>
+          </div>
         </div>
       </aside>
 
@@ -2467,35 +2561,7 @@
 
           <!-- VIEW 4: LAKEHOUSE & DATA -->
           <section class="page-view" id="view-lakehouse">
-            <div class="glass-card" style="margin-bottom: 1.75rem">
-              <div class="card-title">Pratinjau Hasil Laporan Anggaran</div>
-              <p class="card-subtitle">
-                Contoh sampel data keuangan yang telah selesai diproses dan dibersihkan.
-              </p>
-              <div id="dataPreviewPanel" class="table-wrapper">
-                <table class="apple-table">
-                  <thead>
-                    <tr>
-                      <th style="width: 15%;">Layer</th>
-                      <th style="width: 35%;">Kolom</th>
-                      <th style="width: 50%;">Contoh Data</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td
-                        colspan="3"
-                        style="text-align: center; color: var(--text-secondary)"
-                      >
-                        Memuat pratinjau data anggaran...
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Storage Manifest (Dev Only) -->
+            <!-- Storage Manifest -->
             <div class="glass-card" style="margin-bottom: 1.75rem">
               <div class="card-title">Pemetaan Penyimpanan Berkas Data</div>
               <p class="card-subtitle">
@@ -2525,6 +2591,35 @@
                 </table>
               </div>
             </div>
+
+            <!-- Data Preview -->
+            <div class="glass-card" style="margin-bottom: 1.75rem">
+              <div class="card-title">Pratinjau Hasil Laporan Anggaran</div>
+              <p class="card-subtitle">
+                Contoh sampel data keuangan yang telah selesai diproses dan dibersihkan.
+              </p>
+              <div id="dataPreviewPanel" class="table-wrapper">
+                <table class="apple-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 15%;">Layer</th>
+                      <th style="width: 35%;">Kolom</th>
+                      <th style="width: 50%;">Cuplikan Data</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td
+                        colspan="3"
+                        style="text-align: center; color: var(--text-secondary)"
+                      >
+                        Memuat pratinjau data anggaran...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </section>
 
           <!-- VIEW 5: DASHBOARD BI -->
@@ -2545,6 +2640,7 @@
                   <p class="card-subtitle" style="margin-bottom: 0">
                     Pilih tautan di bawah untuk membuka halaman grafik interaktif dan laporan data lengkap.
                   </p>
+                  <div id="activeDashboardBadge" style="margin-top: 0.5rem; display: none; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-secondary,#86868b); background: rgba(0,113,227,0.06); padding: 0.35rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,113,227,0.12);"></div>
                 </div>
                 <div
                   id="dashboardLinksPanel"
@@ -2664,22 +2760,49 @@
                       required
                     />
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" style="position: relative;">
                     <label class="form-label">Modul Evaluasi</label>
-                    <select class="input-apple" id="uatModule" required>
-                      <option value="Data Ingestion (Bronze)">
-                        Data Ingestion (Bronze)
-                      </option>
-                      <option value="Quality Gate (Silver)">
-                        Quality Gate (Silver)
-                      </option>
-                      <option value="Star Schema (Gold)">
-                        Star Schema (Gold)
-                      </option>
-                      <option value="Superset BI Dashboard">
-                        Superset BI Dashboard
-                      </option>
-                    </select>
+                    <div class="apple-custom-select" id="customUatModuleDropdown">
+                      <button
+                        type="button"
+                        class="apple-custom-select-trigger"
+                        onclick="toggleCustomDropdown('customUatModuleDropdown')"
+                      >
+                        <span id="selectedUatModuleText">Data Ingestion (Bronze)</span>
+                        <span class="material-symbols-outlined dropdown-chevron">expand_more</span>
+                      </button>
+                      <div class="apple-custom-select-menu">
+                        <div
+                          class="apple-custom-select-item active"
+                          onclick="selectCustomOption('customUatModuleDropdown', 'Data Ingestion (Bronze)', 'Data Ingestion (Bronze)', 'selectedUatModuleText', 'uatModule')"
+                        >
+                          <span>Data Ingestion (Bronze)</span>
+                          <span class="material-symbols-outlined check-icon">check</span>
+                        </div>
+                        <div
+                          class="apple-custom-select-item"
+                          onclick="selectCustomOption('customUatModuleDropdown', 'Quality Gate (Silver)', 'Quality Gate (Silver)', 'selectedUatModuleText', 'uatModule')"
+                        >
+                          <span>Quality Gate (Silver)</span>
+                          <span class="material-symbols-outlined check-icon">check</span>
+                        </div>
+                        <div
+                          class="apple-custom-select-item"
+                          onclick="selectCustomOption('customUatModuleDropdown', 'Star Schema (Gold)', 'Star Schema (Gold)', 'selectedUatModuleText', 'uatModule')"
+                        >
+                          <span>Star Schema (Gold)</span>
+                          <span class="material-symbols-outlined check-icon">check</span>
+                        </div>
+                        <div
+                          class="apple-custom-select-item"
+                          onclick="selectCustomOption('customUatModuleDropdown', 'Superset BI Dashboard', 'Superset BI Dashboard', 'selectedUatModuleText', 'uatModule')"
+                        >
+                          <span>Superset BI Dashboard</span>
+                          <span class="material-symbols-outlined check-icon">check</span>
+                        </div>
+                      </div>
+                    </div>
+                    <input type="hidden" id="uatModule" value="Data Ingestion (Bronze)" />
                   </div>
                 </div>
 
@@ -2737,7 +2860,7 @@
                       <th>Waktu</th>
                       <th>Evaluator</th>
                       <th>Modul Evaluasi</th>
-                      <th>Skor & Detail Kriteria</th>
+                      <th>Detail Penilaian</th>
                       <th>Feedback / Catatan</th>
                       <th>Aksi</th>
                     </tr>
@@ -3185,13 +3308,85 @@
         setTimeout(() => toast.classList.remove("show"), 2500);
       }
 
-      function toggleCustomDropdown(id) {
-        const dropdown = document.getElementById(id);
-        if (!dropdown) return;
-        const isOpen = dropdown.classList.contains("open");
-        document.querySelectorAll(".apple-custom-select").forEach((d) => d.classList.remove("open"));
-        if (!isOpen) dropdown.classList.add("open");
+      // ── Floating Dropdown System ──────────────────────────────────────────────
+      let _activeDropdown = null;
+
+      function _positionFloatingMenu(trigger, menu) {
+        const rect = trigger.getBoundingClientRect();
+        menu.style.position = "fixed";
+        menu.style.top    = (rect.bottom + 4) + "px";
+        menu.style.left   = rect.left + "px";
+        menu.style.right  = "auto";
+        menu.style.bottom = "auto";
+        menu.style.width  = rect.width + "px";
       }
+
+      function _closeActiveDropdown() {
+        if (!_activeDropdown) return;
+        const dropdown = _activeDropdown;
+        _activeDropdown = null;
+        dropdown.classList.remove("open");
+        const menu = dropdown._detachedMenu;
+        if (menu) {
+          menu.classList.remove("floating-open");
+          dropdown.appendChild(menu);
+          dropdown._detachedMenu = null;
+        }
+      }
+
+      function toggleCustomDropdown(id) {
+        const dropdown = typeof id === "string" ? document.getElementById(id) : id;
+        if (!dropdown) return;
+
+        if (_activeDropdown === dropdown) {
+          _closeActiveDropdown();
+          return;
+        }
+
+        _closeActiveDropdown();
+
+        const trigger = dropdown.querySelector(".apple-custom-select-trigger");
+        const menu    = dropdown.querySelector(".apple-custom-select-menu");
+        if (!trigger || !menu) return;
+
+        menu.style.position  = "fixed";
+        menu.style.zIndex    = "999999";
+        menu.style.margin    = "0";
+        menu.style.boxShadow = "0 12px 32px rgba(0,0,0,0.22)";
+        menu.style.right     = "auto";
+        menu.style.bottom    = "auto";
+
+        document.body.appendChild(menu);
+        dropdown._detachedMenu = menu;
+
+        _positionFloatingMenu(trigger, menu);
+        menu.classList.add("floating-open");
+        dropdown.classList.add("open");
+        _activeDropdown = dropdown;
+      }
+
+      window.addEventListener("scroll", () => {
+        if (!_activeDropdown) return;
+        const trigger = _activeDropdown.querySelector(".apple-custom-select-trigger");
+        const menu    = _activeDropdown._detachedMenu;
+        if (trigger && menu) _positionFloatingMenu(trigger, menu);
+      }, true);
+
+      window.addEventListener("resize", () => {
+        if (!_activeDropdown) return;
+        const trigger = _activeDropdown.querySelector(".apple-custom-select-trigger");
+        const menu    = _activeDropdown._detachedMenu;
+        if (trigger && menu) _positionFloatingMenu(trigger, menu);
+      });
+
+      document.addEventListener("mousedown", (e) => {
+        if (!_activeDropdown) return;
+        const trigger = _activeDropdown.querySelector(".apple-custom-select-trigger");
+        const menu    = _activeDropdown._detachedMenu;
+        if (trigger && trigger.contains(e.target)) return;
+        if (menu && menu.contains(e.target)) return;
+        _closeActiveDropdown();
+      });
 
       let targetLoadState = { dbAt: 0, dashAt: 0, dbCount: null, dashCount: null };
 
@@ -3227,27 +3422,25 @@
         hint.textContent = `Pilih tujuan update: ${dbPart}, ${dashPart} tersedia.${fallbackPart}`;
       }
 
-      function selectCustomOption(dropdownId, value, label) {
+      function selectCustomOption(dropdownId, value, label, textSpanId, inputId) {
         const dropdown = document.getElementById(dropdownId);
         if (!dropdown) return;
-        const textSpan = dropdown.querySelector("#selectedPeriodeText");
+        const textSpan = textSpanId ? document.getElementById(textSpanId) : dropdown.querySelector(".selected-text, #selectedPeriodeText");
         if (textSpan) textSpan.textContent = label;
-        const hiddenInput = document.getElementById("hiddenPeriodeInput");
+        const hiddenInput = inputId ? document.getElementById(inputId) : document.getElementById("hiddenPeriodeInput");
         if (hiddenInput) hiddenInput.value = value;
 
-        dropdown.querySelectorAll(".apple-custom-select-item").forEach((item) => {
+        // use querySelectorAll on both the dropdown and any detached floating menu
+        const menu = dropdown._detachedMenu || dropdown;
+        menu.querySelectorAll(".apple-custom-select-item").forEach((item) => {
           const itemText = item.querySelector("span")?.textContent?.trim();
           item.classList.toggle("active", itemText === label);
         });
 
-        dropdown.classList.remove("open");
+        _closeActiveDropdown();
       }
 
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".apple-custom-select")) {
-          document.querySelectorAll(".apple-custom-select").forEach((d) => d.classList.remove("open"));
-        }
-      });
+
 
       function selectDashboardMode(mode) {
         document
@@ -3677,7 +3870,9 @@
                   return `<span style="display:inline-block; background:var(--surface-subtle); padding:0.15rem 0.45rem; border-radius:4px; font-size:0.72rem; margin:0.1rem; border:1px solid var(--surface-glass-border); color:var(--text-primary);"><strong>${safe(name)}:</strong> ${safe(v)}/5</span>`;
                 })
                 .join("");
-              scoresDetailHtml = `<div style="margin-top:0.35rem; display:flex; flex-wrap:wrap; gap:0.2rem;">${chips}</div>`;
+              scoresDetailHtml = `<div style="display:flex; flex-wrap:wrap; gap:0.2rem;">${chips}</div>`;
+            } else {
+              scoresDetailHtml = `<span style="font-size:0.8rem; color:var(--text-secondary);">-</span>`;
             }
 
             return `
@@ -3686,7 +3881,6 @@
             <td><strong>${safe(item.evaluator || "Evaluator")}</strong></td>
             <td><span class="badge-apple badge-info">${safe(item.module || "General")}</span></td>
             <td>
-              <span class="badge-apple badge-ok" style="font-size:0.82rem; font-weight:700;">⭐ ${avgFormatted} / 5.0</span>
               ${scoresDetailHtml}
             </td>
             <td><span style="font-size:0.82rem;">${safe(item.feedback || "-")}</span></td>
@@ -3982,34 +4176,58 @@
         if (el) el.textContent = value;
       }
 
-      function renderLiveStepper(viewModel) {
+      function renderLiveStepper(viewModel, runData) {
         const steps = viewModel.steps || [];
+        const isRunning = viewModel.pipeline?.statusKind === "running";
+
+        const runStart   = runData?.start_date || runData?.logical_date || null;
+        const runEnd     = runData?.end_date || null;
+        const progress   = runData?.progress || {};
+        const activeTask = progress.current_task || null;
+
         const nodesHtml = steps
           .map((step, idx) => {
-            const statusView =
-              STATUS_VIEW[step.statusKind] || STATUS_VIEW.missing;
-            const isReady = statusView.step === "ready";
-            const isNextReady =
-              idx < steps.length - 1 &&
+            const statusView  = STATUS_VIEW[step.statusKind] || STATUS_VIEW.missing;
+            const isReady     = statusView.step === "ready";
+            const isNextReady = idx < steps.length - 1 &&
               (STATUS_VIEW[steps[idx + 1]?.statusKind] || {}).step === "ready";
 
-            const connectorHtml =
-              idx < steps.length - 1
-                ? `
-          <div class="pipeline-connector ${isReady && isNextReady ? "active" : ""}">
-            <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
-          </div>
-        `
-                : "";
+            const isActive = isRunning && activeTask &&
+              (step.title.toLowerCase().includes(activeTask.toLowerCase()) ||
+               activeTask.toLowerCase().includes(step.title.split(" ")[0].toLowerCase()));
+
+            // Time detail sub-line
+            let timeLine = step.sub || "";
+            if (runData && runStart) {
+              if (step.statusKind === "running" || isActive) {
+                const elapsed = formatElapsed(runStart);
+                timeLine = elapsed ? `⏱ Berjalan ${elapsed}` : "⏱ Sedang berjalan...";
+              } else if (step.statusKind === "success" && runEnd) {
+                const elapsed = formatElapsed(runStart, runEnd);
+                timeLine = elapsed ? `✓ Selesai · ${elapsed}` : step.sub;
+              }
+            } else if (step.statusKind === "running") {
+              const elapsed = formatElapsed(new Date().toISOString());
+              timeLine = elapsed ? `⏱ Berjalan ${elapsed}` : "⏱ Sedang berjalan...";
+            }
+
+            const connectorHtml = idx < steps.length - 1
+              ? `<div class="pipeline-connector ${isReady && isNextReady ? "active" : ""}"><span class="material-symbols-outlined" style="font-size:20px;">arrow_forward</span></div>`
+              : "";
+
+            const pulseRing = isActive
+              ? `<span style="position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--color-primary,#0071e3);opacity:0.55;animation:pulse-badge 1.6s ease-in-out infinite;"></span>`
+              : "";
 
             return `
-          <div class="pipeline-node ${statusView.step}" data-status="${step.statusKind}">
-            <div class="node-icon">
-              <span class="material-symbols-outlined" style="font-size: 22px;">${step.icon}</span>
+          <div class="pipeline-node ${statusView.step}${isActive ? " running-active" : ""}" data-status="${step.statusKind}">
+            <div class="node-icon" style="position:relative;">
+              ${pulseRing}
+              <span class="material-symbols-outlined" style="font-size:22px;">${step.icon}</span>
             </div>
             <div class="node-content">
               <span class="node-title">${safe(step.title)}</span>
-              ${step.sub ? `<span style="font-size: 0.72rem; color: var(--text-secondary,#86868b); line-height: 1.2;">${safe(step.sub)}</span>` : ""}
+              <span style="font-size:0.72rem;color:${isActive ? "var(--color-primary,#0071e3)" : "var(--text-secondary,#86868b)"};line-height:1.3;margin-top:2px;display:block;font-weight:${isActive ? 600 : 400};">${safe(timeLine)}</span>
             </div>
           </div>
           ${connectorHtml}
@@ -4018,12 +4236,27 @@
           .join("");
 
         const fullHtml = `<div class="medallion-pipeline-flow">${nodesHtml}</div>`;
-
         const s1 = document.getElementById("stepperContainer");
         const s2 = document.getElementById("stepperContainerLakehouse");
         if (s1) s1.innerHTML = fullHtml;
         if (s2) s2.innerHTML = fullHtml;
       }
+
+      // Update stepper when a row in the Airflow table is clicked
+      function updateStepperFromRun(runObj) {
+        if (!runObj) return;
+        const vm = state._lastViewModel;
+        if (!vm) return;
+        const kind = normalizeStatusKind(runObj.state);
+        const patchedVm = {
+          ...vm,
+          pipeline: { ...vm.pipeline, statusKind: kind },
+          steps: vm.steps,
+        };
+        renderLiveStepper(patchedVm, runObj);
+        document.querySelectorAll("#airflowPanel tr.selected-run").forEach(r => r.classList.remove("selected-run"));
+      }
+
 
       function setSkeleton(id, width = "120px", height = "24px") {
         const el = document.getElementById(id);
@@ -4234,6 +4467,8 @@
             .join("");
         }
         renderLiveStepper(viewModel);
+        // cache viewModel so row-click on airflow table can reference it
+        state._lastViewModel = viewModel;
       }
 
       function renderServiceActionButton(service) {
@@ -4373,34 +4608,22 @@
         if (runsList.length > 0) {
           tableRows = runsList
             .map(
-              (r) => `
-          <tr>
+              (r) => {
+                const runJson = encodeURIComponent(JSON.stringify(r));
+                return `
+          <tr class="airflow-run-row" style="cursor:pointer;" onclick="handleAirflowRowClick(this, '${runJson}')" title="Klik untuk lihat detail tahapan Medallion">
             <td><code>${safe(r.dag_run_id || "-")}</code></td>
             <td>${statusBadgeHtml(r.state || "unknown", r.state)}</td>
             <td>${safe(r.conf?.dataset_session_id || r.dataset_session_id || "Session Active")}</td>
             <td>${runTimeInfo(r)}</td>
           </tr>
-        `,
+        `;
+              }
             )
             .join("");
         } else {
           tableRows = `<tr><td colspan="4" style="text-align:center; color:var(--text-secondary);">Belum ada riwayat DAG run Airflow. Klik "Jalankan Sistem" untuk memicu pipeline.</td></tr>`;
         }
-
-        const progress = mainRun.progress || {};
-        const progressHtml =
-          progress.available && progress.total_tasks > 0
-            ? `
-          <div style="padding:0.7rem 1rem; border-top:1px solid var(--border-color, rgba(0,0,0,.06));">
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:.74rem; color:var(--text-secondary,#86868b); margin-bottom:.35rem;">
-              <span>${progress.current_task ? `Task aktif: <strong>${safe(progress.current_task)}</strong>` : "Progress pipeline"}</span>
-              <span>${progress.completed_tasks}/${progress.total_tasks} task · ${progress.progress_pct}%${progress.started_at ? " · " + safe(formatElapsed(progress.started_at)) : ""}</span>
-            </div>
-            <div style="height:5px; background:rgba(0,113,227,.15); border-radius:3px; overflow:hidden;">
-              <div style="width:${progress.progress_pct}%; height:100%; background:linear-gradient(90deg,#0071e3,#409cff); border-radius:3px; transition:width .4s ease-in-out;"></div>
-            </div>
-          </div>`
-            : "";
 
         const panel = document.getElementById("airflowPanel");
         if (panel) {
@@ -4409,10 +4632,32 @@
             <thead><tr><th>DAG Run ID</th><th>Status</th><th>Dataset Session</th><th>Waktu Eksekusi</th></tr></thead>
             <tbody>${tableRows}</tbody>
           </table>
-          ${progressHtml}
         `;
         }
       }
+
+      function handleAirflowRowClick(rowEl, runJson) {
+        // Highlight selected row
+        document.querySelectorAll(".airflow-run-row.selected-run").forEach(r => {
+          r.classList.remove("selected-run");
+          r.style.borderLeft = "";
+          r.style.background = "";
+        });
+        rowEl.classList.add("selected-run");
+        rowEl.style.borderLeft = "3px solid var(--color-primary,#0071e3)";
+        rowEl.style.background = "rgba(0,113,227,0.06)";
+
+        try {
+          const runObj = JSON.parse(decodeURIComponent(runJson));
+          updateStepperFromRun(runObj);
+          // Scroll stepper into view
+          const stepper = document.getElementById("stepperContainer");
+          if (stepper) stepper.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } catch(e) {
+          console.warn("Failed to parse run data:", e);
+        }
+      }
+
 
       function updatePipelineLive(activePayload, latestPayload) {
         const pill = document.getElementById("pipelineLive");
@@ -4426,37 +4671,34 @@
           latestPayload?.run ||
           (latestPayload?.dag_run_id ? latestPayload : null);
 
-        let kind = "missing";
-        let label = "Pipeline Idle";
-        let title = "Tidak ada pipeline aktif";
+        let isRunning = false;
+        let isFailed = false;
 
         if (activeRun) {
-          kind = normalizeStatusKind(activeRun.state);
-          label =
-            kind === "running"
-              ? "Pipeline Berjalan"
-              : `Pipeline ${safe(activeRun.state || kind)}`;
-          title = `DAG Run aktif: ${safe(activeRun.dag_run_id)}`;
+          const kind = normalizeStatusKind(activeRun.state);
+          if (kind === "running") isRunning = true;
+          else if (kind === "failed") isFailed = true;
         } else if (latestRun) {
-          kind = normalizeStatusKind(latestRun.state);
-          if (kind === "running") {
-            label = "Pipeline Berjalan";
-            title = `DAG Run: ${safe(latestRun.dag_run_id)}`;
-          } else if (kind === "failed") {
-            label = "Pipeline Gagal";
-            title = "Run terakhir gagal. Buka Airflow untuk detail.";
-          } else if (kind === "success") {
-            label = "Pipeline Selesai";
-            title = "Run terakhir berhasil.";
-          }
+          const kind = normalizeStatusKind(latestRun.state);
+          if (kind === "running") isRunning = true;
+          else if (kind === "failed") isFailed = true;
         }
 
         pill.hidden = false;
-        pill.classList.toggle("running", kind === "running");
-        pill.classList.toggle("live", kind === "success");
-        pill.classList.toggle("failed", kind === "failed");
-        pill.title = title;
-        textEl.textContent = label;
+        pill.classList.toggle("running", isRunning);
+        pill.classList.toggle("failed", isFailed);
+        pill.classList.toggle("live", !isRunning && !isFailed);
+
+        if (isRunning) {
+          textEl.textContent = "Pipeline Sedang Berjalan";
+          pill.title = "Pipeline Airflow sedang mengekstraksi dan mentransformasi data Medallion real-time.";
+        } else if (isFailed) {
+          textEl.textContent = "Pipeline Perlu Perhatian";
+          pill.title = "Run terakhir Airflow mengalami kendala. Buka Eksekusi Data untuk detail.";
+        } else {
+          textEl.textContent = "Sistem Live";
+          pill.title = "Sistem portal dan Airflow siap menerima eksekusi data.";
+        }
       }
 
       async function refreshActivePipeline() {
@@ -4628,6 +4870,38 @@
         }
       }
 
+      window.filterCustomIkuOptions = function(inputEl, itemId) {
+        const query = (inputEl.value || "").toLowerCase().trim();
+        const dropdown = document.getElementById(`customIkuSelect_${itemId}`);
+        if (!dropdown) return;
+        const items = dropdown.querySelectorAll(".apple-custom-select-item");
+        items.forEach(item => {
+          if (!item.getAttribute("data-payload")) return;
+          const text = (item.textContent || "").toLowerCase();
+          if (!query || text.includes(query)) {
+            item.style.display = "flex";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      };
+
+      window.selectCustomIkuOption = function(itemId, payload, label) {
+        const textSpan = document.getElementById(`selectedIkuText_${itemId}`);
+        const hiddenInput = document.getElementById(`hiddenIkuValue_${itemId}`);
+        const dropdown = document.getElementById(`customIkuSelect_${itemId}`);
+        if (textSpan) textSpan.textContent = label;
+        if (hiddenInput) hiddenInput.value = payload;
+        if (dropdown) {
+          dropdown.querySelectorAll(".apple-custom-select-item").forEach(item => {
+            const itemPayload = item.getAttribute("data-payload") || "";
+            const isActive = itemPayload === payload;
+            item.classList.toggle("active", isActive);
+          });
+          dropdown.classList.remove("open");
+        }
+      };
+
       function renderIkuReviewQueue(review = state.ikuReview) {
         const rows = Array.isArray(review?.rows) ? review.rows : [];
         const options = Array.isArray(review?.iku_options)
@@ -4639,50 +4913,82 @@
             '<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">Tidak ada item Review IKU yang perlu dikoreksi.</td></tr>';
           return;
         }
-        const optionHtml = options
-          .map((option) => {
-            const payload = encodeURIComponent(
-              JSON.stringify({
-                iku_codes: option.iku_raw,
-                detail_id: option.detail_id,
-                detail_kegiatan: option.detail_kegiatan,
-                nomenklatur_path: option.nomenklatur_path,
-              }),
-            );
-            return `<option value="${safe(payload)}">${safe(option.iku_raw)} - ${safe(option.detail_kegiatan)}</option>`;
-          })
-          .join("");
+
         document.getElementById("tblIkuReviewRows").innerHTML = rows
           .map(
-            (row) => `
+            (row) => {
+              const optionsHtml = options.map((option) => {
+                const payloadStr = encodeURIComponent(
+                  JSON.stringify({
+                    iku_codes: option.iku_raw,
+                    detail_id: option.detail_id,
+                    detail_kegiatan: option.detail_kegiatan,
+                    nomenklatur_path: option.nomenklatur_path,
+                  }),
+                );
+                const labelText = `${option.iku_raw} - ${option.detail_kegiatan}`;
+                return `
+                  <div class="apple-custom-select-item" data-payload="${safe(payloadStr)}" onclick="selectCustomIkuOption('${safe(row.item_id)}', '${safe(payloadStr)}', '${safe(labelText)}')">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                      <span style="font-weight: 600; font-size: 0.78rem;">${safe(option.iku_raw)}</span>
+                      <span style="font-size: 0.7rem; color: var(--text-secondary,#86868b); line-height: 1.2;">${safe(option.detail_kegiatan)}</span>
+                    </div>
+                    <span class="material-symbols-outlined check-icon" style="font-size:14px;">check</span>
+                  </div>
+                `;
+              }).join("");
+
+              return `
         <tr>
           <td><strong>${safe(row.item_id)}</strong><br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(row.source_sheet)}:${safe(row.source_row)}</span></td>
           <td>${safe(row.kegiatan)}<br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(row.uraian_detail)}</span></td>
           <td>${rupiah(row.jumlah)}</td>
           <td>${safe(row.kode_iku)}<br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(row.nama_iku)}</span></td>
-          <td><select class="input-apple iku-review-select" data-item-id="${safe(row.item_id)}"><option value="">Pilih IKU</option>${optionHtml}</select></td>
+          <td>
+            <div class="apple-custom-select" id="customIkuSelect_${safe(row.item_id)}" style="min-width: 200px;">
+              <button type="button" class="apple-custom-select-trigger" onclick="toggleCustomDropdown('customIkuSelect_${safe(row.item_id)}')" style="padding: 0.45rem 0.75rem; font-size: 0.78rem; font-weight: 500;">
+                <span class="selected-text" id="selectedIkuText_${safe(row.item_id)}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 145px;">Pilih IKU</span>
+                <span class="material-symbols-outlined dropdown-chevron" style="font-size: 18px;">expand_more</span>
+              </button>
+              <input type="hidden" class="iku-review-select-value" data-item-id="${safe(row.item_id)}" id="hiddenIkuValue_${safe(row.item_id)}" value="" />
+              <div class="apple-custom-select-menu" style="padding: 0.45rem; gap: 0.35rem;">
+                <div style="padding-bottom: 0.4rem; border-bottom: 1px solid var(--surface-glass-border, rgba(0,0,0,0.08));">
+                  <div style="position: relative; display: flex; align-items: center;">
+                    <span class="material-symbols-outlined" style="position: absolute; left: 0.55rem; font-size: 14px; color: var(--text-secondary,#86868b);">search</span>
+                    <input type="text" class="input-apple iku-search-input" placeholder="Cari kode/kegiatan IKU..." onkeyup="filterCustomIkuOptions(this, '${safe(row.item_id)}')" onclick="event.stopPropagation()" style="padding: 0.32rem 0.5rem 0.32rem 1.75rem; font-size: 0.73rem; border-radius: 7px; height: 28px;" />
+                  </div>
+                </div>
+                <div class="custom-select-options-scroll" style="max-height: 180px; overflow-y: auto; padding-right: 0.2rem; margin-top: 0.3rem; display: flex; flex-direction: column; gap: 2px;">
+                  <div class="apple-custom-select-item active" data-payload="" onclick="selectCustomIkuOption('${safe(row.item_id)}', '', 'Pilih IKU')">
+                    <span>Pilih IKU</span>
+                    <span class="material-symbols-outlined check-icon" style="font-size:14px;">check</span>
+                  </div>
+                  ${optionsHtml}
+                </div>
+              </div>
+            </div>
+          </td>
           <td><button type="button" class="btn-apple btn-secondary iku-review-save" data-item-id="${safe(row.item_id)}" onclick="handleIkuOverrideSave(this)">Simpan</button></td>
         </tr>
-      `,
+      `;
+            },
           )
           .join("");
       }
 
       async function handleIkuOverrideSave(button) {
         const itemId = button.dataset.itemId;
-        const select = Array.from(
-          document.querySelectorAll(".iku-review-select"),
-        ).find((candidate) => candidate.dataset.itemId === itemId);
-        if (!select || !select.value) {
+        const hiddenInput = document.getElementById(`hiddenIkuValue_${itemId}`);
+        if (!hiddenInput || !hiddenInput.value) {
           showToast("Pilih IKU dari Nomenklatur terlebih dahulu.");
           return;
         }
         const payload = {
           item_id: itemId,
-          ...JSON.parse(decodeURIComponent(select.value)),
+          ...JSON.parse(decodeURIComponent(hiddenInput.value)),
         };
         await apiPost("/api/iku-review/override", payload);
-        showToast("Review IKU tersimpan. Buka Orkestrasi -> Jalankan Sistem.");
+        showToast("Review IKU tersimpan. Buka Eksekusi -> Jalankan Sistem.");
         state.ikuReview = await apiGet("/api/iku-review/queue?limit=100");
         renderIkuReviewQueue(state.ikuReview);
       }
@@ -4801,13 +5107,23 @@
 
       function renderDashboardLinks(linksPayload = state.dashboardLinks) {
         const panel = document.getElementById("dashboardLinksPanel");
+        const badgeEl = document.getElementById("activeDashboardBadge");
         if (!panel) return;
         const supersetUrl =
           linksPayload?.dashboard_url ||
           "http://localhost:8089/superset/dashboard/dashboard-anggaran-iku-prodi/";
-        const dashboardInfo = linksPayload?.dashboard_id
-          ? `<p style="margin:0 0 0.5rem;font-size:0.8rem;color:var(--text-secondary);">Dashboard aktif: <strong>id ${safe(linksPayload.dashboard_id)}</strong>${linksPayload.dashboard_title ? ` &mdash; ${safe(linksPayload.dashboard_title)}` : ""}${linksPayload.dashboard_target ? ` (target: ${safe(linksPayload.dashboard_target)})` : ""}</p>`
-          : "";
+
+        if (badgeEl) {
+          if (linksPayload?.dashboard_id || linksPayload?.dashboard_title) {
+            const title = linksPayload.dashboard_title || "Dashboard Anggaran IKU";
+            const id = linksPayload.dashboard_id || "5";
+            badgeEl.style.display = "inline-flex";
+            badgeEl.innerHTML = `<span class="material-symbols-outlined" style="font-size:15px; color:var(--accent-primary,#0071e3);">info</span><span>Dashboard aktif: <strong>${safe(title)}</strong> (ID: ${safe(id)})</span>`;
+          } else {
+            badgeEl.style.display = "none";
+          }
+        }
+
         const links = [
           {
             label: "Buka Dashboard Web (Mirror Superset)",
@@ -4822,17 +5138,15 @@
             isPrimary: false,
           },
         ];
-        panel.innerHTML =
-          dashboardInfo +
-          links
-            .map(
-              (link) => `
+        panel.innerHTML = links
+          .map(
+            (link) => `
         <a class="btn-apple ${link.isPrimary ? "btn-primary" : "btn-secondary"}" href="${safeUrl(link.url)}" target="_blank" rel="noreferrer">
           <span class="material-symbols-outlined">${safe(link.icon)}</span> ${safe(link.label)}
         </a>
       `,
-            )
-            .join("");
+          )
+          .join("");
       }
 
       function renderUatOfficialSummary(summary = state.uatSummary) {
@@ -4867,8 +5181,9 @@
       function normalizedSystemServices(servicePayload = state.serviceStatus) {
         const source =
           servicePayload?.services || servicePayload || state.services || {};
+        let list = [];
         if (Array.isArray(source)) {
-          return source.map((item, index) => {
+          list = source.map((item, index) => {
             const service =
               item && typeof item === "object" ? item : { status: item };
             const fallbackName = `service-${index + 1}`;
@@ -4876,15 +5191,24 @@
               service.name || service.key || service.id || fallbackName;
             return [name, service];
           });
+        } else {
+          list = Object.entries(source).map(([key, service]) => {
+            const serviceObject =
+              service && typeof service === "object"
+                ? service
+                : { status: service };
+            const name =
+              serviceObject.name || serviceObject.key || serviceObject.id || key;
+            return [name, serviceObject];
+          });
         }
-        return Object.entries(source).map(([key, service]) => {
-          const serviceObject =
-            service && typeof service === "object"
-              ? service
-              : { status: service };
-          const name =
-            serviceObject.name || serviceObject.key || serviceObject.id || key;
-          return [name, serviceObject];
+
+        const hasOnlineContainers = list.some(([_, s]) => (s.key === "airflow" || s.key === "postgres" || s.key === "minioApi") && (s.status === "online" || s.status === "ready"));
+        return list.map(([name, service]) => {
+          if (service.key === "docker" || name.toLowerCase().includes("docker")) {
+            return [name, { ...service, status: (hasOnlineContainers || service.status === "ready" || service.status === "online") ? "online" : service.status }];
+          }
+          return [name, service];
         });
       }
 

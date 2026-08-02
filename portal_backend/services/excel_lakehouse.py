@@ -8,10 +8,15 @@ from .files import read_json
 from .paths import DATA_DIR, OUTPUTS_DIR, ROOT_DIR
 
 
-_fact_summary_cache: tuple[float, dict[str, Any]] | None = None
+_fact_summary_cache: tuple[tuple[object, ...], dict[str, Any]] | None = None
 
 
-def _get_cached_fact_summary(fact_parquet: Path, fact_csv: Path) -> dict[str, Any]:
+def _get_cached_fact_summary(
+    fact_parquet: Path,
+    fact_csv: Path,
+    active_dataset_session_id: str | None = None,
+    active_run_id: str | None = None,
+) -> dict[str, Any]:
     """⚡ Bolt Optimization: Fast mtime-based cache for fact_anggaran summary.
     Eliminates redundant disk I/O on polling requests when underlying files have not changed.
     """
@@ -21,17 +26,32 @@ def _get_cached_fact_summary(fact_parquet: Path, fact_csv: Path) -> dict[str, An
     mtime_csv = fact_csv.stat().st_mtime if fact_csv.exists() else 0.0
     current_mtime = (str(fact_parquet), str(fact_csv), mtime_parquet, mtime_csv)
 
+    current_mtime = (
+        str(fact_parquet),
+        str(fact_csv),
+        mtime_parquet,
+        mtime_csv,
+        active_dataset_session_id,
+        active_run_id,
+    )
+
     if _fact_summary_cache is not None:
         cached_mtime, cached_result = _fact_summary_cache
         if cached_mtime == current_mtime:
             return cached_result
 
+    base_columns = ["item_id", "jumlah", "jumlah_weighted_iku"]
+    lineage_columns = base_columns + ["dataset_session_id", "run_id"]
     fact_df = None
     if fact_parquet.exists():
         try:
-            fact_df = pd.read_parquet(fact_parquet, columns=["item_id", "jumlah", "jumlah_weighted_iku"])
+            columns = lineage_columns if active_dataset_session_id or active_run_id else base_columns
+            fact_df = pd.read_parquet(fact_parquet, columns=columns)
         except Exception:
-            fact_df = None
+            try:
+                fact_df = pd.read_parquet(fact_parquet, columns=base_columns)
+            except Exception:
+                fact_df = None
 
     if fact_df is None and fact_csv.exists():
         try:
@@ -40,6 +60,13 @@ def _get_cached_fact_summary(fact_parquet: Path, fact_csv: Path) -> dict[str, An
             fact_df = None
 
     fact_summary: dict[str, Any] = {"total_jumlah": None, "total_weighted_iku": None}
+    if fact_df is not None and not fact_df.empty:
+        if active_dataset_session_id and "dataset_session_id" in fact_df.columns:
+            fact_df = fact_df[
+                fact_df["dataset_session_id"].astype(str).eq(str(active_dataset_session_id))
+            ]
+        if active_run_id and "run_id" in fact_df.columns:
+            fact_df = fact_df[fact_df["run_id"].astype(str).eq(str(active_run_id))]
     if fact_df is not None and not fact_df.empty:
         distinct_fact = fact_df.drop_duplicates(subset=["item_id"]) if "item_id" in fact_df.columns else fact_df
         fact_summary = {
@@ -83,7 +110,12 @@ def excel_lakehouse_status() -> dict[str, Any]:
 
     fact_parquet = required["fact_anggaran"]
     fact_csv = DATA_DIR / "generated" / "gold" / "fact_anggaran.csv"
-    fact_summary = _get_cached_fact_summary(fact_parquet, fact_csv)
+    fact_summary = _get_cached_fact_summary(
+        fact_parquet,
+        fact_csv,
+        active_dataset_session_id=metadata.get("dataset_session_id"),
+        active_run_id=metadata.get("run_id") or metadata.get("pipeline_run_id"),
+    )
     return {
         "status": "ready" if ready else "missing",
         "domain": "excel_lakehouse",

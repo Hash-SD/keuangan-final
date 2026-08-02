@@ -26,6 +26,10 @@ field `duration` digunakan terlebih dahulu. Jika field tersebut tidak tersedia,
 selisih `start_date` dan `end_date` dari respons Airflow digunakan. Task yang
 masih berjalan tidak memakai `Date.now()` atau waktu lokal browser; badge-nya
 menampilkan spinner dan status berjalan sampai Airflow mengirim durasi final.
+Jika seluruh durasi task dalam satu stage bernilai nol tetapi timestamp task
+tersedia, stage memakai rentang timestamp Airflow terluas (`max(end_date)` -
+`min(start_date)`) agar tahap EmptyOperator tetap memiliki runtime yang
+terbaca.
 
 Frontend hanya memilih run dan merender `duration_seconds` yang dikirim
 backend. Frontend tidak menghitung ulang runtime.

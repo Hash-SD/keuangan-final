@@ -52,11 +52,14 @@ def test_v2_loads_all_authoritative_dashboard_status_endpoints() -> None:
     for endpoint in [
         "/api/superset/summary",
         "/api/metrics",
-        "/api/airflow/latest",
+        "/api/airflow/runtime",
         "/api/system-truth/status",
         "/api/excel-lakehouse/status",
     ]:
-        assert f'apiGet("{endpoint}")' in html
+        assert (
+            f'apiGet("{endpoint}")' in html
+            or f'apiGet("{endpoint}",' in html
+        )
 
     assert "Promise.allSettled" in html
     assert "buildPortalViewModel({" in html
@@ -97,9 +100,40 @@ def test_v2_pipeline_status_distinguishes_success_running_failed_missing_unreach
         assert f'"{state}"' in html
     assert "function normalizeStatusKind" in html
     assert "function authoritativePipelineState" in html
+
+
+def test_v2_medallion_runtime_is_airflow_authoritative() -> None:
+    html = _html()
+
+    assert "function resolveRuntimeRun" in html
+    assert "Sumber waktu:" in html
+    assert "stageData.duration_seconds" in html
+    assert "Date.now() - new Date(ti.start_date)" not in html
     assert "airflowLatest.run || airflowLatest" in html
     assert "statusKind === \"running\"" in html
     assert "statusKind === \"failed\"" in html
+    assert "medallion-progress-summary" in html
+    assert "pipeline-progress-fill" in html
+    assert "node-task-detail" in html
+    assert "Menunggu ${stageTotal} task Airflow" in html
+    assert 'role="status"' in html
+    assert "progressHtml" not in html
+
+
+def test_v2_pipeline_polling_is_single_request_and_silent_until_error() -> None:
+    html = _html()
+    body = _function_body("triggerAirflowAndWait")
+
+    assert (
+        'apiGet("/api/airflow/runtime")' in html
+        or 'apiGet("/api/airflow/runtime",' in html
+    )
+    assert "function fetchAirflowRuntime" in html
+    assert "airflowRuntimeRequest" in html
+    assert "setTimeout(resolve, 3000)" in body
+    assert "showPipelineLoading" not in body
+    assert body.count("showToast") == 1
+    assert "Gagal menjalankan Airflow" in body
 
 
 def test_v2_stepper_uses_live_step_states_instead_of_static_all_ready() -> None:
@@ -107,9 +141,9 @@ def test_v2_stepper_uses_live_step_states_instead_of_static_all_ready() -> None:
 
     assert "function liveWorkflowSteps" in html
     assert "function renderLiveStepper" in html
-    assert "const steps = viewModel.steps || [];" in html
+    assert "const taskInstances = Array.isArray(progress.task_instances)" in html
     assert ".map((step, idx)" in html
-    assert "step.statusKind" in html
+    assert "const statusClass = stageHasFailure" in html
     assert "ready: true" not in html
 
 
@@ -207,8 +241,7 @@ def test_v2_task3_wires_existing_backend_endpoints_without_frontend_business_log
 
     for endpoint in [
         "/api/upload/session/status",
-        "/api/airflow/active",
-        "/api/airflow/latest",
+        "/api/airflow/runtime",
         "/api/iku-review/queue?limit=100",
         "/api/storage/manifest",
         "/api/data/preview?layer=gold&limit=10",
@@ -219,7 +252,10 @@ def test_v2_task3_wires_existing_backend_endpoints_without_frontend_business_log
         "/api/metrics",
         "/api/status/services",
     ]:
-        assert f'apiGet("{endpoint}")' in html
+        assert (
+            f'apiGet("{endpoint}")' in html
+            or f'apiGet("{endpoint}",' in html
+        )
 
     assert 'apiPost("/api/airflow/trigger", {})' in html
     assert "`/api/airflow/runs/${encodeURIComponent(runId)}`" in html

@@ -5,7 +5,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from .files import read_json, write_json
-from .paths import ACTIVITY_LOG_PATH
+from .paths import ACTIVITY_LOG_PATH, LOGS_DIR, PORTAL_LOG_PATH
 
 
 def _now() -> str:
@@ -34,4 +34,13 @@ def append_activity(action: str, source: str, status: str, message: str, target:
     current = read_activities().get("activities", [])
     current.insert(0, entry)
     write_json(ACTIVITY_LOG_PATH, {"activities": current[:100]})
+
+    try:
+        LOGS_DIR.mkdir(parents=True, exist_ok=True)
+        log_line = f"[{entry['time']}] [{status.upper()}] action={action} source={source} target={target} - {message}\n"
+        with open(PORTAL_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(log_line)
+    except Exception:
+        pass
+
     return entry

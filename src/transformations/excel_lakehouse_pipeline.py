@@ -254,17 +254,9 @@ def _write_session_and_combined(df: pd.DataFrame, layer: str, filename: str, ses
     if "dataset_session_id" not in session_df.columns:
         session_df["dataset_session_id"] = session_id
     session_df.to_csv(session_path, index=False)
+    # The top-level artifact is the active snapshot. Historical data remains
+    # available in the session- and run-scoped paths above.
     combined = session_df
-    if combined_path.exists():
-        try:
-            existing = pd.read_csv(combined_path)
-            if "dataset_session_id" in existing.columns:
-                existing = existing[
-                    existing["dataset_session_id"].fillna("").astype(str) != session_id
-                ]
-                combined = pd.concat([existing, session_df], ignore_index=True, sort=False)
-        except (OSError, pd.errors.ParserError, ValueError):
-            pass
     combined.to_csv(combined_path, index=False)
     _write_parquet(session_path.with_name(f"{Path(filename).stem}.parquet"), session_df)
     _write_parquet(combined_path.with_name(f"{Path(filename).stem}.parquet"), combined)
