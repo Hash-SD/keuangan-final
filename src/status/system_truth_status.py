@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import io
 import json
 import os
 import socket
@@ -15,7 +16,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from src.common.logging_utils import write_json
+from src.common.logging_utils import write_json, write_text
 from src.common.paths import ROOT_DIR
 from src.common.runtime_config import get_runtime_config
 from src.common.time_utils import utc_now_iso
@@ -427,7 +428,6 @@ def build_system_truth_status(base_dir: Path | str | None = None, write_outputs:
 
 
 def _write_csv(path: Path, truth: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
     rows = [
         ["component", "status", "source", "message"],
         ["quality_gate", truth["quality_gate"]["status"], None, None],
@@ -440,9 +440,9 @@ def _write_csv(path: Path, truth: dict[str, Any]) -> None:
         rows.append([f"layer.{layer}", item["status"], ",".join(item.get("existing", [])), None])
     for service, item in truth["services"].items():
         rows.append([f"service.{service}", item["status"], item.get("url") or item.get("host"), item.get("message")])
-    with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.writer(handle)
-        writer.writerows(rows)
+    buffer = io.StringIO(newline="")
+    csv.writer(buffer).writerows(rows)
+    write_text(path, buffer.getvalue())
 
 
 def main() -> None:

@@ -2,6 +2,8 @@
 
 **Sistem Lakehouse Anggaran RAB dan IKU Sains Data**
 
+> Untuk onboarding AI/maintainer, mulai dari [CONTEXT.md](CONTEXT.md), [Panduan Pemahaman AI dan Peta Codebase](docs/AI-CODEBASE-GUIDE.md), dan [Prosedur Pemeliharaan Dokumentasi AI](docs/AI-DOCUMENTATION-MAINTENANCE.md). Dokumentasi tersebut harus diperbarui bersama perubahan kontrak kode.
+
 SILARAS SD adalah sistem lakehouse anggaran berbasis Excel untuk **RAB, RPD/IKU, dan Nomenklatur** dengan arsitektur Medallion (Bronze → Silver → Gold). Pipeline utama berjalan *Excel-only*: cukup unggah workbook Excel, sistem memproses hingga dashboard BI.
 
 ## Arsitektur
