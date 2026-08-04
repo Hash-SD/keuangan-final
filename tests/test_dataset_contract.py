@@ -46,6 +46,37 @@ def test_committed_dataset_requires_matching_hash_and_both_source_kinds(tmp_path
     assert any("checksum file tidak cocok" in error for error in result["errors"])
 
 
+def test_committed_dataset_recovers_mixed_bundle_when_category_metadata_is_wrong(tmp_path):
+    rab_files = [
+        tmp_path / "Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx",
+        tmp_path / "RAB_2025_SD_RAB_IKU.xlsx",
+        tmp_path / "RAB_SD_Usulan_KE_1_Jan-Jun_2023.xlsx",
+        tmp_path / "RAB_SD_Usulan_KE_1_jul-des_2023.xlsx",
+    ]
+    nomenklatur = tmp_path / "Nomenklatur.xlsx"
+    for path in [*rab_files, nomenklatur]:
+        path.write_bytes(path.name.encode())
+
+    payload = {
+        "status": "committed",
+        "upload_state": "COMMITTED",
+        "dataset_session_id": "excel-mixed-bundle",
+        "files": [_entry(path, "nomenklatur") for path in [*rab_files, nomenklatur]],
+    }
+
+    result = validate_committed_dataset(payload, tmp_path)
+
+    assert result["valid"] is True
+    assert result["kinds"] == ["nomenklatur", "rab"]
+    assert [item["jenis_dataset"] for item in result["files"]] == [
+        "rab",
+        "rab",
+        "rab",
+        "rab",
+        "nomenklatur",
+    ]
+
+
 def test_dataset_contract_result_is_json_serializable(tmp_path):
     rab = tmp_path / "RAB_2025.xlsx"
     nomenklatur = tmp_path / "Nomenklatur.xlsx"

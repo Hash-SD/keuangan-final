@@ -96,16 +96,17 @@ context.globalThis = context;
 "use strict";
 (async () => {{
   const activeRun = {{ dag_run_id: "active-run", state: "running" }};
-  const selectedRun = {{ dag_run_id: "selected-run", state: "success" }};
-  const latestRun = {{ dag_run_id: "latest-run", state: "success" }};
-  assert.strictEqual(
-    resolveRuntimeRun({{ run: activeRun }}, selectedRun, {{ run: latestRun }}).dag_run_id,
-    "active-run",
-  );
-  assert.strictEqual(
-    resolveRuntimeRun({{ run: null }}, selectedRun, {{ run: latestRun }}).dag_run_id,
-    "selected-run",
-  );
+  const latestRun = {{ dag_run_id: "latest-run", state: "success", end_date: "2026-08-01T01:02:00Z" }};
+  const pipeline = authoritativePipelineState({{ run: activeRun }}, {{ run: latestRun }}, {{}}, {{}});
+  assert.strictEqual(pipeline.statusKind, "running");
+  assert.strictEqual(pipeline.source, "airflow");
+  assert.strictEqual(pipeline.runId, "active-run");
+  const idlePipeline = authoritativePipelineState(null, {{ run: null }}, {{ pipeline: {{ status: "success" }} }}, {{ status: "ready" }});
+  assert.strictEqual(idlePipeline.statusKind, "success");
+  assert.strictEqual(idlePipeline.source, "system_truth");
+  const unreachablePipeline = authoritativePipelineState(null, {{ status: "unreachable", message: "down" }}, {{}}, {{}});
+  assert.strictEqual(unreachablePipeline.statusKind, "unreachable");
+  assert.strictEqual(unreachablePipeline.lastRun, "down");
 
   const viewModel = buildPortalViewModel({{
     supersetSummary: {{
@@ -195,10 +196,22 @@ context.globalThis = context;
   assert.strictEqual(apiCalls[1].options.method, "POST");
   assert.strictEqual(apiCalls[1].options.headers["Content-Type"], "application/json");
   assert.strictEqual(apiCalls[1].options.body, JSON.stringify({{ hello: "world" }}));
+  fetch = async () => ({{
+    ok: false,
+    status: 400,
+    json: async () => ({{
+      status: "failed",
+      message: "Dataset aktif belum valid.",
+      errors: ["dataset canonical wajib memiliki workbook RAB"]
+    }})
+  }});
+  await assert.rejects(
+    () => apiPost("/api/airflow/trigger", {{}}),
+    (error) => error.message === "Dataset aktif belum valid."
+  );
+  assert.strictEqual(inferUploadKind("RAB_2025_SD_RAB_IKU.xlsx", "nomenklatur"), "rab");
+  assert.strictEqual(inferUploadKind("Nomenklatur.xlsx", "rab"), "nomenklatur");
 
-  state.airflowRuntime = null;
-  state.airflowRuntimeUpdatedAt = 0;
-  state.airflowRuntimeRequest = null;
   let runtimeRequestOptions = null;
   fetch = async (url, options = {{}}) => {{
     runtimeRequestOptions = options;
@@ -208,8 +221,24 @@ context.globalThis = context;
       json: async () => ({{ status: "idle", active: false, active_run: null, latest_run: null }}),
     }};
   }};
-  await fetchAirflowRuntime({{ force: true }});
-  assert.strictEqual(runtimeRequestOptions.cache, "no-store");
+  await apiGetCached("/api/airflow/runtime", 2000);
+  assert.strictEqual(runtimeRequestOptions.cache, undefined);
+
+  clearApiCache();
+  let runtimeCallCount = 0;
+  fetch = async (url, options = {{}}) => {{
+    runtimeCallCount += 1;
+    return {{ ok: true, status: 200, json: async () => ({{ status: "ready", calls: runtimeCallCount }}) }};
+  }};
+  const first = await apiGetCached("/api/airflow/cached-test", 5000);
+  const second = await apiGetCached("/api/airflow/cached-test", 5000);
+  const third = await apiGetCached("/api/airflow/cached-test", 5000);
+  assert.strictEqual(first.calls, 1);
+  assert.strictEqual(second.calls, 1);
+  assert.strictEqual(third.calls, 1);
+  assert.strictEqual(runtimeCallCount, 1);
+  const fresh = await apiGet("/api/airflow/cached-test");
+  assert.strictEqual(runtimeCallCount, 2);
 
   const uploadCalls = [];
   fetch = async (url, options = {{}}) => {{
@@ -221,20 +250,36 @@ context.globalThis = context;
   document.getElementById("uploadStatusBadge");
   document.getElementById("appToast");
   document.getElementById("toastText");
-  state.selectedFiles.push({{ name: "RAB-2025.xlsx", size: 1024 }});
-  state.selectedFiles.push({{ name: "RAB-2026.xlsx", size: 2048 }});
+  document.getElementById("hiddenUploadMode").value = "single";
+  document.getElementById("hiddenPeriodeInput").value = "Tahunan";
+  document.getElementById("tahunInput").value = "2026";
+  document.getElementById("prodiInput").value = "Sains Data";
+  document.getElementById("fakultasInput").value = "Fakultas Sains";
+  document.getElementById("fileExcelInput").files = [{{ name: "runtime.xlsx", size: 1 }}];
+  updateFileNames(document.getElementById("fileExcelInput"));
+  assert.strictEqual(state.pendingUploadFiles.length, 1);
+  document.getElementById("tahunInput").value = "2027";
+  document.getElementById("prodiInput").value = "Teknik Informatika";
+  document.getElementById("fakultasInput").value = "Fakultas Teknologi";
+  document.getElementById("fileExcelInput").files = [{{ name: "runtime-2.xlsx", size: 2 }}];
+  updateFileNames(document.getElementById("fileExcelInput"));
+  assert.strictEqual(state.pendingUploadFiles.length, 2);
+  assert.strictEqual(state.pendingUploadFiles[0].metadata.tahun_input, "2026");
+  assert.strictEqual(state.pendingUploadFiles[1].metadata.tahun_input, "2027");
+  assert.match(document.getElementById("fileSelectedList").innerHTML, /Tahun: 2026/);
+  assert.match(document.getElementById("fileSelectedList").innerHTML, /Tahun: 2027/);
   await handleUploadSubmit({{ preventDefault() {{}} }});
   assert.strictEqual(uploadCalls[0].options.credentials, "include");
   assert.strictEqual(uploadCalls[0].options.method, "POST");
-  assert.strictEqual(uploadCalls[0].options.body.get("append_to_active"), "true");
-  assert.strictEqual(uploadCalls[0].options.body._map["file_excel[]"].name, "RAB-2026.xlsx");
+  assert.ok(uploadCalls[0].options.body instanceof FormData);
+  assert.strictEqual(JSON.parse(uploadCalls[0].options.body.get("file_metadata")).length, 2);
   assert.strictEqual(document.getElementById("uploadStatusBadge").textContent, "Upload Gagal");
   assert.notStrictEqual(document.getElementById("uploadStatusBadge").textContent, "Upload Sukses");
   assert.match(document.getElementById("toastText").textContent, /Gagal mengunggah/);
 
   const trickyItemId = 'item-"[data-x="boom]';
   const encodedOverride = encodeURIComponent(JSON.stringify({{ iku_codes: "IKU-1", detail_id: "detail-1" }}));
-  const trickySelect = {{ value: encodedOverride, dataset: {{ itemId: trickyItemId }} }};
+  document.getElementById("hiddenIkuValue_" + trickyItemId).value = encodedOverride;
   const requestedUrls = [];
   fetch = async (url, options = {{}}) => {{
     requestedUrls.push(String(url).replace("http://localhost:8091", ""));
@@ -248,7 +293,6 @@ context.globalThis = context;
     }}
     return {{ ok: true, status: 200, json: async () => ({{}}) }};
   }};
-  document.querySelectorAll = (selector) => selector === ".iku-review-select" ? [trickySelect] : [];
   document.querySelector = () => {{ throw new Error("raw querySelector must not be used for Review IKU item lookup"); }};
   await handleIkuOverrideSave({{ dataset: {{ itemId: trickyItemId }} }});
   assert.ok(requestedUrls.includes("/api/iku-review/override"));
@@ -288,99 +332,168 @@ context.globalThis = context;
   assert.ok(listServiceHtml.includes("Apache Airflow"));
   assert.ok(!listServiceHtml.includes("<strong>0</strong>"));
 
-  state.selectedAirflowRun = null;
+  const vm = buildPortalViewModel({{
+    supersetSummary: {{ status: "ready", total_jumlah: 1, total_weighted_iku: 1, fact_rows: 1 }},
+    metrics: {{ data_quality_score: 97 }},
+    airflowActive: null,
+    airflowLatest: {{ status: "success", run: {{ state: "success", dag_run_id: "dag-x" }} }},
+    systemTruth: {{ layers: {{ raw: {{ status: "ready" }}, bronze: {{ status: "ready" }}, silver: {{ status: "ready" }}, gold: {{ status: "ready" }} }}, dashboard: {{ status: "created" }}, services: {{}} }},
+    excelLakehouse: {{ fact_anggaran: {{}}, counts: {{}}, artifacts: {{}}, metadata: {{}} }},
+    endpointStatus: {{}},
+  }});
+  assert.strictEqual(vm.steps.length, 5);
+  state._lastViewModel = vm;
+
+  // B-1 regression: per-run detail progress (runData.progress.stages) must win
+  // over the global active/latest progress, so clicking different runs shows
+  // different per-stage durations.
   state.airflowActive = null;
   state.airflowLatest = {{
     run: {{
-      dag_run_id: "latest-with-runtime",
-      state: "success",
-      progress: {{
-        available: true,
-        total_tasks: 18,
-        completed_tasks: 18,
-        progress_pct: 100,
-        started_at: "2026-08-01T01:00:00Z",
-        ended_at: "2026-08-01T01:01:00Z",
-        stages: {{
-          raw: {{ total: 3, done: 3, duration_seconds: 0.3 }},
-          bronze: {{ total: 3, done: 3, duration_seconds: 0.4 }},
-          silver: {{ total: 3, done: 3, duration_seconds: 1.0 }},
-          gold: {{ total: 4, done: 4, duration_seconds: 0.8 }},
-          bi: {{ total: 5, done: 5, duration_seconds: 0.5 }},
-        }},
-        task_instances: [],
-      }},
-    }},
-  }};
-  renderLiveStepper();
-  const latestStepperHtml = document.getElementById("stepperContainer").innerHTML;
-  assert.match(latestStepperHtml, /Sumber waktu:.*Run terakhir Airflow/);
-  assert.match(latestStepperHtml, /Pipeline selesai/);
-  assert.ok(latestStepperHtml.includes("18/18 task diproses"));
-  const latestSummaryValue = latestStepperHtml.match(new RegExp('<span class="pipeline-progress-value">([^<]*)</span>'))?.[1] || "";
-  assert.ok(!latestSummaryValue.includes("18/18 task"));
-  assert.ok(!latestSummaryValue.includes("Â"));
-  assert.match(latestStepperHtml, /100%/);
-  assert.match(latestStepperHtml, /pipeline-progress-fill/);
-  assert.match(latestStepperHtml, /0\.3s/);
-  assert.match(latestStepperHtml, /0\.4s/);
-  assert.match(latestStepperHtml, />1s</);
-  assert.match(latestStepperHtml, /0\.8s/);
-  assert.match(latestStepperHtml, /0\.5s/);
-  assert.ok(!latestStepperHtml.includes("node-task-detail"));
-
-  state.selectedAirflowRun = {{
-    dag_run_id: "historical-selected",
-    state: "success",
-    progress: {{ stages: {{ raw: {{ total: 3, done: 3, duration_seconds: 9.9 }} }}, task_instances: [] }},
-  }};
-  state.airflowActive = {{
-    run: {{
-      dag_run_id: "active-now",
+      dag_run_id: "global-active",
       state: "running",
       progress: {{
         available: true,
         total_tasks: 18,
-        completed_tasks: 1,
-        progress_pct: 6,
-        started_at: "2026-08-01T01:00:00Z",
-        stages: {{ raw: {{ total: 3, done: 1, running: 1, duration_seconds: 0.3 }} }},
-        task_instances: [{{ task_id: "validate_upload_context", state: "running" }}],
+        completed_tasks: 2,
+        progress_pct: 11,
+        stages: {{ raw: {{ total: 3, done: 1, duration_seconds: 100 }} }},
       }},
     }},
   }};
-  renderLiveStepper();
-  const activeStepperHtml = document.getElementById("stepperContainer").innerHTML;
-  assert.match(activeStepperHtml, /Sumber waktu:.*Runtime aktif Airflow/);
-  assert.match(activeStepperHtml, /0\.3s/);
-  assert.ok(!activeStepperHtml.includes("9.9s"));
-  assert.match(activeStepperHtml, /stage-spinner/);
-  assert.match(activeStepperHtml, /Pipeline sedang berjalan/);
-  assert.ok(activeStepperHtml.includes("1/18 task"));
-  assert.match(activeStepperHtml, /Task aktif: validate_upload_context/);
-  assert.match(activeStepperHtml, /Menunggu 3 task Airflow/);
+  const completedRun = {{
+    dag_run_id: "latest-with-runtime",
+    state: "success",
+    start_date: "2026-08-01T01:00:00Z",
+    end_date: "2026-08-01T01:01:00Z",
+    progress: {{
+      available: true,
+      total_tasks: 18,
+      completed_tasks: 18,
+      progress_pct: 100,
+      started_at: "2026-08-01T01:00:00Z",
+      ended_at: "2026-08-01T01:01:00Z",
+      stages: {{
+        raw: {{ total: 3, done: 3, duration_seconds: 3 }},
+        bronze: {{ total: 3, done: 3, duration_seconds: 5 }},
+        silver: {{ total: 3, done: 3, duration_seconds: 7 }},
+        gold: {{ total: 4, done: 4, duration_seconds: 9 }},
+        bi: {{ total: 5, done: 5, duration_seconds: 11 }},
+      }},
+      task_instances: [],
+    }},
+  }};
+  renderLiveStepper(vm, completedRun);
+  const latestStepperHtml = document.getElementById("stepperContainer").innerHTML;
+  assert.ok(!latestStepperHtml.includes("Pipeline sedang berjalan"));
+  assert.ok(!latestStepperHtml.includes("global-active"));
+  assert.ok(latestStepperHtml.includes(">3 d</span>"));
+  assert.ok(latestStepperHtml.includes(">5 d</span>"));
+  assert.ok(latestStepperHtml.includes(">7 d</span>"));
+  assert.ok(latestStepperHtml.includes(">9 d</span>"));
+  assert.ok(latestStepperHtml.includes(">11 d</span>"));
+  assert.match(latestStepperHtml, /stage-timing done/);
 
-  state.selectedAirflowRun = null;
-  state.airflowActive = {{
-    run: {{
-      dag_run_id: "failed-run",
-      state: "failed",
-      progress: {{
-        available: true,
-        total_tasks: 18,
-        completed_tasks: 8,
-        progress_pct: 44,
-        task_instances: [{{ task_id: "normalize_silver", state: "failed" }}],
-        stages: {{ silver: {{ total: 3, done: 1, failed: 1 }} }},
-      }},
+  // Distinct historical run: raw 42 d must NOT come from global active progress.
+  const selectedRunDetail = {{
+    dag_run_id: "historical-selected",
+    state: "success",
+    start_date: "2026-08-01T01:00:00Z",
+    end_date: "2026-08-01T01:01:00Z",
+    progress: {{
+      available: true,
+      total_tasks: 18,
+      completed_tasks: 18,
+      progress_pct: 100,
+      started_at: "2026-08-01T01:00:00Z",
+      ended_at: "2026-08-01T01:01:00Z",
+      stages: {{ raw: {{ total: 3, done: 3, duration_seconds: 42 }} }},
+      task_instances: [],
     }},
   }};
-  state.airflowLatest = null;
-  renderLiveStepper();
+  renderLiveStepper(vm, selectedRunDetail);
+  const selectedStepperHtml = document.getElementById("stepperContainer").innerHTML;
+  assert.ok(selectedStepperHtml.includes(">42 d</span>"));
+  assert.ok(!selectedStepperHtml.includes(">3 d</span>"));
+
+  // Running run: live spinner, task count from its own progress.
+  const runningRun = {{
+    dag_run_id: "active-now",
+    state: "running",
+    start_date: "2026-08-01T01:00:00Z",
+    progress: {{
+      available: true,
+      total_tasks: 18,
+      completed_tasks: 7,
+      progress_pct: 39,
+      current_task: "parse_flexible",
+      started_at: "2026-08-01T01:00:00Z",
+      stages: {{ bronze: {{ total: 3, done: 1, running: 1, started_at: "2026-08-01T01:00:00Z", duration_seconds: 5 }} }},
+      task_instances: [{{ task_id: "parse_flexible", state: "running" }}],
+    }},
+  }};
+  renderLiveStepper(vm, runningRun);
+  const activeStepperHtml = document.getElementById("stepperContainer").innerHTML;
+  assert.match(activeStepperHtml, /Pipeline sedang berjalan/i);
+  assert.match(activeStepperHtml, /stage-spinner/);
+  assert.match(activeStepperHtml, /stage-timing running/);
+  assert.ok(activeStepperHtml.includes("7/18 task"));
+  assert.ok(activeStepperHtml.includes("parse_flexible"));
+
+  // Live ticker: with a running stage it re-renders without throwing; with none
+  // it is a no-op.
+  tickLiveStepper();
+  assert.ok(document.getElementById("stepperContainer").innerHTML.includes("stage-spinner"));
+
+  const idleRun = {{
+    dag_run_id: "idle-run",
+    state: "success",
+    start_date: "2026-08-01T01:00:00Z",
+    end_date: "2026-08-01T01:01:00Z",
+    progress: {{
+      available: true,
+      total_tasks: 18,
+      completed_tasks: 18,
+      progress_pct: 100,
+      started_at: "2026-08-01T01:00:00Z",
+      ended_at: "2026-08-01T01:01:00Z",
+      stages: {{ raw: {{ total: 3, done: 3, duration_seconds: 3 }} }},
+      task_instances: [],
+    }},
+  }};
+  renderLiveStepper(vm, idleRun);
+  const beforeIdleTick = document.getElementById("stepperContainer").innerHTML;
+  tickLiveStepper();
+  const afterIdleTick = document.getElementById("stepperContainer").innerHTML;
+  assert.strictEqual(beforeIdleTick, afterIdleTick);
+
+  // Failed run: failed chip + failed node styling.
+  const failedRun = {{
+    dag_run_id: "failed-run",
+    state: "failed",
+    start_date: "2026-08-01T01:00:00Z",
+    progress: {{
+      available: true,
+      total_tasks: 18,
+      completed_tasks: 8,
+      progress_pct: 44,
+      task_instances: [{{ task_id: "normalize_silver", state: "failed" }}],
+      stages: {{ silver: {{ total: 3, done: 1, failed: 1 }} }},
+    }},
+  }};
+  renderLiveStepper(vm, failedRun);
   const failedStepperHtml = document.getElementById("stepperContainer").innerHTML;
-  assert.match(failedStepperHtml, /Pipeline gagal/);
-  assert.match(failedStepperHtml, /material-symbols-outlined[^>]*>error/);
-  assert.match(failedStepperHtml, /class="pipeline-node failed" data-stage="silver"/);
+  assert.ok(!failedStepperHtml.includes("Pipeline sedang berjalan"));
+  assert.match(failedStepperHtml, /stage-timing failed/);
+  assert.match(failedStepperHtml, /pipeline-node failed/);
+  assert.ok(failedStepperHtml.includes("gagal"));
+
+  // currentAirflowProgress prefers active run, then latest run.
+  state.airflowActive = {{ run: {{ progress: {{ stages: {{ raw: {{ running: 1 }} }} }} }} }};
+  state.airflowLatest = {{ run: {{ progress: {{ stages: {{ raw: {{ done: 1 }} }} }} }} }};
+  assert.strictEqual(currentAirflowProgress().stages.raw.running, 1);
+  state.airflowActive = null;
+  assert.strictEqual(currentAirflowProgress().stages.raw.done, 1);
 
   renderSystemStatus({{ services: {{ trino: {{ name: "Trino Coordinator", role: "SQL Engine", status: "ready", url: "http://localhost:8080" }} }} }});
   const objectServiceHtml = document.getElementById("tblServicesStatus").innerHTML;

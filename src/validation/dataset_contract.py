@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from src.common.workbook_kind import infer_workbook_kind
+
 
 EXCEL_SUFFIXES = {".xlsx", ".xlsm", ".xltx", ".xltm"}
 FORBIDDEN_PATH_PARTS = {"fixture", "fixtures", "synthetic", "sample", "dummy", "test-session", "archive"}
@@ -64,9 +66,7 @@ def validate_committed_dataset(payload: dict[str, Any], root_dir: Path) -> dict[
         actual_hash = _sha256(path)
         if expected_hash and expected_hash != actual_hash:
             errors.append(f"checksum file tidak cocok: {raw_path}")
-        kind = str(item.get("jenis_dataset") or "").strip().lower()
-        if kind not in {"rab", "nomenklatur", "rpd", "iku"}:
-            kind = "nomenklatur" if "nomenklatur" in path.name.lower() else "rab"
+        kind = infer_workbook_kind(path.name, item.get("jenis_dataset"))
         kinds.add(kind)
         # This result is emitted by Airflow as JSON; keep paths portable and
         # serializable instead of leaking pathlib objects across the boundary.

@@ -312,6 +312,48 @@ def test_portal_trigger_endpoint_queues_active_dataset(monkeypatch, tmp_path):
     assert body.get("dataset_session_id") or body.get("conf", {}).get("dataset_session_id") or body.get("run", {}).get("conf", {}).get("dataset_session_id")
 
 
+def test_portal_trigger_repairs_filename_kinds_before_validation(monkeypatch, tmp_path):
+    import portal_backend.app as app_module
+    from portal_backend.app import create_app
+    from portal_backend.services import excel_upload
+
+    raw_dir = tmp_path / "data/raw/excel_lakehouse/dataset-1"
+    raw_dir.mkdir(parents=True)
+    rab = raw_dir / "RAB_2025_SD_RAB_IKU.xlsx"
+    nomenklatur = raw_dir / "Nomenklatur.xlsx"
+    rab.write_bytes(b"rab")
+    nomenklatur.write_bytes(b"nomenklatur")
+    active_path = tmp_path / "outputs/reports/active.json"
+    active_path.parent.mkdir(parents=True)
+    active_path.write_text(
+        '{"dataset_id":"dataset-1","dataset_session_id":"dataset-1",'
+        '"status":"committed","upload_state":"COMMITTED","files":['
+        '{"filename":"RAB_2025_SD_RAB_IKU.xlsx",'
+        '"path":"data/raw/excel_lakehouse/dataset-1/RAB_2025_SD_RAB_IKU.xlsx",'
+        '"jenis_dataset":"nomenklatur"},'
+        '{"filename":"Nomenklatur.xlsx",'
+        '"path":"data/raw/excel_lakehouse/dataset-1/Nomenklatur.xlsx",'
+        '"jenis_dataset":"nomenklatur"}]}',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(excel_upload, "ACTIVE_EXCEL_DATASET_PATH", active_path)
+    monkeypatch.setattr(app_module, "PORTAL_DIR", tmp_path / "portal")
+    monkeypatch.setattr(app_module, "purge_stale_queued_runs", lambda _session: [])
+    monkeypatch.setattr(app_module, "get_active_dag_run", lambda **_kwargs: None)
+    monkeypatch.setattr(app_module, "trigger_dag", lambda **kwargs: {
+        "dag_id": DAG_ID,
+        "dag_run_id": "portal__run-repaired",
+        "dataset_session_id": kwargs["dataset_session_id"],
+        "pipeline_run_id": kwargs["pipeline_run_id"],
+        "state": "queued",
+    })
+
+    response = create_app().test_client().post("/api/airflow/trigger", json={})
+
+    assert response.status_code == 202
+    assert response.get_json()["dag_run_id"] == "portal__run-repaired"
+
+
 def test_portal_trigger_rejects_partial_active_dataset(monkeypatch, tmp_path):
     from portal_backend.app import create_app
     from portal_backend.services import excel_upload

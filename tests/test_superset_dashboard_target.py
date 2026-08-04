@@ -59,3 +59,42 @@ def test_upsert_dashboard_targets_explicit_id_without_slug_match(monkeypatch):
     assert session.put.call_count == 3  # dashboard PUT + 2 chart attaches
     put_url = session.put.call_args_list[0][0][0]
     assert put_url.endswith("/api/v1/dashboard/2")
+
+
+def test_hidden_columns_excluded_from_table_charts():
+    assert assets.HIDDEN_COLUMNS == frozenset({"mapping_status", "data_quality_flag", "source_sheet", "source_row"})
+    assert assets.HIDDEN_COLUMNS.isdisjoint(assets.DETAIL_TABLE_COLUMNS)
+    assert assets.HIDDEN_COLUMNS.isdisjoint(assets.VALIDASI_TABLE_COLUMNS)
+    assert "source_file" in assets.DETAIL_TABLE_COLUMNS
+
+
+def test_deactivate_hidden_columns_marks_inactive():
+    session = Mock()
+    session.get.return_value = Mock(
+        ok=True,
+        status_code=200,
+        json=lambda: {
+            "result": {
+                "columns": [
+                    {"id": 1, "column_name": "tahun"},
+                    {"id": 2, "column_name": "mapping_status"},
+                    {"id": 3, "column_name": "source_row"},
+                ]
+            }
+        },
+    )
+    session.put.return_value = Mock(ok=True, status_code=200, json=lambda: {"result": {"id": 5}})
+
+    deactivated = assets._deactivate_hidden_columns(session, dataset_id=5)
+
+    assert deactivated == ["mapping_status", "source_row"]
+    put_payload = session.put.call_args[1]["json"]
+    by_name = {column["column_name"]: column for column in put_payload["columns"]}
+    assert by_name["tahun"]["is_active"] is True
+    assert by_name["mapping_status"]["is_active"] is False
+    assert by_name["source_row"]["is_active"] is False
+
+
+def test_detail_saved_query_sql_excludes_hidden_columns():
+    for hidden in assets.HIDDEN_COLUMNS:
+        assert hidden not in assets.SAVED_QUERY_DETAIL_SQL

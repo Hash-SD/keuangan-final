@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 import hashlib
+import json
 import re
 import shutil
 
@@ -15,6 +16,7 @@ from werkzeug.utils import secure_filename
 from .files import read_json, relative_path, write_json
 from .paths import DATA_DIR, OUTPUTS_DIR, ROOT_DIR
 from src.common.time_utils import utc_now_iso
+from src.common.workbook_kind import infer_workbook_kind
 
 
 ACTIVE_EXCEL_DATASET_PATH = OUTPUTS_DIR / "reports" / "active_excel_lakehouse_dataset.json"
@@ -27,9 +29,28 @@ def _safe(value: object, fallback: str = "unknown") -> str:
 
 
 def _kind(filename: str, explicit: str | None = None) -> str:
-    if explicit in {"rab", "rpd", "iku", "nomenklatur"}:
-        return explicit
-    return "nomenklatur" if "nomenklatur" in filename.lower() else "rab"
+    return infer_workbook_kind(filename, explicit)
+
+
+def normalize_dataset_file_kinds(payload: dict[str, Any] | None) -> dict[str, Any]:
+    """Return a dataset copy with obvious filename/category mismatches repaired."""
+
+    if not isinstance(payload, dict) or not isinstance(payload.get("files"), list):
+        return payload or {}
+    normalized_files: list[Any] = []
+    changed = False
+    for item in payload["files"]:
+        if not isinstance(item, dict):
+            normalized_files.append(item)
+            continue
+        normalized_kind = _kind(
+            str(item.get("filename") or Path(str(item.get("path") or "")).name),
+            str(item.get("jenis_dataset") or "") or None,
+        )
+        normalized_item = {**item, "jenis_dataset": normalized_kind}
+        normalized_files.append(normalized_item)
+        changed = changed or normalized_item != item
+    return {**payload, "files": normalized_files} if changed else payload
 
 
 def _detect_year(filename: str, fallback: str | None) -> str | None:
@@ -38,10 +59,29 @@ def _detect_year(filename: str, fallback: str | None) -> str | None:
 
 
 def _upload_scope(saved: list[dict[str, Any]], tahun_input: str | None) -> dict[str, Any]:
-    years = sorted({year for item in saved if (year := _detect_year(str(item["filename"]), tahun_input))})
+    years = sorted(
+        {
+            year
+            for item in saved
+            if (
+                year := _detect_year(
+                    str(item["filename"]),
+                    str(item.get("tahun_input") or tahun_input or "") or None,
+                )
+            )
+        }
+    )
     kinds = {str(item.get("jenis_dataset") or "") for item in saved}
     has_nomenklatur = "nomenklatur" in kinds
-    has_2025_like = any("2025" in str(item["filename"]) or _detect_year(str(item["filename"]), tahun_input) == "2025" for item in saved)
+    has_2025_like = any(
+        "2025" in str(item["filename"])
+        or _detect_year(
+            str(item["filename"]),
+            str(item.get("tahun_input") or tahun_input or "") or None,
+        )
+        == "2025"
+        for item in saved
+    )
     warnings: list[str] = []
     if not has_nomenklatur:
         warnings.append("Nomenklatur belum diunggah; mapping IKU dapat berstatus perlu review.")
@@ -58,6 +98,93 @@ def _upload_scope(saved: list[dict[str, Any]], tahun_input: str | None) -> dict[
     }
 
 
+def _parse_file_metadata(raw_value: str, expected_count: int) -> list[dict[str, Any]] | None:
+    if not raw_value:
+        return None
+    try:
+        parsed = json.loads(raw_value)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Metadata setiap file tidak valid.") from exc
+    if not isinstance(parsed, list) or len(parsed) != expected_count or any(
+        not isinstance(item, dict) for item in parsed
+    ):
+        raise ValueError("Metadata setiap file harus berjumlah sama dengan file yang dipilih.")
+    return [dict(item) for item in parsed]
+
+
+def _common_metadata_value(records: list[dict[str, Any]], key: str) -> str | None:
+    values = {str(record.get(key) or "").strip() for record in records}
+    values.discard("")
+    return next(iter(values)) if len(values) == 1 else None
+
+
+def _build_upload_metadata_records(
+    form: Any,
+    upload_count: int,
+    upload_mode: str,
+    legacy_metadata: bool,
+    jenis_dataset: str | None,
+    raw_tahun_input: str,
+    raw_periode: str,
+    raw_prodi: str,
+    raw_fakultas: str,
+) -> list[dict[str, Any]]:
+    entries = _parse_file_metadata(
+        str(form.get("file_metadata") or "").strip(),
+        upload_count,
+    )
+    records: list[dict[str, Any]] = []
+    for index in range(upload_count):
+        entry = entries[index] if entries is not None else {}
+        item_mode = str(entry.get("upload_mode") or upload_mode).strip().lower()
+        if item_mode != upload_mode:
+            raise ValueError("Semua file dalam satu antrean harus memakai mode upload yang sama.")
+        item_kind = str(entry.get("jenis_dataset") or jenis_dataset or "").strip().lower() or None
+        item_tahun = str(entry.get("tahun_input") or raw_tahun_input).strip()
+        item_periode = str(entry.get("periode") or raw_periode).strip()
+        item_prodi = str(entry.get("prodi") or raw_prodi).strip()
+        item_fakultas = str(entry.get("fakultas") or raw_fakultas).strip()
+        if item_mode == "multi":
+            records.append(
+                {
+                    "upload_mode": "multi",
+                    "jenis_dataset": item_kind,
+                    "tahun_input": None,
+                    "periode": None,
+                    "prodi": None,
+                    "fakultas": None,
+                }
+            )
+            continue
+        missing_metadata = [
+            label
+            for label, value in (
+                ("Tahun Input", item_tahun),
+                ("Periode", item_periode),
+                ("Prodi", item_prodi),
+                ("Fakultas", item_fakultas),
+            )
+            if not value
+        ]
+        if missing_metadata and not legacy_metadata:
+            raise ValueError(
+                f"Metadata upload single pada file ke-{index + 1} wajib diisi: "
+                + ", ".join(missing_metadata)
+                + "."
+            )
+        records.append(
+            {
+                "upload_mode": "single",
+                "jenis_dataset": item_kind,
+                "tahun_input": item_tahun or None,
+                "periode": item_periode or ("Tahunan" if legacy_metadata else None),
+                "prodi": item_prodi or ("Sains Data" if legacy_metadata else None),
+                "fakultas": item_fakultas or ("Fakultas Sains" if legacy_metadata else None),
+            }
+        )
+    return records
+
+
 def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
     upload_started_at = utc_now_iso()
     uploads: list[FileStorage] = []
@@ -66,11 +193,53 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
     if not uploads:
         raise ValueError("Minimal satu file Excel wajib diunggah.")
 
-    tahun_input = str(form.get("tahun_input") or form.get("tahun_anggaran") or "").strip()
-    prodi = str(form.get("prodi") or "Sains Data").strip()
-    fakultas = str(form.get("fakultas") or "Fakultas Sains").strip()
-    periode = str(form.get("periode") or "").strip() or None
     jenis_dataset = str(form.get("jenis_dataset") or "").strip().lower() or None
+    raw_upload_mode = str(form.get("upload_mode") or "").strip().lower()
+    legacy_metadata = not raw_upload_mode
+    upload_mode = raw_upload_mode or ("multi" if jenis_dataset == "rpd" else "single")
+    if upload_mode not in {"single", "multi"}:
+        raise ValueError("Mode upload tidak valid. Gunakan single atau multi.")
+
+    raw_tahun_input = str(form.get("tahun_input") or form.get("tahun_anggaran") or "").strip()
+    raw_periode = str(form.get("periode") or "").strip()
+    raw_prodi = str(form.get("prodi") or "").strip()
+    raw_fakultas = str(form.get("fakultas") or "").strip()
+    metadata_records = _build_upload_metadata_records(
+        form,
+        len(uploads),
+        upload_mode,
+        legacy_metadata,
+        jenis_dataset,
+        raw_tahun_input,
+        raw_periode,
+        raw_prodi,
+        raw_fakultas,
+    )
+    tahun_input = _common_metadata_value(metadata_records, "tahun_input")
+    periode = _common_metadata_value(metadata_records, "periode")
+    prodi = _common_metadata_value(metadata_records, "prodi")
+    fakultas = _common_metadata_value(metadata_records, "fakultas")
+    dataset_jenis_dataset = _common_metadata_value(metadata_records, "jenis_dataset")
+    metadata_mixed = len(
+        {
+            tuple(record.get(key) for key in ("upload_mode", "tahun_input", "periode", "prodi", "fakultas"))
+            for record in metadata_records
+        }
+    ) > 1
+    metadata_years = sorted(
+        {
+            str(record["tahun_input"])
+            for record in metadata_records
+            if record.get("tahun_input")
+        }
+    )
+    target_year = (
+        metadata_years[0]
+        if len(metadata_years) == 1
+        else "multi-year"
+        if metadata_years
+        else "unknown"
+    )
     catatan = str(form.get("catatan") or "").strip() or None
     append_to_active = str(form.get("append_to_active") or "").strip().lower() == "true"
     dashboard_mode = str(form.get("dashboard_mode") or "update").strip().lower()
@@ -88,12 +257,13 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
     if len(uploads) > 20:
         raise ValueError("Jumlah workbook melebihi batas 20 file per dataset.")
     staging_dir = DATA_DIR / "uploads" / "staging" / dataset_id
-    target_dir = DATA_DIR / "raw" / "excel_lakehouse" / _safe(tahun_input, "unknown") / dataset_id
+    target_dir = DATA_DIR / "raw" / "excel_lakehouse" / _safe(target_year, "unknown") / dataset_id
     saved: list[dict[str, Any]] = []
     seen_names: set[str] = set()
     try:
         staging_dir.mkdir(parents=True, exist_ok=False)
-        for upload in uploads:
+        for index, upload in enumerate(uploads):
+            metadata = metadata_records[index]
             suffix = Path(upload.filename or "").suffix.lower()
             if suffix not in {".xlsx", ".xlsm", ".xltx", ".xltm"}:
                 raise ValueError("Semua file harus berupa workbook Excel .xlsx/.xlsm/.xltx/.xltm.")
@@ -124,10 +294,22 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
                     "sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
                     "workbook_openable": True,
                     "sheet_count": sheet_count,
-                    "jenis_dataset": _kind(filename, jenis_dataset),
+                    "jenis_dataset": _kind(
+                        filename,
+                        None if metadata["upload_mode"] == "multi" else metadata.get("jenis_dataset"),
+                    ),
+                    "upload_mode": metadata["upload_mode"],
+                    "tahun_input": metadata["tahun_input"],
+                    "periode": metadata["periode"],
+                    "prodi": metadata["prodi"],
+                    "fakultas": metadata["fakultas"],
                 }
             )
-        active = read_json(ACTIVE_EXCEL_DATASET_PATH) if append_to_active else None
+        active = (
+            normalize_dataset_file_kinds(read_json(ACTIVE_EXCEL_DATASET_PATH))
+            if append_to_active
+            else None
+        )
         active_files = active.get("files", []) if isinstance(active, dict) and active.get("status") == "committed" else []
         if active_files:
             first_path = Path(str(active_files[0].get("path") or ""))
@@ -162,11 +344,14 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
         "upload_state": "COMMITTED",
         "validation_status": "VALIDATED",
         "excel_only": True,
+        "upload_mode": upload_mode,
+        "metadata_scope": "bundle" if upload_mode == "multi" else "per_file",
+        "metadata_mixed": metadata_mixed,
         "tahun_input": tahun_input or None,
         "periode": periode,
         "prodi": prodi,
         "fakultas": fakultas,
-        "jenis_dataset": jenis_dataset,
+        "jenis_dataset": dataset_jenis_dataset or jenis_dataset,
         "catatan": catatan,
         "dashboard_mode": dashboard_mode,
         "dashboard_database_id": dashboard_database_id,

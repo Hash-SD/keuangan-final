@@ -10,13 +10,21 @@
     <meta name="theme-color" content="#0071e3" />
     <title>SILARAS SD - Portal Lakehouse Anggaran & IKU</title>
 
-    <!-- Apple Font & Material Symbols -->
+    <!-- Apple Font & Material Symbols (non-blocking: print+onload swap pattern) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Material+Symbols+Outlined:FILL,wght,GRAD,opsz@0..1,100..700,-25..200,20..48&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.onload=null;this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Material+Symbols+Outlined:FILL,wght,GRAD,opsz@0..1,100..700,-25..200,20..48&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <style>
       /* ==========================================================================
@@ -1599,43 +1607,10 @@
         pointer-events: auto;
       }
 
-      @keyframes loadingPulse {
-        0% {
-          left: -40%;
-          width: 40%;
-        }
-        50% {
-          left: 40%;
-          width: 60%;
-        }
-        100% {
-          left: 100%;
-          width: 40%;
-        }
-      }
-
       @keyframes spin {
         to {
           transform: rotate(360deg);
         }
-      }
-
-      /* Loading Overlays: bounded to the dashboard content area so the
-         sidebar, top header, and footer stay visible and non-blocking. */
-      .loading-overlay {
-        position: fixed;
-        top: var(--header-height);
-        bottom: var(--footer-height);
-        left: var(--sidebar-width);
-        right: 0;
-        z-index: 99999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition:
-          opacity 0.4s ease,
-          visibility 0.4s ease;
       }
 
       /* Skeleton Loading Shimmer System */
@@ -1683,115 +1658,9 @@
         }
       }
 
-      #appLoadingOverlay {
-        display: none !important;
-      }
     </style>
   </head>
   <body>
-    <!-- Initial App Loading Screen Overlay (Disabled in favor of Skeleton Loading) -->
-    <div
-      id="appLoadingOverlay"
-      class="loading-overlay"
-      aria-live="polite"
-      style="display: none !important;"
-    >
-      <div
-        style="
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          max-width: 420px;
-          padding: 2rem;
-        "
-      >
-        <div
-          style="
-            width: 64px;
-            height: 64px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, #0071e3 0%, #409cff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 25px rgba(0, 113, 227, 0.3);
-            margin-bottom: 1.25rem;
-          "
-        >
-          <span
-            class="material-symbols-outlined"
-            style="font-size: 34px; color: #ffffff"
-            >account_balance</span
-          >
-        </div>
-        <h2
-          style="
-            font-size: 1.45rem;
-            font-weight: 700;
-            color: var(--text-primary, #1d1d1f);
-            margin-bottom: 0.35rem;
-          "
-        >
-          SILARAS SD Portal
-        </h2>
-        <p
-          style="
-            font-size: 0.85rem;
-            color: var(--text-secondary, #86868b);
-            margin-bottom: 1.5rem;
-          "
-        >
-          Memuat Data Live & Status System Truth Lakehouse...
-        </p>
-        <div
-          style="
-            width: 220px;
-            height: 4px;
-            background: rgba(0, 113, 227, 0.15);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-            position: relative;
-          "
-        >
-          <div
-            style="
-              position: absolute;
-              top: 0;
-              bottom: 0;
-              left: 0;
-              background: linear-gradient(90deg, #0071e3, #409cff);
-              border-radius: 2px;
-              animation: loadingPulse 1.2s infinite ease-in-out;
-            "
-          ></div>
-        </div>
-        <span
-          style="
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-secondary, #86868b);
-          "
-          >Sinkronisasi Medallion & Airflow...</span
-        >
-      </div>
-    </div>
-
-    <div id="pipelineLoadingOverlay" class="loading-overlay" aria-live="assertive" aria-busy="false" style="display:none; background:rgba(245,245,247,.94); backdrop-filter:blur(18px); z-index:100000;">
-      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; max-width:440px; padding:2rem;">
-        <div style="width:64px; height:64px; border-radius:18px; background:linear-gradient(135deg,#0071e3,#409cff); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 25px rgba(0,113,227,.3); margin-bottom:1.25rem;">
-          <span class="material-symbols-outlined" style="font-size:34px;color:#fff;animation:spin 1.1s linear infinite">sync</span>
-        </div>
-        <h2 id="pipelineLoadingTitle" style="font-size:1.45rem;font-weight:700;color:var(--text-primary,#1d1d1f);margin-bottom:.35rem">Menjalankan Sistem</h2>
-        <p id="pipelineLoadingMessage" style="font-size:.85rem;color:var(--text-secondary,#86868b);margin-bottom:1.5rem">Mengirim pipeline ke Airflow...</p>
-        <div style="width:280px;height:6px;background:rgba(0,113,227,.15);border-radius:3px;overflow:hidden;position:relative;margin-bottom:1rem">
-          <div id="pipelineProgressBar" style="position:absolute;top:0;left:0;bottom:0;width:15%;background:linear-gradient(90deg,#0071e3,#409cff);border-radius:3px;transition:width 0.4s ease-in-out"></div>
-        </div>
-        <span id="pipelineLoadingState" style="font-size:.78rem;font-weight:600;color:var(--text-secondary,#86868b)">Menunggu Airflow...</span>
-      </div>
-    </div>
-
     <div class="app-viewport">
       <!-- 1. COLLAPSIBLE SIDEBAR NAV (Auto Hover Expand & Collapse) -->
       <aside
@@ -2022,6 +1891,9 @@
               </p>
 
               <form id="excelUploadForm" onsubmit="handleUploadSubmit(event)">
+                <input type="hidden" name="upload_mode" id="hiddenUploadMode" value="single" />
+                <input type="hidden" name="append_to_active" id="hiddenAppendToActive" value="false" />
+                <input type="hidden" name="jenis_dataset" id="hiddenJenisDataset" value="rab" />
                 <!-- Selector Jenis Upload -->
                 <div class="form-group" style="margin-bottom: 1.25rem">
                   <label class="form-label" style="font-weight: 600"
@@ -2073,7 +1945,7 @@
                   </div>
                 </div>
 
-                <!-- Context Metadata Fields (Required for RAB & Multi-File, Hidden for Nomenklatur) -->
+                <!-- Metadata wajib untuk upload satuan; Bundel Multi-File/RPD tidak memerlukannya. -->
                 <div
                   id="metadataFieldsContainer"
                   style="
@@ -2087,9 +1959,11 @@
                     <label class="form-label">Tahun Input</label>
                     <input
                       class="input-apple"
+                      id="tahunInput"
                       name="tahun_input"
                       value=""
                       placeholder="2026"
+                      oninput="refreshSelectedUploadDetails()"
                       required
                     />
                   </div>
@@ -2121,22 +1995,28 @@
                         </div>
                       </div>
                     </div>
-                    <input type="hidden" name="periode" id="hiddenPeriodeInput" value="Tahunan" />
+                    <input type="hidden" name="periode" id="hiddenPeriodeInput" value="Tahunan" required />
                   </div>
                   <div class="form-group">
                     <label class="form-label">Prodi</label>
                     <input
                       class="input-apple"
+                      id="prodiInput"
                       name="prodi"
                       value="Sains Data"
+                      oninput="refreshSelectedUploadDetails()"
+                      required
                     />
                   </div>
                   <div class="form-group">
                     <label class="form-label">Fakultas</label>
                     <input
                       class="input-apple"
+                      id="fakultasInput"
                       name="fakultas"
                       value="Fakultas Sains"
+                      oninput="refreshSelectedUploadDetails()"
+                      required
                     />
                   </div>
                 </div>
@@ -2676,6 +2556,13 @@
               <p class="card-subtitle">
                 Total nominal dan rincian alokasi anggaran yang ditarik secara live dari sistem BI.
               </p>
+              <p
+                class="card-subtitle"
+                id="dashSummaryStatus"
+                style="color:var(--text-secondary);"
+              >
+                Data ringkasan Superset belum tersedia.
+              </p>
 
               <div class="metrics-grid" style="margin-bottom: 1.5rem">
                 <div class="metric-card">
@@ -2683,16 +2570,23 @@
                     >Total Anggaran (Superset API)</span
                   >
                   <div class="metric-value" id="dashTotalAnggaran">
-                    Rp 517.361.656
+                    -
                   </div>
                 </div>
+                <p
+                  class="card-subtitle"
+                  id="uploadMetadataHint"
+                  style="margin-top: -0.75rem; margin-bottom: 1.25rem;"
+                >
+                  Upload satuan menyimpan detail pilihan ini pada setiap file. Upload berikutnya akan menambah dataset aktif.
+                </p>
                 <div class="metric-card">
                   <span class="metric-label">Total Baris Fact (Gold)</span>
-                  <div class="metric-value" id="dashFactRows">253</div>
+                  <div class="metric-value" id="dashFactRows">-</div>
                 </div>
                 <div class="metric-card">
                   <span class="metric-label">Jumlah Akun Belanja</span>
-                  <div class="metric-value" id="dashAkunCount">5</div>
+                  <div class="metric-value" id="dashAkunCount">-</div>
                 </div>
               </div>
 
@@ -3016,6 +2910,8 @@
         portalLoadStatus: "idle",
         portalViewModel: null,
         uploadSession: null,
+        uploadCategory: "rab",
+        pendingUploadFiles: [],
         airflowActive: null,
         storageManifest: null,
         goldPreview: null,
@@ -3079,15 +2975,15 @@
         ],
       };
 
-      // Helper Formatter
-      const rupiah = (val) =>
-        new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          maximumFractionDigits: 0,
-        }).format(Number(val || 0));
-      const n = (val) =>
-        new Intl.NumberFormat("id-ID").format(Number(val || 0));
+      // Helper Formatter (hoisted Intl instances, reused across renders)
+      const _idrFmt = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+      });
+      const _numFmt = new Intl.NumberFormat("id-ID");
+      const rupiah = (val) => _idrFmt.format(Number(val || 0));
+      const n = (val) => _numFmt.format(Number(val || 0));
       function escapeHtml(value) {
         return String(value)
           .replaceAll("&", "&amp;")
@@ -3136,11 +3032,23 @@
       }
 
       // API Helpers
+      async function apiErrorMessage(res, fallback = `HTTP Error ${res.status}`) {
+        try {
+          const payload = await res.json();
+          const details = Array.isArray(payload?.errors)
+            ? payload.errors.filter(Boolean).join("; ")
+            : "";
+          return payload?.message || details || fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
       async function apiGet(path) {
         const res = await fetch(`${API_BASE_URL}${path}`, {
           credentials: "include",
         });
-        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        if (!res.ok) throw new Error(await apiErrorMessage(res));
         return await res.json();
       }
 
@@ -3151,8 +3059,45 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
-        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        if (!res.ok) throw new Error(await apiErrorMessage(res));
         return await res.json();
+      }
+
+      // Shared GET cache: TTL + in-flight promise dedupe.
+      // Collapses the N duplicate polls seen in baseline (airflow/active ×17, etc.)
+      // into a single network request per (path, ttl) window. Immutable by design:
+      // every response is stored as a fresh object and stale entries are dropped.
+      const _getCache = new Map();
+      const _inflight = new Map();
+      function _cacheKey(path) {
+        return `${path}`;
+      }
+      async function apiGetCached(path, ttlMs) {
+        const key = _cacheKey(path);
+        const now = Date.now();
+        const hit = _getCache.get(key);
+        if (hit && now < hit.expiresAt) return hit.value;
+        if (_inflight.has(key)) return _inflight.get(key);
+        const p = apiGet(path).then(
+          (value) => {
+            _getCache.set(key, {
+              value,
+              expiresAt: Date.now() + (ttlMs == null ? 2000 : ttlMs),
+            });
+            _inflight.delete(key);
+            return value;
+          },
+          (err) => {
+            _inflight.delete(key);
+            throw err;
+          }
+        );
+        _inflight.set(key, p);
+        return p;
+      }
+      function clearApiCache() {
+        _getCache.clear();
+        _inflight.clear();
       }
 
       // UI Router & Layout State
@@ -3239,7 +3184,9 @@
         if (window.location.hash !== `#${pageId}`) {
           history.replaceState(null, "", `#${pageId}`);
         }
-        if (pageId === "beranda") refreshDashboardTargets();
+        if (pageId === "beranda" || pageId === "dashboard") {
+          refreshDashboardTargets();
+        }
       }
 
       function expandSidebarHover() {
@@ -3370,14 +3317,14 @@
         const trigger = _activeDropdown.querySelector(".apple-custom-select-trigger");
         const menu    = _activeDropdown._detachedMenu;
         if (trigger && menu) _positionFloatingMenu(trigger, menu);
-      }, true);
+      }, { capture: true, passive: true });
 
       window.addEventListener("resize", () => {
         if (!_activeDropdown) return;
         const trigger = _activeDropdown.querySelector(".apple-custom-select-trigger");
         const menu    = _activeDropdown._detachedMenu;
         if (trigger && menu) _positionFloatingMenu(trigger, menu);
-      });
+      }, { passive: true });
 
       document.addEventListener("mousedown", (e) => {
         if (!_activeDropdown) return;
@@ -3429,6 +3376,7 @@
         if (textSpan) textSpan.textContent = label;
         const hiddenInput = inputId ? document.getElementById(inputId) : document.getElementById("hiddenPeriodeInput");
         if (hiddenInput) hiddenInput.value = value;
+        if (typeof refreshSelectedUploadDetails === "function") refreshSelectedUploadDetails();
 
         // use querySelectorAll on both the dropdown and any detached floating menu
         const menu = dropdown._detachedMenu || dropdown;
@@ -3587,7 +3535,63 @@
         document.getElementById("btnPeriodeSemester")?.classList.toggle("active", val === "Semester / Parsial");
       }
 
+      function uploadCategoryMode(category) {
+        return category === "multi" ? "multi" : "single";
+      }
+
+      function setUploadMetadataState(category = "rab") {
+        const mode = uploadCategoryMode(category);
+        const isMulti = mode === "multi";
+        const modeInput = document.getElementById("hiddenUploadMode");
+        const kindInput = document.getElementById("hiddenJenisDataset");
+        if (modeInput) modeInput.value = mode;
+        if (kindInput) {
+          kindInput.value = category === "nomenklatur" ? "nomenklatur" : category === "rab" ? "rab" : "";
+        }
+
+        const container = document.getElementById("metadataFieldsContainer");
+        if (container) {
+          container.style.display = isMulti ? "none" : "grid";
+          container.querySelectorAll("input").forEach((input) => {
+            input.disabled = isMulti;
+            if (isMulti) {
+              input.removeAttribute("required");
+            } else if (["tahun_input", "periode", "prodi", "fakultas"].includes(input.name)) {
+              input.setAttribute("required", "required");
+            }
+          });
+        }
+
+        const periodeInput = document.getElementById("hiddenPeriodeInput");
+        const periodeText = document.getElementById("selectedPeriodeText");
+        if (periodeInput) {
+          if (isMulti) {
+            periodeInput.dataset.previousValue = periodeInput.value || "Tahunan";
+            periodeInput.value = "";
+          } else if (!periodeInput.value) {
+            periodeInput.value = periodeInput.dataset.previousValue || "Tahunan";
+          }
+        }
+        if (periodeText) periodeText.textContent = isMulti ? "Tidak diperlukan" : periodeInput?.value || "Tahunan";
+
+        const hint = document.getElementById("uploadMetadataHint");
+        if (hint) {
+          hint.textContent = isMulti
+            ? "Bundel Multi-File / RPD menyimpan file sebagai satu bundel; Tahun Input, Periode, Prodi, dan Fakultas tidak diperlukan."
+            : "Upload satuan menyimpan detail pilihan ini pada setiap file. Upload berikutnya akan menambah dataset aktif.";
+        }
+        const input = document.getElementById("fileExcelInput");
+        if (input) renderUploadFileList(state.pendingUploadFiles, state.uploadSession);
+      }
+
       function selectUploadCategory(category) {
+        const requestedMode = uploadCategoryMode(category);
+        const currentMode = uploadCategoryMode(state.uploadCategory || "rab");
+        if (state.pendingUploadFiles.length > 0 && requestedMode !== currentMode) {
+          showToast("Selesaikan atau hapus antrean file sebelum mengganti mode upload.");
+          return;
+        }
+        state.uploadCategory = category;
         document
           .getElementById("btnCatRab")
           ?.classList.toggle("active", category === "rab");
@@ -3597,22 +3601,7 @@
         document
           .getElementById("btnCatMulti")
           ?.classList.toggle("active", category === "multi");
-
-        const container = document.getElementById("metadataFieldsContainer");
-        if (container) {
-          if (category === "nomenklatur") {
-            container.style.display = "none";
-            container
-              .querySelectorAll("input")
-              .forEach((input) => input.removeAttribute("required"));
-          } else {
-            container.style.display = "grid";
-            const tahunInput = container.querySelector(
-              'input[name="tahun_input"]',
-            );
-            if (tahunInput) tahunInput.setAttribute("required", "required");
-          }
-        }
+        setUploadMetadataState(category);
       }
 
       function formatFileSize(bytes) {
@@ -3647,65 +3636,254 @@
           : "";
       }
 
-      function updateFileNames(input) {
+      function readUploadField(id) {
+        const input = document.getElementById(id);
+        return String(input?.value || "").trim();
+      }
+
+      function currentUploadMetadata() {
+        const mode = document.getElementById("hiddenUploadMode")?.value || "single";
+        const kind = document.getElementById("hiddenJenisDataset")?.value || "";
+        if (mode === "multi") return { upload_mode: "multi", jenis_dataset: kind || null };
+        return {
+          upload_mode: "single",
+          jenis_dataset: kind || null,
+          tahun_input: readUploadField("tahunInput"),
+          periode: readUploadField("hiddenPeriodeInput"),
+          prodi: readUploadField("prodiInput"),
+          fakultas: readUploadField("fakultasInput"),
+        };
+      }
+
+      function inferUploadKind(filename, selectedKind = null) {
+        const name = String(filename || "").toLowerCase();
+        if (name.includes("nomenklatur")) return "nomenklatur";
+        if (name.includes("anggaran") || /(^|[^a-z])rab([^a-z]|$)/.test(name)) return "rab";
+        return selectedKind || null;
+      }
+
+      function uploadFileDetail(file = {}, session = {}) {
+        const source = { ...(session || {}), ...(file || {}) };
+        const mode = source.upload_mode || session?.upload_mode || "single";
+        if (mode === "multi") return "Bundel Multi-File / RPD · metadata tidak diperlukan";
+        return [
+          `Tahun: ${safe(source.tahun_input)}`,
+          `Periode: ${safe(source.periode)}`,
+          `Prodi: ${safe(source.prodi)}`,
+          `Fakultas: ${safe(source.fakultas)}`,
+        ].join(" · ");
+      }
+
+      function pendingFileKey(file) {
+        return String(file?.name || "").trim().toLowerCase();
+      }
+
+      function renderUploadFileItem(entry, session, label, pendingIndex = null) {
+        const file = entry?.file || entry || {};
+        const metadata = entry?.metadata || file;
+        const name = file.filename || file.name || "workbook.xlsx";
+        const type = fileTypeLabel(name);
+        const cls = fileTypeClass(name);
+        const size = formatFileSize(file.size_bytes ?? file.size ?? 0);
+        const detailSource = { ...metadata, filename: name };
+        const kind = detailSource.jenis_dataset ? `Jenis: ${safe(detailSource.jenis_dataset)} · ` : "";
+        const removeControl = pendingIndex === null
+          ? ""
+          : `<button type="button" class="file-list-clear" onclick="removePendingUploadFile(${pendingIndex})" aria-label="Hapus ${escapeHtml(name)}"><span class="material-symbols-outlined">close</span> Hapus</button>`;
+        return `
+          <li class="file-item" title="${escapeHtml(name)}">
+            <span class="file-item-icon ${cls}">${escapeHtml(type)}</span>
+            <span class="file-item-body">
+              <span class="file-item-name">${escapeHtml(name)}</span>
+              <span class="file-item-meta">${kind}${uploadFileDetail(detailSource, session)}</span>
+              <span class="file-item-meta">${escapeHtml(label)}</span>
+            </span>
+            <span class="file-item-size">${escapeHtml(size)}</span>
+            ${removeControl}
+          </li>`;
+      }
+
+      function renderUploadFileList(pendingEntries = state.pendingUploadFiles, session = state.uploadSession) {
         const list = document.getElementById("fileSelectedList");
-        const files = Array.from(input.files || []);
-        if (files.length === 0) {
+        if (!list) return;
+        const committedFiles = Array.isArray(session?.files) ? session.files : [];
+        const pendingFiles = Array.isArray(pendingEntries) ? pendingEntries : [];
+        if (committedFiles.length === 0 && pendingFiles.length === 0) {
           list.innerHTML = "";
           return;
         }
-
-        const items = files
-          .map((f, i) => {
-            const name = f.name;
-            const type = fileTypeLabel(name);
-            const cls = fileTypeClass(name);
-            const size = formatFileSize(f.size);
-            return `
-            <li class="file-item" title="${escapeHtml(name)}">
-              <span class="file-item-icon ${cls}">${escapeHtml(type)}</span>
-              <span class="file-item-body">
-                <span class="file-item-name">${escapeHtml(name)}</span>
-                <span class="file-item-meta">File ${i + 1} dari ${files.length}</span>
-              </span>
-              <span class="file-item-size">${size}</span>
-            </li>`;
-          })
+        const committedItems = committedFiles
+          .map((file) => renderUploadFileItem(file, session, "tersimpan di dataset aktif"))
           .join("");
-
+        const pendingItems = pendingFiles
+          .map((entry, index) => renderUploadFileItem(entry, session, "menunggu upload", index))
+          .join("");
+        const allItems = committedItems + pendingItems;
+        const summary = pendingFiles.length
+          ? `${pendingFiles.length} file dipilih${committedFiles.length ? ` · ${committedFiles.length} file tersimpan` : ""}`
+          : `${committedFiles.length} file tersimpan di dataset aktif`;
         list.innerHTML = `
           <div class="file-list-panel">
             <div class="file-list-summary">
               <span class="file-list-summary-left">
                 <span class="material-symbols-outlined">folder_open</span>
-                <strong>${files.length} file dipilih</strong>
-                <small>siap untuk diunggah</small>
+                <strong>${escapeHtml(summary)}</strong>
+                <small>${pendingFiles.length ? "periksa detail tiap file sebelum Upload Data" : "siap ditinjau atau ditambah"}</small>
               </span>
-              <button type="button" class="file-list-clear" onclick="clearFiles()">
-                <span class="material-symbols-outlined">close</span>
-                Hapus
-              </button>
+              ${pendingFiles.length ? `<button type="button" class="file-list-clear" onclick="clearFiles()"><span class="material-symbols-outlined">close</span> Hapus semua pilihan</button>` : ""}
             </div>
-            <ul class="file-list">${items}</ul>
+            <ul class="file-list">${allItems}</ul>
           </div>`;
+      }
+
+      function updateFileNames(input) {
+        const files = Array.from(input?.files || []);
+        if (files.length === 0) {
+          renderUploadFileList(state.pendingUploadFiles, state.uploadSession);
+          return;
+        }
+        const metadata = currentUploadMetadata();
+        const pendingModes = new Set(
+          state.pendingUploadFiles.map((entry) => entry.metadata?.upload_mode || "single"),
+        );
+        if (pendingModes.size > 0 && !pendingModes.has(metadata.upload_mode)) {
+          showToast("Selesaikan atau hapus antrean file sebelum mengganti mode upload.");
+          input.value = "";
+          return;
+        }
+        const existingKeys = new Set(state.pendingUploadFiles.map((entry) => pendingFileKey(entry.file)));
+        const batchKeys = new Set();
+        const duplicates = [];
+        const additions = [];
+        files.forEach((file) => {
+          const key = pendingFileKey(file);
+          if (!key || existingKeys.has(key) || batchKeys.has(key)) {
+            duplicates.push(file.name || "workbook.xlsx");
+            return;
+          }
+          batchKeys.add(key);
+          additions.push({
+            file,
+            metadata: {
+              ...metadata,
+              jenis_dataset: inferUploadKind(file.name, metadata.jenis_dataset),
+            },
+          });
+        });
+        state.pendingUploadFiles = [...state.pendingUploadFiles, ...additions];
+        input.value = "";
+        if (duplicates.length > 0) {
+          showToast(`File duplikat dilewati: ${duplicates.join(", ")}.`);
+        }
+        renderUploadFileList(state.pendingUploadFiles, state.uploadSession);
+      }
+
+      function refreshSelectedUploadDetails() {
+        renderUploadFileList(state.pendingUploadFiles, state.uploadSession);
+      }
+
+      function removePendingUploadFile(index) {
+        if (!Number.isInteger(index) || index < 0 || index >= state.pendingUploadFiles.length) return;
+        state.pendingUploadFiles = state.pendingUploadFiles.filter((_, itemIndex) => itemIndex !== index);
+        renderUploadFileList(state.pendingUploadFiles, state.uploadSession);
       }
 
       function clearFiles() {
         const input = document.getElementById("fileExcelInput");
+        state.pendingUploadFiles = [];
         if (input) {
           input.value = "";
-          updateFileNames(input);
+          renderUploadFileList([], state.uploadSession);
         }
+      }
+
+      function syncUploadSessionForm(session = state.uploadSession) {
+        const appendInput = document.getElementById("hiddenAppendToActive");
+        if (!appendInput) return;
+        const committedCount = Number(session?.committed_file_count ?? session?.files?.length ?? 0);
+        appendInput.value = session?.status === "committed" && committedCount > 0 ? "true" : "false";
+      }
+
+      async function refreshUploadSession() {
+        const session = await apiGet("/api/upload/session/status");
+        state.uploadSession = session;
+        syncUploadSessionForm(session);
+        renderUploadSession(session);
+        renderUploadFileList(state.pendingUploadFiles, session);
+        return session;
+      }
+
+      function uploadMetadataMissingFields(metadata = currentUploadMetadata()) {
+        if (metadata.upload_mode === "multi") return [];
+        return [
+          ["Tahun Input", metadata.tahun_input],
+          ["Periode", metadata.periode],
+          ["Prodi", metadata.prodi],
+          ["Fakultas", metadata.fakultas],
+        ]
+          .filter(([, value]) => !value)
+          .map(([label]) => label);
+      }
+
+      function pendingUploadMetadataErrors(entries = state.pendingUploadFiles) {
+        return entries
+          .map((entry, index) => ({
+            index,
+            name: entry.file?.name || `File ${index + 1}`,
+            missing: uploadMetadataMissingFields(entry.metadata),
+          }))
+          .filter((entry) => entry.missing.length > 0);
       }
 
       // Handlers
       async function handleUploadSubmit(e) {
         e.preventDefault();
+        const fileInput = document.getElementById("fileExcelInput");
+        if (state.pendingUploadFiles.length === 0 && fileInput?.files?.length) {
+          updateFileNames(fileInput);
+        }
+        const pendingEntries = [...state.pendingUploadFiles];
+        if (pendingEntries.length === 0) {
+          const committedCount = Number(
+            state.uploadSession?.committed_file_count ?? state.uploadSession?.files?.length ?? 0,
+          );
+          showToast(
+            committedCount > 0
+              ? `${committedCount} workbook sudah tersimpan di dataset aktif. Pilih workbook Excel baru untuk menambah data.`
+              : "Pilih minimal satu workbook Excel sebelum mengunggah.",
+          );
+          return;
+        }
+        const pendingModes = new Set(
+          pendingEntries.map((entry) => entry.metadata?.upload_mode || "single"),
+        );
+        if (pendingModes.size !== 1) {
+          showToast("Antrean file tidak boleh mencampur mode Single dan Bundel.");
+          return;
+        }
+        const metadataErrors = pendingUploadMetadataErrors(pendingEntries);
+        if (metadataErrors.length > 0) {
+          const firstError = metadataErrors[0];
+          showToast(`Lengkapi ${firstError.missing.join(", ")} untuk ${firstError.name}.`);
+          return;
+        }
+
         const form = document.getElementById("excelUploadForm");
         const formData = new FormData(form);
+        const mode = pendingEntries[0].metadata?.upload_mode || "single";
+        ["file_excel[]", "file_excel", "file_metadata"].forEach((key) => formData.delete(key));
+        pendingEntries.forEach((entry) => {
+          formData.append("file_excel[]", entry.file, entry.file.name);
+        });
+        formData.set("file_metadata", JSON.stringify(pendingEntries.map((entry) => entry.metadata)));
+        formData.set("upload_mode", mode);
+        formData.set("append_to_active", document.getElementById("hiddenAppendToActive")?.value || "false");
+        formData.set("jenis_dataset", document.getElementById("hiddenJenisDataset")?.value || "");
+        if (mode === "multi") {
+          ["tahun_input", "periode", "prodi", "fakultas"].forEach((key) => formData.delete(key));
+        }
 
         document.getElementById("btnUploadSubmit").disabled = true;
-        showPipelineLoading("Mengunggah Dataset", "Mengirim workbook Excel ke backend SILARAS...", "Upload sedang berjalan...");
         document.getElementById("uploadStatusBadge").textContent =
           "Uploading...";
         document.getElementById("uploadStatusBadge").className =
@@ -3720,13 +3898,24 @@
           });
           if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
           const data = await res.json();
+          state.uploadSession = data;
           showToast("Workbook Excel berhasil diunggah!");
-          logTerminal("Workbook Excel berhasil diunggah ke Staging Lakehouse!", "SUCCESS");
+          logTerminal("Workbook Excel berhasil diunggah ke Raw Lakehouse dan ditambahkan ke session aktif.", "SUCCESS");
           document.getElementById("uploadStatusBadge").textContent =
             "Upload Sukses";
           document.getElementById("uploadStatusBadge").className =
             "badge-apple badge-ok";
-          fetchDashboardData();
+          state.pendingUploadFiles = [];
+          if (fileInput) fileInput.value = "";
+          try {
+            await refreshUploadSession();
+          } catch (refreshError) {
+            syncUploadSessionForm(data);
+            renderUploadSession(data);
+            renderUploadFileList(state.pendingUploadFiles, data);
+            logTerminal(`Session upload berhasil, tetapi status belum tersinkron: ${refreshError.message}`, "WARN");
+          }
+          fetchDashboardData().catch(() => {});
         } catch (err) {
           logTerminal(`Gagal mengunggah dataset Excel: ${err.message}`, "ERROR");
           showToast("Gagal mengunggah file. Pastikan server backend online.");
@@ -3735,7 +3924,6 @@
           document.getElementById("uploadStatusBadge").className =
             "badge-apple badge-error";
         } finally {
-          hidePipelineLoading();
           document.getElementById("btnUploadSubmit").disabled = false;
         }
       }
@@ -4178,7 +4366,7 @@
 
       function stageTimingHtml(stage, forceRunning = false, runState = "success") {
         const running = forceRunning || (stage && stage.running > 0);
-        const elapsed = stage?.stageText || ((stage && stage.started_at) ? formatElapsed(stage.started_at, stage.ended_at || null) : "");
+        const elapsed = stage?.stageText || "";
         
         if (running) {
           return `<span class="stage-timing running" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:0.68rem;padding:3px 10px;border-radius:12px;background:rgba(0,113,227,0.12);color:#0071e3;font-weight:600;width:fit-content;"><span class="stage-spinner" style="display:inline-block;width:8px;height:8px;border:2px solid #0071e3;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span><span>${safe(elapsed || "berjalan…")}</span></span>`;
@@ -4204,11 +4392,18 @@
         );
       }
 
+      const STAGE_KEYS = ["raw", "bronze", "silver", "gold", "bi"];
+
       function renderLiveStepper(viewModel, runData) {
         const steps = viewModel.steps || [];
-        const progress = currentAirflowProgress();
+        const progress =
+          runData?.progress?.stages &&
+          typeof runData.progress.stages === "object" &&
+          Object.keys(runData.progress.stages).length > 0
+            ? runData.progress
+            : currentAirflowProgress();
         const stages = progress.stages || {};
-        const stageKeys = ["raw", "bronze", "silver", "gold", "bi"];
+        const stageKeys = STAGE_KEYS;
 
         const activeRun = runData || state.airflowActive?.run || state.airflowActive;
         const isPipelineRunning = (activeRun?.state === "running") || (progress.running > 0);
@@ -4264,12 +4459,6 @@
           if (failedStageIndex === -1) failedStageIndex = 2; // Default to Silver layer if unspecified
         }
 
-        // Distinct stage execution times calculation (real backend stage metrics or proportional stage distribution)
-        const totalDurationSec = (runStart && runEnd) ? Math.max(1, Math.floor((new Date(runEnd) - new Date(runStart)) / 1000)) : 869;
-
-        // Realistic proportion distribution of 14m 29s (869s): Raw ~1s, Bronze ~845s, Silver ~8s, Gold ~10s, BI ~5s
-        const stageProportions = [0.002, 0.970, 0.010, 0.012, 0.006];
-
         const nodesHtml = steps
           .map((step, idx) => {
             const stageKey = stageKeys[idx];
@@ -4318,10 +4507,8 @@
               stageElapsedText = formatStageDuration(stage.duration_seconds);
             } else if (stage.started_at && stage.ended_at) {
               stageElapsedText = formatElapsed(stage.started_at, stage.ended_at);
-            } else if (effectiveState === "success" && runStart && runEnd) {
-              stageElapsedText = formatElapsed(runStart, runEnd);
-            } else if (effectiveState === "running" && runStart) {
-              stageElapsedText = formatElapsed(runStart);
+            } else if (effectiveState === "running" && stage.started_at) {
+              stageElapsedText = formatElapsed(stage.started_at);
             }
 
             // Custom stage timing object with distinct duration per stage
@@ -4356,6 +4543,9 @@
           .join("");
 
         const fullHtml = `${progressBarHtml}<div class="medallion-pipeline-flow">${nodesHtml}</div>`;
+        renderLiveStepper._lastArgs = [viewModel, runData];
+        if (fullHtml === renderLiveStepper._lastHtml) return;
+        renderLiveStepper._lastHtml = fullHtml;
 
         const s1 = document.getElementById("stepperContainer");
         const s2 = document.getElementById("stepperContainerLakehouse");
@@ -4363,21 +4553,25 @@
         if (s2) s2.innerHTML = fullHtml;
       }
 
-      // Update stepper when a row in the Airflow table is clicked
-      function updateStepperFromRun(runObj) {
-        if (!runObj) return;
-        const vm = state._lastViewModel;
-        if (!vm) return;
-        const kind = normalizeStatusKind(runObj.state);
-        const patchedVm = {
-          ...vm,
-          pipeline: { ...vm.pipeline, statusKind: kind },
-          steps: vm.steps,
-        };
-        renderLiveStepper(patchedVm, runObj);
-        document.querySelectorAll("#airflowPanel tr.selected-run").forEach(r => r.classList.remove("selected-run"));
+      // Lightweight 1s ticker: re-renders the stepper ONLY while at least one
+      // Medallion stage is actively running, so per-stage elapsed times tick up
+      // live. The memo guard in renderLiveStepper makes idle ticks no-ops.
+      function tickLiveStepper() {
+        if (!renderLiveStepper._lastArgs) return;
+        const [lastVm, lastRunData] = renderLiveStepper._lastArgs;
+        const progress =
+          lastRunData?.progress?.stages &&
+          typeof lastRunData.progress.stages === "object" &&
+          Object.keys(lastRunData.progress.stages).length > 0
+            ? lastRunData.progress
+            : currentAirflowProgress();
+        const stages = progress.stages || {};
+        const hasRunningStage = STAGE_KEYS.some(
+          (key) => stages[key] && stages[key].running > 0,
+        );
+        if (!hasRunningStage) return;
+        renderLiveStepper(lastVm, lastRunData);
       }
-
 
       function setSkeleton(id, width = "120px", height = "24px") {
         const el = document.getElementById(id);
@@ -4640,9 +4834,10 @@
               .map(
                 (file) => `
         <tr>
-          <td>${safe(session.dataset_session_id || session.active_dataset_id)}</td>
+          <td>${safe(session?.dataset_session_id || session?.active_dataset_id)}</td>
           <td>${statusBadgeHtml(session.status, session.status)}</td>
           <td>${safe(file.filename)}<br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(file.jenis_dataset || file.path)}</span></td>
+          <td>${uploadFileDetail(file, session)}</td>
           <td>${safe(session.message)}</td>
         </tr>
       `,
@@ -4658,7 +4853,7 @@
       `;
         document.getElementById("uploadSessionPanel").innerHTML = `
         <table class="apple-table">
-          <thead><tr><th>Dataset</th><th>Status</th><th>File</th><th>Pesan</th></tr></thead>
+          <thead><tr><th>Dataset</th><th>Status</th><th>File</th><th>Detail Pilihan</th><th>Pesan</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       `;
@@ -4776,6 +4971,24 @@
           const targetRun = runsList.find(r => r.dag_run_id === state.selectedRunId) || runsList[0];
           if (targetRun) {
             updateStepperFromRun(targetRun, false); // false = don't scroll
+            // Enrich with real per-stage progress from the run detail endpoint (cached).
+            if (targetRun.dag_run_id) {
+              apiGetCached(
+                `/api/airflow/runs/${encodeURIComponent(targetRun.dag_run_id)}`,
+                8000,
+              )
+                .then((payload) => {
+                  if (state.selectedRunId && state.selectedRunId !== targetRun.dag_run_id) return;
+                  const detailed = payload?.run || payload;
+                  const stages = detailed?.progress?.stages;
+                  if (!stages || typeof stages !== "object") return;
+                  updateStepperFromRun(
+                    { ...targetRun, ...detailed, progress: detailed.progress },
+                    false,
+                  );
+                })
+                .catch(() => {});
+            }
           }
         }
       }
@@ -4801,6 +5014,23 @@
           // Instantly parse JSON payload directly embedded in HTML row (zero network latency)
           const runObj = JSON.parse(decodeURIComponent(runJson));
           updateStepperFromRun(runObj, true);
+
+          // Enrich with real per-stage progress from the run detail endpoint (cached).
+          apiGetCached(
+            `/api/airflow/runs/${encodeURIComponent(runId)}`,
+            8000,
+          )
+            .then((payload) => {
+              if (state.selectedRunId !== runId) return;
+              const detailed = payload?.run || payload;
+              const stages = detailed?.progress?.stages;
+              if (!stages || typeof stages !== "object") return;
+              updateStepperFromRun(
+                { ...runObj, ...detailed, progress: detailed.progress },
+                false,
+              );
+            })
+            .catch(() => {});
         } catch(e) {
           console.warn("Failed to parse run data:", e);
         }
@@ -4870,8 +5100,8 @@
       async function refreshActivePipeline() {
         try {
           const [active, latest] = await Promise.allSettled([
-            apiGet("/api/airflow/active"),
-            apiGet("/api/airflow/latest"),
+            apiGetCached("/api/airflow/active", 8000),
+            apiGetCached("/api/airflow/latest", 8000),
           ]);
           const activePayload =
             active.status === "fulfilled" ? active.value : null;
@@ -4936,8 +5166,6 @@
 
         setButtonsRunning(true);
 
-        showPipelineLoading("Menjalankan Sistem", "Mengirim pipeline ke Airflow...", "Menunggu antrean Airflow...", 5);
-
         try {
           const queued = await apiPost("/api/airflow/trigger", {});
 
@@ -4945,22 +5173,10 @@
           renderAirflowPanel(queued, state.airflowLatest, state.airflowRuns);
           if (queued.deduplicated) {
             showToast("Sistem sudah berjalan. Memantau pipeline yang aktif...");
-            showPipelineLoading(
-              "Sistem Sedang Berjalan",
-              "Pipeline Airflow sudah aktif dan sedang dipantau.",
-              `Status: ${queued.state || "running"}`,
-              null
-            );
           } else {
             showToast(
               "Pipeline Airflow masuk antrean: " +
                 safe(queued.dag_run_id || "OK"),
-            );
-            showPipelineLoading(
-              "Pipeline Dikirim ke Airflow",
-              "Menunggu DAG run dimulai oleh scheduler Airflow.",
-              `Status: ${queued.state || "queued"}`,
-              5
             );
           }
 
@@ -4980,25 +5196,6 @@
             renderAirflowPanel(run, current, state.airflowRuns);
 
             const progress = run.progress || {};
-            const statusText = `Status Airflow: ${run?.state || "running"}`;
-            if (progress.available && progress.total_tasks > 0) {
-              const elapsed = formatElapsed(progress.started_at);
-              showPipelineLoading(
-                progress.current_task
-                  ? `Task: ${progress.current_task}`
-                  : "Pipeline Sedang Berjalan",
-                `${progress.completed_tasks} dari ${progress.total_tasks} task selesai${elapsed ? ` · berjalan ${elapsed}` : ""}`,
-                `${statusText} · ${progress.progress_pct}%`,
-                progress.progress_pct
-              );
-            } else {
-              showPipelineLoading(
-                "Pipeline Sedang Berjalan",
-                "Menunggu status task dari Airflow...",
-                statusText,
-                null
-              );
-            }
 
             const terminalStates = [
               "success",
@@ -5015,12 +5212,6 @@
                   : "Pipeline Airflow selesai dengan status: " +
                       safe(run.state),
               );
-              showPipelineLoading(
-                run.state === "success" ? "Tahap 5/5: Pipeline Selesai" : "Pipeline Berakhir",
-                run.state === "success" ? "Seluruh tahapan Medallion & dashboard Superset telah siap." : "Periksa detail status Airflow.",
-                `Status akhir: ${run.state}`,
-                100
-              );
               break;
             }
           }
@@ -5028,10 +5219,8 @@
           await fetchFeatureParityData();
           await fetchDashboardData();
         } catch (err) {
-          showPipelineLoading("Pipeline Gagal", safe(err.message || err), "Periksa koneksi backend dan Airflow.", 0);
           showToast("Gagal menjalankan Airflow: " + safe(err.message || err));
         } finally {
-          setTimeout(hidePipelineLoading, 900);
           setButtonsRunning(false);
         }
       }
@@ -5399,19 +5588,19 @@
 
       async function fetchFeatureParityData() {
         const results = await Promise.allSettled([
-          apiGet("/api/upload/session/status"),
-          apiGet("/api/airflow/active"),
-          apiGet("/api/airflow/latest"),
-          apiGet("/api/airflow/runs"),
-          apiGet("/api/iku-review/queue?limit=100"),
-          apiGet("/api/storage/manifest"),
-          apiGet("/api/data/preview?layer=gold&limit=10"),
-          apiGet("/api/data/preview?layer=silver&limit=10"),
-          apiGet("/api/dashboard/links/current"),
-          apiGet("/api/uat/summary"),
-          apiGet("/api/system-truth/status"),
-          apiGet("/api/metrics"),
-          apiGet("/api/status/services"),
+          apiGetCached("/api/upload/session/status", 8000),
+          apiGetCached("/api/airflow/active", 8000),
+          apiGetCached("/api/airflow/latest", 8000),
+          apiGetCached("/api/airflow/runs", 8000),
+          apiGetCached("/api/iku-review/queue?limit=100", 8000),
+          apiGetCached("/api/storage/manifest", 8000),
+          apiGetCached("/api/data/preview?layer=gold&limit=10", 8000),
+          apiGetCached("/api/data/preview?layer=silver&limit=10", 8000),
+          apiGetCached("/api/dashboard/links/current", 8000),
+          apiGetCached("/api/uat/summary", 8000),
+          apiGetCached("/api/system-truth/status", 8000),
+          apiGetCached("/api/metrics", 8000),
+          apiGetCached("/api/status/services", 8000),
         ]);
         const value = (index) =>
           results[index].status === "fulfilled" ? results[index].value : null;
@@ -5428,7 +5617,9 @@
         state.truth = value(10);
         state.metrics = value(11) || state.metrics;
         state.serviceStatus = value(12);
+        syncUploadSessionForm(state.uploadSession);
         renderUploadSession(state.uploadSession);
+        renderUploadFileList(state.pendingUploadFiles, state.uploadSession);
         renderAirflowPanel(
           state.airflowActive,
           state.airflowLatest,
@@ -5490,12 +5681,12 @@
       async function fetchDashboardData({ silent = false } = {}) {
         if (!silent && !_dashboardInitialized) renderLoadingState();
         const results = await Promise.allSettled([
-          apiGet("/api/superset/summary"),
-          apiGet("/api/metrics"),
-          apiGet("/api/airflow/active"),
-          apiGet("/api/airflow/latest"),
-          apiGet("/api/system-truth/status"),
-          apiGet("/api/excel-lakehouse/status"),
+          apiGetCached("/api/superset/summary", 8000),
+          apiGetCached("/api/metrics", 8000),
+          apiGetCached("/api/airflow/active", 8000),
+          apiGetCached("/api/airflow/latest", 8000),
+          apiGetCached("/api/system-truth/status", 8000),
+          apiGetCached("/api/excel-lakehouse/status", 8000),
         ]);
         const endpointNames = [
           "supersetSummary",
@@ -5557,24 +5748,41 @@
 
       async function renderLiveDashboardPreview() {
         try {
-          const payload = await apiGet("/api/local-dashboard/all");
+          const payload = await apiGetCached("/api/local-dashboard/all", 8000);
           const data = payload?.data || {};
           const summary = data.summary || {};
           const charts = data.charts || {};
+          const summaryStatus = document.getElementById("dashSummaryStatus");
+          const summaryAvailable = [
+            summary.total_anggaran,
+            summary.total_rows,
+            summary.total_akun,
+          ].some((value) => value !== undefined && value !== null);
+          if (summaryStatus) {
+            summaryStatus.style.display = summaryAvailable ? "none" : "block";
+            summaryStatus.textContent = summaryAvailable
+              ? ""
+              : "Data ringkasan Superset belum tersedia.";
+          }
 
           setText(
             "dashTotalAnggaran",
-            summary.total_anggaran !== undefined
+            summary.total_anggaran !== undefined &&
+            summary.total_anggaran !== null
               ? rupiah(summary.total_anggaran)
-              : "Rp 517.361.656",
+              : "-",
           );
           setText(
             "dashFactRows",
-            summary.total_rows !== undefined ? n(summary.total_rows) : "253",
+            summary.total_rows !== undefined && summary.total_rows !== null
+              ? n(summary.total_rows)
+              : "-",
           );
           setText(
             "dashAkunCount",
-            summary.total_akun !== undefined ? n(summary.total_akun) : "5",
+            summary.total_akun !== undefined && summary.total_akun !== null
+              ? n(summary.total_akun)
+              : "-",
           );
 
           const barItems = charts.bar_by_akun?.items || [];
@@ -5615,41 +5823,10 @@
         }
       }
 
-      function hideLoadingOverlay() {
-        const overlay = document.getElementById("appLoadingOverlay");
-        if (overlay) {
-          overlay.style.opacity = "0";
-          overlay.style.visibility = "hidden";
-          setTimeout(() => {
-            overlay.style.display = "none";
-          }, 400);
-        }
-      }
-
-      function showPipelineLoading(title, message, status, progressPct = null) {
-        const overlay = document.getElementById("pipelineLoadingOverlay");
-        if (!overlay) return;
-        overlay.style.display = "flex";
-        overlay.setAttribute("aria-busy", "true");
-        setText("pipelineLoadingTitle", title);
-        setText("pipelineLoadingMessage", message);
-        setText("pipelineLoadingState", status);
-        const progressBar = overlay.querySelector("#pipelineProgressBar");
-        if (progressBar && progressPct !== null) {
-          progressBar.style.width = `${progressPct}%`;
-        }
-      }
-
-      function hidePipelineLoading() {
-        const overlay = document.getElementById("pipelineLoadingOverlay");
-        if (!overlay) return;
-        overlay.setAttribute("aria-busy", "false");
-        overlay.style.display = "none";
-      }
-
       // Initializer
       window.addEventListener("DOMContentLoaded", async () => {
         collapseSidebarHover();
+        selectUploadCategory("rab");
         const currentYear = new Date().getFullYear().toString();
         const tahunInput = document.querySelector('input[name="tahun_input"]');
         if (tahunInput) tahunInput.placeholder = currentYear;
@@ -5662,16 +5839,8 @@
         });
 
         renderLoadingState();
-        const overlay = document.getElementById("appLoadingOverlay");
-        if (overlay) {
-          overlay.style.display = "flex";
-          overlay.style.opacity = "1";
-          overlay.style.visibility = "visible";
-        }
         renderUatCriteriaForm();
         renderUatTable();
-        loadDashboardDatabases().catch(() => {});
-        loadDashboardDashboards().catch(() => {});
         const savedTheme = localStorage.getItem("silaras_v2_theme") || "light";
         setTheme(savedTheme);
         await Promise.allSettled([
@@ -5679,21 +5848,42 @@
           fetchFeatureParityData(),
           renderLiveDashboardPreview(),
         ]);
-        hideLoadingOverlay();
         refreshActivePipeline().catch(() => {});
-        setInterval(() => {
-          if (canBackgroundRefresh())
-            fetchDashboardData({ silent: true }).catch(() => {});
-        }, 30000);
-        setInterval(() => {
-          if (canBackgroundRefresh()) refreshActivePipeline().catch(() => {});
-        }, 10000);
-        setInterval(() => {
-          if (canBackgroundRefresh()) {
-            fetchFeatureParityData().catch(() => {});
-            renderLiveDashboardPreview().catch(() => {});
+        // Unified background scheduler: single interval, per-job cadence.
+        // Each job respects canBackgroundRefresh and shares apiGetCached dedupe,
+        // so overlapping polls collapse onto one network request. Heavy jobs are
+        // also gated to the pages that actually render their payloads.
+        const _scheduler = () => {
+          if (!canBackgroundRefresh()) return;
+          const now = Date.now();
+          const page = state.activePage || "beranda";
+          if (now - _scheduler.lastPipeline >= 10000) {
+            _scheduler.lastPipeline = now;
+            refreshActivePipeline().catch(() => {});
           }
-        }, 45000);
+          if (
+            (page === "beranda" || page === "dashboard") &&
+            now - _scheduler.lastDashboard >= 30000
+          ) {
+            _scheduler.lastDashboard = now;
+            fetchDashboardData({ silent: true }).catch(() => {});
+          }
+          if (
+            page !== "analytics" &&
+            now - _scheduler.lastFeature >= 45000
+          ) {
+            _scheduler.lastFeature = now;
+            fetchFeatureParityData().catch(() => {});
+            if (page === "beranda") renderLiveDashboardPreview().catch(() => {});
+          }
+        };
+        _scheduler.lastPipeline = 0;
+        _scheduler.lastDashboard = 0;
+        _scheduler.lastFeature = 0;
+        setInterval(_scheduler, 10000);
+        // Per-stage elapsed ticking: runs every second, but only re-renders the
+        // stepper while a Medallion stage is actively running.
+        setInterval(tickLiveStepper, 1000);
       });
     </script>
   </body>

@@ -16,6 +16,7 @@ from src.common.logging_utils import write_json
 from src.common.paths import DATA_DIR, GENERATED_DIR, OUTPUTS_DIR, RAW_DIR, ensure_parent
 from src.common.runtime_paths import active_dataset_pointer, active_period_metadata, raw_rab_path
 from src.common.time_utils import utc_now_iso
+from src.common.workbook_kind import infer_workbook_kind
 from src.excel_ingestion.excel_cell_extractor import ExcelSource, extract_excel_cells
 from src.gold.fact_anggaran import build_fact_anggaran
 from src.mapping.flexible_mapping import build_mapping_table
@@ -87,7 +88,7 @@ def _excel_source(path: Path, prodi: str, tahun_input: object = None, periode: o
         tahun_input=_infer_year_from_filename(resolved, tahun_input),
         periode=_infer_period_from_filename(resolved, periode),
         prodi=prodi,
-        jenis_dataset=str(jenis_dataset or _dataset_kind(resolved)),
+        jenis_dataset=infer_workbook_kind(resolved.name, jenis_dataset),
     )
 
 
@@ -166,7 +167,10 @@ def discover_excel_sources() -> list[ExcelSource]:
                 tahun_input=_infer_year_from_filename(path, tahun_input),
                 periode=_infer_period_from_filename(path, excel_pointer.get("periode")),
                 prodi=prodi,
-                jenis_dataset=str(item.get("jenis_dataset") or _dataset_kind(path)) if isinstance(item, dict) else _dataset_kind(path),
+                jenis_dataset=infer_workbook_kind(
+                    path.name,
+                    item.get("jenis_dataset") if isinstance(item, dict) else None,
+                ),
             )
             for path, item in zip(pointer_paths, excel_pointer["files"], strict=False)
             if path.exists()
@@ -203,10 +207,7 @@ def discover_excel_sources() -> list[ExcelSource]:
 
 
 def _dataset_kind(path: Path) -> str:
-    name = path.name.lower()
-    if "nomenklatur" in name:
-        return "nomenklatur"
-    return "rab"
+    return infer_workbook_kind(path.name)
 
 
 def _write_parquet(path: Path, df: pd.DataFrame) -> None:

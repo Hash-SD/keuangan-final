@@ -2,10 +2,26 @@ import { expect, test } from "@playwright/test";
 
 const task = (task_id: string, state: string) => ({ task_id, state });
 
-const activeRuntime = {
+const runningStages = {
+  raw: { total: 3, done: 3, running: 0, duration_seconds: 3 },
+  bronze: { total: 3, done: 1, running: 1, duration_seconds: 5 },
+  silver: { total: 3, done: 0, running: 0, duration_seconds: null },
+  gold: { total: 4, done: 0, running: 0, duration_seconds: null },
+  bi: { total: 5, done: 0, running: 0, duration_seconds: null },
+};
+
+const completedStages = {
+  raw: { total: 3, done: 3, running: 0, duration_seconds: 3 },
+  bronze: { total: 3, done: 3, running: 0, duration_seconds: 5 },
+  silver: { total: 3, done: 3, running: 0, duration_seconds: 7 },
+  gold: { total: 4, done: 4, running: 0, duration_seconds: 9 },
+  bi: { total: 5, done: 5, running: 0, duration_seconds: 11 },
+};
+
+const activePayload = {
   status: "ready",
   active: true,
-  active_run: {
+  run: {
     dag_run_id: "e2e-running-run",
     state: "running",
     start_date: "2026-08-02T10:40:00Z",
@@ -17,13 +33,7 @@ const activeRuntime = {
       current_task: "parse_flexible",
       current_state: "running",
       started_at: "2026-08-02T10:40:00Z",
-      stages: {
-        raw: { total: 3, done: 3, running: 0, duration_seconds: 0.3 },
-        bronze: { total: 3, done: 1, running: 1, duration_seconds: 0.4 },
-        silver: { total: 3, done: 0, running: 0, duration_seconds: null },
-        gold: { total: 4, done: 0, running: 0, duration_seconds: null },
-        bi: { total: 5, done: 0, running: 0, duration_seconds: null },
-      },
+      stages: runningStages,
       task_instances: [
         task("start", "success"),
         task("validate_upload_context", "success"),
@@ -46,72 +56,67 @@ const activeRuntime = {
       ],
     },
   },
-  latest_run: null,
-  runtime_run: null,
-  source: "active",
 };
 
-const completedRuntime = {
-  status: "ready",
-  active: false,
-  active_run: null,
-  latest_run: {
-    dag_run_id: "e2e-completed-run",
-    state: "success",
-    start_date: "2026-08-02T10:40:00Z",
-    end_date: "2026-08-02T10:41:00Z",
-    progress: {
-      available: true,
-      total_tasks: 18,
-      completed_tasks: 18,
-      progress_pct: 100,
-      started_at: "2026-08-02T10:40:00Z",
-      ended_at: "2026-08-02T10:41:00Z",
-      stages: {
-        raw: { total: 3, done: 3, running: 0, duration_seconds: 0.3 },
-        bronze: { total: 3, done: 3, running: 0, duration_seconds: 0.4 },
-        silver: { total: 3, done: 3, running: 0, duration_seconds: 1 },
-        gold: { total: 4, done: 4, running: 0, duration_seconds: 0.8 },
-        bi: { total: 5, done: 5, running: 0, duration_seconds: 0.5 },
-      },
-      task_instances: [],
-    },
+const completedRun = {
+  dag_run_id: "e2e-completed-run",
+  state: "success",
+  start_date: "2026-08-02T10:40:00Z",
+  end_date: "2026-08-02T10:41:00Z",
+  progress: {
+    available: true,
+    total_tasks: 18,
+    completed_tasks: 18,
+    progress_pct: 100,
+    started_at: "2026-08-02T10:40:00Z",
+    ended_at: "2026-08-02T10:41:00Z",
+    stages: completedStages,
+    task_instances: [],
   },
-  runtime_run: null,
-  source: "latest",
+};
+
+const latestPayload = { status: "ready", run: completedRun };
+
+const runsPayload = {
+  status: "success",
+  runs: [completedRun, { dag_run_id: "e2e-running-run", state: "running", start_date: "2026-08-02T10:40:00Z" }],
 };
 
 test("Medallion stepper follows Airflow running and completed states", async ({ page }) => {
-  let runtimePayload: typeof activeRuntime | typeof completedRuntime = activeRuntime;
-
-  await page.route("**/api/airflow/runtime", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify(runtimePayload),
-    });
+  await page.route("**/api/airflow/active", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(activePayload) });
+  });
+  await page.route("**/api/airflow/latest", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(latestPayload) });
+  });
+  await page.route("**/api/airflow/runs", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(runsPayload) });
+  });
+  await page.route("**/api/airflow/runs/**", async (route) => {
+    const id = decodeURIComponent(new URL(route.request().url()).pathname.split("/").pop() || "");
+    const run = id === "e2e-completed-run" ? completedRun : activePayload.run;
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ status: "success", run }) });
   });
 
   await page.goto("/v2/#orkestrasi");
 
   const stepper = page.locator("#stepperContainer");
-  await expect(stepper.getByText("Pipeline sedang berjalan")).toBeVisible();
+  await expect(stepper.getByText("Pipeline Sedang Berjalan")).toBeVisible();
   await expect(stepper).toContainText("7/18 task");
-  await expect(stepper).toContainText("Task aktif: parse_flexible");
-  await expect(stepper).toContainText("Menunggu 3 task Airflow");
+  await expect(stepper).toContainText("parse_flexible");
   await expect(stepper.locator(".pipeline-node.running")).toHaveCount(1);
-  await expect(stepper.locator(".node-task-detail")).toHaveCount(5);
+  await expect(stepper.locator(".stage-timing.running")).toHaveCount(1);
+  await expect(stepper.locator(".stage-spinner")).toHaveCount(1);
+  await expect(stepper.locator(".stage-timing.idle")).toHaveCount(3);
 
-  runtimePayload = completedRuntime;
-  await page.reload();
-
-  await expect(stepper.getByText("Pipeline selesai")).toBeVisible();
-  await expect(stepper.locator(".medallion-progress-summary")).toHaveCount(1);
-  await expect(stepper.locator(".pipeline-progress-value")).toContainText("100%");
-  await expect(stepper.locator(".pipeline-progress-value")).not.toContainText("18/18 task");
-  await expect(stepper.locator(".pipeline-progress-value")).not.toContainText("Â");
-  await expect(stepper).toContainText("0.3s");
-  await expect(stepper).toContainText("0.5s");
-  await expect(stepper.locator(".pipeline-node.running")).toHaveCount(0);
-  await expect(stepper.locator(".node-task-detail")).toHaveCount(0);
+  // Clicking the completed row must switch the stepper to that run's real
+  // per-stage durations (3/5/7/9/11 s) instead of the active run's progress.
+  await page.locator("#airflowPanel tr", { hasText: "e2e-completed-run" }).click();
+  await expect(stepper).not.toContainText("Pipeline Sedang Berjalan");
+  await expect(stepper).toContainText("3 d");
+  await expect(stepper).toContainText("5 d");
+  await expect(stepper).toContainText("7 d");
+  await expect(stepper).toContainText("9 d");
+  await expect(stepper).toContainText("11 d");
+  await expect(stepper.locator(".stage-timing.running")).toHaveCount(0);
 });

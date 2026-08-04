@@ -41,8 +41,6 @@ FACT_COLUMNS = [
     "iku",
     "jumlah",
     "jumlah_weighted_iku",
-    "mapping_status",
-    "data_quality_flag",
     "uraian_detail",
 ]
 
@@ -97,7 +95,6 @@ def _chart_data_payload(dataset_id: int, filters: dict[str, list[str]] | None = 
             "semester": "periode",
             "nama_prodi": "prodi",
             "nama_fakultas": "fakultas",
-            "kualitas": "data_quality_flag",
         }.get(column, column)
         adhoc_filters.append(
             {

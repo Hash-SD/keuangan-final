@@ -333,7 +333,9 @@ def create_app() -> Flask:
     @app.post("/api/airflow/trigger")
     def airflow_trigger():
         payload = request.get_json(silent=True) or {}
-        active_dataset = read_json(excel_upload.ACTIVE_EXCEL_DATASET_PATH) or {}
+        active_dataset = excel_upload.normalize_dataset_file_kinds(
+            read_json(excel_upload.ACTIVE_EXCEL_DATASET_PATH) or {}
+        )
         session_id = str(
             payload.get("dataset_session_id")
             or active_dataset.get("dataset_session_id")
@@ -494,7 +496,9 @@ def create_app() -> Flask:
 
     @app.get("/api/upload/session/status")
     def upload_session_status():
-        active = read_json(excel_upload.ACTIVE_EXCEL_DATASET_PATH)
+        active = excel_upload.normalize_dataset_file_kinds(
+            read_json(excel_upload.ACTIVE_EXCEL_DATASET_PATH)
+        )
         registry = read_json(excel_upload.EXCEL_DATASET_REGISTRY_PATH)
         staging_dir = excel_upload.DATA_DIR / "uploads" / "staging"
         staging_files = (
@@ -524,6 +528,12 @@ def create_app() -> Flask:
                 if isinstance(active, dict)
                 else None,
                 "dataset_session_id": active.get("dataset_session_id")
+                if isinstance(active, dict)
+                else None,
+                "upload_mode": active.get("upload_mode")
+                if isinstance(active, dict)
+                else None,
+                "metadata_scope": active.get("metadata_scope")
                 if isinstance(active, dict)
                 else None,
                 "committed_file_count": len(committed_files),

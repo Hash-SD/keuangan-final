@@ -52,12 +52,15 @@ def test_v2_loads_all_authoritative_dashboard_status_endpoints() -> None:
     for endpoint in [
         "/api/superset/summary",
         "/api/metrics",
-        "/api/airflow/runtime",
+        "/api/airflow/active",
+        "/api/airflow/latest",
         "/api/system-truth/status",
         "/api/excel-lakehouse/status",
     ]:
         assert (
-            f'apiGet("{endpoint}")' in html
+            f'apiGetCached("{endpoint}", 8000)' in html
+            or f'apiGetCached("{endpoint}",' in html
+            or f'apiGet("{endpoint}")' in html
             or f'apiGet("{endpoint}",' in html
         )
 
@@ -105,35 +108,38 @@ def test_v2_pipeline_status_distinguishes_success_running_failed_missing_unreach
 def test_v2_medallion_runtime_is_airflow_authoritative() -> None:
     html = _html()
 
-    assert "function resolveRuntimeRun" in html
-    assert "Sumber waktu:" in html
-    assert "stageData.duration_seconds" in html
-    assert "Date.now() - new Date(ti.start_date)" not in html
-    assert "airflowLatest.run || airflowLatest" in html
-    assert "statusKind === \"running\"" in html
-    assert "statusKind === \"failed\"" in html
-    assert "medallion-progress-summary" in html
-    assert "pipeline-progress-fill" in html
-    assert "node-task-detail" in html
-    assert "Menunggu ${stageTotal} task Airflow" in html
-    assert 'role="status"' in html
+    assert "function renderLiveStepper" in html
+    assert "function currentAirflowProgress" in html
+    assert "runData?.progress?.stages" in html
+    assert "STAGE_KEYS" in html
+    assert "function stageTimingHtml" in html
+    assert "stage.duration_seconds" in html
+    assert "function formatStageDuration" in html
+    assert "function tickLiveStepper" in html
+    assert "setInterval(tickLiveStepper, 1000)" in html
+    assert "renderLiveStepper._lastHtml" in html
+    assert "apiGetCached(" in html
+    assert "`/api/airflow/runs/${encodeURIComponent(runId)}`" in html
+    assert "medallion-pipeline-flow" in html
+    assert "stage-timing running" in html
+    assert "stage-timing done" in html
+    assert "stage-timing idle" in html
+    assert "menunggu" in html
     assert "progressHtml" not in html
 
 
-def test_v2_pipeline_polling_is_single_request_and_silent_until_error() -> None:
+def test_v2_pipeline_trigger_polls_run_detail_and_reports_error() -> None:
     html = _html()
     body = _function_body("triggerAirflowAndWait")
 
-    assert (
-        'apiGet("/api/airflow/runtime")' in html
-        or 'apiGet("/api/airflow/runtime",' in html
-    )
-    assert "function fetchAirflowRuntime" in html
-    assert "airflowRuntimeRequest" in html
-    assert "setTimeout(resolve, 3000)" in body
-    assert "showPipelineLoading" not in body
-    assert body.count("showToast") == 1
+    assert 'apiPost("/api/airflow/trigger", {})' in html
+    assert "`/api/airflow/runs/${encodeURIComponent(runId)}`" in html
+    assert "setTimeout(resolve, 1500)" in body
+    assert "setButtonsRunning(true)" in body
+    assert "setButtonsRunning(false)" in body
     assert "Gagal menjalankan Airflow" in body
+    assert "function apiErrorMessage" in html
+    assert "payload.message" in html
 
 
 def test_v2_stepper_uses_live_step_states_instead_of_static_all_ready() -> None:
@@ -141,9 +147,10 @@ def test_v2_stepper_uses_live_step_states_instead_of_static_all_ready() -> None:
 
     assert "function liveWorkflowSteps" in html
     assert "function renderLiveStepper" in html
-    assert "const taskInstances = Array.isArray(progress.task_instances)" in html
+    assert "const progress =" in html
     assert ".map((step, idx)" in html
-    assert "const statusClass = stageHasFailure" in html
+    assert "const isStageRunning" in html
+    assert "effectiveState" in html
     assert "ready: true" not in html
 
 
@@ -165,6 +172,43 @@ def test_v2_upload_rejects_non_ok_http_responses_before_success_ui() -> None:
     assert "Upload Gagal" in body
     assert "Workbook Excel berhasil diunggah!" in body
     assert body.index("if (!res.ok)") < body.index("Workbook Excel berhasil diunggah!")
+
+
+def test_v2_upload_modes_preserve_file_details_and_append_session() -> None:
+    html = _html()
+    upload_body = _function_body("handleUploadSubmit")
+
+    assert 'name="upload_mode"' in html
+    assert 'name="append_to_active"' in html
+    assert "function setUploadMetadataState" in html
+    assert "function refreshSelectedUploadDetails" in html
+    assert "pendingUploadFiles" in html
+    assert "function removePendingUploadFile" in html
+    assert 'category === "multi"' in html
+    assert "setUploadMetadataState(category)" in html
+    assert "input.disabled" in html
+    assert "File ${i + 1} dari ${files.length}" not in html
+    for label in ["Tahun:", "Periode:", "Prodi:", "Fakultas:"]:
+        assert label in html
+    assert "append_to_active" in upload_body
+    assert 'formData.append("file_excel[]"' in upload_body
+    assert 'formData.set("file_metadata"' in upload_body
+    assert "refreshUploadSession" in upload_body
+    assert "function inferUploadKind" in html
+    assert "inferUploadKind(file.name, metadata.jenis_dataset)" in html
+
+
+def test_v2_has_no_fullscreen_loading_overlay_or_runtime_controller() -> None:
+    html = _html()
+
+    for marker in [
+        "loading-overlay",
+        "appLoadingOverlay",
+        "pipelineLoadingOverlay",
+        "showPipelineLoading",
+        "hidePipelineLoading",
+    ]:
+        assert marker not in html
 
 
 def test_v2_safe_escapes_html_before_uat_rows_use_inner_html() -> None:
@@ -215,6 +259,26 @@ def test_v2_initial_dom_uses_loading_labels_not_ready_or_online() -> None:
     assert "SYSTEM LOADING" not in html
 
 
+def test_v2_dashboard_summary_never_uses_stale_numeric_fallbacks() -> None:
+    html = _html()
+
+    for element_id in ["dashTotalAnggaran", "dashFactRows", "dashAkunCount"]:
+        assert re.search(
+            rf'<div class="metric-value" id="{element_id}">\s*-\s*</div>',
+            html,
+        )
+
+    assert "Rp 517.361.656" not in html
+    assert 'id="dashFactRows">253</div>' not in html
+    assert 'id="dashAkunCount">5</div>' not in html
+    assert 'summary.total_anggaran !== undefined &&\n            summary.total_anggaran !== null' in html
+    assert 'summary.total_rows !== undefined && summary.total_rows !== null' in html
+    assert 'summary.total_akun !== undefined && summary.total_akun !== null' in html
+    assert 'id="dashSummaryStatus"' in html
+    assert "Data ringkasan Superset belum tersedia." in html
+    assert "summaryStatus.style.display" in html
+
+
 def test_v2_task3_has_navigation_and_views_for_all_primary_workflows() -> None:
     html = _html()
 
@@ -241,7 +305,9 @@ def test_v2_task3_wires_existing_backend_endpoints_without_frontend_business_log
 
     for endpoint in [
         "/api/upload/session/status",
-        "/api/airflow/runtime",
+        "/api/airflow/active",
+        "/api/airflow/latest",
+        "/api/airflow/runs",
         "/api/iku-review/queue?limit=100",
         "/api/storage/manifest",
         "/api/data/preview?layer=gold&limit=10",
@@ -253,7 +319,9 @@ def test_v2_task3_wires_existing_backend_endpoints_without_frontend_business_log
         "/api/status/services",
     ]:
         assert (
-            f'apiGet("{endpoint}")' in html
+            f'apiGetCached("{endpoint}", 8000)' in html
+            or f'apiGetCached("{endpoint}",' in html
+            or f'apiGet("{endpoint}")' in html
             or f'apiGet("{endpoint}",' in html
         )
 
@@ -270,9 +338,9 @@ def test_v2_task3_review_iku_instruction_and_accessible_save_flow() -> None:
 
     assert "function renderIkuReviewQueue" in html
     assert "function handleIkuOverrideSave" in html
-    assert "Review IKU tersimpan. Buka Orkestrasi -> Jalankan Sistem." in html
-    assert "Orkestrasi -> Jalankan Sistem" in html
-    assert 'class="input-apple iku-review-select"' in html
+    assert "Review IKU tersimpan. Buka Eksekusi -> Jalankan Sistem." in html
+    assert "Eksekusi -> Jalankan Sistem" in html
+    assert 'class="input-apple iku-search-input"' in html
     assert 'class="btn-apple btn-secondary iku-review-save"' in html
     assert "data-item-id" in html
 

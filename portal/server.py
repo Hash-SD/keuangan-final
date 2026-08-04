@@ -25,7 +25,31 @@ class PortalHandler(SimpleHTTPRequestHandler):
             )
             self.send_header("Pragma", "no-cache")
             self.send_header("Expires", "0")
+        elif self._is_static_asset(request_path):
+            self.send_header("Cache-Control", "public, max-age=86400")
+            self.send_header("Pragma", "no-cache")
         super().end_headers()
+
+    @staticmethod
+    def _is_static_asset(path: str) -> bool:
+        return path.lower().endswith(
+            (
+                ".css",
+                ".js",
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".gif",
+                ".svg",
+                ".ico",
+                ".woff",
+                ".woff2",
+                ".ttf",
+                ".eot",
+                ".webp",
+                ".avif",
+            )
+        )
 
     def do_GET(self) -> None:
         request_path = self.path.split("?", 1)[0]

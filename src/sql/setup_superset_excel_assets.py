@@ -23,6 +23,42 @@ DASHBOARD_SLUG = "dashboard-anggaran-iku-prodi"
 DASHBOARD_MODE = os.getenv("SUPERSET_DASHBOARD_MODE", "update").strip().lower()
 TARGET_DASHBOARD_ID = os.getenv("SUPERSET_DASHBOARD_ID", "").strip()
 
+# Atribut teknis pipeline/QA yang disembunyikan dari tampilan Superset.
+# Tabel faktual gold.fact_anggaran tetap utuh; kolom hanya dinonaktifkan di level dataset.
+HIDDEN_COLUMNS = frozenset({"mapping_status", "data_quality_flag", "source_sheet", "source_row"})
+
+DETAIL_TABLE_COLUMNS = [
+    "tahun",
+    "periode",
+    "prodi",
+    "iku",
+    "kegiatan",
+    "akun",
+    "uraian_detail",
+    "qty",
+    "harga_satuan",
+    "jumlah",
+    "source_file",
+]
+
+VALIDASI_TABLE_COLUMNS = ["tahun", "periode", "source_file", "jumlah"]
+
+SAVED_QUERY_DETAIL_SQL = """
+SELECT tahun, periode, prodi, fakultas, kegiatan, cluster_kegiatan, akun, kode_akun,
+       nama_akun, iku, kode_iku, nama_iku, uraian_detail, qty, satuan, harga_satuan,
+       jumlah, allocation_weight, jumlah_weighted_iku, source_file
+FROM fact_anggaran
+ORDER BY tahun, periode, prodi
+"""
+
+SAVED_QUERY_HIDDEN_COLUMNS_SQL = """
+SELECT column_name
+FROM information_schema.columns
+WHERE table_schema = 'gold' AND table_name = 'fact_anggaran'
+  AND column_name IN ('mapping_status', 'data_quality_flag', 'source_sheet', 'source_row')
+ORDER BY column_name
+"""
+
 
 def _dashboard_suffix() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
@@ -131,6 +167,125 @@ def _dataset_id(session: requests.Session, database_id: int) -> int:
     refresh = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}/refresh", timeout=60)
     refresh.raise_for_status()
     return dataset_id
+
+
+def _deactivate_hidden_columns(session: requests.Session, dataset_id: int) -> list[str]:
+    response = session.get(f"{BASE_URL}/api/v1/dataset/{dataset_id}", timeout=60)
+    response.raise_for_status()
+    columns = (response.json().get("result") or {}).get("columns") or []
+    payload_columns: list[dict] = []
+    deactivated: list[str] = []
+    for column in columns:
+        name = column.get("column_name")
+        if not name:
+            continue
+        is_active = name not in HIDDEN_COLUMNS
+        if not is_active:
+            deactivated.append(name)
+        payload_columns.append({"id": column.get("id"), "column_name": name, "is_active": is_active})
+    if deactivated:
+        update = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}", json={"columns": payload_columns}, timeout=60)
+        if update.status_code not in {200, 201}:
+            update.raise_for_status()
+    return deactivated
+
+
+def _upsert_saved_query(session: requests.Session, database_id: int, label: str, sql: str, description: str) -> int:
+    matches = [item for item in _get_items(session, "saved_query") if item.get("label") == label]
+    payload = {"db_id": database_id, "schema": "gold", "label": label, "sql": sql, "description": description}
+    if matches:
+        query_id = int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
+        response = session.put(f"{BASE_URL}/api/v1/saved_query/{query_id}", json=payload, timeout=60)
+    else:
+        response = session.post(f"{BASE_URL}/api/v1/saved_query/", json=payload, timeout=60)
+        query_id = None
+    response.raise_for_status()
+    return int(response.json().get("id") or response.json().get("result", {}).get("id") or query_id)
+
+
+def _clean_stale_dashboards(session: requests.Session, dataset_id: int) -> dict:
+    import json
+
+    cleaned_dashboards: list[int] = []
+    cleaned_charts: list[int] = []
+    removed_quality_filters = 0
+    for dashboard in _get_items(session, "dashboard"):
+        detail = session.get(f"{BASE_URL}/api/v1/dashboard/{dashboard['id']}", timeout=60)
+        detail.raise_for_status()
+        result = detail.json().get("result") or {}
+        position = result.get("position_json") or {}
+        metadata = result.get("json_metadata") or {}
+        if isinstance(position, str):
+            position = json.loads(position)
+        if isinstance(metadata, str):
+            metadata = json.loads(metadata)
+        grid = position.get("GRID_ID") or {}
+        grid_children = list(grid.get("children") or [])
+        row_of = {}
+        for node_id, node in position.items():
+            if isinstance(node, dict) and node.get("type") == "ROW":
+                for child in node.get("children") or []:
+                    row_of[child] = node_id
+
+        dashboard_changed = False
+        for node_id, node in list(position.items()):
+            if not isinstance(node, dict) or node.get("type") != "CHART":
+                continue
+            chart_id = int(node.get("meta", {}).get("chartId"))
+            chart_response = session.get(f"{BASE_URL}/api/v1/chart/{chart_id}", timeout=60)
+            if chart_response.status_code != 200:
+                continue
+            chart = chart_response.json().get("result") or {}
+            name = chart.get("slice_name") or ""
+            viz_type = chart.get("viz_type") or ""
+            params: dict = {}
+            if chart.get("params"):
+                try:
+                    params = json.loads(chart["params"]) if isinstance(chart["params"], str) else chart["params"]
+                except ValueError:
+                    params = {}
+            groupby = params.get("groupby") or []
+            if viz_type == "pie" and "mapping_status" in groupby:
+                position.pop(node_id, None)
+                row_id = row_of.get(node_id)
+                if row_id:
+                    position.pop(row_id, None)
+                    if row_id in grid_children:
+                        grid_children.remove(row_id)
+                dashboard_changed = True
+                continue
+            if viz_type == "table" and chart.get("datasource_id") == dataset_id:
+                new_columns = None
+                if "Detail Item Biaya" in name:
+                    new_columns = DETAIL_TABLE_COLUMNS
+                elif "Validasi Rekap" in name:
+                    new_columns = VALIDASI_TABLE_COLUMNS
+                if new_columns is not None and (params.get("all_columns") or []) != new_columns:
+                    payload = _chart_payload(dataset_id, name, "table", {"all_columns": new_columns, "page_length": 25}, {"columns": new_columns, "metrics": []})
+                    session.put(f"{BASE_URL}/api/v1/chart/{chart_id}", json=payload, timeout=60).raise_for_status()
+                    cleaned_charts.append(chart_id)
+
+        filters = metadata.get("native_filter_configuration") or []
+        kept_filters = [nf for nf in filters if not (isinstance(nf, dict) and nf.get("groupby") == "data_quality_flag")]
+        if len(kept_filters) != len(filters):
+            metadata["native_filter_configuration"] = kept_filters
+            removed_quality_filters += len(filters) - len(kept_filters)
+            dashboard_changed = True
+
+        if dashboard_changed:
+            grid["children"] = grid_children
+            position["GRID_ID"] = grid
+            session.put(
+                f"{BASE_URL}/api/v1/dashboard/{dashboard['id']}",
+                json={"position_json": json.dumps(position), "json_metadata": json.dumps(metadata)},
+                timeout=60,
+            ).raise_for_status()
+            cleaned_dashboards.append(int(dashboard["id"]))
+    return {
+        "cleaned_dashboards": cleaned_dashboards,
+        "cleaned_charts": cleaned_charts,
+        "removed_quality_filters": removed_quality_filters,
+    }
 
 
 def _metric(label: str, aggregate: str, column: str) -> dict:
@@ -251,7 +406,6 @@ def _native_filters(dataset_id: int, chart_ids: list[int]) -> list[dict]:
         nf("NATIVE_FILTER-iku", "IKU", "iku"),
         nf("NATIVE_FILTER-kegiatan", "Kegiatan", "kegiatan"),
         nf("NATIVE_FILTER-akun", "Akun", "akun"),
-        nf("NATIVE_FILTER-quality", "Data Quality", "data_quality_flag"),
     ]
 
 
@@ -330,7 +484,6 @@ def _create_year_permalinks(session: requests.Session, dashboard_id: int) -> dic
         "NATIVE_FILTER-iku",
         "NATIVE_FILTER-kegiatan",
         "NATIVE_FILTER-akun",
-        "NATIVE_FILTER-quality",
     ]
     all_years_payload = {
         "dataMask": {filter_id: {"extraFormData": {"filters": []}, "filterState": {"value": None}, "ownState": {}} for filter_id in filter_ids},
@@ -373,6 +526,7 @@ def main() -> None:
         session = _login()
         database_id = _database_id(session)
         dataset_id = _dataset_id(session, database_id)
+        hidden_deactivated = _deactivate_hidden_columns(session, dataset_id)
         total_anggaran = _metric("Total Anggaran", "SUM", "jumlah_weighted_iku")
         total_weighted = _metric("Total Weighted IKU", "SUM", "jumlah_weighted_iku")
         count_items = _metric("Jumlah Item", "COUNT_DISTINCT", "item_id")
@@ -390,13 +544,28 @@ def main() -> None:
             _chart_payload(dataset_id, _chart_name("Cluster Kegiatan"), "treemap_v2", {"metric": total_anggaran, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["iku", "kegiatan"]}),
             _chart_payload(dataset_id, _chart_name("Komposisi Akun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]], "row_limit": 25}),
             _chart_payload(dataset_id, _chart_name("Anggaran per Akun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]]}),
-            _chart_payload(dataset_id, _chart_name("Mapping Quality"), "pie", {"metric": count_items, "groupby": ["mapping_status"], "label_type": "key_percent"}, {"metrics": [count_items], "columns": ["mapping_status"]}),
-            _chart_payload(dataset_id, _chart_name("Detail Item Biaya"), "table", {"all_columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "page_length": 25}, {"columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "qty", "harga_satuan", "jumlah", "mapping_status", "data_quality_flag", "source_file", "source_sheet", "source_row"], "metrics": []}),
-            _chart_payload(dataset_id, _chart_name("Validasi Rekap"), "table", {"all_columns": ["tahun", "periode", "source_file", "source_sheet", "jumlah", "data_quality_flag"], "page_length": 25}, {"columns": ["tahun", "periode", "source_file", "source_sheet", "jumlah", "data_quality_flag"], "metrics": []}),
+            _chart_payload(dataset_id, _chart_name("Detail Item Biaya"), "table", {"all_columns": DETAIL_TABLE_COLUMNS, "page_length": 25}, {"columns": DETAIL_TABLE_COLUMNS, "metrics": []}),
+            _chart_payload(dataset_id, _chart_name("Validasi Rekap"), "table", {"all_columns": VALIDASI_TABLE_COLUMNS, "page_length": 25}, {"columns": VALIDASI_TABLE_COLUMNS, "metrics": []}),
         ]
         chart_ids = [_upsert_chart(session, payload) for payload in chart_payloads]
         dashboard_id = _upsert_dashboard(session, dataset_id, chart_ids)
         dashboard_urls_by_year = _create_year_permalinks(session, dashboard_id)
+        saved_query_ids = [
+            _upsert_saved_query(
+                session,
+                database_id,
+                "SILARAS - Detail Item Biaya (tanpa kolom teknis)",
+                SAVED_QUERY_DETAIL_SQL,
+                "Query cek data faktual gold.fact_anggaran tanpa atribut teknis mapping_status, data_quality_flag, source_sheet, source_row.",
+            ),
+            _upsert_saved_query(
+                session,
+                database_id,
+                "SILARAS - Cek Kolom Teknis (audit)",
+                SAVED_QUERY_HIDDEN_COLUMNS_SQL,
+                "Audit: kolom teknis masih ada di tabel gold.fact_anggaran tetapi disembunyikan dari dataset Superset.",
+            ),
+        ]
         default_dashboard_url = dashboard_urls_by_year.get("Semua") or f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/"
         result = {
             "status": "validated",
@@ -414,6 +583,9 @@ def main() -> None:
             "dashboard_urls_by_year": dashboard_urls_by_year,
             "chart_ids": chart_ids,
             "chart_count": len(chart_ids),
+            "hidden_columns": sorted(HIDDEN_COLUMNS),
+            "hidden_columns_deactivated": hidden_deactivated,
+            "saved_query_ids": saved_query_ids,
             "dataset_session_id": dataset_session_id,
             "pipeline_run_id": pipeline_run_id,
             "superset_refresh_started_at": refresh_started_at,

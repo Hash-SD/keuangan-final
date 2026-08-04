@@ -338,6 +338,18 @@ Dashboard minimal:
 
 Dataset: `gold.fact_anggaran`
 
+Atribut teknis berikut **tidak ditampilkan** di Superset (dinonaktifkan di level dataset; kolom tetap ada di tabel `gold.fact_anggaran` untuk lineage/QA dan dapat diakses via SQL Lab):
+
+- `mapping_status`
+- `data_quality_flag`
+- `source_sheet`
+- `source_row`
+
+Script juga membuat **Saved Queries** untuk pengecekan:
+
+- `SILARAS - Detail Item Biaya (tanpa kolom teknis)` — data faktual tanpa atribut teknis
+- `SILARAS - Cek Kolom Teknis (audit)` — verifikasi kolom teknis masih eksis di tabel
+
 ### Target database & dashboard
 
 Pipeline dapat diarahkan ke target spesifik via env/`dag_run.conf`:

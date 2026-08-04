@@ -18,8 +18,13 @@ Filter wajib:
 - iku
 - kegiatan
 - akun
+
+Kolom tersembunyi (tetap ada di tabel gold, tidak ditampilkan di Superset):
+
 - mapping_status
 - data_quality_flag
+- source_sheet
+- source_row
 
 Chart minimal:
 
@@ -28,13 +33,16 @@ Chart minimal:
 - KPI Jumlah IKU
 - KPI Jumlah Kegiatan
 - KPI Jumlah Item
-- KPI Mapping OK %
 - Bar Chart Anggaran per IKU
 - Treemap IKU -> Cluster Kegiatan
 - Bar Chart Anggaran per Akun
-- Table Detail Item
-- Table Mapping Quality
+- Table Detail Item (tanpa kolom teknis)
 - Table Validation/Reconciliation
+
+Saved queries (dibuat otomatis oleh script):
+
+- `SILARAS - Detail Item Biaya (tanpa kolom teknis)` — cek data gold tanpa atribut teknis
+- `SILARAS - Cek Kolom Teknis (audit)` — pastikan kolom teknis masih eksis di tabel
 
 Script otomatis:
 

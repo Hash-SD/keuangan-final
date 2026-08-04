@@ -40,5 +40,11 @@
     {"label": "Jumlah Item", "expression": "COUNT(DISTINCT item_id)"},
     {"label": "Jumlah IKU", "expression": "COUNT(DISTINCT kode_iku)"},
     {"label": "Jumlah Kegiatan", "expression": "COUNT(DISTINCT kegiatan)"}
+  ],
+  "hidden_columns": [
+    "mapping_status",
+    "data_quality_flag",
+    "source_sheet",
+    "source_row"
   ]
 }
