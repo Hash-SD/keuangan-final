@@ -51,11 +51,16 @@ def normalize_dataset_file_kinds(payload: dict[str, Any] | None) -> dict[str, An
         normalized_item = {**item, "jenis_dataset": normalized_kind}
         normalized_files.append(normalized_item)
         changed = changed or normalized_item != item
-    return {**payload, "files": normalized_files} if changed else payload
+    refreshed_scope = _upload_scope(
+        normalized_files,
+        str(payload.get("tahun_input") or "").strip() or None,
+    )
+    scope_changed = any(payload.get(key) != value for key, value in refreshed_scope.items())
+    return {**payload, "files": normalized_files, **refreshed_scope} if changed or scope_changed else payload
 
 
 def _detect_year(filename: str, fallback: str | None) -> str | None:
-    match = re.search(r"\b(20\d{2})\b", filename)
+    match = re.search(r"(?<!\d)(20\d{2})(?!\d)", filename)
     return match.group(1) if match else fallback
 
 

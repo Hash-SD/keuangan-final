@@ -111,9 +111,11 @@ context.globalThis = context;
   const viewModel = buildPortalViewModel({{
     supersetSummary: {{
       status: "ready",
-      total_jumlah: 125000,
-      total_weighted_iku: 50000,
-      fact_rows: 42
+      total_anggaran: 125000,
+      jumlah_item: 42,
+      jumlah_iku: 7,
+      jumlah_kegiatan: 9,
+      status_rekonsiliasi: "OK"
     }},
     metrics: {{ data_quality_score: 97 }},
     airflowLatest: {{
@@ -136,16 +138,18 @@ context.globalThis = context;
       services: {{ superset: {{ status: "ready", url: "http://localhost:8089" }} }}
     }},
     excelLakehouse: {{
-      fact_anggaran: {{ total_jumlah: 1, total_weighted_iku: 2 }},
+      fact_anggaran: {{ total_anggaran: 1, jumlah_item: 1, jumlah_iku: 1, jumlah_kegiatan: 1, status_rekonsiliasi: "OK" }},
       counts: {{ fact_anggaran_rows: 3 }},
       artifacts: {{}},
       metadata: {{ pipeline_run_id: "fallback-run" }}
     }}
   }});
 
-  assert.strictEqual(viewModel.total_jumlah, 125000);
-  assert.strictEqual(viewModel.total_weighted_iku, 50000);
-  assert.strictEqual(viewModel.fact_rows, 42);
+  assert.strictEqual(viewModel.total_anggaran, 125000);
+  assert.strictEqual(viewModel.jumlah_item, 42);
+  assert.strictEqual(viewModel.jumlah_iku, 7);
+  assert.strictEqual(viewModel.jumlah_kegiatan, 9);
+  assert.strictEqual(viewModel.status_rekonsiliasi, "OK");
   assert.strictEqual(viewModel.data_quality_score, 97);
   assert.strictEqual(viewModel.pipeline.statusKind, "success");
   assert.strictEqual(viewModel.steps.at(-1).statusKind, "success");
@@ -156,7 +160,7 @@ context.globalThis = context;
   assert.throws(() => {{ viewModel.steps[0].statusKind = "failed"; }}, TypeError);
 
   const endpointStatus = {{
-    supersetSummary: settledEndpoint("supersetSummary", {{ status: "fulfilled", value: {{ status: "ready", total_jumlah: 9, total_weighted_iku: 8, fact_rows: 7 }} }}),
+    supersetSummary: settledEndpoint("supersetSummary", {{ status: "fulfilled", value: {{ status: "ready", total_anggaran: 9, jumlah_item: 7, jumlah_iku: 2, jumlah_kegiatan: 3, status_rekonsiliasi: "OK" }} }}),
     metrics: settledEndpoint("metrics", {{ status: "fulfilled", value: {{ data_quality_score: 88 }} }}),
     airflowLatest: settledEndpoint("airflowLatest", {{ status: "rejected", reason: new Error("airflow down") }}),
     systemTruth: settledEndpoint("systemTruth", {{ status: "fulfilled", value: {{ layers: {{}} }} }}),
@@ -343,7 +347,7 @@ context.globalThis = context;
   assert.ok(!listServiceHtml.includes("<strong>0</strong>"));
 
   const vm = buildPortalViewModel({{
-    supersetSummary: {{ status: "ready", total_jumlah: 1, total_weighted_iku: 1, fact_rows: 1 }},
+    supersetSummary: {{ status: "ready", total_anggaran: 1, jumlah_item: 1, jumlah_iku: 1, jumlah_kegiatan: 1, status_rekonsiliasi: "OK" }},
     metrics: {{ data_quality_score: 97 }},
     airflowActive: null,
     airflowLatest: {{ status: "success", run: {{ state: "success", dag_run_id: "dag-x" }} }},

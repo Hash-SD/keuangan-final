@@ -42,6 +42,11 @@ _Avoid_: data yang sudah pasti dipublikasikan.
 Data faktual yang lolos quality gate dan siap dipublikasikan ke PostgreSQL, Trino, dan Superset.
 _Avoid_: semua hasil parsing.
 
+Gold utama adalah `fact_anggaran` berbasis laporan tahunan dengan grain satu
+item anggaran x satu alokasi IKU. `tahun` adalah satu-satunya atribut waktu
+analitik; cakupan sumber disimpan pada Bronze/Silver/lineage. Total Anggaran
+memakai `SUM(jumlah_weighted_iku)` dan status rekonsiliasi bukan metrik aditif.
+
 **Detail-support**:
 Sheet rincian akun yang dipertahankan untuk audit dan rekonsiliasi, tetapi tidak dijumlahkan ke Gold jika workbook memiliki sheet `RAB` utama.
 _Avoid_: sumber kedua untuk menambah total Gold.
@@ -75,4 +80,3 @@ _Avoid_: validasi kosmetik.
 **Review IKU**:
 Antrean item Silver yang membutuhkan koreksi mapping IKU/akun sebelum pipeline dijalankan ulang untuk membangun Gold.
 _Avoid_: perubahan langsung pada Gold.
-

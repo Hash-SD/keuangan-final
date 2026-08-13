@@ -8,6 +8,10 @@ SILARAS SD adalah sistem lakehouse anggaran berbasis Excel untuk **RAB, RPD/IKU,
 
 ## Arsitektur
 
+Gold menggunakan model data terdenormalisasi berbasis laporan tahunan dengan
+struktur dimensional secara logis. Tidak ada tabel star schema fisik yang
+menjadi syarat runtime.
+
 ```text
 Raw Excel (RAB, RPD/IKU, Nomenklatur)
   -> Bronze   cell-level extraction
@@ -81,7 +85,7 @@ Reports:
 - `outputs/reports/system_truth_status.json`
 - `outputs/reports/service_health_report.json`
 
-## fact_anggaran
+## fact_anggaran tahunan
 
 Gold utama adalah `fact_anggaran` dengan grain:
 
@@ -93,9 +97,9 @@ Kolom utama:
 
 ```text
 item_id
+dataset_session_id
 run_id
 tahun
-periode
 prodi
 fakultas
 kegiatan
@@ -103,6 +107,7 @@ cluster_kegiatan
 akun
 kode_akun
 nama_akun
+nama_akun_asli
 iku
 kode_iku
 nama_iku
@@ -119,8 +124,23 @@ data_quality_flag
 source_file
 source_sheet
 source_row
+source_role
+row_type
+quality_flags
 created_at
 ```
+
+Kontrak dashboard tahunan:
+
+- Filter: `tahun`, `prodi`, `iku`, `kegiatan`, `akun`
+- Total Anggaran: `SUM(jumlah_weighted_iku)`
+- KPI: Total Anggaran, Jumlah Item, Jumlah IKU, Jumlah Kegiatan, Status Rekonsiliasi
+- Grain: satu item anggaran x satu alokasi IKU
+- `pipeline_run_id` hanya untuk manifest/audit; Gold memakai `run_id`
+
+Informasi cakupan sumber seperti Jan-Jun dan Jul-Des tetap berada pada Bronze,
+Silver, atau lineage. Informasi tersebut tidak menjadi kolom analitik Gold dan
+tidak menjadi filter Superset.
 
 Aturan IKU:
 
@@ -333,12 +353,10 @@ src/sql/setup_superset_excel_assets.py
 
 Dashboard minimal:
 
-- Executive KPI
-- Anggaran per IKU
-- Cluster Kegiatan
-- Detail Item Biaya
-- Komposisi Akun
-- Mapping Quality
+- 13 chart aktif dari registry `CHART_SPECS`
+- Lima KPI final: Total Anggaran, Jumlah Item, Jumlah IKU, Jumlah Kegiatan, Status Rekonsiliasi
+- Filter: tahun, prodi, IKU, kegiatan, akun
+- Validasi deployment: `desired_chart_count == attached_chart_count == 13`
 
 Dataset: `gold.fact_anggaran`
 

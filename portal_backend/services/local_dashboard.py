@@ -7,90 +7,51 @@ import pandas as pd
 
 from src.common.logging_utils import write_json
 from src.common.time_utils import utc_now_iso
+from src.gold.contract import DASHBOARD_FILTERS, FACT_COLUMNS
 
 from .paths import OUTPUTS_DIR, ROOT_DIR
 from .superset_api import fetch_superset_fact_rows, read_superset_reference
 
 
-DASHBOARD_VIEW_RELATIVE = "data/generated/gold/vw_dashboard_piutang_ukt.csv"
+DASHBOARD_VIEW_RELATIVE = "data/generated/gold/fact_anggaran.csv"
 DASHBOARD_VIEW_PATH = ROOT_DIR / DASHBOARD_VIEW_RELATIVE
-SUPERSET_GOLD_RELATIVE = "data/generated/gold/fact_anggaran.csv"
+SUPERSET_GOLD_RELATIVE = DASHBOARD_VIEW_RELATIVE
 SUPERSET_GOLD_PATH = ROOT_DIR / SUPERSET_GOLD_RELATIVE
-NOT_AVAILABLE_MESSAGE = "Gold dashboard view belum tersedia. Jalankan pipeline sampai Gold terlebih dahulu."
+NOT_AVAILABLE_MESSAGE = "Gold fact anggaran belum tersedia. Jalankan pipeline sampai Gold terlebih dahulu."
 
-REQUIRED_COLUMNS = [
-    "tahun_akademik",
-    "tahun_anggaran",
-    "semester",
-    "nama_prodi",
-    "nama_fakultas",
-    "kualitas",
-    "nominal_piutang_rp",
-    "jumlah_mhs_penunggak",
-    "nim",
-    "nama_debitur",
-]
-
-FILTER_COLUMNS = [
+FILTER_COLUMNS = list(DASHBOARD_FILTERS)
+SUPERSET_REQUIRED_COLUMNS = [
+    "dataset_session_id",
+    "run_id",
     "item_id",
-    "tahun_akademik",
-    "tahun_anggaran",
-    "semester",
-    "nama_prodi",
-    "kualitas",
+    "tahun",
+    "prodi",
     "iku",
     "kegiatan",
     "akun",
+    "jumlah_weighted_iku",
 ]
-
-SUPERSET_REQUIRED_COLUMNS = [
-    "tahun",
-    "periode",
-    "prodi",
-    "fakultas",
-    "item_id",
-    "kegiatan",
-    "jumlah",
-]
-
-PIUTANG_LABELS = {
-    "title": "Dashboard Lokal Piutang UKT",
-    "subtitle": "Data dibaca dari Gold view vw_dashboard_piutang_ukt.",
-    "value_label": "Total Piutang",
-    "count_label": "Mahasiswa Penunggak",
-    "entity_label": "Debitur Unik",
-    "row_label": "Baris Detail",
-    "value_note": "nominal_piutang_rp dari Gold",
-    "count_note": "jumlah_mhs_penunggak dari Gold",
-    "entity_note": "distinct nim",
-    "table_title": "Drill-down Detail Debitur",
-    "name_column": "Debitur",
-    "id_column": "NIM",
-    "amount_column": "Nominal",
-}
 
 SUPERSET_LABELS = {
-    "title": "Dashboard Anggaran IKU Sains Data",
-    "subtitle": "Data dibaca dari Gold fact_anggaran, dataset yang sama dengan dashboard Superset.",
+    "title": "Dashboard Anggaran RAB/IKU",
+    "subtitle": "Laporan tahunan dari Gold fact_anggaran pada grain item anggaran dan alokasi IKU.",
     "value_label": "Total Anggaran",
-    "count_label": "Item Anggaran",
-    "entity_label": "Item Unik",
-    "row_label": "Baris Detail",
-    "value_note": "jumlah_weighted_iku/jumlah dari Gold fact_anggaran",
-    "count_note": "jumlah baris item dari dataset Superset",
-    "entity_note": "distinct item_id",
-    "table_title": "Drill-down Detail Item Biaya",
-    "name_column": "Kegiatan",
-    "id_column": "Item ID",
-    "amount_column": "Nilai",
+    "item_label": "Jumlah Item",
+    "iku_label": "Jumlah IKU",
+    "activity_label": "Jumlah Kegiatan",
+    "status_label": "Status Rekonsiliasi",
+    "table_title": "Detail Item Biaya",
 }
 
 OPTIONAL_ANALYTIC_COLUMNS = {
+    "prodi": "-",
+    "fakultas": "-",
     "iku": "-",
+    "kode_iku": "-",
     "kegiatan": "-",
     "akun": "-",
-    "mapping_status": "-",
     "uraian_detail": "-",
+    "source_file": "-",
 }
 
 
@@ -105,6 +66,8 @@ def _empty_response(status: str = "not_available", message: str = NOT_AVAILABLE_
     return {
         "status": status,
         "source": None,
+        "source_kind": None,
+        "source_dataset": "fact_anggaran",
         "generated_at": utc_now_iso(),
         "message": message,
         "data": None,
@@ -114,22 +77,21 @@ def _empty_response(status: str = "not_available", message: str = NOT_AVAILABLE_
 def _clean_value(value: Any) -> Any:
     if pd.isna(value):
         return None
-    if hasattr(value, "item"):
-        return value.item()
-    return value
+    return value.item() if hasattr(value, "item") else value
 
 
 def _records(frame: pd.DataFrame) -> list[dict[str, Any]]:
-    rows = frame.to_dict(orient="records")
-    return [{key: _clean_value(value) for key, value in row.items()} for row in rows]
+    return [{key: _clean_value(value) for key, value in row.items()} for row in frame.to_dict(orient="records")]
 
 
 def _ensure_analytic_columns(frame: pd.DataFrame) -> pd.DataFrame:
     normalized = frame.copy()
     for column, fallback in OPTIONAL_ANALYTIC_COLUMNS.items():
-        if column not in normalized.columns:
-            normalized[column] = fallback
-        normalized[column] = normalized[column].fillna(fallback).astype(str)
+        values = normalized[column] if column in normalized.columns else pd.Series(fallback, index=normalized.index)
+        normalized[column] = values.fillna(fallback).astype(str)
+    for column in ("jumlah", "jumlah_weighted_iku", "qty", "harga_satuan", "allocation_weight"):
+        if column in normalized.columns:
+            normalized[column] = pd.to_numeric(normalized[column], errors="coerce").fillna(0)
     return normalized
 
 
@@ -138,72 +100,29 @@ def _query_filters(args: Any | None) -> dict[str, list[str]]:
         return {}
     filters: dict[str, list[str]] = {}
     for column in FILTER_COLUMNS:
-        values = []
-        if hasattr(args, "getlist"):
-            values = args.getlist(column)
-        elif isinstance(args, dict):
+        values = args.getlist(column) if hasattr(args, "getlist") else []
+        if isinstance(args, dict):
             raw = args.get(column)
-            if isinstance(raw, list):
-                values = raw
-            elif raw not in {None, ""}:
-                values = [raw]
-        split_values: list[str] = []
-        for value in values:
-            split_values.extend(part.strip() for part in str(value).split(",") if part.strip())
+            values = raw if isinstance(raw, list) else ([raw] if raw not in {None, ""} else [])
+        split_values = [part.strip() for value in values for part in str(value).split(",") if part.strip()]
         if split_values:
             filters[column] = split_values
     return filters
 
 
-def load_dashboard_view(path: Path | None = None) -> tuple[pd.DataFrame | None, dict[str, Any]]:
-    source_path = path or DASHBOARD_VIEW_PATH
-    source_kind = "piutang_ukt"
-    labels = PIUTANG_LABELS
-    if not source_path.exists() and path is None and _rel(source_path) == DASHBOARD_VIEW_RELATIVE:
-        superset_frame, superset_metadata = _load_superset_api_view()
-        if superset_frame is not None:
-            return superset_frame, superset_metadata
-    if not source_path.exists() and path is None and SUPERSET_GOLD_PATH.exists():
-        return _load_superset_gold_view()
-    if not source_path.exists():
-        return None, _empty_response("not_available")
-    try:
-        frame = pd.read_csv(source_path, low_memory=False)
-    except Exception as exc:
-        return None, _empty_response("failed", f"Gold dashboard view gagal dibaca: {exc}")
-    metadata = {
-        "status": "gold_csv_ready",
-        "source": _rel(source_path),
+def _metadata(source: str, source_kind: str, row_count: int, source_note: str | None = None) -> dict[str, Any]:
+    payload = {
+        "status": "gold_csv_ready" if source_kind == "gold_fact_anggaran" else "superset_api_ready",
+        "source": source,
         "source_kind": source_kind,
-        "source_dataset": "vw_dashboard_piutang_ukt",
-        "labels": labels,
+        "source_dataset": "fact_anggaran",
+        "labels": SUPERSET_LABELS,
         "generated_at": utc_now_iso(),
-        "row_count": int(len(frame)),
+        "row_count": int(row_count),
     }
-    return frame, metadata
-
-
-def _fact_to_dashboard_frame(source: pd.DataFrame) -> pd.DataFrame:
-    amount_column = "jumlah_weighted_iku" if "jumlah_weighted_iku" in source.columns else "jumlah"
-    return pd.DataFrame(
-        {
-            "tahun_akademik": source["tahun"].astype(str),
-            "tahun_anggaran": source["tahun"].astype(str),
-            "semester": source["periode"].fillna("Tahunan").astype(str),
-            "nama_prodi": source["prodi"].fillna("-").astype(str),
-            "nama_fakultas": source["fakultas"].fillna("-").astype(str),
-            "kualitas": source.get("data_quality_flag", source.get("mapping_status", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "nominal_piutang_rp": pd.to_numeric(source[amount_column], errors="coerce").fillna(0),
-            "jumlah_mhs_penunggak": 1,
-            "nim": source["item_id"].fillna("-").astype(str),
-            "nama_debitur": source["kegiatan"].fillna(source.get("uraian_detail", "-")).astype(str),
-            "iku": source.get("iku", source.get("kode_iku", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "kegiatan": source["kegiatan"].fillna("-").astype(str),
-            "akun": source.get("akun", source.get("nama_akun", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "mapping_status": source.get("mapping_status", source.get("data_quality_flag", pd.Series(["-"] * len(source)))).fillna("-").astype(str),
-            "uraian_detail": source.get("uraian_detail", source["kegiatan"]).fillna("-").astype(str),
-        }
-    )
+    if source_note:
+        payload["source_note"] = source_note
+    return payload
 
 
 def _load_superset_api_view() -> tuple[pd.DataFrame | None, dict[str, Any]]:
@@ -218,25 +137,23 @@ def _load_superset_api_view() -> tuple[pd.DataFrame | None, dict[str, Any]]:
             "source_kind": "superset_api",
             "source_dataset": "fact_anggaran",
             "generated_at": utc_now_iso(),
-            "message": "Superset API fact_anggaran tidak memiliki kolom minimum untuk dashboard lokal.",
+            "message": "Superset API fact_anggaran belum memiliki kolom dashboard yang wajib.",
             "missing_columns": missing,
             "superset_reference": api_metadata.get("superset_reference"),
             "data": None,
         }
-    frame = _fact_to_dashboard_frame(source)
-    metadata = {
-        "status": "superset_api_ready",
-        "source": "superset_api:/api/v1/chart/data",
-        "source_kind": "superset_api",
-        "source_dataset": "fact_anggaran",
+    frame = _ensure_analytic_columns(source)
+    metadata = _metadata(
+        "superset_api:/api/v1/chart/data",
+        "superset_api",
+        len(frame),
+        "Dashboard lokal membaca dataset fact_anggaran melalui Superset API.",
+    )
+    return frame, {
+        **metadata,
         "source_priority": ["superset_api", "gold_fact_anggaran"],
-        "source_note": "Data dashboard lokal dibaca melalui Superset API chart/data dari dataset fact_anggaran.",
         "superset_reference": api_metadata.get("superset_reference"),
-        "labels": SUPERSET_LABELS,
-        "generated_at": utc_now_iso(),
-        "row_count": int(len(frame)),
     }
-    return frame, metadata
 
 
 def _load_superset_gold_view() -> tuple[pd.DataFrame | None, dict[str, Any]]:
@@ -252,34 +169,51 @@ def _load_superset_gold_view() -> tuple[pd.DataFrame | None, dict[str, Any]]:
             "source_kind": "gold_fact_anggaran",
             "source_dataset": "fact_anggaran",
             "generated_at": utc_now_iso(),
-            "message": "Gold fact_anggaran tidak memiliki kolom minimum untuk dashboard lokal.",
+            "message": "Gold fact_anggaran belum memiliki kolom dashboard yang wajib.",
             "missing_columns": missing,
             "data": None,
         }
-    frame = _fact_to_dashboard_frame(source)
-    metadata = {
-        "status": "gold_csv_ready",
-        "source": _rel(SUPERSET_GOLD_PATH),
-        "source_kind": "gold_fact_anggaran",
-        "source_dataset": "fact_anggaran",
+    frame = _ensure_analytic_columns(source)
+    return frame, {
+        **_metadata(
+            _rel(SUPERSET_GOLD_PATH),
+            "gold_fact_anggaran",
+            len(frame),
+            "Fallback lokal membaca Gold fact_anggaran yang sama dengan dataset Superset.",
+        ),
         "source_priority": ["superset_api", "gold_fact_anggaran"],
         "superset_reference": read_superset_reference(),
-        "source_note": "Fallback faktual: Superset API belum tersedia, sehingga dashboard lokal membaca Gold fact_anggaran yang sama dengan dataset Superset.",
-        "labels": SUPERSET_LABELS,
-        "generated_at": utc_now_iso(),
-        "row_count": int(len(frame)),
         "fallback_reason": "superset_api_unavailable",
     }
-    return frame, metadata
+
+
+def load_dashboard_view(path: Path | None = None) -> tuple[pd.DataFrame | None, dict[str, Any]]:
+    source_path = path or DASHBOARD_VIEW_PATH
+    if not source_path.exists() and path is None:
+        superset_frame, superset_metadata = _load_superset_api_view()
+        if superset_frame is not None:
+            return superset_frame, superset_metadata
+        if SUPERSET_GOLD_PATH.exists():
+            return _load_superset_gold_view()
+    if not source_path.exists():
+        return None, _empty_response()
+    try:
+        frame = pd.read_csv(source_path, low_memory=False)
+    except Exception as exc:
+        return None, _empty_response("failed", f"Gold fact_anggaran gagal dibaca: {exc}")
+    return _ensure_analytic_columns(frame), _metadata(_rel(source_path), "gold_fact_anggaran", len(frame))
 
 
 def validate_dashboard_columns(frame: pd.DataFrame | None) -> dict[str, Any]:
     if frame is None:
-        return {"status": "gold_csv_missing", "missing_columns": REQUIRED_COLUMNS}
-    missing = [column for column in REQUIRED_COLUMNS if column not in frame.columns]
+        return {"status": "gold_csv_missing", "missing_columns": SUPERSET_REQUIRED_COLUMNS}
+    missing = [column for column in SUPERSET_REQUIRED_COLUMNS if column not in frame.columns]
+    forbidden = [column for column in ("periode", "pipeline_run_id") if column in frame.columns]
     if missing:
         return {"status": "missing_columns", "missing_columns": missing}
-    return {"status": "validated", "missing_columns": []}
+    if forbidden:
+        return {"status": "forbidden_columns", "missing_columns": [], "forbidden_columns": forbidden}
+    return {"status": "validated", "missing_columns": [], "forbidden_columns": []}
 
 
 def apply_dashboard_filters(frame: pd.DataFrame, filters: dict[str, list[str]]) -> pd.DataFrame:
@@ -289,124 +223,107 @@ def apply_dashboard_filters(frame: pd.DataFrame, filters: dict[str, list[str]]) 
             continue
         if column not in filtered.columns:
             return filtered.iloc[0:0].copy()
-        allowed = {str(value) for value in values}
-        filtered = filtered[filtered[column].astype(str).isin(allowed)]
+        filtered = filtered[filtered[column].astype(str).isin({str(value) for value in values})]
     return filtered.copy()
 
 
 def build_available_filters(frame: pd.DataFrame) -> dict[str, list[str]]:
-    result: dict[str, list[str]] = {}
-    for column in FILTER_COLUMNS:
-        if column not in frame.columns:
-            result[column] = []
-            continue
-        values = frame[column].dropna().astype(str).unique().tolist()
-        result[column] = sorted([value for value in values if value and value != "-"], key=lambda value: (value.lower(), value))
-    return result
+    return {
+        column: sorted(
+            [value for value in frame[column].dropna().astype(str).unique().tolist() if value and value != "-"],
+            key=lambda value: (value.lower(), value),
+        )
+        if column in frame.columns
+        else []
+        for column in FILTER_COLUMNS
+    }
+
+
+def _unique_count(frame: pd.DataFrame, column: str) -> int:
+    if column not in frame.columns:
+        return 0
+    values = frame[column].dropna().astype(str).replace({"": pd.NA, "-": pd.NA})
+    return int(values.dropna().nunique())
+
+
+def _reconciliation_status(frame: pd.DataFrame) -> str:
+    if "status" in frame.columns:
+        values = {str(value).upper() for value in frame["status"].dropna()}
+        return "OK" if values and values == {"OK"} else ("CHECK" if values else "NOT_AVAILABLE")
+    if frame.empty:
+        return "NOT_AVAILABLE"
+    identity = [column for column in ("dataset_session_id", "run_id", "item_id") if column in frame.columns]
+    item_level = frame.drop_duplicates(identity) if identity else frame
+    raw_total = pd.to_numeric(item_level.get("jumlah"), errors="coerce").fillna(0).sum()
+    weighted_total = pd.to_numeric(frame.get("jumlah_weighted_iku"), errors="coerce").fillna(0).sum()
+    return "OK" if abs(float(raw_total) - float(weighted_total)) <= 0.01 else "CHECK"
 
 
 def build_summary(frame: pd.DataFrame) -> dict[str, Any]:
-    nominal = pd.to_numeric(frame["nominal_piutang_rp"], errors="coerce").fillna(0)
-    penunggak = pd.to_numeric(frame["jumlah_mhs_penunggak"], errors="coerce").fillna(0)
+    weighted = pd.to_numeric(frame.get("jumlah_weighted_iku"), errors="coerce").fillna(0)
     return {
-        "total_nominal_piutang_rp": float(nominal.sum()),
-        "total_jumlah_mhs_penunggak": int(penunggak.sum()),
-        "total_debitur_unik": int(frame["nim"].dropna().astype(str).nunique()),
+        "total_anggaran": float(weighted.sum()),
+        "jumlah_item": _unique_count(frame, "item_id"),
+        "jumlah_iku": _unique_count(frame, "kode_iku" if "kode_iku" in frame.columns else "iku"),
+        "jumlah_kegiatan": _unique_count(frame, "kegiatan"),
+        "status_rekonsiliasi": _reconciliation_status(frame),
         "row_count": int(len(frame)),
-        "prodi_count": int(frame["nama_prodi"].dropna().astype(str).nunique()),
-        "total_iku_unik": int(frame["iku"].dropna().astype(str).replace("-", pd.NA).dropna().nunique()) if "iku" in frame.columns else 0,
-        "total_kegiatan_unik": int(frame["kegiatan"].dropna().astype(str).replace("-", pd.NA).dropna().nunique()) if "kegiatan" in frame.columns else 0,
+        "prodi_count": _unique_count(frame, "prodi"),
     }
 
 
 def _series(frame: pd.DataFrame, dimension: str, limit: int | None = None) -> list[dict[str, Any]]:
-    if frame.empty:
+    if frame.empty or dimension not in frame.columns:
         return []
     grouped = (
-        frame.groupby(dimension, dropna=False)
-        .agg(
-            nominal_piutang_rp=("nominal_piutang_rp", "sum"),
-            jumlah_mhs_penunggak=("jumlah_mhs_penunggak", "sum"),
-            debitur_unik=("nim", lambda values: values.dropna().astype(str).nunique()),
-        )
+        frame.assign(_amount=pd.to_numeric(frame["jumlah_weighted_iku"], errors="coerce").fillna(0))
+        .groupby(dimension, dropna=False)
+        .agg(total_anggaran=("_amount", "sum"), jumlah_item=("item_id", "nunique"))
         .reset_index()
         .rename(columns={dimension: "label"})
     )
     grouped["label"] = grouped["label"].fillna("-").astype(str)
-    grouped = grouped.sort_values(["nominal_piutang_rp", "label"], ascending=[False, True])
-    if limit is not None:
-        grouped = grouped.head(limit)
-    return _records(grouped)
+    if dimension == "tahun":
+        grouped = grouped.sort_values("label", ascending=True)
+    else:
+        grouped = grouped.sort_values(["total_anggaran", "label"], ascending=[False, True])
+    return _records(grouped.head(limit) if limit is not None else grouped)
 
 
 def build_chart_payloads(frame: pd.DataFrame) -> dict[str, Any]:
-    trend = _series(frame, "tahun_akademik")
-    trend = sorted(trend, key=lambda item: str(item["label"]))
     return {
-        "bar_by_tahun_anggaran": {
-            "filter_column": "tahun_anggaran",
-            "items": _series(frame, "tahun_anggaran"),
-        },
-        "donut_by_kualitas": {
-            "filter_column": "kualitas",
-            "items": _series(frame, "kualitas"),
-        },
-        "bar_by_prodi": {
-            "filter_column": "nama_prodi",
-            "items": _series(frame, "nama_prodi", limit=12),
-        },
-        "line_by_tahun_akademik": {
-            "filter_column": "tahun_akademik",
-            "items": trend,
-        },
-        "bar_by_semester": {
-            "filter_column": "semester",
-            "items": _series(frame, "semester"),
-        },
-        "bar_by_iku": {
-            "filter_column": "iku",
-            "items": _series(frame, "iku") if "iku" in frame.columns else [],
-        },
-        "bar_by_kegiatan": {
-            "filter_column": "kegiatan",
-            "items": _series(frame, "kegiatan") if "kegiatan" in frame.columns else [],
-        },
-        "bar_by_akun": {
-            "filter_column": "akun",
-            "items": _series(frame, "akun") if "akun" in frame.columns else [],
-        },
+        "ringkasan_per_tahun": {"filter_column": "tahun", "items": _series(frame, "tahun")},
+        "anggaran_per_tahun": {"filter_column": "tahun", "items": _series(frame, "tahun")},
+        "anggaran_per_iku": {"filter_column": "iku", "items": _series(frame, "iku")},
+        "cluster_kegiatan": {"filter_column": "kegiatan", "items": _series(frame, "kegiatan", limit=20)},
+        "komposisi_akun": {"filter_column": "akun", "items": _series(frame, "akun", limit=25)},
+        "anggaran_per_akun": {"filter_column": "akun", "items": _series(frame, "akun")},
+        "validasi_rekap": {"status": _reconciliation_status(frame)},
     }
 
 
 def build_detail_table(frame: pd.DataFrame, limit: int = 50, offset: int = 0) -> dict[str, Any]:
     columns = [
-        "tahun_akademik",
-        "tahun_anggaran",
-        "semester",
-        "nama_prodi",
-        "nama_fakultas",
-        "kualitas",
-        "item_id",
-        "nim",
-        "nama_debitur",
-        "nominal_piutang_rp",
-        "jumlah_mhs_penunggak",
+        "tahun",
+        "prodi",
         "iku",
         "kegiatan",
         "akun",
-        "mapping_status",
         "uraian_detail",
+        "qty",
+        "satuan",
+        "harga_satuan",
+        "jumlah",
+        "allocation_weight",
+        "jumlah_weighted_iku",
+        "source_file",
+        "item_id",
     ]
-    sorted_frame = frame.sort_values("nominal_piutang_rp", ascending=False)
-    available_columns = [column for column in columns if column in sorted_frame.columns]
-    page = sorted_frame[available_columns].iloc[max(offset, 0) : max(offset, 0) + max(limit, 1)]
-    return {
-        "columns": columns,
-        "rows": _records(page),
-        "total_rows": int(len(frame)),
-        "limit": int(limit),
-        "offset": int(offset),
-    }
+    available = [column for column in columns if column in frame.columns]
+    ordered = frame.assign(_amount=pd.to_numeric(frame.get("jumlah_weighted_iku"), errors="coerce").fillna(0)).sort_values("_amount", ascending=False)
+    start = max(offset, 0)
+    page = ordered[available].iloc[start : start + max(limit, 1)]
+    return {"columns": columns, "rows": _records(page), "total_rows": int(len(frame)), "limit": int(limit), "offset": int(offset)}
 
 
 def build_dashboard_response(args: Any | None = None, section: str = "all", path: Path | None = None) -> dict[str, Any]:
@@ -416,33 +333,29 @@ def build_dashboard_response(args: Any | None = None, section: str = "all", path
         return metadata
     if validation["status"] != "validated":
         return {
-            "status": "missing_columns",
-            "source": metadata["source"],
-            "generated_at": metadata["generated_at"],
-            "message": "Gold dashboard view tidak memiliki kolom wajib.",
-            "missing_columns": validation["missing_columns"],
+            "status": validation["status"],
+            "source": metadata.get("source"),
+            "generated_at": metadata.get("generated_at"),
+            "message": "Gold fact_anggaran belum memenuhi kontrak dashboard.",
+            "missing_columns": validation.get("missing_columns", []),
+            "forbidden_columns": validation.get("forbidden_columns", []),
             "data": None,
         }
 
-    frame["nominal_piutang_rp"] = pd.to_numeric(frame["nominal_piutang_rp"], errors="coerce").fillna(0)
-    frame["jumlah_mhs_penunggak"] = pd.to_numeric(frame["jumlah_mhs_penunggak"], errors="coerce").fillna(0)
-    frame = _ensure_analytic_columns(frame)
     filters = _query_filters(args)
     filtered = apply_dashboard_filters(frame, filters)
-    status = "empty_after_filter" if filtered.empty else "validated"
     response: dict[str, Any] = {
-        "status": status,
-        "source": metadata["source"],
+        "status": "empty_after_filter" if filtered.empty else "validated",
+        "source": metadata.get("source"),
         "source_kind": metadata.get("source_kind"),
         "source_dataset": metadata.get("source_dataset"),
         "source_note": metadata.get("source_note"),
         "source_priority": metadata.get("source_priority"),
         "superset_reference": metadata.get("superset_reference"),
-        "generated_at": metadata["generated_at"],
+        "generated_at": metadata.get("generated_at"),
         "filters": filters,
-        "data": {"labels": metadata.get("labels", PIUTANG_LABELS)},
+        "data": {"labels": metadata.get("labels", SUPERSET_LABELS)},
     }
-
     if section in {"all", "status"}:
         response["data"]["status"] = {"row_count": int(len(frame)), "filtered_row_count": int(len(filtered))}
     if section in {"all", "filters"}:
@@ -463,8 +376,7 @@ def dashboard_section(args: Any | None, section: str) -> dict[str, Any]:
     if payload.get("data") is None or section == "all":
         return payload
     data = payload.get("data", {})
-    key = "status" if section == "status" else section
-    payload["data"] = data.get(key)
+    payload["data"] = data.get(section)
     return payload
 
 

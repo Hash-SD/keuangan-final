@@ -12,12 +12,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.logging_utils import write_json
 from src.common.paths import GENERATED_DIR, OUTPUTS_DIR
+from src.gold.contract import DASHBOARD_FILTERS, FACT_COLUMNS, GOLD_METRICS
 
 
 BASE_URL = os.getenv("SUPERSET_BASE_URL", "http://localhost:8089")
 PUBLIC_BASE_URL = os.getenv("SUPERSET_PUBLIC_URL", "http://localhost:8089")
 DATABASE_NAME = "Trino PostgreSQL Gold Keuangan"
 TABLE_NAME = "fact_anggaran"
+RECONCILIATION_TABLE_NAME = "vw_dashboard_reconciliation"
 DASHBOARD_TITLE = "SILARAS SD - Dashboard Anggaran IKU"
 DASHBOARD_SLUG = "dashboard-anggaran-iku-prodi"
 DASHBOARD_MODE = os.getenv("SUPERSET_DASHBOARD_MODE", "update").strip().lower()
@@ -34,7 +36,6 @@ COLUMN_LABELS = {
     "dataset_session_id": "Sesi Dataset",
     "run_id": "Run Pipeline",
     "tahun": "Tahun",
-    "periode": "Periode",
     "prodi": "Program Studi",
     "fakultas": "Fakultas",
     "kegiatan": "Kegiatan",
@@ -42,6 +43,7 @@ COLUMN_LABELS = {
     "akun": "Akun Belanja",
     "kode_akun": "Kode Akun",
     "nama_akun": "Nama Akun",
+    "nama_akun_asli": "Nama Akun Asli",
     "iku": "IKU",
     "kode_iku": "Kode IKU",
     "nama_iku": "Nama IKU",
@@ -68,7 +70,6 @@ DATASET_DISPLAY_NAME = "Data Anggaran RAB/IKU"
 
 DETAIL_TABLE_COLUMNS = [
     "tahun",
-    "periode",
     "prodi",
     "iku",
     "kegiatan",
@@ -80,14 +81,14 @@ DETAIL_TABLE_COLUMNS = [
     "source_file",
 ]
 
-VALIDASI_TABLE_COLUMNS = ["tahun", "periode", "source_file", "jumlah"]
+VALIDASI_TABLE_COLUMNS = ["tahun", "source_file", "total_detail", "total_rekap", "selisih", "status"]
 
 SAVED_QUERY_DETAIL_SQL = """
-SELECT tahun, periode, prodi, fakultas, kegiatan, cluster_kegiatan, akun, kode_akun,
-       nama_akun, iku, kode_iku, nama_iku, uraian_detail, qty, satuan, harga_satuan,
+SELECT tahun, prodi, fakultas, kegiatan, cluster_kegiatan, akun, kode_akun,
+       nama_akun, nama_akun_asli, iku, kode_iku, nama_iku, uraian_detail, qty, satuan, harga_satuan,
        jumlah, allocation_weight, jumlah_weighted_iku, source_file
 FROM fact_anggaran
-ORDER BY tahun, periode, prodi
+ORDER BY tahun, prodi
 """
 
 SAVED_QUERY_HIDDEN_COLUMNS_SQL = """
@@ -97,6 +98,57 @@ WHERE table_schema = 'gold' AND table_name = 'fact_anggaran'
   AND column_name IN ('mapping_status', 'data_quality_flag', 'source_sheet', 'source_row')
 ORDER BY column_name
 """
+
+CHART_SPECS = [
+    "kpi_total_anggaran",
+    "kpi_jumlah_item",
+    "kpi_jumlah_iku",
+    "kpi_jumlah_kegiatan",
+    "kpi_status_rekonsiliasi",
+    "ringkasan_per_tahun",
+    "anggaran_per_tahun",
+    "anggaran_per_iku",
+    "cluster_kegiatan",
+    "komposisi_akun",
+    "anggaran_per_akun",
+    "detail_item_biaya",
+    "validasi_rekap",
+]
+
+CHART_DISPLAY_NAMES = {
+    "kpi_total_anggaran": "KPI Total Anggaran",
+    "kpi_jumlah_item": "KPI Jumlah Item",
+    "kpi_jumlah_iku": "KPI Jumlah IKU",
+    "kpi_jumlah_kegiatan": "KPI Jumlah Kegiatan",
+    "kpi_status_rekonsiliasi": "KPI Status Rekonsiliasi",
+    "ringkasan_per_tahun": "Ringkasan per Tahun",
+    "anggaran_per_tahun": "Anggaran per Tahun",
+    "anggaran_per_iku": "Anggaran per IKU",
+    "cluster_kegiatan": "Cluster Kegiatan",
+    "komposisi_akun": "Komposisi Akun",
+    "anggaran_per_akun": "Anggaran per Akun",
+    "detail_item_biaya": "Detail Item Biaya",
+    "validasi_rekap": "Validasi Rekap",
+}
+
+MANAGED_CHART_MARKER = "SILARAS_REGISTRY_KEY:"
+LEGACY_MANAGED_CHART_MARKER = "silaras-managed:"
+
+CHART_REGISTRY = {
+    "kpi_total_anggaran": {"key": "kpi_total_anggaran", "name": CHART_DISPLAY_NAMES["kpi_total_anggaran"], "dataset": "fact", "viz_type": "big_number_total", "metric_key": "total_anggaran", "groupby": [], "layout": {"width": 12, "height": 48}},
+    "kpi_jumlah_item": {"key": "kpi_jumlah_item", "name": CHART_DISPLAY_NAMES["kpi_jumlah_item"], "dataset": "fact", "viz_type": "big_number_total", "metric_key": "jumlah_item", "groupby": [], "layout": {"width": 12, "height": 48}},
+    "kpi_jumlah_iku": {"key": "kpi_jumlah_iku", "name": CHART_DISPLAY_NAMES["kpi_jumlah_iku"], "dataset": "fact", "viz_type": "big_number_total", "metric_key": "jumlah_iku", "groupby": [], "layout": {"width": 12, "height": 48}},
+    "kpi_jumlah_kegiatan": {"key": "kpi_jumlah_kegiatan", "name": CHART_DISPLAY_NAMES["kpi_jumlah_kegiatan"], "dataset": "fact", "viz_type": "big_number_total", "metric_key": "jumlah_kegiatan", "groupby": [], "layout": {"width": 12, "height": 48}},
+    "kpi_status_rekonsiliasi": {"key": "kpi_status_rekonsiliasi", "name": CHART_DISPLAY_NAMES["kpi_status_rekonsiliasi"], "dataset": "reconciliation", "viz_type": "table", "metric_key": None, "groupby": [], "layout": {"width": 12, "height": 48}},
+    "ringkasan_per_tahun": {"key": "ringkasan_per_tahun", "name": CHART_DISPLAY_NAMES["ringkasan_per_tahun"], "dataset": "fact", "viz_type": "table", "metric_key": "total_anggaran", "groupby": ["tahun"], "layout": {"width": 12, "height": 48}},
+    "anggaran_per_tahun": {"key": "anggaran_per_tahun", "name": CHART_DISPLAY_NAMES["anggaran_per_tahun"], "dataset": "fact", "viz_type": "echarts_timeseries_bar", "metric_key": "total_anggaran", "groupby": ["tahun"], "layout": {"width": 12, "height": 48}},
+    "anggaran_per_iku": {"key": "anggaran_per_iku", "name": CHART_DISPLAY_NAMES["anggaran_per_iku"], "dataset": "fact", "viz_type": "echarts_timeseries_bar", "metric_key": "total_anggaran", "groupby": ["iku"], "layout": {"width": 12, "height": 48}},
+    "cluster_kegiatan": {"key": "cluster_kegiatan", "name": CHART_DISPLAY_NAMES["cluster_kegiatan"], "dataset": "fact", "viz_type": "treemap_v2", "metric_key": "total_anggaran", "groupby": ["iku", "kegiatan"], "layout": {"width": 12, "height": 48}},
+    "komposisi_akun": {"key": "komposisi_akun", "name": CHART_DISPLAY_NAMES["komposisi_akun"], "dataset": "fact", "viz_type": "echarts_timeseries_bar", "metric_key": "total_anggaran", "groupby": ["akun"], "layout": {"width": 12, "height": 48}},
+    "anggaran_per_akun": {"key": "anggaran_per_akun", "name": CHART_DISPLAY_NAMES["anggaran_per_akun"], "dataset": "fact", "viz_type": "echarts_timeseries_bar", "metric_key": "total_anggaran", "groupby": ["akun"], "layout": {"width": 12, "height": 48}},
+    "detail_item_biaya": {"key": "detail_item_biaya", "name": CHART_DISPLAY_NAMES["detail_item_biaya"], "dataset": "fact", "viz_type": "table", "metric_key": None, "groupby": [], "layout": {"width": 12, "height": 48}},
+    "validasi_rekap": {"key": "validasi_rekap", "name": CHART_DISPLAY_NAMES["validasi_rekap"], "dataset": "reconciliation", "viz_type": "table", "metric_key": None, "groupby": [], "layout": {"width": 12, "height": 48}},
+}
 
 
 def _dashboard_suffix() -> str:
@@ -149,7 +201,7 @@ def _login() -> requests.Session:
 
 
 def _get_items(session: requests.Session, resource: str) -> list[dict]:
-    response = session.get(f"{BASE_URL}/api/v1/{resource}/?page_size=500", timeout=30)
+    response = session.get(f"{BASE_URL}/api/v1/{resource}/?q=(page:0,page_size:500)", timeout=30)
     response.raise_for_status()
     return response.json().get("result", [])
 
@@ -186,8 +238,8 @@ def _database_id(session: requests.Session) -> int:
     return int(database_id)
 
 
-def _dataset_id(session: requests.Session, database_id: int) -> int:
-    datasets = session.get(f"{BASE_URL}/api/v1/dataset/?q=(filters:!((col:table_name,opr:eq,value:{TABLE_NAME})))", timeout=30)
+def _dataset_id(session: requests.Session, database_id: int, table_name: str = TABLE_NAME, display_name: str = DATASET_DISPLAY_NAME) -> int:
+    datasets = session.get(f"{BASE_URL}/api/v1/dataset/?q=(filters:!((col:table_name,opr:eq,value:{table_name})))", timeout=30)
     datasets.raise_for_status()
     result = datasets.json().get("result", [])
     if result:
@@ -198,8 +250,8 @@ def _dataset_id(session: requests.Session, database_id: int) -> int:
                 "database_id": database_id,
                 "catalog": "postgres",
                 "schema": "gold",
-                "table_name": TABLE_NAME,
-                "description": DATASET_DISPLAY_NAME,
+                "table_name": table_name,
+                "description": display_name,
             },
             timeout=60,
         )
@@ -209,16 +261,27 @@ def _dataset_id(session: requests.Session, database_id: int) -> int:
             "database": database_id,
             "catalog": "postgres",
             "schema": "gold",
-            "table_name": TABLE_NAME,
-            "description": DATASET_DISPLAY_NAME,
+            "table_name": table_name,
         }
         response = session.post(f"{BASE_URL}/api/v1/dataset/", json=payload, timeout=60)
         if response.status_code not in {200, 201, 422}:
             response.raise_for_status()
         raw_dataset_id = response.json().get("id") or response.json().get("result", {}).get("id")
         if raw_dataset_id is None:
-            raise RuntimeError(f"Superset dataset {TABLE_NAME!r} was not created or found")
+            raise RuntimeError(f"Superset dataset {table_name!r} was not created or found")
         dataset_id = int(raw_dataset_id)
+        update = session.put(
+            f"{BASE_URL}/api/v1/dataset/{dataset_id}",
+            json={
+                "database_id": database_id,
+                "catalog": "postgres",
+                "schema": "gold",
+                "table_name": table_name,
+                "description": display_name,
+            },
+            timeout=60,
+        )
+        update.raise_for_status()
     refresh = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}/refresh", timeout=60)
     refresh.raise_for_status()
     return dataset_id
@@ -234,6 +297,33 @@ def _dataset_column_payload(column: dict) -> dict:
         "verbose_name": COLUMN_LABELS.get(name, name.replace("_", " ").title()),
         "is_active": name not in HIDDEN_COLUMNS,
     }
+
+
+def _remove_stale_dataset_columns(session: requests.Session, dataset_id: int) -> list[str]:
+    """Remove Superset metadata columns no longer present in canonical Gold."""
+
+    response = session.get(f"{BASE_URL}/api/v1/dataset/{dataset_id}", timeout=60)
+    response.raise_for_status()
+    columns = (response.json().get("result") or {}).get("columns") or []
+    stale = [
+        column
+        for column in columns
+        if str(column.get("column_name") or "").strip() not in FACT_COLUMNS
+    ]
+    removed: list[str] = []
+    for column in stale:
+        column_id = column.get("id")
+        column_name = str(column.get("column_name") or "").strip()
+        if not column_id or not column_name:
+            continue
+        delete = session.delete(
+            f"{BASE_URL}/api/v1/dataset/{dataset_id}/column/{column_id}",
+            timeout=60,
+        )
+        if delete.status_code not in {200, 204, 404}:
+            delete.raise_for_status()
+        removed.append(column_name)
+    return removed
 
 
 def _deactivate_hidden_columns(session: requests.Session, dataset_id: int) -> list[str]:
@@ -281,6 +371,13 @@ def _clean_stale_dashboards(session: requests.Session, dataset_id: int) -> dict:
     cleaned_charts: list[int] = []
     removed_quality_filters = 0
     for dashboard in _get_items(session, "dashboard"):
+        dashboard_title = str(dashboard.get("dashboard_title") or "")
+        dashboard_slug = str(dashboard.get("slug") or "")
+        managed_dashboard = (
+            TARGET_DASHBOARD_ID.isdigit() and str(dashboard.get("id")) == TARGET_DASHBOARD_ID
+        ) or dashboard_title.startswith(DASHBOARD_TITLE) or dashboard_slug.startswith(DASHBOARD_SLUG)
+        if not managed_dashboard:
+            continue
         detail = session.get(f"{BASE_URL}/api/v1/dashboard/{dashboard['id']}", timeout=60)
         detail.raise_for_status()
         result = detail.json().get("result") or {}
@@ -307,6 +404,8 @@ def _clean_stale_dashboards(session: requests.Session, dataset_id: int) -> dict:
             if chart_response.status_code != 200:
                 continue
             chart = chart_response.json().get("result") or {}
+            if not str(chart.get("description") or "").startswith(MANAGED_CHART_MARKER):
+                continue
             name = chart.get("slice_name") or ""
             viz_type = chart.get("viz_type") or ""
             params: dict = {}
@@ -369,7 +468,7 @@ def _metric(label: str, aggregate: str, column: str) -> dict:
     }
 
 
-def _chart_payload(dataset_id: int, name: str, viz_type: str, form_data: dict, query: dict) -> dict:
+def _chart_payload(dataset_id: int, name: str, viz_type: str, form_data: dict, query: dict, registry_key: str | None = None) -> dict:
     form_data = {
         "datasource": f"{dataset_id}__table",
         "viz_type": viz_type,
@@ -379,7 +478,7 @@ def _chart_payload(dataset_id: int, name: str, viz_type: str, form_data: dict, q
         **form_data,
     }
     query = {"filters": [], "extras": {"having": "", "where": ""}, "applied_time_extras": {}, "annotation_layers": [], "row_limit": 10000, "series_limit": 0, **query}
-    return {
+    payload = {
         "slice_name": name,
         "viz_type": viz_type,
         "datasource_id": dataset_id,
@@ -387,10 +486,38 @@ def _chart_payload(dataset_id: int, name: str, viz_type: str, form_data: dict, q
         "params": __import__("json").dumps(form_data),
         "query_context": __import__("json").dumps({"datasource": {"id": dataset_id, "type": "table"}, "force": False, "queries": [query], "form_data": form_data, "result_format": "json", "result_type": "full"}),
     }
+    if registry_key:
+        payload["description"] = f"{MANAGED_CHART_MARKER}{registry_key}"
+    return payload
 
 
 def _upsert_chart(session: requests.Session, payload: dict) -> int:
-    matches = [item for item in _get_items(session, "chart") if item.get("slice_name") == payload["slice_name"]]
+    managed_description = payload.get("description")
+    charts = _get_items(session, "chart")
+    registry_key = (
+        str(managed_description)[len(MANAGED_CHART_MARKER):]
+        if str(managed_description).startswith(MANAGED_CHART_MARKER)
+        else ""
+    )
+    managed_descriptions = {
+        value
+        for value in (
+            managed_description,
+            f"{LEGACY_MANAGED_CHART_MARKER}{registry_key}" if registry_key else None,
+        )
+        if value
+    }
+    matches = [item for item in charts if item.get("description") in managed_descriptions]
+    if not matches:
+        matches = [item for item in charts if item.get("slice_name") == payload["slice_name"] and str(item.get("slice_name", "")).startswith("SILARAS |")]
+    if not matches and registry_key:
+        legacy_name = CHART_DISPLAY_NAMES.get(registry_key)
+        legacy_description = f"{LEGACY_MANAGED_CHART_MARKER}{registry_key}"
+        candidates = [item for item in charts if item.get("slice_name") == legacy_name]
+        for candidate in candidates:
+            detail = session.get(f"{BASE_URL}/api/v1/chart/{candidate['id']}", timeout=60)
+            if detail.status_code == 200 and (detail.json().get("result") or {}).get("description") == legacy_description:
+                matches.append(candidate)
     if matches:
         chart_id = int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
         response = session.put(f"{BASE_URL}/api/v1/chart/{chart_id}", json=payload, timeout=60)
@@ -399,6 +526,48 @@ def _upsert_chart(session: requests.Session, payload: dict) -> int:
         chart_id = None
     response.raise_for_status()
     return int(response.json().get("id") or response.json().get("result", {}).get("id") or chart_id)
+
+
+def _registry_metric(key: str) -> dict:
+    metric = next(item for item in GOLD_METRICS if item["key"] == key)
+    if metric["aggregation"] == "STATUS":
+        raise ValueError(f"Metric status tidak dapat dijumlahkan: {key}")
+    return _metric(metric["label"], metric["aggregation"], metric["column"])
+
+
+def _registry_chart_payload(key: str, fact_dataset_id: int, reconciliation_dataset_id: int) -> dict:
+    name = _chart_name(f"SILARAS | {CHART_REGISTRY[key]['name']}")
+    total = _registry_metric("total_anggaran")
+    count_items = _registry_metric("jumlah_item")
+    count_iku = _registry_metric("jumlah_iku")
+    count_kegiatan = _registry_metric("jumlah_kegiatan")
+    if key == "kpi_total_anggaran":
+        return _chart_payload(fact_dataset_id, name, "big_number_total", {"metric": total, "y_axis_format": ",d"}, {"metrics": [total], "columns": []}, key)
+    if key == "kpi_jumlah_item":
+        return _chart_payload(fact_dataset_id, name, "big_number_total", {"metric": count_items, "y_axis_format": ",d"}, {"metrics": [count_items], "columns": []}, key)
+    if key == "kpi_jumlah_iku":
+        return _chart_payload(fact_dataset_id, name, "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": []}, key)
+    if key == "kpi_jumlah_kegiatan":
+        return _chart_payload(fact_dataset_id, name, "big_number_total", {"metric": count_kegiatan, "y_axis_format": ",d"}, {"metrics": [count_kegiatan], "columns": []}, key)
+    if key == "kpi_status_rekonsiliasi":
+        return _chart_payload(reconciliation_dataset_id, name, "table", {"all_columns": ["status"], "page_length": 5}, {"columns": ["status"], "metrics": []}, key)
+    if key == "ringkasan_per_tahun":
+        return _chart_payload(fact_dataset_id, name, "table", {"groupby": ["tahun"], "metrics": [total, count_items], "page_length": 10}, {"metrics": [total, count_items], "columns": ["tahun"], "orderby": [["tahun", True]], "row_limit": 10}, key)
+    if key == "anggaran_per_tahun":
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "tahun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total], "columns": ["tahun"], "orderby": [["tahun", True]]}, key)
+    if key == "anggaran_per_iku":
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total], "columns": ["iku"], "orderby": [[total, False]]}, key)
+    if key == "cluster_kegiatan":
+        return _chart_payload(fact_dataset_id, name, "treemap_v2", {"metric": total, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total], "columns": ["iku", "kegiatan"]}, key)
+    if key == "komposisi_akun":
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total], "columns": ["akun"], "orderby": [[total, False]], "row_limit": 25}, key)
+    if key == "anggaran_per_akun":
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total], "columns": ["akun"], "orderby": [[total, False]]}, key)
+    if key == "detail_item_biaya":
+        return _chart_payload(fact_dataset_id, name, "table", {"all_columns": DETAIL_TABLE_COLUMNS, "page_length": 25}, {"columns": DETAIL_TABLE_COLUMNS, "metrics": []}, key)
+    if key == "validasi_rekap":
+        return _chart_payload(reconciliation_dataset_id, name, "table", {"all_columns": VALIDASI_TABLE_COLUMNS, "page_length": 25}, {"columns": VALIDASI_TABLE_COLUMNS, "metrics": []}, key)
+    raise KeyError(key)
 
 
 def _position_json(chart_ids: list[int]) -> dict:
@@ -446,7 +615,8 @@ def _default_filter_mask(column: str, values: list) -> dict:
     }
 
 
-def _native_filters(dataset_id: int, chart_ids: list[int]) -> list[dict]:
+def _native_filters(dataset_id: int, chart_ids: list[int], excluded_chart_ids: set[int] | None = None) -> list[dict]:
+    excluded = excluded_chart_ids or set()
     def nf(filter_id: str, label: str, column: str, multi_select: bool = True) -> dict:
         empty_mask = {"extraFormData": {"filters": []}, "filterState": {"value": None}, "ownState": {}}
         return {
@@ -461,7 +631,7 @@ def _native_filters(dataset_id: int, chart_ids: list[int]) -> list[dict]:
             "defaultDataMask": empty_mask,
             "cascadeParentIds": [],
             "scope": {"rootPath": ["ROOT_ID"], "excluded": []},
-            "chartsInScope": chart_ids,
+            "chartsInScope": [chart_id for chart_id in chart_ids if chart_id not in excluded],
             "type": "NATIVE_FILTER",
             "controlValues": {
                 "enableEmptyFilter": False,
@@ -471,13 +641,8 @@ def _native_filters(dataset_id: int, chart_ids: list[int]) -> list[dict]:
                 "inverseSelection": False,
             },
         }
-    return [
-        nf("NATIVE_FILTER-tahun", "Tahun", "tahun"),
-        nf("NATIVE_FILTER-prodi", "Prodi", "prodi"),
-        nf("NATIVE_FILTER-iku", "IKU", "iku"),
-        nf("NATIVE_FILTER-kegiatan", "Kegiatan", "kegiatan"),
-        nf("NATIVE_FILTER-akun", "Akun", "akun"),
-    ]
+    labels = {"tahun": "Tahun", "prodi": "Prodi", "iku": "IKU", "kegiatan": "Kegiatan", "akun": "Akun"}
+    return [nf(f"NATIVE_FILTER-{column}", labels[column], column) for column in DASHBOARD_FILTERS]
 
 
 def _target_dashboard_id(session: requests.Session) -> int | None:
@@ -488,7 +653,7 @@ def _target_dashboard_id(session: requests.Session) -> int | None:
     return target if target in existing else None
 
 
-def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: list[int]) -> int:
+def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: list[int], excluded_chart_ids: set[int] | None = None) -> int:
     import json
 
     dashboard_title = _dashboard_title()
@@ -498,7 +663,7 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
         "slug": dashboard_slug,
         "published": True,
         "json_metadata": json.dumps({
-            "native_filter_configuration": _native_filters(dataset_id, chart_ids),
+            "native_filter_configuration": _native_filters(dataset_id, chart_ids, excluded_chart_ids),
             "color_namespace": "superset",
             "color_scheme": "supersetColors",
             "show_native_filters": True,
@@ -528,6 +693,58 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
         attach = session.put(f"{BASE_URL}/api/v1/chart/{chart_id}", json={"dashboards": [dashboard_id]}, timeout=60)
         attach.raise_for_status()
     return dashboard_id
+
+
+def _detach_stale_managed_charts(session: requests.Session, dashboard_id: int, active_keys: list[str]) -> int:
+    """Detach obsolete registry charts from one managed dashboard only."""
+
+    import json
+
+    response = session.get(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", timeout=60)
+    response.raise_for_status()
+    result = response.json().get("result") or {}
+    position = result.get("position_json") or {}
+    if isinstance(position, str):
+        position = json.loads(position)
+    active = set(active_keys)
+    row_of: dict[str, str] = {}
+    for node_id, node in position.items():
+        if isinstance(node, dict) and node.get("type") == "ROW":
+            for child in node.get("children") or []:
+                row_of[child] = node_id
+    removed = 0
+    grid_children = list((position.get("GRID_ID") or {}).get("children") or [])
+    for node_id, node in list(position.items()):
+        if not isinstance(node, dict) or node.get("type") != "CHART":
+            continue
+        chart_id = node.get("meta", {}).get("chartId")
+        if not chart_id:
+            continue
+        chart_response = session.get(f"{BASE_URL}/api/v1/chart/{chart_id}", timeout=60)
+        if chart_response.status_code != 200:
+            continue
+        chart = chart_response.json().get("result") or {}
+        description = str(chart.get("description") or "")
+        if not description.startswith(MANAGED_CHART_MARKER):
+            continue
+        key = description[len(MANAGED_CHART_MARKER):]
+        if key in active:
+            continue
+        position.pop(node_id, None)
+        row_id = row_of.get(node_id)
+        if row_id:
+            position.pop(row_id, None)
+            if row_id in grid_children:
+                grid_children.remove(row_id)
+        removed += 1
+    if removed:
+        position.setdefault("GRID_ID", {})["children"] = grid_children
+        session.put(
+            f"{BASE_URL}/api/v1/dashboard/{dashboard_id}",
+            json={"position_json": json.dumps(position)},
+            timeout=60,
+        ).raise_for_status()
+    return removed
 
 
 def _filter_state(column: str, value: str) -> dict:
@@ -596,30 +813,24 @@ def main() -> None:
     try:
         session = _login()
         database_id = _database_id(session)
-        dataset_id = _dataset_id(session, database_id)
+        dataset_id = _dataset_id(session, database_id, TABLE_NAME, DATASET_DISPLAY_NAME)
+        reconciliation_dataset_id = _dataset_id(session, database_id, RECONCILIATION_TABLE_NAME, "Status Rekonsiliasi Anggaran")
+        stale_columns_removed = _remove_stale_dataset_columns(session, dataset_id)
         hidden_deactivated = _deactivate_hidden_columns(session, dataset_id)
-        total_anggaran = _metric("Total Anggaran", "SUM", "jumlah_weighted_iku")
-        total_weighted = _metric("Total Weighted IKU", "SUM", "jumlah_weighted_iku")
-        count_items = _metric("Jumlah Item", "COUNT_DISTINCT", "item_id")
-        count_iku = _metric("Jumlah IKU", "COUNT_DISTINCT", "iku")
-        count_kegiatan = _metric("Jumlah Kegiatan", "COUNT_DISTINCT", "kegiatan")
-        chart_payloads = [
-            _chart_payload(dataset_id, _chart_name("Executive KPI - Total Anggaran"), "big_number_total", {"metric": total_anggaran, "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": []}),
-            _chart_payload(dataset_id, _chart_name("Executive KPI - Total Weighted IKU"), "big_number_total", {"metric": total_weighted, "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": []}),
-            _chart_payload(dataset_id, _chart_name("Executive KPI - Jumlah Item"), "big_number_total", {"metric": count_items, "y_axis_format": ",d"}, {"metrics": [count_items], "columns": []}),
-            _chart_payload(dataset_id, _chart_name("Executive KPI - Jumlah IKU"), "big_number_total", {"metric": count_iku, "y_axis_format": ",d"}, {"metrics": [count_iku], "columns": []}),
-            _chart_payload(dataset_id, _chart_name("Executive KPI - Jumlah Kegiatan"), "big_number_total", {"metric": count_kegiatan, "y_axis_format": ",d"}, {"metrics": [count_kegiatan], "columns": []}),
-            _chart_payload(dataset_id, _chart_name("Ringkasan per Tahun"), "table", {"groupby": ["tahun"], "metrics": [total_anggaran, count_items], "page_length": 10}, {"metrics": [total_anggaran, count_items], "columns": ["tahun"], "orderby": [["tahun", True]], "row_limit": 10}),
-            _chart_payload(dataset_id, _chart_name("Anggaran per Tahun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "tahun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["tahun"], "orderby": [["tahun", True]]}),
-            _chart_payload(dataset_id, _chart_name("Anggaran per IKU"), "echarts_timeseries_bar", {"metrics": [total_weighted], "x_axis": "iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_weighted], "columns": ["iku"], "orderby": [[total_weighted, False]]}),
-            _chart_payload(dataset_id, _chart_name("Cluster Kegiatan"), "treemap_v2", {"metric": total_anggaran, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total_anggaran], "columns": ["iku", "kegiatan"]}),
-            _chart_payload(dataset_id, _chart_name("Komposisi Akun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]], "row_limit": 25}),
-            _chart_payload(dataset_id, _chart_name("Anggaran per Akun"), "echarts_timeseries_bar", {"metrics": [total_anggaran], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total_anggaran], "columns": ["akun"], "orderby": [[total_anggaran, False]]}),
-            _chart_payload(dataset_id, _chart_name("Detail Item Biaya"), "table", {"all_columns": DETAIL_TABLE_COLUMNS, "page_length": 25}, {"columns": DETAIL_TABLE_COLUMNS, "metrics": []}),
-            _chart_payload(dataset_id, _chart_name("Validasi Rekap"), "table", {"all_columns": VALIDASI_TABLE_COLUMNS, "page_length": 25}, {"columns": VALIDASI_TABLE_COLUMNS, "metrics": []}),
+        chart_ids = [
+            _upsert_chart(session, _registry_chart_payload(key, dataset_id, reconciliation_dataset_id))
+            for key in CHART_SPECS
         ]
-        chart_ids = [_upsert_chart(session, payload) for payload in chart_payloads]
-        dashboard_id = _upsert_dashboard(session, dataset_id, chart_ids)
+        desired_chart_count = len(CHART_SPECS)
+        attached_chart_count = len(chart_ids)
+        if desired_chart_count != attached_chart_count or attached_chart_count != 13:
+            raise RuntimeError(f"Registry chart tidak valid: desired={desired_chart_count}, attached={attached_chart_count}")
+        reconciliation_chart_ids = {
+            chart_ids[CHART_SPECS.index("kpi_status_rekonsiliasi")],
+            chart_ids[CHART_SPECS.index("validasi_rekap")],
+        }
+        dashboard_id = _upsert_dashboard(session, dataset_id, chart_ids, excluded_chart_ids=reconciliation_chart_ids)
+        detached_chart_count = _detach_stale_managed_charts(session, dashboard_id, CHART_SPECS)
         dashboard_urls_by_year = _create_year_permalinks(session, dashboard_id)
         saved_query_ids = [
             _upsert_saved_query(
@@ -644,6 +855,7 @@ def main() -> None:
             "dashboard_mode": DASHBOARD_MODE,
             "database_id": database_id,
             "dataset_id": dataset_id,
+            "reconciliation_dataset_id": reconciliation_dataset_id,
             "table_name": TABLE_NAME,
             "dataset_display_name": DATASET_DISPLAY_NAME,
             "column_labels": COLUMN_LABELS,
@@ -656,8 +868,13 @@ def main() -> None:
             "dashboard_urls_by_year": dashboard_urls_by_year,
             "chart_ids": chart_ids,
             "chart_count": len(chart_ids),
+            "desired_chart_count": desired_chart_count,
+            "attached_chart_count": attached_chart_count,
+            "detached_chart_count": detached_chart_count,
+            "chart_registry": CHART_SPECS,
             "hidden_columns": sorted(HIDDEN_COLUMNS),
             "hidden_columns_deactivated": hidden_deactivated,
+            "stale_columns_removed": stale_columns_removed,
             "saved_query_ids": saved_query_ids,
             "dataset_session_id": dataset_session_id,
             "pipeline_run_id": pipeline_run_id,

@@ -81,18 +81,22 @@ def test_v2_maps_live_fact_quality_and_pipeline_fields_into_view_model() -> None
 
     assert "function buildPortalViewModel" in html
     assert "Object.freeze({" in html
-    assert "supersetSummary.total_jumlah" in html
-    assert "supersetSummary.total_weighted_iku" in html
+    assert "supersetSummary.total_anggaran" in html
+    assert "supersetSummary.jumlah_item" in html
     assert "supersetSummary.fact_rows" in html
     assert "metrics.data_quality_score" in html
-    assert "excelLakehouse.fact_anggaran.total_jumlah" in html
+    assert "excelLakehouse.fact_anggaran.total_anggaran" in html
     assert "excelLakehouse.counts?.fact_anggaran_rows" in html
     assert 'document.getElementById("valTotalAnggaran")' in html
-    assert 'id="valTotalWeightedIku"' in html
-    assert re.search(r'setText\(\s*"valTotalWeightedIku"', html)
+    assert 'id="valJumlahIku"' in html
+    assert re.search(r'setText\(\s*"valJumlahIku"', html)
+    assert 'id="valJumlahKegiatan"' in html
+    assert re.search(r'setText\(\s*"valJumlahKegiatan"', html)
+    assert 'id="valStatusRekonsiliasi"' in html
+    assert re.search(r'setText\(\s*"valStatusRekonsiliasi"', html)
     assert 'document.getElementById("valItemAnggaran")' in html
-    assert 'document.getElementById("valQualityScore")' in html
-    assert 'document.getElementById("valPipelineStatus")' in html
+    assert 'document.getElementById("valJumlahKegiatan")' in html
+    assert 'document.getElementById("valStatusRekonsiliasi")' in html
 
 
 def test_v2_pipeline_status_distinguishes_success_running_failed_missing_unreachable() -> None:
@@ -252,8 +256,8 @@ def test_v2_deep_freezes_view_model_and_nested_steps() -> None:
 def test_v2_initial_dom_uses_loading_labels_not_ready_or_online() -> None:
     html = _html()
 
-    assert '<div class="metric-value" id="valPipelineStatus">Menunggu</div>' in html
-    assert '<div class="metric-value" id="valPipelineStatus">Ready</div>' not in html
+    assert '<div class="metric-value" id="valStatusRekonsiliasi">Menunggu</div>' in html
+    assert '<div class="metric-value" id="valStatusRekonsiliasi">Ready</div>' not in html
     assert 'id="footerStatusBadge"' not in html
     assert 'id="footerPipelineMsg"' not in html
     assert "SYSTEM LOADING" not in html
@@ -272,8 +276,8 @@ def test_v2_dashboard_summary_never_uses_stale_numeric_fallbacks() -> None:
     assert 'id="dashFactRows">253</div>' not in html
     assert 'id="dashAkunCount">5</div>' not in html
     assert 'summary.total_anggaran !== undefined &&\n            summary.total_anggaran !== null' in html
-    assert 'summary.total_rows !== undefined && summary.total_rows !== null' in html
-    assert 'summary.total_akun !== undefined && summary.total_akun !== null' in html
+    assert 'summary.jumlah_item !== undefined && summary.jumlah_item !== null' in html
+    assert 'summary.jumlah_iku !== undefined && summary.jumlah_iku !== null' in html
     assert 'id="dashSummaryStatus"' in html
     assert "Data ringkasan Superset belum tersedia." in html
     assert "summaryStatus.style.display" in html

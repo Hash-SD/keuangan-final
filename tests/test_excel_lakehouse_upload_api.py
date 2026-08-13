@@ -37,6 +37,43 @@ def _configure_upload_paths(tmp_path, monkeypatch):
     monkeypatch.setattr(excel_upload, "relative_path", lambda path: str(path))
 
 
+def test_upload_scope_infers_years_from_underscore_filenames():
+    result = excel_upload._upload_scope(
+        [
+            {"filename": "RAB_2025_SD_RAB_IKU.xlsx", "jenis_dataset": "rab"},
+            {"filename": "RAB_SD_Usulan_KE_1_Jan-Jun_2023.xlsx", "jenis_dataset": "rab"},
+            {"filename": "RAB_SD_Usulan_KE_1_jul-des_2023.xlsx", "jenis_dataset": "rab"},
+            {"filename": "Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx", "jenis_dataset": "rab"},
+        ],
+        None,
+    )
+
+    assert result["detected_years"] == ["2023", "2024", "2025"]
+    assert "Tahun tidak terdeteksi dari metadata atau nama file." not in result["warnings"]
+
+
+def test_normalize_active_dataset_refreshes_stale_scope_metadata():
+    payload = {
+        "status": "committed",
+        "upload_scope": "single_year",
+        "detected_years": [],
+        "warnings": ["Tahun tidak terdeteksi dari metadata atau nama file."],
+        "files": [
+            {"filename": "RAB_2025_SD_RAB_IKU.xlsx", "jenis_dataset": "rab"},
+            {"filename": "RAB_SD_Usulan_KE_1_Jan-Jun_2023.xlsx", "jenis_dataset": "rab"},
+            {"filename": "RAB_SD_Usulan_KE_1_jul-des_2023.xlsx", "jenis_dataset": "rab"},
+            {"filename": "Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx", "jenis_dataset": "rab"},
+            {"filename": "Nomenklatur.xlsx", "jenis_dataset": "nomenklatur"},
+        ],
+    }
+
+    normalized = excel_upload.normalize_dataset_file_kinds(payload)
+
+    assert normalized["upload_scope"] == "multi_year_bundle"
+    assert normalized["detected_years"] == ["2023", "2024", "2025"]
+    assert normalized["warnings"] == []
+
+
 def test_excel_lakehouse_upload_accepts_multi_file_excel_only(tmp_path, monkeypatch):
     monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
     monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")

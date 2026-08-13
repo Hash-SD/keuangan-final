@@ -41,17 +41,21 @@ def _get_cached_fact_summary(
             return cached_result
 
     base_columns = ["item_id", "jumlah", "jumlah_weighted_iku"]
+    analytic_columns = base_columns + ["kode_iku", "kegiatan"]
     lineage_columns = base_columns + ["dataset_session_id", "run_id"]
     fact_df = None
     if fact_parquet.exists():
         try:
-            columns = lineage_columns if active_dataset_session_id or active_run_id else base_columns
+            columns = analytic_columns + ["dataset_session_id", "run_id"] if active_dataset_session_id or active_run_id else analytic_columns
             fact_df = pd.read_parquet(fact_parquet, columns=columns)
         except Exception:
             try:
-                fact_df = pd.read_parquet(fact_parquet, columns=base_columns)
+                fact_df = pd.read_parquet(fact_parquet, columns=lineage_columns if active_dataset_session_id or active_run_id else base_columns)
             except Exception:
-                fact_df = None
+                try:
+                    fact_df = pd.read_parquet(fact_parquet, columns=base_columns)
+                except Exception:
+                    fact_df = None
 
     if fact_df is None and fact_csv.exists():
         try:
@@ -59,7 +63,13 @@ def _get_cached_fact_summary(
         except Exception:
             fact_df = None
 
-    fact_summary: dict[str, Any] = {"total_jumlah": None, "total_weighted_iku": None}
+    fact_summary: dict[str, Any] = {
+        "total_anggaran": None,
+        "jumlah_item": None,
+        "jumlah_iku": None,
+        "jumlah_kegiatan": None,
+        "status_rekonsiliasi": None,
+    }
     if fact_df is not None and not fact_df.empty:
         if active_dataset_session_id and "dataset_session_id" in fact_df.columns:
             fact_df = fact_df[
@@ -69,9 +79,15 @@ def _get_cached_fact_summary(
             fact_df = fact_df[fact_df["run_id"].astype(str).eq(str(active_run_id))]
     if fact_df is not None and not fact_df.empty:
         distinct_fact = fact_df.drop_duplicates(subset=["item_id"]) if "item_id" in fact_df.columns else fact_df
+        weighted = float(pd.to_numeric(fact_df.get("jumlah_weighted_iku", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
+        raw_total = float(pd.to_numeric(distinct_fact.get("jumlah", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
+        status = "OK" if abs(raw_total - weighted) <= 0.01 else "CHECK"
         fact_summary = {
-            "total_jumlah": float(pd.to_numeric(distinct_fact.get("jumlah", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()),
-            "total_weighted_iku": float(pd.to_numeric(fact_df.get("jumlah_weighted_iku", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()),
+            "total_anggaran": weighted,
+            "jumlah_item": int(distinct_fact["item_id"].nunique()) if "item_id" in distinct_fact.columns else int(len(distinct_fact)),
+            "jumlah_iku": int(fact_df["kode_iku"].dropna().astype(str).nunique()) if "kode_iku" in fact_df.columns else 0,
+            "jumlah_kegiatan": int(fact_df["kegiatan"].dropna().astype(str).nunique()) if "kegiatan" in fact_df.columns else 0,
+            "status_rekonsiliasi": status,
         }
 
     _fact_summary_cache = (current_mtime, fact_summary)

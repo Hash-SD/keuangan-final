@@ -1,17 +1,36 @@
 {
   "dashboard_title": "SILARAS SD - Dashboard Anggaran IKU",
   "dataset_display_name": "Data Anggaran RAB/IKU",
+  "chart_registry": [
+    "kpi_total_anggaran",
+    "kpi_jumlah_item",
+    "kpi_jumlah_iku",
+    "kpi_jumlah_kegiatan",
+    "kpi_status_rekonsiliasi",
+    "ringkasan_per_tahun",
+    "anggaran_per_tahun",
+    "anggaran_per_iku",
+    "cluster_kegiatan",
+    "komposisi_akun",
+    "anggaran_per_akun",
+    "detail_item_biaya",
+    "validasi_rekap"
+  ],
+  "filters": ["tahun", "prodi", "iku", "kegiatan", "akun"],
   "charts": [
-    {"name": "KPI Total Anggaran", "viz_type": "big_number_total", "metric": "SUM(jumlah)"},
-    {"name": "KPI Total Anggaran Weighted IKU", "viz_type": "big_number_total", "metric": "SUM(jumlah_weighted_iku)"},
-    {"name": "KPI Jumlah IKU", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kode_iku)"},
-    {"name": "KPI Jumlah Kegiatan", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kegiatan)"},
-    {"name": "KPI Jumlah Item", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT item_id)"},
-    {"name": "Anggaran per IKU", "viz_type": "echarts_timeseries_bar", "groupby": ["iku"], "metric": "SUM(jumlah_weighted_iku)"},
-    {"name": "Treemap IKU to Cluster Kegiatan", "viz_type": "treemap_v2", "groupby": ["iku", "cluster_kegiatan"], "metric": "SUM(jumlah_weighted_iku)"},
-    {"name": "Anggaran per Akun", "viz_type": "echarts_timeseries_bar", "groupby": ["akun"], "metric": "SUM(jumlah)"},
-    {"name": "Detail Item Biaya", "viz_type": "table", "columns": ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "source_file"]},
-    {"name": "Validation Reconciliation", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation"}
+    {"key": "kpi_total_anggaran", "name": "KPI Total Anggaran", "viz_type": "big_number_total", "metric": "SUM(jumlah_weighted_iku)"},
+    {"key": "kpi_jumlah_item", "name": "KPI Jumlah Item", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT item_id)"},
+    {"key": "kpi_jumlah_iku", "name": "KPI Jumlah IKU", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kode_iku)"},
+    {"key": "kpi_jumlah_kegiatan", "name": "KPI Jumlah Kegiatan", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kegiatan)"},
+    {"key": "kpi_status_rekonsiliasi", "name": "KPI Status Rekonsiliasi", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation", "columns": ["status"]},
+    {"key": "ringkasan_per_tahun", "name": "Ringkasan per Tahun", "viz_type": "table", "groupby": ["tahun"], "metrics": ["SUM(jumlah_weighted_iku)", "COUNT(DISTINCT item_id)"]},
+    {"key": "anggaran_per_tahun", "name": "Anggaran per Tahun", "viz_type": "echarts_timeseries_bar", "groupby": ["tahun"], "metric": "SUM(jumlah_weighted_iku)"},
+    {"key": "anggaran_per_iku", "name": "Anggaran per IKU", "viz_type": "echarts_timeseries_bar", "groupby": ["iku"], "metric": "SUM(jumlah_weighted_iku)"},
+    {"key": "cluster_kegiatan", "name": "Cluster Kegiatan", "viz_type": "treemap_v2", "groupby": ["iku", "kegiatan"], "metric": "SUM(jumlah_weighted_iku)"},
+    {"key": "komposisi_akun", "name": "Komposisi Akun", "viz_type": "echarts_timeseries_bar", "groupby": ["akun"], "metric": "SUM(jumlah_weighted_iku)"},
+    {"key": "anggaran_per_akun", "name": "Anggaran per Akun", "viz_type": "echarts_timeseries_bar", "groupby": ["akun"], "metric": "SUM(jumlah_weighted_iku)"},
+    {"key": "detail_item_biaya", "name": "Detail Item Biaya", "viz_type": "table", "columns": ["tahun", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "allocation_weight", "jumlah_weighted_iku", "source_file"]},
+    {"key": "validasi_rekap", "name": "Validasi Rekap", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation", "columns": ["tahun", "source_file", "total_detail", "total_rekap", "selisih", "status"]}
   ],
   "hidden_columns": ["mapping_status", "data_quality_flag", "source_sheet", "source_row"],
   "column_labels": {
@@ -25,6 +44,5 @@
     "akun": "Akun Belanja",
     "iku": "IKU",
     "tahun": "Tahun"
-  },
-  "note": "Kolom pada hidden_columns tidak ditampilkan di chart/dataset Superset, tetapi tetap ada di tabel gold.fact_anggaran."
+  }
 }

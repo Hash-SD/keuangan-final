@@ -4,40 +4,7 @@ import re
 
 import pandas as pd
 
-FACT_COLUMNS = [
-    "item_id",
-    "run_id",
-    "tahun",
-    "periode",
-    "prodi",
-    "fakultas",
-    "kegiatan",
-    "cluster_kegiatan",
-    "akun",
-    "kode_akun",
-    "nama_akun",
-    "nama_akun_asli",
-    "iku",
-    "kode_iku",
-    "nama_iku",
-    "nomenklatur_path",
-    "uraian_detail",
-    "qty",
-    "satuan",
-    "harga_satuan",
-    "jumlah",
-    "jumlah_weighted_iku",
-    "allocation_weight",
-    "mapping_status",
-    "data_quality_flag",
-    "source_file",
-    "source_sheet",
-    "source_row",
-    "source_role",
-    "row_type",
-    "quality_flags",
-    "created_at",
-]
+from .contract import FACT_COLUMNS
 
 UNCLASSIFIED_IKU_LABEL = "IKU belum terklasifikasi"
 
@@ -82,9 +49,9 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
             rows.append(
                 {
                     "item_id": item.get("item_id"),
+                    "dataset_session_id": item.get("dataset_session_id"),
                     "run_id": item.get("run_id"),
                     "tahun": item.get("tahun"),
-                    "periode": item.get("periode"),
                     "prodi": item.get("prodi"),
                     "fakultas": item.get("fakultas"),
                     "kegiatan": item.get("kegiatan"),

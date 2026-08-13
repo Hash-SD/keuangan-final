@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -21,6 +22,7 @@ FILES = [
 def test_excel_lakehouse_pipeline_writes_bronze_silver_gold_parquet(tmp_path, monkeypatch):
     generated = tmp_path / "generated"
     monkeypatch.setattr(excel_lakehouse_pipeline, "GENERATED_DIR", generated)
+    monkeypatch.setattr(excel_lakehouse_pipeline, "OUTPUTS_DIR", tmp_path / "outputs")
     monkeypatch.setattr(excel_lakehouse_pipeline, "ACTIVE_EXCEL_DATASET_PATH", tmp_path / "missing.json")
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_dataset_pointer", lambda: {"session_id": "test-session"})
     monkeypatch.setattr(excel_lakehouse_pipeline, "active_period_metadata", lambda: {"target_tahun_anggaran": "2025", "target_prodi": "Sains Data"})
@@ -44,6 +46,8 @@ def test_excel_lakehouse_pipeline_writes_bronze_silver_gold_parquet(tmp_path, mo
     assert (generated / "silver" / "test-session" / "pipeline-test-run" / "silver_rab_items_flexible.parquet").exists()
     assert (generated / "silver" / "test-session" / "pipeline-test-run" / "silver_nomenklatur_detail.parquet").exists()
     assert (generated / "gold" / "test-session" / "pipeline-test-run" / "fact_anggaran.parquet").exists()
+    metadata = json.loads((generated / "excel_lakehouse_metadata.json").read_text(encoding="utf-8"))
+    assert metadata["status"] == "PUBLISHED"
 
 
 def test_discover_excel_sources_prefers_complete_uploaded_multiyear_bundle(tmp_path, monkeypatch):
@@ -116,3 +120,8 @@ def test_2025_parser_excludes_template_example_sheets():
     items, _, _ = excel_lakehouse_pipeline.parse_rab_workbook(ExcelSource(path=FILES[0], tahun_input=2025, prodi="Sains Data", jenis_dataset="rab"))
 
     assert not items["source_sheet"].str.lower().str.startswith("contoh").any()
+
+
+def test_infer_year_from_filename_accepts_underscore_delimiters():
+    assert excel_lakehouse_pipeline._infer_year_from_filename(Path("RAB_2025_SD_RAB_IKU.xlsx")) == "2025"
+    assert excel_lakehouse_pipeline._infer_year_from_filename(Path("RAB_SD_Usulan_KE_1_Jan-Jun_2023.xlsx")) == "2023"

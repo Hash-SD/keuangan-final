@@ -7,8 +7,8 @@ Dokumen ini adalah peta hidup repository untuk AI dan maintainer. Tujuannya adal
 | Atribut | Nilai |
 |---|---|
 | Sistem | SILARAS SD — Sistem Lakehouse Anggaran RAB dan IKU Sains Data |
-| Baseline yang dipelajari | commit `9e459e0` |
-| Tanggal snapshot | 2026-08-04 |
+| Baseline yang dipelajari | commit `483a1f3` |
+| Tanggal snapshot | 2026-08-13 |
 | Cakupan | source, DAG, portal, dashboard mirror, konfigurasi, test, dan dokumentasi yang ada |
 | Tingkat keyakinan | Tinggi untuk kontrak yang ditegakkan test/kode; sedang untuk area legacy yang ditandai di bagian “Ambiguitas” |
 | Dokumen domain | [CONTEXT.md](../CONTEXT.md) |
@@ -64,7 +64,7 @@ Arsitektur yang benar-benar dieksekusi oleh pipeline Python saat ini menggunakan
 | `src/excel_ingestion/` | Ekstraksi sel Excel dan normalisasi primitive | Bronze, `ExcelSource` |
 | `src/parser_flexible/` | Parser RAB dan Nomenklatur yang toleran terhadap variasi workbook | Silver awal |
 | `src/transformations/` | Cleaning, mapping enrichment, pipeline utama | `excel_lakehouse_pipeline.py` |
-| `src/gold/` | Pembentukan fact table dan alokasi IKU | `fact_anggaran.py` |
+| `src/gold/` | Kontrak tahunan, pembentukan fact, dan alokasi IKU | `contract.py`, `fact_anggaran.py`, `annual_sources.py` |
 | `src/validation/` | Dataset contract, Gold quality gate, cross-engine validation | blocking sebelum publish |
 | `src/storage/` | Manifest layer dan optional upload MinIO | `excel_storage_manifest.py` |
 | `src/sql/` | Publish PostgreSQL, setup Superset, query/schema | bukan parser |
@@ -173,9 +173,11 @@ Aturan penting:
 - item tanpa IKU mendapat label `IKU belum terklasifikasi`;
 - item dengan N IKU menjadi N baris, masing-masing `allocation_weight = 1/N`;
 - `jumlah_weighted_iku = jumlah × allocation_weight`;
-- quality gate memeriksa uniqueness `(item_id, kode_iku)`, lineage, ID dataset/run, angka, dan rumus weighted.
+- quality gate memeriksa schema kanonik, tahun wajib, uniqueness grain, lineage, ID dataset/run, angka, dan rumus weighted;
+- `allocation_weight` harus berjumlah satu untuk setiap `(dataset_session_id, run_id, item_id)`;
+- sumber tahunan dan sumber parsial dalam tahun sama harus melewati seleksi cakupan; overlap yang belum terbukti berhenti sebagai `AMBIGUOUS_SOURCE_OVERLAP`.
 
-Kolom faktual utama: `item_id`, `dataset_session_id`, `run_id`, `tahun`, `periode`, `prodi`, `fakultas`, `kegiatan`, `cluster_kegiatan`, `akun`, `kode_akun`, `nama_akun`, `iku`, `kode_iku`, `nama_iku`, `nomenklatur_path`, `uraian_detail`, `qty`, `satuan`, `harga_satuan`, `jumlah`, `jumlah_weighted_iku`, `allocation_weight`, status kualitas/mapping, lineage source, row type, dan `created_at`.
+Kolom faktual kanonik: `item_id`, `dataset_session_id`, `run_id`, `tahun`, `prodi`, `fakultas`, `kegiatan`, `cluster_kegiatan`, `akun`, `kode_akun`, `nama_akun`, `nama_akun_asli`, `iku`, `kode_iku`, `nama_iku`, `nomenklatur_path`, `uraian_detail`, `qty`, `satuan`, `harga_satuan`, `jumlah`, `allocation_weight`, `jumlah_weighted_iku`, status kualitas/mapping, lineage source, row type, dan `created_at`. Atribut cakupan sumber disimpan di Bronze/Silver/lineage, bukan pada schema Gold.
 
 ### Identitas output dan publish
 
@@ -257,6 +259,15 @@ Backend Airflow adapter (`portal_backend/services/airflow.py`) mengelompokkan ta
 
 `src/sql/setup_superset_excel_assets.py` login melalui REST API, mencari/membuat database Trino, memastikan dataset `gold.fact_anggaran`, menyegarkan metadata, menerapkan `verbose_name` bisnis pada label Superset, menyembunyikan kolom teknis dari UI, membuat saved query, dan upsert dashboard/charts. Tabel faktual tetap memiliki nama kolom fisik untuk query dan lineage/QA; label seperti `source_file` → `Sumber Data`, `uraian_detail` → `Detail`, dan `harga_satuan` → `Harga Satuan` hanya berlaku pada tampilan Superset. Target database/dashboard dapat diarahkan dengan ID; ID database eksplisit yang tidak ada bersifat fail-fast, sedangkan target dashboard dapat fallback sesuai kode setup.
 
+Registry chart kanonik berada pada `CHART_SPECS` dan menghasilkan tepat 13 chart:
+`kpi_total_anggaran`, `kpi_jumlah_item`, `kpi_jumlah_iku`,
+`kpi_jumlah_kegiatan`, `kpi_status_rekonsiliasi`, `ringkasan_per_tahun`,
+`anggaran_per_tahun`, `anggaran_per_iku`, `cluster_kegiatan`,
+`komposisi_akun`, `anggaran_per_akun`, `detail_item_biaya`, dan `validasi_rekap`.
+Metric utama memakai `SUM(jumlah_weighted_iku)`; status rekonsiliasi berasal dari
+view validasi dan tidak dijumlahkan. Runtime harus membuktikan
+`desired_chart_count == attached_chart_count == 13`.
+
 ## Backend portal
 
 `portal_backend/app.py` adalah Flask app dan delegator ke service kecil. Endpoint dibagi menjadi:
@@ -306,11 +317,15 @@ Submit UAT → POST /api/uat/submit (juga menyimpan histori lokal)
 
 ## Dashboard lokal dan mirror Superset
 
-`portal_backend/services/local_dashboard.py` memiliki adapter legacy untuk view `vw_dashboard_piutang_ukt`. Untuk mode SILARAS, urutan sumber yang diterapkan kode adalah:
+`portal_backend/services/local_dashboard.py` hanya memakai kontrak anggaran
+tahunan. Urutan sumber yang diterapkan kode adalah:
 
-1. view legacy jika file tersedia;
-2. Superset REST `/api/v1/chart/data` jika reference dataset tersedia;
-3. fallback faktual `data/generated/gold/fact_anggaran.csv`.
+1. Superset REST `/api/v1/chart/data` jika reference dataset tersedia;
+2. fallback faktual `data/generated/gold/fact_anggaran.csv`.
+
+Filter dashboard lokal sama dengan Superset: `tahun`, `prodi`, `iku`,
+`kegiatan`, dan `akun`. Total Anggaran memakai `jumlah_weighted_iku` dan
+payload ringkasan memuat lima KPI final.
 
 `superset-dashboard/` tidak membaca database secara langsung. Browser memanggil proxy Flask (`/api/dashboards`, `/api/dashboard/<id>/meta`, `/api/chart/<id>/data`), lalu server yang login ke Superset. `lib/_shared.py` memiliki cache meta dashboard dan cache chart sekitar 60 detik; credential hanya server-side.
 
@@ -361,10 +376,10 @@ Test workbook yang tidak tersedia dapat menyebabkan test parser tertentu di-skip
 
 ## Ambiguitas dan legacy yang harus diketahui AI
 
-- `docs/architecture.md` masih menyebut `src/validation/excel_count_validation.py`, sedangkan entry point aktual yang dipakai README/Makefile adalah `src/metrics/validate_excel_lakehouse_counts.py`.
+- Validasi count Excel memakai entry point `src/metrics/validate_excel_lakehouse_counts.py`; jika command berubah, README dan architecture harus diubah bersama.
 - README menyebut portal V2 sebagai primer dan V1 sebagai fallback, tetapi route `/legacy` pada server saat ini mengarah ke V2; test juga mengunci perilaku alias tersebut.
-- `portal_backend/services/local_dashboard.py` mempertahankan nama/kontrak legacy piutang (`vw_dashboard_piutang_ukt`) walaupun mode SILARAS memakai `fact_anggaran`; baca adapter dan test sebelum mengubah payload.
-- `portal/v2/index.html` preview dashboard lama mengharapkan beberapa key ringkasan (`total_anggaran`, `total_rows`, `total_akun`) yang tidak identik dengan semua key yang dikembalikan adapter local dashboard; jangan menyamakan keduanya tanpa test.
+- Portal lokal dan Superset memakai kontrak anggaran yang sama; perbedaan sumber hanya pada prioritas Superset API lalu fallback Gold lokal.
+- `portal/v2/index.html` preview dashboard memakai key tahunan `total_anggaran`, `jumlah_item`, `jumlah_iku`, `jumlah_kegiatan`, dan `status_rekonsiliasi`; perubahan payload harus menjaga test view model dan state loading.
 - Docker Compose menyediakan Spark/Iceberg, tetapi entry point Python utama saat ini menggunakan pandas/openpyxl dan publish PostgreSQL/Trino/Superset.
 - Beberapa command README memakai PowerShell, sedangkan `superset-dashboard/README.md` memakai Bash. Dokumentasikan shell yang dipakai saat menambah command baru.
 

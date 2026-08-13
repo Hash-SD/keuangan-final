@@ -9,6 +9,8 @@ from typing import Any
 import pandas as pd
 import requests
 
+from src.gold.contract import DASHBOARD_FILTERS, FACT_COLUMNS
+
 from .paths import OUTPUTS_DIR
 
 
@@ -27,23 +29,6 @@ def _base_url() -> str:
 
 def _timeout_seconds() -> float:
     return float(os.getenv("SUPERSET_API_TIMEOUT_SECONDS", "5.0"))
-
-FACT_COLUMNS = [
-    "item_id",
-    "dataset_session_id",
-    "run_id",
-    "tahun",
-    "periode",
-    "prodi",
-    "fakultas",
-    "kegiatan",
-    "akun",
-    "iku",
-    "jumlah",
-    "jumlah_weighted_iku",
-    "uraian_detail",
-]
-
 
 def read_superset_reference() -> dict[str, Any]:
     payload = _read_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json") or _read_json(OUTPUTS_DIR / "reports" / "superset_excel_assets.json") or {}
@@ -88,14 +73,9 @@ def _login() -> requests.Session:
 def _chart_data_payload(dataset_id: int, filters: dict[str, list[str]] | None = None, limit: int = 10000) -> dict[str, Any]:
     adhoc_filters = []
     for column, values in (filters or {}).items():
-        if not values:
+        if not values or column not in set(DASHBOARD_FILTERS) | {"dataset_session_id", "run_id"}:
             continue
-        subject = {
-            "tahun_anggaran": "tahun",
-            "semester": "periode",
-            "nama_prodi": "prodi",
-            "nama_fakultas": "fakultas",
-        }.get(column, column)
+        subject = column
         adhoc_filters.append(
             {
                 "clause": "WHERE",

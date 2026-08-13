@@ -6,7 +6,6 @@ def test_gold_sql_exposes_excel_dashboard_filter_columns():
 
     for column in [
         "tahun",
-        "periode",
         "prodi",
         "fakultas",
         "kode_iku",

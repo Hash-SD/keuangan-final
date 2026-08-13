@@ -168,7 +168,7 @@ def _fact_anggaran_status(base_dir: Path) -> dict[str, Any]:
         return {
             "status": "missing",
             "total_anggaran": _value(None, "missing", None, "fact_anggaran belum tersedia."),
-            "total_weighted_iku": _value(None, "missing", None, "fact_anggaran belum tersedia."),
+            "status_rekonsiliasi": _value(None, "missing", None, "fact_anggaran belum tersedia."),
             "fact_rows": _value(None, "missing", None, "fact_anggaran belum tersedia."),
             "source": None,
         }
@@ -191,7 +191,7 @@ def _fact_anggaran_status(base_dir: Path) -> dict[str, Any]:
         return {
             "status": "missing",
             "total_anggaran": _value(None, "missing", None, "fact_anggaran tidak dapat dibaca."),
-            "total_weighted_iku": _value(None, "missing", None, "fact_anggaran tidak dapat dibaca."),
+            "status_rekonsiliasi": _value(None, "missing", None, "fact_anggaran tidak dapat dibaca."),
             "fact_rows": _value(None, "missing", None, "fact_anggaran tidak dapat dibaca."),
             "source": None,
         }
@@ -201,11 +201,12 @@ def _fact_anggaran_status(base_dir: Path) -> dict[str, Any]:
     weighted = pd.to_numeric(fact.get("jumlah_weighted_iku"), errors="coerce").fillna(0)
     status = "validated"
     message = "Nilai dibaca langsung dari fact_anggaran."
-    total_val = float(distinct_jumlah.sum()) if not distinct_jumlah.empty else float(weighted.sum())
+    total_val = float(weighted.sum())
+    reconciliation_status = "VALIDATED" if abs(float(distinct_jumlah.sum()) - total_val) <= 0.01 else "CHECK"
     return {
         "status": status,
         "total_anggaran": _value(total_val, status, source, message),
-        "total_weighted_iku": _value(float(weighted.sum()), status, source, message),
+        "status_rekonsiliasi": _value(reconciliation_status, status, source, message),
         "fact_rows": _value(int(len(fact)), status, source, message),
         "source": source,
     }
@@ -375,7 +376,7 @@ def _bab4_evidence(truth: dict[str, Any]) -> dict[str, Any]:
         "status": "ready" if fact["status"] == "validated" else "not_available",
         "message": "Ringkasan hanya memuat hasil Excel Lakehouse yang tersedia.",
         "total_anggaran": fact["total_anggaran"]["value"],
-        "total_weighted_iku": fact["total_weighted_iku"]["value"],
+        "status_rekonsiliasi": fact["status_rekonsiliasi"]["value"],
         "fact_rows": fact["fact_rows"]["value"],
         "storage_status": truth["storage"]["status"],
         "uat_average": uat.get("average_score") if uat["status"] == "completed" else None,
@@ -399,7 +400,7 @@ def build_system_truth_status(base_dir: Path | str | None = None, write_outputs:
         "runtime_config": {
             "target_prodi": config.target_prodi,
             "target_fakultas": config.target_fakultas,
-            "target_tahun_akademik": config.target_tahun_akademik,
+            "target_tahun": config.target_tahun,
             "target_tahun_anggaran": config.target_tahun_anggaran,
         },
         "sources": _source_status(base),

@@ -46,7 +46,7 @@ def test_status_falls_back_to_gold_csv_for_fact_totals(tmp_path, monkeypatch):
 
     result = excel_lakehouse.excel_lakehouse_status()
 
-    assert result["fact_anggaran"] == {"total_jumlah": 300.0, "total_weighted_iku": 100.0}
+    assert result["fact_anggaran"] == {"total_anggaran": 100.0, "jumlah_item": 2, "jumlah_iku": 0, "jumlah_kegiatan": 0, "status_rekonsiliasi": "CHECK"}
 
 
 def test_status_summarizes_active_dataset_session_only(tmp_path, monkeypatch):
@@ -88,7 +88,7 @@ def test_status_summarizes_active_dataset_session_only(tmp_path, monkeypatch):
 
     result = excel_lakehouse.excel_lakehouse_status()
 
-    assert result["fact_anggaran"] == {"total_jumlah": 200.0, "total_weighted_iku": 200.0}
+    assert result["fact_anggaran"] == {"total_anggaran": 200.0, "jumlah_item": 1, "jumlah_iku": 0, "jumlah_kegiatan": 0, "status_rekonsiliasi": "OK"}
 
 
 def test_status_reads_gold_csv_when_parquet_is_absent(tmp_path, monkeypatch):
@@ -109,4 +109,4 @@ def test_status_reads_gold_csv_when_parquet_is_absent(tmp_path, monkeypatch):
 
     result = excel_lakehouse.excel_lakehouse_status()
 
-    assert result["fact_anggaran"] == {"total_jumlah": 75.0, "total_weighted_iku": 25.0}
+    assert result["fact_anggaran"] == {"total_anggaran": 25.0, "jumlah_item": 1, "jumlah_iku": 0, "jumlah_kegiatan": 0, "status_rekonsiliasi": "CHECK"}

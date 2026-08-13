@@ -18,6 +18,7 @@ from src.common.runtime_paths import active_dataset_pointer, active_period_metad
 from src.common.time_utils import utc_now_iso
 from src.common.workbook_kind import infer_workbook_kind
 from src.excel_ingestion.excel_cell_extractor import ExcelSource, extract_excel_cells
+from src.gold.annual_sources import select_annual_sources
 from src.gold.fact_anggaran import build_fact_anggaran
 from src.mapping.flexible_mapping import build_mapping_table
 from src.parser_flexible.nomenklatur_parser import parse_nomenklatur_workbook
@@ -64,7 +65,7 @@ def _resolve_repo_path(path: Path) -> Path:
 
 
 def _infer_year_from_filename(path: Path, default: object = None) -> str:
-    match = re.search(r"\b(20\d{2})\b", path.name)
+    match = re.search(r"(?<!\d)(20\d{2})(?!\d)", path.name)
     if match:
         return match.group(1)
     if "nomenklatur" in path.name.lower():
@@ -320,6 +321,45 @@ def _build_rab_reconciliation_report(silver_rab: pd.DataFrame, silver_validation
     }
 
 
+def _build_reconciliation_view(fact: pd.DataFrame) -> pd.DataFrame:
+    """Build an annual reconciliation view without repeating item amounts per IKU."""
+
+    columns = [
+        "source_file",
+        "total_detail",
+        "total_rekap",
+        "selisih",
+        "status",
+        "dataset_session_id",
+        "run_id",
+        "tahun",
+    ]
+    if fact.empty:
+        return pd.DataFrame(columns=columns)
+    identity = [column for column in ("dataset_session_id", "run_id", "item_id") if column in fact.columns]
+    item_level = (
+        fact.groupby(identity + ["source_file", "tahun"], dropna=False, as_index=False)
+        .agg(
+            total_detail=("jumlah", "first"),
+            total_rekap=("jumlah_weighted_iku", "sum"),
+        )
+    )
+    grouped = (
+        item_level.groupby(
+            ["source_file", "dataset_session_id", "run_id", "tahun"],
+            dropna=False,
+        )
+        .agg(
+            total_detail=("total_detail", "sum"),
+            total_rekap=("total_rekap", "sum"),
+        )
+        .reset_index()
+    )
+    grouped["selisih"] = grouped["total_detail"] - grouped["total_rekap"]
+    grouped["status"] = grouped["selisih"].abs().le(0.01).map({True: "OK", False: "CHECK"})
+    return grouped[columns]
+
+
 def _archive_raw_sources(sources: list[ExcelSource], run_id: str, session_id: str) -> list[dict[str, object]]:
     archive_dir = DATA_DIR / "raw" / "excel_lakehouse" / session_id / run_id
     raw_root = (DATA_DIR / "raw" / "excel_lakehouse").resolve()
@@ -353,6 +393,15 @@ def _archive_raw_sources(sources: list[ExcelSource], run_id: str, session_id: st
 def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> dict[str, object]:
     pipeline_started_at = utc_now_iso()
     sources = sources if sources is not None else discover_excel_sources()
+    rab_sources = [source for source in sources if source.jenis_dataset != "nomenklatur"]
+    select_annual_sources(
+        {
+            "source_id": str(source.path.resolve()),
+            "year": source.tahun_input,
+            "kind": source.periode,
+        }
+        for source in rab_sources
+    )
     session_id = _session_id()
     run_id = Path(str(os.getenv("PIPELINE_RUN_ID") or uuid.uuid4())).name
     active_dataset = _active_excel_dataset()
@@ -392,6 +441,10 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     silver_mapping = build_mapping_table(silver_rab, silver_nomenklatur)
     created_at = utc_now_iso()
     if not silver_rab.empty:
+        if "dataset_session_id" not in silver_rab.columns:
+            silver_rab["dataset_session_id"] = session_id
+        else:
+            silver_rab["dataset_session_id"] = silver_rab["dataset_session_id"].fillna(session_id)
         if "run_id" not in silver_rab.columns:
             silver_rab["run_id"] = run_id
         else:
@@ -404,11 +457,6 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
             silver_rab["created_at"] = created_at
         silver_rab = clean_and_enrich_budget_items(silver_rab, silver_nomenklatur, bridge_nomenklatur)
     fact = build_fact_anggaran(silver_rab)
-    if not fact.empty:
-        fact["dataset_session_id"] = session_id
-        fact["run_id"] = run_id
-        fact["pipeline_run_id"] = run_id
-        fact["airflow_dag_run_id"] = os.getenv("AIRFLOW_DAG_RUN_ID")
     silver_rab_rows_classified = silver_rab.copy()
     silver_rab_formula_coverage = (
         silver_validation[silver_validation["validation_type"].eq("FORMULA_COVERAGE")].copy()
@@ -427,10 +475,10 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     )
     rab_reconciliation_report = _build_rab_reconciliation_report(silver_rab, silver_validation, fact)
     mapped_fact = fact[fact["kode_iku"].notna() & fact["kode_iku"].astype(str).str.strip().ne("")] if not fact.empty else fact
-    dashboard_iku = mapped_fact.groupby(["dataset_session_id", "run_id", "tahun", "periode", "prodi", "fakultas", "iku", "kode_iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not mapped_fact.empty else pd.DataFrame()
+    dashboard_iku = mapped_fact.groupby(["dataset_session_id", "run_id", "tahun", "prodi", "fakultas", "iku", "kode_iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not mapped_fact.empty else pd.DataFrame()
     dashboard_mapping = fact.groupby(["dataset_session_id", "run_id", "mapping_status", "data_quality_flag"], dropna=False)["item_id"].nunique().reset_index(name="item_count") if not fact.empty else pd.DataFrame()
     dashboard_detail = fact.copy()
-    dashboard_reconciliation = silver_validation.copy()
+    dashboard_reconciliation = _build_reconciliation_view(fact)
 
     outputs = {}
     for layer, filename, df in [
@@ -483,6 +531,7 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     if quality_gate["status"] != "PASSED":
         raise ValueError(f"Quality gate blocking: {', '.join(quality_gate['blocking_errors'])}")
     metadata["status"] = "PUBLISHED"
+    write_json(GENERATED_DIR / "excel_lakehouse_metadata.json", metadata)
     write_json(OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{run_id}.json", metadata)
     write_json(OUTPUTS_DIR / "reports" / "active_gold_run.json", {"status": "PUBLISHED", "dataset_session_id": session_id, "pipeline_run_id": run_id, "outputs": outputs})
     write_json(OUTPUTS_DIR / "reports" / "rab_reconciliation_report.json", rab_reconciliation_report)

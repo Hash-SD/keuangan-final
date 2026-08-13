@@ -12,7 +12,7 @@ def lakehouse_summary() -> dict[str, Any]:
     # Performance: `build_system_truth_status` already validates fact rows and
     # weighted total from Parquet, so avoid a second fact table read per request.
     fact_anggaran_rows = (reconcile.get("fact_rows") or {}).get("value")
-    fact_anggaran_total = (reconcile.get("total_weighted_iku") or {}).get("value")
+    fact_anggaran_total = (reconcile.get("total_anggaran") or {}).get("value")
     return {
         "bronze": {
             "status": layers["bronze"]["status"],

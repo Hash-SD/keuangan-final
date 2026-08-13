@@ -42,7 +42,7 @@ def _source_event() -> datetime:
 class RuntimeConfig:
     target_prodi: str
     target_fakultas: str
-    target_tahun_akademik: str
+    target_tahun: str
     target_tahun_anggaran: str
     batch_id: str
     source_event: datetime
@@ -58,7 +58,7 @@ class RuntimeConfig:
 
     @property
     def target_label(self) -> str:
-        return f"{self.target_prodi} - Tahun Akademik {self.target_tahun_akademik}"
+        return f"{self.target_prodi} - Tahun {self.target_tahun}"
 
     @property
     def validation_mode(self) -> str:
@@ -66,14 +66,14 @@ class RuntimeConfig:
 
     @property
     def target_slug(self) -> str:
-        return slugify(f"{self.target_prodi}_{self.target_tahun_akademik}")
+        return slugify(f"{self.target_prodi}_{self.target_tahun}")
 
 
 def get_runtime_config() -> RuntimeConfig:
     return RuntimeConfig(
         target_prodi=_env("PORTAL_TARGET_PRODI", "Sains Data"),
         target_fakultas=_env("PORTAL_TARGET_FAKULTAS", "Fakultas Sains"),
-        target_tahun_akademik=_env("PORTAL_TARGET_TAHUN_AKADEMIK", "2023/2024"),
+        target_tahun=_env("PORTAL_TARGET_TAHUN", "2024"),
         target_tahun_anggaran=_env("PORTAL_TARGET_TAHUN_ANGGARAN", "2024"),
         batch_id=_env("PORTAL_BATCH_ID", "batch-excel-lakehouse"),
         source_event=_source_event(),

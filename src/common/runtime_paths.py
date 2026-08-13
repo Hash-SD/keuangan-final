@@ -55,14 +55,14 @@ def active_period_metadata() -> dict[str, str]:
     pointer = active_dataset_pointer() or {}
     target_prodi = pointer.get("target_prodi") or config.target_prodi
     target_fakultas = pointer.get("target_fakultas") or config.target_fakultas
-    target_tahun_akademik = pointer.get("tahun_akademik") or config.target_tahun_akademik
+    target_tahun = pointer.get("tahun") or config.target_tahun
     target_tahun_anggaran = pointer.get("tahun_anggaran") or config.target_tahun_anggaran
     return {
         "target_prodi": target_prodi,
         "target_fakultas": target_fakultas,
-        "target_tahun_akademik": target_tahun_akademik,
+        "target_tahun": target_tahun,
         "target_tahun_anggaran": target_tahun_anggaran,
-        "target_label": pointer.get("target_label") or f"{target_prodi} - Tahun Akademik {target_tahun_akademik}",
+        "target_label": pointer.get("target_label") or f"{target_prodi} - Tahun {target_tahun}",
         "batch_id": pointer.get("batch_id") or config.batch_id,
         "source_event": config.source_event_iso,
     }

@@ -1,36 +1,63 @@
-# Superset Dashboard Spec - SILARAS SD
+# Superset Dashboard Spec — SILARAS SD
 
-Dashboard: `SILARAS SD - Dashboard Anggaran IKU`
-
+Dashboard: `SILARAS SD - Dashboard Anggaran IKU`  
 Slug: `dashboard-anggaran-iku-prodi`
 
-Dataset utama:
+Dashboard memakai model data Gold terdenormalisasi berbasis laporan tahunan. Tabel utama tetap:
 
 ```text
 gold.fact_anggaran
 ```
 
-Filter wajib:
+Grain: satu item anggaran x satu alokasi IKU. Nilai Total Anggaran selalu memakai:
+
+```text
+SUM(jumlah_weighted_iku)
+```
+
+Filter dashboard resmi hanya:
 
 - tahun
-- periode
 - prodi
 - iku
 - kegiatan
 - akun
 
-Kolom tersembunyi (tetap ada di tabel gold, tidak ditampilkan di Superset):
+KPI resmi:
 
-- mapping_status
-- data_quality_flag
-- source_sheet
-- source_row
+- Total Anggaran
+- Jumlah Item
+- Jumlah IKU
+- Jumlah Kegiatan
+- Status Rekonsiliasi
 
-Label tampilan Superset:
+Status Rekonsiliasi berasal dari `gold.vw_dashboard_reconciliation` dan tidak diperlakukan sebagai nilai yang dijumlahkan.
 
-Nama kolom fisik tetap dipakai untuk query dan lineage, sedangkan Superset menampilkan label bisnis berikut:
+## Registry chart
 
-| Kolom fisik | Label tampilan |
+Registry runtime adalah sumber kebenaran dan harus menghasilkan 13 chart aktif:
+
+1. `kpi_total_anggaran`
+2. `kpi_jumlah_item`
+3. `kpi_jumlah_iku`
+4. `kpi_jumlah_kegiatan`
+5. `kpi_status_rekonsiliasi`
+6. `ringkasan_per_tahun`
+7. `anggaran_per_tahun`
+8. `anggaran_per_iku`
+9. `cluster_kegiatan`
+10. `komposisi_akun`
+11. `anggaran_per_akun`
+12. `detail_item_biaya`
+13. `validasi_rekap`
+
+Validasi deployment harus memenuhi `desired_chart_count == attached_chart_count == 13`. Chart lama yang dikelola registry boleh dilepaskan dari layout, tetapi chart milik pengguna tidak dihapus.
+
+## Label presentasi
+
+Nama fisik dipertahankan untuk query dan lineage, sedangkan Superset menampilkan label bisnis:
+
+| Nama fisik | Label tampilan |
 | --- | --- |
 | `source_file` | Sumber Data |
 | `uraian_detail` | Detail |
@@ -43,27 +70,9 @@ Nama kolom fisik tetap dipakai untuk query dan lineage, sedangkan Superset menam
 | `iku` | IKU |
 | `tahun` | Tahun |
 
-Dataset ditampilkan sebagai **Data Anggaran RAB/IKU**, tetapi tabel fisiknya tetap `gold.fact_anggaran`.
+Kolom teknis `mapping_status`, `data_quality_flag`, `source_sheet`, dan `source_row` tetap tersedia untuk audit namun disembunyikan dari tampilan umum.
 
-Chart minimal:
-
-- KPI Total Anggaran
-- KPI Total Anggaran Weighted IKU
-- KPI Jumlah IKU
-- KPI Jumlah Kegiatan
-- KPI Jumlah Item
-- Bar Chart Anggaran per IKU
-- Treemap IKU -> Cluster Kegiatan
-- Bar Chart Anggaran per Akun
-- Table Detail Item (tanpa kolom teknis)
-- Table Validation/Reconciliation
-
-Saved queries (dibuat otomatis oleh script):
-
-- `SILARAS - Detail Item Biaya (tanpa kolom teknis)` — cek data gold tanpa atribut teknis
-- `SILARAS - Cek Kolom Teknis (audit)` — pastikan kolom teknis masih eksis di tabel
-
-Script otomatis:
+Script sinkronisasi:
 
 ```text
 src/sql/setup_superset_excel_assets.py

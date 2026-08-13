@@ -305,7 +305,7 @@ def _extract_simple_rab_table(source: ExcelSource) -> pd.DataFrame:
         jumlah = normalize_money(record.get("total_pagu"))
         rows.append(
             {
-                "item_id": _stable_id([source.path.name, "RAB", idx, record.get("kode_akun"), record.get("nama_kegiatan")]),
+                "item_id": _stable_id([source.file_id, source.path.name, "RAB", idx, record.get("kode_akun"), record.get("nama_kegiatan")]),
                 "tahun": tahun,
                 "periode": _sheet_period(source),
                 "prodi": source.prodi or "Sains Data",
@@ -598,7 +598,7 @@ def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame,
                 include_in_gold = False
             quality_flags.extend(f"formula_{error.lower().replace('#', '').replace('!', '')}" for error in detect_formula_errors(formula_p))
             record = {
-                "item_id": _stable_id([source.path.name, ws.title, row_number, parsed.get("uraian_detail")]),
+                "item_id": _stable_id([source.file_id, source.path.name, ws.title, row_number, parsed.get("uraian_detail")]),
                 "tahun": tahun,
                 "periode": periode,
                 "prodi": prodi,

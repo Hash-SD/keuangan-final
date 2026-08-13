@@ -190,10 +190,8 @@ def create_app() -> Flask:
     def superset_summary():
         """Authoritative summary of fact_anggaran Gold layer metrics.
 
-        Uses item_id deduplication so total_jumlah matches Superset:
-        - total_jumlah  = sum(jumlah) after drop_duplicates(item_id)  -> 517,361,656
-        - total_weighted_iku = sum(jumlah_weighted_iku) across active dataset/run IKU rows
-        - fact_rows = total raw rows in fact_anggaran (before dedup)
+        The dashboard metric is the weighted annual allocation total.  Raw
+        amount is retained in the fact for audit but is not used as the KPI.
         """
         lakehouse = excel_lakehouse_status()
         fact = lakehouse.get("fact_anggaran", {})
@@ -201,11 +199,14 @@ def create_app() -> Flask:
         return jsonify(
             {
                 "status": lakehouse.get("status", "missing"),
-                "total_jumlah": fact.get("total_jumlah"),
-                "total_weighted_iku": fact.get("total_weighted_iku"),
+                "total_anggaran": fact.get("total_anggaran"),
+                "jumlah_item": fact.get("jumlah_item") or counts.get("fact_anggaran_rows"),
+                "jumlah_iku": fact.get("jumlah_iku"),
+                "jumlah_kegiatan": fact.get("jumlah_kegiatan"),
+                "status_rekonsiliasi": fact.get("status_rekonsiliasi"),
                 "fact_rows": counts.get("fact_anggaran_rows"),
                 "source": "excel_lakehouse_gold_fact_anggaran",
-                "note": "total_jumlah dihitung setelah deduplikasi item_id, sesuai Superset",
+                "note": "Total Anggaran dihitung dari SUM(jumlah_weighted_iku).",
             }
         )
 

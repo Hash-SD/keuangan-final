@@ -12,13 +12,15 @@ def _superset_fact_frame() -> pd.DataFrame:
         [
             {
                 "item_id": "superset-item-1",
+                "dataset_session_id": "dataset-1",
+                "run_id": "run-1",
                 "tahun": "2025",
-                "periode": "Tahunan",
                 "prodi": "Sains Data",
                 "fakultas": "Fakultas Sains",
                 "kegiatan": "Kuliah Lapangan",
                 "akun": "Perjalanan Dinas",
                 "iku": "IK 6.7",
+                "kode_iku": "IK 6.7",
                 "jumlah": 1_000_000,
                 "jumlah_weighted_iku": 750_000,
                 "mapping_status": "mapped",
@@ -30,8 +32,8 @@ def _superset_fact_frame() -> pd.DataFrame:
 
 
 def test_local_dashboard_prefers_superset_api_when_gold_view_missing(monkeypatch):
-    monkeypatch.setattr(local_dashboard, "DASHBOARD_VIEW_PATH", local_dashboard.ROOT_DIR / "missing_vw_dashboard_piutang_ukt.csv")
-    monkeypatch.setattr(local_dashboard, "DASHBOARD_VIEW_RELATIVE", "missing_vw_dashboard_piutang_ukt.csv")
+    monkeypatch.setattr(local_dashboard, "DASHBOARD_VIEW_PATH", local_dashboard.ROOT_DIR / "missing_dashboard_view.csv")
+    monkeypatch.setattr(local_dashboard, "DASHBOARD_VIEW_RELATIVE", "missing_dashboard_view.csv")
     monkeypatch.setattr(local_dashboard, "SUPERSET_GOLD_PATH", local_dashboard.ROOT_DIR / "missing_fact_anggaran.csv")
     monkeypatch.setattr(
         local_dashboard,
@@ -44,7 +46,7 @@ def test_local_dashboard_prefers_superset_api_when_gold_view_missing(monkeypatch
     assert payload["status"] == "validated"
     assert payload["source_kind"] == "superset_api"
     assert payload["source"] == "superset_api:/api/v1/chart/data"
-    assert payload["data"]["summary"]["total_nominal_piutang_rp"] == 750_000
+    assert payload["data"]["summary"]["total_anggaran"] == 750_000
     assert payload["superset_reference"]["dataset_id"] == 2
 
 
