@@ -17,6 +17,7 @@ from .files import read_json, relative_path, write_json
 from .paths import DATA_DIR, OUTPUTS_DIR, ROOT_DIR
 from src.common.time_utils import utc_now_iso
 from src.common.workbook_kind import infer_workbook_kind
+from src.validation.dataset_contract import validate_committed_dataset
 
 
 ACTIVE_EXCEL_DATASET_PATH = OUTPUTS_DIR / "reports" / "active_excel_lakehouse_dataset.json"
@@ -374,3 +375,164 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
             pass
     write_json(EXCEL_DATASET_REGISTRY_PATH, registry)
     return dataset
+
+
+def _active_raw_root() -> Path:
+    return (DATA_DIR / "raw" / "excel_lakehouse").resolve()
+
+
+def _resolve_active_file_path(file_record: dict[str, Any]) -> Path:
+    raw_path = str(file_record.get("path") or "").strip()
+    if not raw_path:
+        raise ValueError("Metadata file aktif tidak memiliki path.")
+    candidate = Path(raw_path)
+    resolved = (candidate if candidate.is_absolute() else ROOT_DIR / candidate).resolve()
+    try:
+        resolved.relative_to(_active_raw_root())
+    except ValueError as exc:
+        raise ValueError("File aktif berada di luar canonical raw root.") from exc
+    return resolved
+
+
+def _read_active_dataset() -> dict[str, Any]:
+    active = normalize_dataset_file_kinds(read_json(ACTIVE_EXCEL_DATASET_PATH))
+    if not isinstance(active, dict) or active.get("status") != "committed":
+        raise FileNotFoundError("Dataset aktif COMMITTED tidak tersedia.")
+    files = active.get("files")
+    if not isinstance(files, list) or not files:
+        raise FileNotFoundError("Dataset aktif tidak memiliki file.")
+    return active
+
+
+def _validate_after_file_change(dataset: dict[str, Any]) -> dict[str, Any]:
+    validation = validate_committed_dataset(dataset, ROOT_DIR)
+    return {
+        "validation_status": "VALIDATED" if validation["valid"] else "NEEDS_REVIEW",
+        "validation_errors": validation["errors"],
+    }
+
+
+def _persist_file_change(
+    active: dict[str, Any],
+    remaining_files: list[dict[str, Any]],
+    deleted_files: list[dict[str, Any]],
+) -> dict[str, Any]:
+    dataset_id = str(active.get("dataset_session_id") or active.get("dataset_id") or "").strip()
+    if not dataset_id:
+        raise ValueError("Dataset aktif tidak memiliki dataset_session_id.")
+    now = utc_now_iso()
+    if remaining_files:
+        updated = {
+            **active,
+            **_upload_scope(remaining_files, str(active.get("tahun_input") or "") or None),
+            **_validate_after_file_change({**active, "files": remaining_files}),
+            "files": remaining_files,
+            "status": "committed",
+            "upload_state": "COMMITTED",
+            "updated_at": now,
+            "deleted_files": [*(active.get("deleted_files") or []), *deleted_files],
+        }
+        write_json(ACTIVE_EXCEL_DATASET_PATH, updated)
+        active_dataset_id: str | None = dataset_id
+        registry_record = updated
+    else:
+        updated = {
+            "dataset_id": None,
+            "dataset_session_id": None,
+            "deleted_dataset_id": dataset_id,
+            "status": "empty",
+            "upload_state": "EMPTY",
+            "validation_status": "DELETED",
+            "files": [],
+            "deleted_files": [*(active.get("deleted_files") or []), *deleted_files],
+            "deleted_at": now,
+            "updated_at": now,
+        }
+        write_json(ACTIVE_EXCEL_DATASET_PATH, updated)
+        active_dataset_id = None
+        registry_record = {
+            **active,
+            "status": "DELETED",
+            "upload_state": "DELETED",
+            "validation_status": "DELETED",
+            "files": [],
+            "deleted_files": updated["deleted_files"],
+            "deleted_at": now,
+            "updated_at": now,
+        }
+
+    registry = read_json(EXCEL_DATASET_REGISTRY_PATH) or {}
+    datasets = registry.get("datasets") if isinstance(registry, dict) else []
+    datasets = datasets if isinstance(datasets, list) else []
+    registry = {
+        **registry,
+        "active_dataset_id": active_dataset_id,
+        "updated_at": now,
+        "datasets": [
+            registry_record,
+            *[
+                item
+                for item in datasets
+                if str(item.get("dataset_id") or item.get("dataset_session_id") or "") != dataset_id
+            ],
+        ],
+    }
+    write_json(EXCEL_DATASET_REGISTRY_PATH, registry)
+    return updated
+
+
+def delete_active_dataset_file(filename: str) -> dict[str, Any]:
+    requested = str(filename or "").strip()
+    if not requested or Path(requested).name != requested:
+        raise ValueError("Nama file aktif tidak valid.")
+    active = _read_active_dataset()
+    files = [item for item in active["files"] if isinstance(item, dict)]
+    match = next((item for item in files if str(item.get("filename") or "") == requested), None)
+    if match is None:
+        raise FileNotFoundError(f"File {requested!r} tidak ditemukan pada dataset aktif.")
+    target = _resolve_active_file_path(match)
+    physical_deleted = target.is_file()
+    if physical_deleted:
+        target.unlink()
+    try:
+        target.parent.rmdir()
+    except OSError:
+        pass
+    deleted = {
+        **match,
+        "deleted_at": utc_now_iso(),
+        "physical_deleted": physical_deleted,
+    }
+    remaining = [item for item in files if item is not match]
+    updated = _persist_file_change(active, remaining, [deleted])
+    return {
+        **updated,
+        "deleted_file": deleted,
+        "deleted_file_count": 1,
+        "committed_file_count": len(remaining),
+    }
+
+
+def delete_all_active_dataset_files() -> dict[str, Any]:
+    active = _read_active_dataset()
+    files = [item for item in active["files"] if isinstance(item, dict)]
+    targets = [(item, _resolve_active_file_path(item)) for item in files]
+    deleted_at = utc_now_iso()
+    deleted_files: list[dict[str, Any]] = []
+    for item, target in targets:
+        physical_deleted = target.is_file()
+        if physical_deleted:
+            target.unlink()
+        deleted_files.append({**item, "deleted_at": deleted_at, "physical_deleted": physical_deleted})
+    for _, target in targets:
+        try:
+            target.parent.rmdir()
+        except OSError:
+            pass
+    updated = _persist_file_change(active, [], deleted_files)
+    return {
+        **updated,
+        "deleted_files": deleted_files,
+        "deleted_file_count": len(deleted_files),
+        "committed_file_count": 0,
+    }

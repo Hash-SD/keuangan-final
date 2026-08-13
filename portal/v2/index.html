@@ -3063,6 +3063,20 @@
         return await res.json();
       }
 
+      async function apiDelete(path, body = undefined) {
+        const options = {
+          method: "DELETE",
+          credentials: "include",
+        };
+        if (body !== undefined) {
+          options.headers = { "Content-Type": "application/json" };
+          options.body = JSON.stringify(body);
+        }
+        const res = await fetch(`${API_BASE_URL}${path}`, options);
+        if (!res.ok) throw new Error(await apiErrorMessage(res));
+        return await res.json();
+      }
+
       // Shared GET cache: TTL + in-flight promise dedupe.
       // Collapses the N duplicate polls seen in baseline (airflow/active ×17, etc.)
       // into a single network request per (path, ttl) window. Immutable by design:
@@ -3687,9 +3701,12 @@
         const size = formatFileSize(file.size_bytes ?? file.size ?? 0);
         const detailSource = { ...metadata, filename: name };
         const kind = detailSource.jenis_dataset ? `Jenis: ${safe(detailSource.jenis_dataset)} · ` : "";
-        const removeControl = pendingIndex === null
-          ? ""
-          : `<button type="button" class="file-list-clear" onclick="removePendingUploadFile(${pendingIndex})" aria-label="Hapus ${escapeHtml(name)}"><span class="material-symbols-outlined">close</span> Hapus</button>`;
+        const isCommitted = pendingIndex === null && Boolean(file.filename);
+        const removeControl = isCommitted
+          ? `<button type="button" class="file-list-clear" onclick="deleteActiveUploadFile('${jsStr(name)}')" aria-label="Hapus file tersimpan ${escapeHtml(name)}"><span class="material-symbols-outlined">delete</span> Hapus</button>`
+          : pendingIndex === null
+            ? ""
+            : `<button type="button" class="file-list-clear" onclick="removePendingUploadFile(${pendingIndex})" aria-label="Hapus ${escapeHtml(name)}"><span class="material-symbols-outlined">close</span> Hapus</button>`;
         return `
           <li class="file-item" title="${escapeHtml(name)}">
             <span class="file-item-icon ${cls}">${escapeHtml(type)}</span>
@@ -3730,7 +3747,10 @@
                 <strong>${escapeHtml(summary)}</strong>
                 <small>${pendingFiles.length ? "periksa detail tiap file sebelum Upload Data" : "siap ditinjau atau ditambah"}</small>
               </span>
-              ${pendingFiles.length ? `<button type="button" class="file-list-clear" onclick="clearFiles()"><span class="material-symbols-outlined">close</span> Hapus semua pilihan</button>` : ""}
+              <span style="display:flex; gap:0.25rem; flex-wrap:wrap; justify-content:flex-end;">
+                ${committedFiles.length ? `<button type="button" class="file-list-clear" onclick="deleteAllActiveUploads()" aria-label="Hapus semua file tersimpan"><span class="material-symbols-outlined">delete_sweep</span> Hapus semua file tersimpan</button>` : ""}
+                ${pendingFiles.length ? `<button type="button" class="file-list-clear" onclick="clearFiles()"><span class="material-symbols-outlined">close</span> Hapus semua pilihan</button>` : ""}
+              </span>
             </div>
             <ul class="file-list">${allItems}</ul>
           </div>`;
@@ -3794,6 +3814,49 @@
         if (input) {
           input.value = "";
           renderUploadFileList([], state.uploadSession);
+        }
+      }
+
+      async function deleteActiveUploadFile(filename) {
+        const name = String(filename || "").trim();
+        if (!name) return;
+        if (!confirm(`Hapus file tersimpan "${name}" dari dataset aktif dan Raw?`)) return;
+        try {
+          const payload = await apiDelete("/api/upload/session/file", { filename: name });
+          state.uploadSession = payload;
+          syncUploadSessionForm(payload);
+          renderUploadSession(payload);
+          renderUploadFileList(state.pendingUploadFiles, payload);
+          clearApiCache();
+          showToast(`File tersimpan dihapus: ${name}`);
+          logTerminal(`File upload ${name} dihapus dari dataset aktif dan Raw.`, "SUCCESS");
+          fetchDashboardData().catch(() => {});
+        } catch (err) {
+          showToast(`Gagal menghapus file: ${err.message}`);
+          logTerminal(`Gagal menghapus file upload ${name}: ${err.message}`, "ERROR");
+        }
+      }
+
+      async function deleteAllActiveUploads() {
+        const files = Array.isArray(state.uploadSession?.files) ? state.uploadSession.files : [];
+        if (files.length === 0) {
+          showToast("Tidak ada file tersimpan yang dapat dihapus.");
+          return;
+        }
+        if (!confirm(`Hapus semua file tersimpan (${files.length} file) dari dataset aktif dan Raw?`)) return;
+        try {
+          const payload = await apiDelete("/api/upload/session");
+          state.uploadSession = payload;
+          syncUploadSessionForm(payload);
+          renderUploadSession(payload);
+          renderUploadFileList(state.pendingUploadFiles, payload);
+          clearApiCache();
+          showToast(`${files.length} file tersimpan berhasil dihapus.`);
+          logTerminal(`Seluruh file upload (${files.length}) dihapus dari dataset aktif dan Raw.`, "SUCCESS");
+          fetchDashboardData().catch(() => {});
+        } catch (err) {
+          showToast(`Gagal menghapus semua file: ${err.message}`);
+          logTerminal(`Gagal menghapus seluruh file upload: ${err.message}`, "ERROR");
         }
       }
 
@@ -4839,6 +4902,7 @@
           <td>${safe(file.filename)}<br><span style="color:var(--text-secondary); font-size:0.75rem;">${safe(file.jenis_dataset || file.path)}</span></td>
           <td>${uploadFileDetail(file, session)}</td>
           <td>${safe(session.message)}</td>
+          <td><button type="button" class="file-list-clear" onclick="deleteActiveUploadFile('${jsStr(file.filename)}')" aria-label="Hapus file tersimpan ${escapeHtml(file.filename)}"><span class="material-symbols-outlined">delete</span> Hapus</button></td>
         </tr>
       `,
               )
@@ -4848,12 +4912,14 @@
           <td>${safe(session?.dataset_session_id || "-")}</td>
           <td>${statusBadgeHtml(session?.status || "empty", session?.status || "missing")}</td>
           <td>-</td>
+          <td>-</td>
           <td>${safe(session?.message || "Belum ada upload session aktif.")}</td>
+          <td>-</td>
         </tr>
       `;
         document.getElementById("uploadSessionPanel").innerHTML = `
         <table class="apple-table">
-          <thead><tr><th>Dataset</th><th>Status</th><th>File</th><th>Detail Pilihan</th><th>Pesan</th></tr></thead>
+          <thead><tr><th>Dataset</th><th>Status</th><th>File</th><th>Detail Pilihan</th><th>Pesan</th><th>Aksi</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       `;

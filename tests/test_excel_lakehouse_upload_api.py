@@ -20,6 +20,23 @@ def _xlsx_bytes() -> bytes:
     return buffer.getvalue()
 
 
+def _configure_upload_paths(tmp_path, monkeypatch):
+    monkeypatch.setattr(excel_upload, "ROOT_DIR", tmp_path)
+    monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")
+    monkeypatch.setattr(
+        excel_upload,
+        "ACTIVE_EXCEL_DATASET_PATH",
+        tmp_path / "outputs" / "reports" / "active_excel_lakehouse_dataset.json",
+    )
+    monkeypatch.setattr(
+        excel_upload,
+        "EXCEL_DATASET_REGISTRY_PATH",
+        tmp_path / "outputs" / "reports" / "excel_dataset_registry.json",
+    )
+    monkeypatch.setattr(excel_upload, "relative_path", lambda path: str(path))
+
+
 def test_excel_lakehouse_upload_accepts_multi_file_excel_only(tmp_path, monkeypatch):
     monkeypatch.setattr(excel_upload, "DATA_DIR", tmp_path / "data")
     monkeypatch.setattr(excel_upload, "OUTPUTS_DIR", tmp_path / "outputs")
@@ -226,3 +243,95 @@ def test_single_file_upload_rejects_missing_metadata(tmp_path, monkeypatch):
 
     assert response.status_code == 400
     assert "Tahun Input" in response.get_json()["message"]
+
+
+def test_delete_one_active_file_removes_physical_file_and_updates_registry(tmp_path, monkeypatch):
+    _configure_upload_paths(tmp_path, monkeypatch)
+    client = create_app().test_client()
+
+    upload = client.post(
+        "/api/upload/excel-lakehouse",
+        data={
+            "tahun_input": "2025",
+            "periode": "Tahunan",
+            "prodi": "Sains Data",
+            "fakultas": "Fakultas Sains",
+            "jenis_dataset": "rab",
+            "file_excel[]": [
+                (io.BytesIO(_xlsx_bytes()), "rab_keep.xlsx"),
+                (io.BytesIO(_xlsx_bytes()), "rab_remove.xlsx"),
+            ],
+        },
+        content_type="multipart/form-data",
+    )
+    uploaded = upload.get_json()
+    removed_path = next(item["path"] for item in uploaded["files"] if item["filename"] == "rab_remove.xlsx")
+    assert __import__("pathlib").Path(removed_path).is_file()
+
+    response = client.delete(
+        "/api/upload/session/file",
+        json={"filename": "rab_remove.xlsx"},
+    )
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["deleted_file"]["filename"] == "rab_remove.xlsx"
+    assert payload["committed_file_count"] == 1
+    assert [item["filename"] for item in payload["files"]] == ["rab_keep.xlsx"]
+    assert not __import__("pathlib").Path(removed_path).exists()
+    active = __import__("json").loads(excel_upload.ACTIVE_EXCEL_DATASET_PATH.read_text(encoding="utf-8"))
+    assert [item["filename"] for item in active["files"]] == ["rab_keep.xlsx"]
+    registry = __import__("json").loads(excel_upload.EXCEL_DATASET_REGISTRY_PATH.read_text(encoding="utf-8"))
+    assert registry["active_dataset_id"] == uploaded["dataset_id"]
+    assert registry["datasets"][0]["deleted_files"][0]["filename"] == "rab_remove.xlsx"
+
+
+def test_delete_all_active_files_clears_pointer_and_blocks_pipeline(tmp_path, monkeypatch):
+    _configure_upload_paths(tmp_path, monkeypatch)
+    client = create_app().test_client()
+
+    upload = client.post(
+        "/api/upload/excel-lakehouse",
+        data={
+            "tahun_input": "2025",
+            "periode": "Tahunan",
+            "prodi": "Sains Data",
+            "fakultas": "Fakultas Sains",
+            "jenis_dataset": "rab",
+            "file_excel[]": [(io.BytesIO(_xlsx_bytes()), "rab_remove_all.xlsx")],
+        },
+        content_type="multipart/form-data",
+    )
+    uploaded = upload.get_json()
+    source_path = __import__("pathlib").Path(uploaded["files"][0]["path"])
+
+    response = client.delete("/api/upload/session")
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["status"] == "empty"
+    assert payload["committed_file_count"] == 0
+    assert payload["deleted_file_count"] == 1
+    assert not source_path.exists()
+    active = __import__("json").loads(excel_upload.ACTIVE_EXCEL_DATASET_PATH.read_text(encoding="utf-8"))
+    assert active["status"] == "empty"
+    assert active["files"] == []
+    registry = __import__("json").loads(excel_upload.EXCEL_DATASET_REGISTRY_PATH.read_text(encoding="utf-8"))
+    assert registry["active_dataset_id"] is None
+    assert registry["datasets"][0]["status"] == "DELETED"
+
+    pipeline_response = client.post("/api/pipeline/run/run-after-delete")
+    assert pipeline_response.status_code == 400
+    assert "Dataset aktif COMMITTED" in pipeline_response.get_json()["message"]
+
+
+def test_delete_active_file_rejects_unknown_filename(tmp_path, monkeypatch):
+    _configure_upload_paths(tmp_path, monkeypatch)
+    client = create_app().test_client()
+
+    response = client.delete(
+        "/api/upload/session/file",
+        json={"filename": "not-in-active-dataset.xlsx"},
+    )
+
+    assert response.status_code == 404

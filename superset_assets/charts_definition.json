@@ -1,5 +1,6 @@
 {
   "dashboard_title": "SILARAS SD - Dashboard Anggaran IKU",
+  "dataset_display_name": "Data Anggaran RAB/IKU",
   "charts": [
     {"name": "KPI Total Anggaran", "viz_type": "big_number_total", "metric": "SUM(jumlah)"},
     {"name": "KPI Total Anggaran Weighted IKU", "viz_type": "big_number_total", "metric": "SUM(jumlah_weighted_iku)"},
@@ -13,5 +14,17 @@
     {"name": "Validation Reconciliation", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation"}
   ],
   "hidden_columns": ["mapping_status", "data_quality_flag", "source_sheet", "source_row"],
+  "column_labels": {
+    "source_file": "Sumber Data",
+    "uraian_detail": "Detail",
+    "harga_satuan": "Harga Satuan",
+    "jumlah": "Jumlah Anggaran",
+    "jumlah_weighted_iku": "Alokasi Anggaran IKU",
+    "prodi": "Program Studi",
+    "kegiatan": "Kegiatan",
+    "akun": "Akun Belanja",
+    "iku": "IKU",
+    "tahun": "Tahun"
+  },
   "note": "Kolom pada hidden_columns tidak ditampilkan di chart/dataset Superset, tetapi tetap ada di tabel gold.fact_anggaran."
 }

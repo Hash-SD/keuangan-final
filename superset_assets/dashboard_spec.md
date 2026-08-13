@@ -26,6 +26,25 @@ Kolom tersembunyi (tetap ada di tabel gold, tidak ditampilkan di Superset):
 - source_sheet
 - source_row
 
+Label tampilan Superset:
+
+Nama kolom fisik tetap dipakai untuk query dan lineage, sedangkan Superset menampilkan label bisnis berikut:
+
+| Kolom fisik | Label tampilan |
+| --- | --- |
+| `source_file` | Sumber Data |
+| `uraian_detail` | Detail |
+| `harga_satuan` | Harga Satuan |
+| `jumlah` | Jumlah Anggaran |
+| `jumlah_weighted_iku` | Alokasi Anggaran IKU |
+| `prodi` | Program Studi |
+| `akun` | Akun Belanja |
+| `kegiatan` | Kegiatan |
+| `iku` | IKU |
+| `tahun` | Tahun |
+
+Dataset ditampilkan sebagai **Data Anggaran RAB/IKU**, tetapi tabel fisiknya tetap `gold.fact_anggaran`.
+
 Chart minimal:
 
 - KPI Total Anggaran

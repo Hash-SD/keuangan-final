@@ -614,6 +614,41 @@ def create_app() -> Flask:
     def upload_excel_dataset():
         return upload_excel_lakehouse()
 
+    @app.delete("/api/upload/session/file")
+    def delete_upload_session_file():
+        payload = request.get_json(silent=True) or {}
+        try:
+            result = excel_upload.delete_active_dataset_file(payload.get("filename"))
+        except FileNotFoundError as exc:
+            return jsonify({"status": "not_found", "message": str(exc)}), 404
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
+        append_activity(
+            action="delete_upload_file",
+            source="upload",
+            status="success",
+            target=result.get("deleted_file", {}).get("filename", ""),
+            message="Satu file dihapus dari dataset aktif dan Raw.",
+        )
+        return _no_store_json(result)
+
+    @app.delete("/api/upload/session")
+    def delete_upload_session():
+        try:
+            result = excel_upload.delete_all_active_dataset_files()
+        except FileNotFoundError as exc:
+            return jsonify({"status": "not_found", "message": str(exc)}), 404
+        except ValueError as exc:
+            return jsonify({"status": "failed", "message": str(exc)}), 400
+        append_activity(
+            action="delete_upload_dataset",
+            source="upload",
+            status="success",
+            target=result.get("deleted_dataset_id") or "active-dataset",
+            message="Seluruh file dataset aktif dihapus dari Raw.",
+        )
+        return _no_store_json(result)
+
     @app.get("/api/datasets")
     def datasets():
         payload = read_json(OUTPUTS_DIR / "reports" / "excel_dataset_registry.json")

@@ -252,6 +252,8 @@ Alur unggah (Excel-only):
 | POST | `/api/upload/excel-lakehouse` | Unggah workbook pipeline |
 | POST | `/api/upload/excel-dataset` | Commit dataset Excel aktif |
 | GET | `/api/upload/session/status` | Status sesi unggah |
+| DELETE | `/api/upload/session/file` | Hapus satu file dari dataset aktif dan Raw |
+| DELETE | `/api/upload/session` | Hapus seluruh file dari dataset aktif dan Raw |
 | GET | `/api/datasets` | Daftar dataset |
 | GET | `/api/excel-lakehouse/status` | Status lakehouse |
 

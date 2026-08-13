@@ -1,44 +1,61 @@
-# Desain Refactor Gold Tahunan dan Dashboard RAB/IKU
+# Desain Refactor Gold Tahunan dan Dashboard RAB/IKU (One-Gold)
 
 Tanggal: 2026-08-13
-Status: disetujui secara percakapan; menunggu review spec sebelum implementation plan
+Status: draft revisi; menunggu persetujuan sebelum implementation plan
 
-## Tujuan
+## 1. Tujuan
 
-Refactor dilakukan bertahap untuk menyelaraskan pipeline, Gold, PostgreSQL, Trino, Superset, portal lokal, test, dan dokumentasi tanpa mengubah seluruh sistem sekaligus.
+Refactor menyelaraskan pipeline Excel, Gold, PostgreSQL/Trino, Superset, portal lokal, test, dan dokumentasi dengan perubahan minimum yang aman.
 
-Sistem mempertahankan satu tabel Gold utama:
+Sistem menggunakan satu tabel Gold fisik:
 
 ```text
 gold.fact_anggaran
 ```
 
-Modelnya adalah model data Gold terdenormalisasi berbasis laporan tahunan dengan struktur dimensional secara logis. Tidak ada tabel dimensi fisik yang ditambahkan.
+Struktur dimensional hanya digunakan sebagai konsep analitik dan diagram penulisan. Tidak ada tabel dimensi fisik, bridge table, atau tabel agregasi baru.
 
-Grain kanonik:
+## 2. Arsitektur dan grain
 
 ```text
-1 baris = 1 item anggaran × 1 alokasi IKU
+Bronze/Silver
+  ├── menyimpan periode sumber, hasil parsing, dan metadata lineage
+  └── memilih serta menggabungkan sumber tahunan
+             ↓
+Gold: fact_anggaran
+  └── 1 baris = 1 item anggaran × 1 alokasi IKU
+             ↓
+View dashboard (proyeksi, bukan tabel Gold baru)
+  ├── Superset
+  └── Portal lokal
 ```
 
-## Keputusan yang tidak boleh berubah
+`item_id` dapat muncul beberapa kali jika item memiliki beberapa IKU. Grain unik yang divalidasi adalah:
 
-- `fact_anggaran` adalah satu-satunya tabel Gold utama.
-- `tahun` adalah satu-satunya atribut waktu analitik di Gold, Superset, portal, dan dashboard.
-- `periode` tidak boleh ada di `fact_anggaran`, dataset Superset, filter, metric, view analitik, atau KPI.
-- Informasi Jan-Jun, Jul-Des, dan sumber tahunan hanya disimpan di Bronze/Silver atau metadata lineage/audit.
-- `dataset_session_id` dan `run_id` adalah identitas data utama.
-- `pipeline_run_id` tetap boleh berada pada manifest/audit pipeline, tetapi tidak menjadi kolom Gold duplikat ketika nilainya sama dengan `run_id`.
-- Metric nominal utama adalah `SUM(jumlah_weighted_iku)`.
-- `Status Rekonsiliasi` adalah status validasi, bukan metric penjumlahan.
-- KPI final: `Total Anggaran`, `Jumlah Item`, `Jumlah IKU`, `Jumlah Kegiatan`, dan `Status Rekonsiliasi`.
-- Referensi produktif domain piutang berikut harus hilang: `nominal_piutang_rp`, `tahun_akademik`, `nama_debitur`, `vw_dashboard_piutang_ukt`, `nim`, dan istilah kualitas piutang.
+```text
+(dataset_session_id, run_id, item_id, kode_iku)
+```
 
-## Kontrak Gold kanonik
+Jika `item_id` bentrok antar sumber, pipeline membentuk identitas stabil yang menyertakan konteks sumber, bukan path absolut atau urutan eksekusi.
 
-Kontrak didefinisikan di `src/gold/contract.py` dan menjadi sumber kebenaran untuk urutan kolom, tipe, grain, metric, filter, dan validasi. Artefak SQL/JSON tetap dapat dibaca manusia, tetapi test harus memastikan isinya sama dengan kontrak.
+## 3. Keputusan arsitektur yang tetap
 
-Urutan kolom Gold:
+- `gold.fact_anggaran` adalah satu-satunya tabel Gold fisik.
+- `tahun` adalah satu-satunya atribut waktu analitik.
+- `periode` tidak boleh ada pada fact, view analitik, dataset Superset, filter, metric, API dashboard, atau fixture dashboard.
+- Informasi `Jan-Jun`, `Jul-Des`, dan sumber tahunan hanya berada di Bronze/Silver atau metadata lineage/audit.
+- `dataset_session_id` dan `run_id` menjadi identitas data.
+- `pipeline_run_id` dan `airflow_dag_run_id` hanya berada pada manifest/audit dan tidak menjadi kolom fact.
+- `allocation_weight` dan `jumlah_weighted_iku` dipertahankan karena grain fact adalah item × IKU.
+- Total nominal dashboard selalu memakai `SUM(jumlah_weighted_iku)`.
+- `Status Rekonsiliasi` adalah status validasi dari quality gate/manifest, bukan metric penjumlahan.
+- Tidak ada referensi produktif ke `nominal_piutang_rp`, `tahun_akademik`, `nama_debitur`, `vw_dashboard_piutang_ukt`, `nim`, atau istilah kualitas piutang.
+
+## 4. Kontrak Gold minimal
+
+Kontrak berada di `src/gold/contract.py` dan menjadi sumber kebenaran untuk urutan kolom, tipe, grain, metric, filter, dan validasi.
+
+### 4.1 Kolom identitas, analitik, dan nominal
 
 ```text
 item_id
@@ -52,7 +69,6 @@ cluster_kegiatan
 akun
 kode_akun
 nama_akun
-nama_akun_asli
 iku
 kode_iku
 nama_iku
@@ -64,6 +80,11 @@ harga_satuan
 jumlah
 allocation_weight
 jumlah_weighted_iku
+```
+
+### 4.2 Kolom lineage dan quality minimum
+
+```text
 mapping_status
 data_quality_flag
 source_file
@@ -75,172 +96,132 @@ quality_flags
 created_at
 ```
 
-Kontrak tidak memasukkan `periode`, `pipeline_run_id`, atau `airflow_dag_run_id`.
+Kolom audit tetap berada pada satu fact agar quality gate dan lineage tidak kehilangan bukti, tetapi seluruhnya disembunyikan dari view Superset. `nama_akun_asli` dipertahankan di Silver sebagai nilai sumber; Gold memakai nama akun kanonik. Kolom `pipeline_run_id` dan `airflow_dag_run_id` tidak masuk fact.
 
-Tipe lintas layer:
+### 4.3 Tipe lintas layer
 
-- atribut teks dan lineage: `TEXT`;
-- `tahun`: `TEXT` yang wajib tervalidasi sebagai tahun anggaran empat digit agar kompatibel dengan CSV/parser yang ada;
-- `qty`, `harga_satuan`, `jumlah`, `allocation_weight`, dan `jumlah_weighted_iku`: `DOUBLE PRECISION`;
+- atribut dan lineage: `TEXT`;
+- `tahun`: `TEXT`, wajib cocok dengan pola `20XX` agar kompatibel dengan CSV/parser saat ini;
+- `qty`, `harga_satuan`, `jumlah`, `allocation_weight`, `jumlah_weighted_iku`: `DOUBLE PRECISION`;
 - `source_row`: `INTEGER`;
-- `created_at`: `TIMESTAMPTZ`, direpresentasikan sebagai waktu UTC pada DataFrame/Parquet.
+- `created_at`: `TIMESTAMPTZ` UTC.
 
-Metric kanonik:
+## 5. Aturan nominal IKU
+
+`jumlah` adalah nominal item sumber dan boleh berulang pada beberapa baris IKU. `jumlah_weighted_iku` adalah nominal analitik yang aditif:
 
 ```text
-Total Anggaran    = SUM(jumlah_weighted_iku)
-Jumlah Item       = COUNT(DISTINCT item_id)
-Jumlah IKU        = COUNT(DISTINCT kode_iku)
-Jumlah Kegiatan   = COUNT(DISTINCT kegiatan)
-Status Rekonsiliasi = status validasi Gold/manifest, bukan SUM
+allocation_weight = 1 / jumlah IKU pada item
+jumlah_weighted_iku = jumlah × allocation_weight
 ```
 
-`jumlah` tetap dipertahankan sebagai nominal item sumber, tetapi tidak boleh dipakai sebagai total agregat dashboard pada allocation-grain.
+Invariant wajib:
 
-## Penggabungan laporan tahunan
+```text
+SUM(allocation_weight) = 1 per (dataset_session_id, run_id, item_id)
+jumlah_weighted_iku = jumlah × allocation_weight
+SUM(jumlah_weighted_iku) = total nominal sumber
+```
 
-Penggabungan dilakukan sebelum pembentukan Gold dan tidak mengandalkan `periode` sebagai kolom Gold.
+Tidak ada agregasi yang disimpan sebagai tabel Gold. Agregasi dilakukan oleh query Superset atau view dashboard.
 
-1. Setiap sumber harus memiliki tahun anggaran yang dapat ditentukan dari metadata/sumber dan harus konsisten dengan barisnya.
-2. Satu workbook untuk satu tahun dipakai langsung setelah validasi.
-3. Beberapa workbook parsial dalam satu tahun digabungkan jika identitas sumbernya tidak tumpang tindih.
-4. Jika terdapat workbook tahunan dan parsial pada tahun yang sama, pipeline membandingkan cakupan dan rekonsiliasi. Workbook tahunan hanya dipilih bila seluruh data parsial terbukti tercakup dan totalnya cocok.
-5. Jika cakupan tidak dapat dibuktikan, pipeline berhenti dengan status `AMBIGUOUS_SOURCE_OVERLAP` dan melaporkan file/sheet/baris yang bertabrakan.
-6. Deduplicasi tidak boleh menggunakan nama kegiatan, akun, atau `uraian_detail` saja.
-7. Identitas sumber minimal adalah `dataset_session_id`, `item_id`, `source_file`, `source_sheet`, dan `source_row`.
-8. Jika `item_id` bertabrakan antarfile, pembentukannya diperbaiki agar memiliki konteks sumber yang stabil. Kunci turunan tidak boleh bergantung pada path absolut atau urutan eksekusi.
-9. Workbook Jan-Jun dan Jul-Des tahun 2023 menjadi satu laporan tahunan jika tidak overlap.
-10. Metadata hasil seleksi menyimpan tahun, sumber terpilih, sumber yang dikeluarkan, informasi periode sumber, status overlap, total sumber, dan total Gold.
+## 6. View dashboard
 
-Informasi periode boleh tetap berada di Silver untuk audit dan keputusan overlap. Informasi tersebut tidak boleh dipropagasikan ke fact, view analitik, dataset Superset, API dashboard, atau fixture dashboard.
+View dashboard adalah proyeksi dari `gold.fact_anggaran`, bukan Gold fisik kedua. Kolom yang diekspos:
 
-## Quality gate
+```text
+tahun
+item_id
+source_file
+prodi
+fakultas
+iku
+kode_iku
+kegiatan
+cluster_kegiatan
+akun
+uraian_detail
+qty
+satuan
+harga_satuan
+jumlah
+```
 
-`src/validation/production_quality_gate.py` memvalidasi:
+Pada view:
 
-- urutan dan kelengkapan schema Gold terhadap kontrak;
-- semua baris memiliki `dataset_session_id`, `run_id`, tahun, dan lineage wajib;
-- `periode` tidak ada pada kolom Gold maupun artefak analitik;
-- kolom domain piutang tidak ada pada Gold, portal, Superset, dan test produktif;
-- `allocation_weight` berada pada rentang `[0, 1]`;
-- untuk setiap `(dataset_session_id, run_id, item_id)`, jumlah `allocation_weight` adalah `1` dengan toleransi numerik;
-- `jumlah_weighted_iku == jumlah * allocation_weight`;
-- grain `(item_id, kode_iku)` tidak duplikat dalam dataset/run;
-- tidak ada item hasil overlap yang terduplikasi;
-- semua sumber memiliki tahun dan status penggabungan/rekonsiliasi tahunan valid;
-- total Gold sama dengan total sumber yang dipilih setelah weighting.
+```sql
+jumlah_weighted_iku AS jumlah
+```
 
-Status `AMBIGUOUS_SOURCE_OVERLAP` bersifat blocking: pipeline tidak boleh menulis pointer Gold `PUBLISHED`.
+Kolom teknis tidak ditampilkan pada dataset Superset, tetapi tetap tersedia di fact untuk quality gate dan audit.
 
-## SQL, loader, dan lintas engine
-
-`create_gold_tables.sql`, `load_gold_to_postgres.py`, output CSV/Parquet, dan view dashboard dibangun dari kontrak yang sama.
-
-View yang tetap diperbolehkan adalah view dashboard/reconciliation, bukan tabel Gold tambahan. View tidak boleh memperkenalkan `periode` sebagai atribut analitik. View reconciliation dapat menyediakan status tekstual untuk KPI `Status Rekonsiliasi`.
-
-PostgreSQL dan Trino wajib dibandingkan berdasarkan `dataset_session_id` dan `run_id` yang sama, dengan pemeriksaan:
-
-- jumlah baris;
-- jumlah item unik;
-- total weighted;
-- status rekonsiliasi.
-
-## Portal lokal
-
-Portal membaca `fact_anggaran` melalui Superset API dan fallback CSV/Parquet Gold yang sama. Filter dashboard lokal hanya:
+Filter Superset:
 
 ```text
 tahun, prodi, iku, kegiatan, akun
 ```
 
-Summary portal menggunakan lima KPI kanonik. Detail menampilkan atribut RAB/IKU dan menggunakan `jumlah_weighted_iku` sebagai nilai alokasi yang aman untuk agregasi. Tidak ada adapter produktif, label, fallback, fixture, atau selector yang memakai domain piutang.
+## 7. KPI dan registry chart
 
-## Superset dan registry chart
-
-Registry chart stabil menjadi sumber kebenaran nama, key, metric, groupby, layout, dan jumlah chart. Registry wajib memiliki tepat 13 key:
+KPI final:
 
 ```text
-kpi_total_anggaran
-kpi_jumlah_item
-kpi_jumlah_iku
-kpi_jumlah_kegiatan
-kpi_status_rekonsiliasi
-ringkasan_per_tahun
-anggaran_per_tahun
-anggaran_per_iku
-cluster_kegiatan
-komposisi_akun
-anggaran_per_akun
-detail_item_biaya
-validasi_rekap
+Total Anggaran      = SUM(jumlah_weighted_iku)
+Jumlah Item         = COUNT(DISTINCT item_id)
+Jumlah IKU          = COUNT(DISTINCT kode_iku)
+Jumlah Kegiatan     = COUNT(DISTINCT kegiatan)
+Status Rekonsiliasi = status quality gate/manifest
 ```
 
-Registry menghasilkan `charts_definition.json` dan dipakai script setup Superset. Chart yang dikelola sistem diberi identitas/key stabil. Saat sinkronisasi:
+Status Rekonsiliasi ditampilkan sebagai status card/label dari manifest atau endpoint quality gate. Status tersebut tidak dipaksa menjadi angka pada query fact dan tidak dihitung dengan `SUM`.
 
-- chart dikelola di-upsert berdasarkan key stabil;
-- ID Superset disimpan pada manifest/report;
-- chart lama yang dikelola sistem tetapi tidak ada di registry dilepas dari layout;
-- chart pengguna yang tidak memiliki identitas managed tidak dihapus;
-- hasil valid hanya jika `desired_chart_count == attached_chart_count == 13`.
+Registry dashboard berisi tepat 13 chart stabil. Definisi dataset, runtime Superset, snapshot, dan test harus memiliki nama chart, metric, filter, serta jumlah chart yang sama. KPI `Total Weighted IKU` sebagai KPI terpisah dihapus karena identik dengan `Total Anggaran`.
 
-Native filter Superset hanya `tahun`, `prodi`, `iku`, `kegiatan`, dan `akun`. Tidak ada filter `periode`.
+## 8. Penggabungan laporan tahunan
 
-## Urutan implementasi
+1. Setiap sumber harus memiliki tahun anggaran yang konsisten.
+2. Satu workbook tahunan digunakan setelah validasi.
+3. Workbook parsial pada tahun yang sama digabung hanya jika sumber tidak tumpang tindih.
+4. Workbook tahunan dan parsial dibandingkan berdasarkan identitas sumber, cakupan, dan total rekonsiliasi.
+5. Jika overlap tidak terbukti aman, pipeline berhenti dengan `AMBIGUOUS_SOURCE_OVERLAP`.
+6. Deduplicasi tidak boleh hanya memakai nama kegiatan, akun, atau uraian.
+7. `source_file`, `source_sheet`, `source_row`, dan `item_id` menjadi bukti lineage.
+8. Data 2023 Jan-Jun dan Jul-Des menjadi satu laporan tahunan jika tidak overlap.
+9. Metadata seleksi mencatat sumber terpilih, sumber yang dikeluarkan, periode sumber, status overlap, total sumber, dan total Gold.
 
-### Fase 0 — Baseline
+## 9. Quality gate
 
-Catat status git, compileall, seluruh pytest, serta kegagalan awal. Kegagalan baseline tidak boleh disamarkan sebagai regresi.
+`src/validation/production_quality_gate.py` memvalidasi:
 
-### Fase 1 — Kontrak kanonik
+- schema fact sama dengan kontrak;
+- tidak ada `periode` atau domain piutang pada Gold dan artefak analitik;
+- setiap baris memiliki `dataset_session_id`, `run_id`, tahun, dan lineage minimum;
+- `allocation_weight` berada pada `[0, 1]`;
+- jumlah bobot per item sama dengan `1`;
+- formula weighted benar;
+- grain `(dataset_session_id, run_id, item_id, kode_iku)` tidak duplikat;
+- total weighted cocok dengan total sumber;
+- dataset Superset hanya mengekspos kolom dashboard;
+- lima KPI dan lima filter sesuai kontrak;
+- status rekonsiliasi tersedia dari quality gate/manifest.
 
-Buat kontrak, test schema/tipe/grain/metric, dan selaraskan definisi dataset/SQL/loader tanpa menyentuh UI lebih dulu.
+## 10. Urutan perubahan
 
-### Fase 2 — Fact dan pipeline
-
-Gunakan kontrak pada pembentukan fact, tambahkan identitas dataset/run secara immutable, keluarkan `periode` dari Gold, dan implementasikan pemilihan/penggabungan sumber tahunan beserta status overlap.
-
-### Fase 3 — Quality gate
-
-Perketat schema, tahun, weighting, uniqueness, sumber, rekonsiliasi, larangan periode, dan larangan domain piutang.
-
-### Fase 4 — SQL dan loader
-
-Selaraskan DDL, view, loader, CSV/Parquet, PostgreSQL, dan Trino.
-
-### Fase 5 — Portal lokal
-
-Migrasikan backend, frontend, fixture, dan Playwright dari kontrak piutang ke kontrak anggaran tahunan.
-
-### Fase 6 — Superset
-
-Tambahkan registry 13 chart, lima KPI, lima filter, managed-chart detach, dan artefak JSON/Markdown yang dihasilkan dari registry.
-
-### Fase 7 — Dokumentasi dan test
-
-Perbarui README, `docs/architecture.md`, AI codebase guide, Superset assets, seluruh fixture, dan test. Tambahkan kasus annual/partial/overlap, weighted allocation, no-period, no-legacy, filter, chart count, dan cross-engine.
-
-Setelah setiap fase:
-
-```bash
-python -m compileall src dags portal_backend
-python -m pytest tests -q
+```text
+contract.py
+  → fact_anggaran.py
+  → seleksi dan merge tahunan pada pipeline
+  → quality gate
+  → DDL/loader satu fact
+  → view dashboard
+  → Superset dan portal lokal
+  → test kontrak, smoke test, dan dokumentasi
 ```
 
-Setelah semua fase dan hanya jika layanan tersedia:
+Setiap fase harus lulus test sebelum fase berikutnya dimulai. Tidak ada perubahan ke physical dimension table pada refactor ini.
 
-```bash
-python scripts/run_release_fixture_smoke.py
-python src/validation/runtime_cross_engine.py
-python src/sql/setup_superset_excel_assets.py
-npx playwright test tests/playwright/local-dashboard.spec.ts
-npx playwright test tests/playwright/superset-dashboard.spec.ts
-```
+## 11. Bahasa penulisan
 
-## Batasan dan non-goals
+Untuk skripsi, struktur dimensional boleh ditampilkan sebagai logical star schema. Implementasi harus dijelaskan sebagai:
 
-- Tidak membuat `dim_waktu`, `dim_prodi`, `dim_kegiatan`, `dim_akun`, atau `dim_iku` fisik.
-- Tidak menghapus data produksi atau tabel produksi.
-- Tidak memilih workbook yang overlap secara diam-diam.
-- Tidak menghapus test hanya untuk membuat suite hijau.
-- Tidak menjadikan `SUM(jumlah)` sebagai total dashboard.
-- Tidak menyatakan selesai sebelum seluruh kontrak dan verifikasi yang tersedia lulus.
+> Gold merupakan satu tabel fakta terdenormalisasi `gold.fact_anggaran` dengan struktur dimensional secara logis. Dimensi pada diagram merepresentasikan kelompok atribut analitik, bukan tabel dimensi fisik yang terpisah.

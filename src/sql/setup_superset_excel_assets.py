@@ -27,6 +27,45 @@ TARGET_DASHBOARD_ID = os.getenv("SUPERSET_DASHBOARD_ID", "").strip()
 # Tabel faktual gold.fact_anggaran tetap utuh; kolom hanya dinonaktifkan di level dataset.
 HIDDEN_COLUMNS = frozenset({"mapping_status", "data_quality_flag", "source_sheet", "source_row"})
 
+# Nama fisik tetap mengikuti kontrak Gold agar query, pipeline, dan loader tidak
+# berubah. Superset hanya memakai verbose_name ini sebagai label presentasi.
+COLUMN_LABELS = {
+    "item_id": "ID Item",
+    "dataset_session_id": "Sesi Dataset",
+    "run_id": "Run Pipeline",
+    "tahun": "Tahun",
+    "periode": "Periode",
+    "prodi": "Program Studi",
+    "fakultas": "Fakultas",
+    "kegiatan": "Kegiatan",
+    "cluster_kegiatan": "Klaster Kegiatan",
+    "akun": "Akun Belanja",
+    "kode_akun": "Kode Akun",
+    "nama_akun": "Nama Akun",
+    "iku": "IKU",
+    "kode_iku": "Kode IKU",
+    "nama_iku": "Nama IKU",
+    "nomenklatur_path": "Jalur Nomenklatur",
+    "uraian_detail": "Detail",
+    "qty": "Kuantitas",
+    "satuan": "Satuan",
+    "harga_satuan": "Harga Satuan",
+    "jumlah": "Jumlah Anggaran",
+    "allocation_weight": "Bobot Alokasi",
+    "jumlah_weighted_iku": "Alokasi Anggaran IKU",
+    "mapping_status": "Status Mapping",
+    "data_quality_flag": "Flag Kualitas Data",
+    "source_file": "Sumber Data",
+    "source_sheet": "Sheet Sumber",
+    "source_row": "Baris Sumber",
+    "source_role": "Peran Sumber",
+    "row_type": "Jenis Baris",
+    "quality_flags": "Catatan Kualitas",
+    "created_at": "Waktu Dibuat",
+}
+
+DATASET_DISPLAY_NAME = "Data Anggaran RAB/IKU"
+
 DETAIL_TABLE_COLUMNS = [
     "tahun",
     "periode",
@@ -153,10 +192,26 @@ def _dataset_id(session: requests.Session, database_id: int) -> int:
     result = datasets.json().get("result", [])
     if result:
         dataset_id = int(result[0]["id"])
-        update = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}", json={"database_id": database_id, "catalog": "postgres", "schema": "gold", "table_name": TABLE_NAME}, timeout=60)
+        update = session.put(
+            f"{BASE_URL}/api/v1/dataset/{dataset_id}",
+            json={
+                "database_id": database_id,
+                "catalog": "postgres",
+                "schema": "gold",
+                "table_name": TABLE_NAME,
+                "description": DATASET_DISPLAY_NAME,
+            },
+            timeout=60,
+        )
         update.raise_for_status()
     else:
-        payload = {"database": database_id, "catalog": "postgres", "schema": "gold", "table_name": TABLE_NAME}
+        payload = {
+            "database": database_id,
+            "catalog": "postgres",
+            "schema": "gold",
+            "table_name": TABLE_NAME,
+            "description": DATASET_DISPLAY_NAME,
+        }
         response = session.post(f"{BASE_URL}/api/v1/dataset/", json=payload, timeout=60)
         if response.status_code not in {200, 201, 422}:
             response.raise_for_status()
@@ -167,6 +222,18 @@ def _dataset_id(session: requests.Session, database_id: int) -> int:
     refresh = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}/refresh", timeout=60)
     refresh.raise_for_status()
     return dataset_id
+
+
+def _dataset_column_payload(column: dict) -> dict:
+    name = str(column.get("column_name") or "").strip()
+    if not name:
+        raise ValueError("Kolom Superset harus memiliki column_name.")
+    return {
+        "id": column.get("id"),
+        "column_name": name,
+        "verbose_name": COLUMN_LABELS.get(name, name.replace("_", " ").title()),
+        "is_active": name not in HIDDEN_COLUMNS,
+    }
 
 
 def _deactivate_hidden_columns(session: requests.Session, dataset_id: int) -> list[str]:
@@ -182,9 +249,13 @@ def _deactivate_hidden_columns(session: requests.Session, dataset_id: int) -> li
         is_active = name not in HIDDEN_COLUMNS
         if not is_active:
             deactivated.append(name)
-        payload_columns.append({"id": column.get("id"), "column_name": name, "is_active": is_active})
-    if deactivated:
-        update = session.put(f"{BASE_URL}/api/v1/dataset/{dataset_id}", json={"columns": payload_columns}, timeout=60)
+        payload_columns.append(_dataset_column_payload(column))
+    if payload_columns:
+        update = session.put(
+            f"{BASE_URL}/api/v1/dataset/{dataset_id}",
+            json={"columns": payload_columns},
+            timeout=60,
+        )
         if update.status_code not in {200, 201}:
             update.raise_for_status()
     return deactivated
@@ -574,6 +645,8 @@ def main() -> None:
             "database_id": database_id,
             "dataset_id": dataset_id,
             "table_name": TABLE_NAME,
+            "dataset_display_name": DATASET_DISPLAY_NAME,
+            "column_labels": COLUMN_LABELS,
             "dashboard_id": dashboard_id,
             "dashboard_target": "explicit_id" if TARGET_DASHBOARD_ID.isdigit() and str(dashboard_id) == TARGET_DASHBOARD_ID else "slug_or_create",
             "dashboard_title": _dashboard_title(),

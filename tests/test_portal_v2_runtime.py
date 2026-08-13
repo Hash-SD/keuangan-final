@@ -191,11 +191,21 @@ context.globalThis = context;
   }};
   await apiGet("/api/credential-get");
   await apiPost("/api/credential-post", {{ hello: "world" }});
+  await apiDelete("/api/delete-file", {{ filename: "RAB.xlsx" }});
+  await apiDelete("/api/delete-all");
   assert.strictEqual(apiCalls[0].options.credentials, "include");
   assert.strictEqual(apiCalls[1].options.credentials, "include");
   assert.strictEqual(apiCalls[1].options.method, "POST");
   assert.strictEqual(apiCalls[1].options.headers["Content-Type"], "application/json");
   assert.strictEqual(apiCalls[1].options.body, JSON.stringify({{ hello: "world" }}));
+  assert.strictEqual(apiCalls[2].options.credentials, "include");
+  assert.strictEqual(apiCalls[2].options.method, "DELETE");
+  assert.strictEqual(apiCalls[2].options.headers["Content-Type"], "application/json");
+  assert.strictEqual(apiCalls[2].options.body, JSON.stringify({{ filename: "RAB.xlsx" }}));
+  assert.strictEqual(apiCalls[3].options.credentials, "include");
+  assert.strictEqual(apiCalls[3].options.method, "DELETE");
+  assert.strictEqual(apiCalls[3].options.headers, undefined);
+  assert.strictEqual(apiCalls[3].options.body, undefined);
   fetch = async () => ({{
     ok: false,
     status: 400,

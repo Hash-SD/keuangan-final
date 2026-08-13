@@ -104,6 +104,7 @@ Entry point HTTP: `POST /api/upload/excel-dataset` (alias `POST /api/upload/exce
 4. Setiap file harus dapat dibuka oleh `openpyxl`, tidak kosong, tidak melebihi batas upload, memiliki nama aman, dan memiliki SHA-256.
 5. Setelah seluruh bundle lolos, staging dipindahkan ke `data/raw/excel_lakehouse/<target_year>/<dataset_id>`; registry dan pointer aktif ditulis setelah pemindahan.
 6. Pointer utama: `outputs/reports/active_excel_lakehouse_dataset.json`; registry: `outputs/reports/excel_dataset_registry.json`.
+7. File yang sudah committed dapat dihapus satu per satu melalui `DELETE /api/upload/session/file` atau seluruhnya melalui `DELETE /api/upload/session`; operasi ini menghapus file dari Raw dan mencatat status `DELETED` di registry, tetapi tidak menghapus Gold yang sudah terbit. Setelah semua file dihapus, pointer aktif berstatus `empty` dan pipeline menolak proses baru sampai ada upload valid.
 
 `src/validation/dataset_contract.py` adalah gerbang canonical production. Payload valid harus:
 
@@ -254,7 +255,7 @@ Backend Airflow adapter (`portal_backend/services/airflow.py`) mengelompokkan ta
 
 ### Superset
 
-`src/sql/setup_superset_excel_assets.py` login melalui REST API, mencari/membuat database Trino, memastikan dataset `gold.fact_anggaran`, menyegarkan metadata, menyembunyikan kolom teknis dari UI, membuat saved query, dan upsert dashboard/charts. Tabel faktual tetap memiliki kolom teknis untuk lineage/QA. Target database/dashboard dapat diarahkan dengan ID; ID database eksplisit yang tidak ada bersifat fail-fast, sedangkan target dashboard dapat fallback sesuai kode setup.
+`src/sql/setup_superset_excel_assets.py` login melalui REST API, mencari/membuat database Trino, memastikan dataset `gold.fact_anggaran`, menyegarkan metadata, menerapkan `verbose_name` bisnis pada label Superset, menyembunyikan kolom teknis dari UI, membuat saved query, dan upsert dashboard/charts. Tabel faktual tetap memiliki nama kolom fisik untuk query dan lineage/QA; label seperti `source_file` → `Sumber Data`, `uraian_detail` → `Detail`, dan `harga_satuan` → `Harga Satuan` hanya berlaku pada tampilan Superset. Target database/dashboard dapat diarahkan dengan ID; ID database eksplisit yang tidak ada bersifat fail-fast, sedangkan target dashboard dapat fallback sesuai kode setup.
 
 ## Backend portal
 
@@ -264,7 +265,7 @@ Backend Airflow adapter (`portal_backend/services/airflow.py`) mengelompokkan ta
 |---|---|---|
 | Health/readiness | `/api/health`, `/api/readiness`, `/api/production/readiness` | filesystem, system truth, release gate |
 | Runtime/status | `/api/runtime-config`, `/api/runtime-context`, `/api/status/services`, `/api/system-truth/status`, `/api/metrics`, `/api/activity` | config, report, network probe |
-| Upload/dataset | `/api/upload/excel-dataset`, `/api/upload/session/status`, `/api/datasets`, `/api/excel-lakehouse/status` | raw files + pointer + metadata |
+| Upload/dataset | `/api/upload/excel-dataset`, `/api/upload/session/status`, `DELETE /api/upload/session/file`, `DELETE /api/upload/session`, `/api/datasets`, `/api/excel-lakehouse/status` | raw files + pointer + metadata |
 | Airflow | `/api/airflow/trigger`, `/api/airflow/active`, `/api/airflow/latest`, `/api/airflow/runtime`, `/api/airflow/runs` | Airflow REST API |
 | Data preview | `/api/data/preview`, `/api/preview/<layer>`, `/api/data/rejected-rows`, `/api/data-quality/<run_id>` | CSV/artifact lokal |
 | Review | `/api/iku-review/queue`, `/api/mapping-review/queue`, `/api/iku-review/override` | Silver/Gold + override JSON |
@@ -368,4 +369,3 @@ Test workbook yang tidak tersedia dapat menyebabkan test parser tertentu di-skip
 - Beberapa command README memakai PowerShell, sedangkan `superset-dashboard/README.md` memakai Bash. Dokumentasikan shell yang dipakai saat menambah command baru.
 
 Ambiguitas di atas dicatat agar AI tidak “memperbaiki” perilaku legacy secara diam-diam. Jika ingin mengubahnya, perlakukan sebagai perubahan kontrak dan update test, README, dokumen ini, serta maintenance log.
-

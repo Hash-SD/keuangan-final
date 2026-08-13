@@ -3,6 +3,7 @@
   "sqlalchemy_uri": "trino://trino@trino:8080/iceberg/gold",
   "schema": "gold",
   "table_name": "fact_anggaran",
+  "display_name": "Data Anggaran RAB/IKU",
   "main_dttm_col": null,
   "columns": [
     "item_id",
@@ -46,5 +47,39 @@
     "data_quality_flag",
     "source_sheet",
     "source_row"
-  ]
+  ],
+  "column_labels": {
+    "item_id": "ID Item",
+    "dataset_session_id": "Sesi Dataset",
+    "run_id": "Run Pipeline",
+    "tahun": "Tahun",
+    "periode": "Periode",
+    "prodi": "Program Studi",
+    "fakultas": "Fakultas",
+    "kegiatan": "Kegiatan",
+    "cluster_kegiatan": "Klaster Kegiatan",
+    "akun": "Akun Belanja",
+    "kode_akun": "Kode Akun",
+    "nama_akun": "Nama Akun",
+    "iku": "IKU",
+    "kode_iku": "Kode IKU",
+    "nama_iku": "Nama IKU",
+    "nomenklatur_path": "Jalur Nomenklatur",
+    "uraian_detail": "Detail",
+    "qty": "Kuantitas",
+    "satuan": "Satuan",
+    "harga_satuan": "Harga Satuan",
+    "jumlah": "Jumlah Anggaran",
+    "allocation_weight": "Bobot Alokasi",
+    "jumlah_weighted_iku": "Alokasi Anggaran IKU",
+    "mapping_status": "Status Mapping",
+    "data_quality_flag": "Flag Kualitas Data",
+    "source_file": "Sumber Data",
+    "source_sheet": "Sheet Sumber",
+    "source_row": "Baris Sumber",
+    "source_role": "Peran Sumber",
+    "row_type": "Jenis Baris",
+    "quality_flags": "Catatan Kualitas",
+    "created_at": "Waktu Dibuat"
+  }
 }

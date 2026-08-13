@@ -394,3 +394,15 @@ def test_v2_task3_uat_official_matrix_and_local_submissions_are_separate() -> No
     assert "Matriks UAT Resmi" in html
     assert "renderUatOfficialSummary" in html
     assert "state.uatSummary" in html
+
+
+def test_v2_exposes_delete_controls_for_committed_uploads() -> None:
+    html = _html()
+
+    assert "async function deleteActiveUploadFile" in html
+    assert "async function deleteAllActiveUploads" in html
+    assert 'apiDelete("/api/upload/session/file"' in html
+    assert 'apiDelete("/api/upload/session"' in html
+    assert "Hapus file tersimpan" in html
+    assert "Hapus semua file tersimpan" in html
+    assert "confirm(" in html

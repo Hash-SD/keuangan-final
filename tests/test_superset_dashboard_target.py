@@ -68,6 +68,26 @@ def test_hidden_columns_excluded_from_table_charts():
     assert "source_file" in assets.DETAIL_TABLE_COLUMNS
 
 
+def test_superset_display_labels_use_business_friendly_names():
+    assert assets.COLUMN_LABELS["source_file"] == "Sumber Data"
+    assert assets.COLUMN_LABELS["uraian_detail"] == "Detail"
+    assert assets.COLUMN_LABELS["harga_satuan"] == "Harga Satuan"
+    assert assets.COLUMN_LABELS["jumlah_weighted_iku"] == "Alokasi Anggaran IKU"
+
+
+def test_dataset_column_payload_keeps_physical_name_and_adds_display_label():
+    payload = assets._dataset_column_payload(
+        {"id": 7, "column_name": "source_file", "is_active": True}
+    )
+
+    assert payload == {
+        "id": 7,
+        "column_name": "source_file",
+        "verbose_name": "Sumber Data",
+        "is_active": True,
+    }
+
+
 def test_deactivate_hidden_columns_marks_inactive():
     session = Mock()
     session.get.return_value = Mock(
