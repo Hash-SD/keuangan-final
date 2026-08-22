@@ -49,6 +49,8 @@ def _guess_format(metric: dict[str, Any] | None) -> str:
         return _INTEGER
     col = (metric.get("column") or {}).get("column_name", "")
     agg = str(metric.get("aggregate", "")).upper()
+    if any(token in col for token in ("jumlah_item", "jumlah_iku", "jumlah_kegiatan", "count", "status")):
+        return _INTEGER
     if "jumlah" in col or "weighted" in col or "harga" in col or "total" in col:
         return _CURRENCY
     if agg in ("SUM", "AVG") and col not in ("qty", "source_row"):

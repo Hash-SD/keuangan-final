@@ -103,6 +103,76 @@ function renderSource(payload) {
     <span>Sumber: <strong>${escapeHtml(payload.source || "-")}</strong></span>`;
 }
 
+function initCustomSelect(select) {
+  if (!select) return;
+  const parent = select.parentElement;
+  if (!parent) return;
+  let wrapper = parent.querySelector(`.custom-select[data-for="${select.id || select.getAttribute('data-filter') || ''}"]`);
+  if (wrapper) wrapper.remove();
+
+  select.style.position = "absolute";
+  select.style.left = "0";
+  select.style.top = "0";
+  select.style.width = "100%";
+  select.style.height = "100%";
+  select.style.opacity = "0.001";
+  select.style.zIndex = "-1";
+  select.style.pointerEvents = "none";
+
+  wrapper = document.createElement("div");
+  wrapper.className = "custom-select";
+  const key = select.id || select.getAttribute("data-filter") || "";
+  if (key) wrapper.dataset.for = key;
+
+  const trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.className = "custom-select-trigger";
+  const selectedOpt = select.options[select.selectedIndex] || select.options[0];
+  trigger.innerHTML = `<span class="custom-select-label">${escapeHtml(selectedOpt ? selectedOpt.textContent : "")}</span>
+    <span class="custom-select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>`;
+
+  const menu = document.createElement("div");
+  menu.className = "custom-select-menu";
+
+  Array.from(select.options).forEach((opt) => {
+    const item = document.createElement("div");
+    item.className = "custom-select-option" + (opt.selected ? " selected" : "");
+    item.dataset.value = opt.value;
+    item.textContent = opt.textContent;
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      select.value = opt.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      wrapper.classList.remove("open");
+    });
+    menu.appendChild(item);
+  });
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const wasOpen = wrapper.classList.contains("open");
+    document.querySelectorAll(".custom-select.open").forEach((el) => el.classList.remove("open"));
+    if (!wasOpen) wrapper.classList.add("open");
+  });
+
+  select.addEventListener("change", () => {
+    const cur = select.options[select.selectedIndex];
+    const label = trigger.querySelector(".custom-select-label");
+    if (label && cur) label.textContent = cur.textContent;
+    menu.querySelectorAll(".custom-select-option").forEach((el) => {
+      el.classList.toggle("selected", el.dataset.value === select.value);
+    });
+  });
+
+  wrapper.appendChild(trigger);
+  wrapper.appendChild(menu);
+  select.parentNode.insertBefore(wrapper, select.nextSibling);
+}
+
+window.addEventListener("click", () => {
+  document.querySelectorAll(".custom-select.open").forEach((el) => el.classList.remove("open"));
+});
+
 function renderFilters(filters) {
   const target = document.getElementById("filterGrid");
   target.innerHTML = FILTERS.map(([key, label, icon]) => {
@@ -116,14 +186,17 @@ function renderFilters(filters) {
       </select>
     </label>`;
   }).join("");
-  target.querySelectorAll("[data-filter]").forEach((select) => select.addEventListener("change", () => {
-    const key = select.getAttribute("data-filter");
-    if (select.value) state.filters[key] = select.value;
-    else delete state.filters[key];
-    state.tableOffset = 0;
-    state.showAllClusters = false;
-    loadDashboard();
-  }));
+  target.querySelectorAll("[data-filter]").forEach((select) => {
+    select.addEventListener("change", () => {
+      const key = select.getAttribute("data-filter");
+      if (select.value) state.filters[key] = select.value;
+      else delete state.filters[key];
+      state.tableOffset = 0;
+      state.showAllClusters = false;
+      loadDashboard();
+    });
+    initCustomSelect(select);
+  });
 }
 
 function renderActiveFilters() {
@@ -146,17 +219,21 @@ function renderStatusPanel(payload) {
 function renderKpis(summary) {
   const labels = state.payload?.data?.labels || {};
   const cards = [
-    { label: labels.value_label || "Total Anggaran", value: summary ? rupiah(summary.total_anggaran) : "-", note: "SUM(jumlah_weighted_iku)", icon: "payments", featured: true },
+    { label: labels.value_label || "Total Anggaran", value: summary ? rupiah(summary.total_anggaran) : "-", note: "SUM(jumlah_weighted_iku)", icon: "payments" },
     { label: labels.item_label || "Jumlah Item", value: summary ? `${number(summary.jumlah_item)} Item` : "-", note: "distinct item anggaran", icon: "description" },
     { label: labels.iku_label || "Jumlah IKU", value: summary ? `${number(summary.jumlah_iku)} IKU` : "-", note: "distinct kode IKU", icon: "ads_click" },
     { label: labels.activity_label || "Jumlah Kegiatan", value: summary ? `${number(summary.jumlah_kegiatan)} Kegiatan` : "-", note: "distinct kegiatan", icon: "event_available" },
     { label: labels.status_label || "Status Rekonsiliasi", value: summary?.status_rekonsiliasi || "-", note: "status validasi tahunan", icon: "fact_check" },
   ];
   document.getElementById("kpiGrid").innerHTML = cards.map((item) => `<article class="kpi-card${item.featured ? " featured" : ""}">
-    <span class="material-symbols-outlined kpi-icon" aria-hidden="true">${item.icon}</span>
-    <div class="kpi-label">${escapeHtml(item.label)}</div>
+    <div class="kpi-top">
+      <span class="material-symbols-outlined kpi-icon-box" aria-hidden="true">${item.icon}</span>
+      <div class="kpi-header-text">
+        <div class="kpi-label">${escapeHtml(item.label)}</div>
+        <div class="kpi-note">${escapeHtml(item.note)}</div>
+      </div>
+    </div>
     <div class="kpi-value">${escapeHtml(item.value)}</div>
-    <div class="kpi-note">${escapeHtml(item.note)}</div>
   </article>`).join("");
 }
 
@@ -322,6 +399,7 @@ document.getElementById("refreshDashboard").addEventListener("click", () => load
 document.getElementById("downloadCsv").addEventListener("click", downloadTableCsv);
 document.getElementById("tableSearch").addEventListener("input", (event) => { state.tableSearch = event.target.value; renderTable(state.payload?.data?.table); });
 document.getElementById("tablePageSize").addEventListener("change", (event) => { state.tableLimit = Number(event.target.value || 10); state.tableOffset = 0; loadDashboard(); });
+initCustomSelect(document.getElementById("tablePageSize"));
 document.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { state.activeTableTab = button.getAttribute("data-tab") || "detail"; updateTitles(state.payload?.data || {}); renderTable(state.payload?.data?.table); }));
 window.addEventListener("resize", () => Object.values(state.charts).forEach((chart) => chart.resize()));
 loadDashboard();

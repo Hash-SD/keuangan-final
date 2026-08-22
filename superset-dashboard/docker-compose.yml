@@ -26,6 +26,10 @@ services:
       SUPERSET_DASHBOARD_BIND_PORT: 8092
     ports:
       - "8092:8092"
+    volumes:
+      - ./public:/app/public:ro
+      - ./server.py:/app/server.py:ro
+      - ./lib:/app/lib:ro
     networks:
       - lakehouse_net
 

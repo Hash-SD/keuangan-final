@@ -8,7 +8,7 @@ Dokumen ini adalah peta hidup repository untuk AI dan maintainer. Tujuannya adal
 |---|---|
 | Sistem | SILARAS SD — Sistem Lakehouse Anggaran RAB dan IKU Sains Data |
 | Baseline yang dipelajari | commit `483a1f3` |
-| Tanggal snapshot | 2026-08-13 |
+| Tanggal snapshot | 2026-08-22 |
 | Cakupan | source, DAG, portal, dashboard mirror, konfigurasi, test, dan dokumentasi yang ada |
 | Tingkat keyakinan | Tinggi untuk kontrak yang ditegakkan test/kode; sedang untuk area legacy yang ditandai di bagian “Ambiguitas” |
 | Dokumen domain | [CONTEXT.md](../CONTEXT.md) |
@@ -329,6 +329,8 @@ payload ringkasan memuat lima KPI final.
 
 `superset-dashboard/` tidak membaca database secara langsung. Browser memanggil proxy Flask (`/api/dashboards`, `/api/dashboard/<id>/meta`, `/api/chart/<id>/data`), lalu server yang login ke Superset. `lib/_shared.py` memiliki cache meta dashboard dan cache chart sekitar 60 detik; credential hanya server-side.
 
+Kontrak presentasi mirror berada di `public/app.js` dan `public/styles.css`: KPI dirender lebih dulu, metrik anggaran menjadi kartu utama, chart analitik mengikuti urutan bisnis yang stabil, dan judul memakai sentence case tanpa prefiks `SILARAS |`. Label kolom teknis diterjemahkan ke bahasa UI tanpa underscore; metrik jumlah dan `Selisih` tidak memakai format Rupiah, sedangkan `source_file` tetap ditampilkan sebagai `Sumber data` untuk audit. Status rekonsiliasi dirender sebagai strip status ringkas dengan status terburuk dari seluruh baris, bukan tabel satu baris. Treemap mengurutkan grup berdasarkan nilai sebelum membentuk node sisa `Lainnya`, mengisi area canvas tanpa inset default, dan memakai feature card yang lebih rapat. Grid memakai kontainer terpusat dengan lebar maksimum 1.480 px dan turun menjadi satu kolom pada viewport kecil. `public/treemap-data.js` menyimpan agregasi treemap yang dapat diuji tanpa browser, sedangkan `public/dashboard-presentation.js` menyimpan aturan label/format; perubahan visual tidak mengubah endpoint atau lineage data.
+
 ## Artefak status dan source-of-truth
 
 | Artefak | Makna |
@@ -358,6 +360,7 @@ Artefak top-level `data/generated/*` adalah active snapshot; path session/run ad
 | Security | `test_portal_security.py`, `test_security_config.py`, `test_production_readiness.py` | auth fail-closed, credential checks, readiness gate |
 | Frontend contract | `test_portal_v2_contract.py`, `test_portal_v2_runtime.py` | authoritative endpoints, safe HTML, live stepper, loading/error, no stale numbers |
 | Dashboard bridge | `test_local_dashboard.py`, `test_superset_api_dashboard_bridge.py`, `test_superset_dashboard_target.py`, `test_gold_view_filter_columns.py` | Superset-first/fallback behavior, target selection, hidden technical columns |
+| Dashboard presentation | `tests/treemap-data.test.js`, `tests/dashboard-presentation.test.js`, `tests/test_superset_dashboard_format.py`, `tests/playwright/superset-dashboard.spec.ts` | overflow treemap tetap merangking grup bernilai terbesar, KPI/tabel jumlah tanpa Rupiah, judul dan label kolom bersih, layout terpusat, feature card treemap, dan responsivitas dasar |
 | E2E | `tests/playwright/*.spec.ts` | local dashboard, mirror Superset, Medallion runtime |
 
 Test workbook yang tidak tersedia dapat menyebabkan test parser tertentu di-skip; itu bukan bukti bahwa semua path input sudah teruji.

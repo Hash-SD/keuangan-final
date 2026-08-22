@@ -15,6 +15,7 @@
     charts: {},                 // chart_id -> { spec, payload }
     palette: ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)", "var(--chart-6)", "var(--chart-7)", "var(--chart-8)", "var(--chart-9)", "var(--chart-10)", "var(--chart-11)", "var(--chart-12)"],
     echarts: {},
+    resizeObservers: {},
     tables: {},                 // chart_id -> { page, size, search }
     sortOrder: {},              // chart_id -> "desc" | "asc" | null (default)
   };
@@ -24,14 +25,13 @@
   const HIDDEN_CHART_IDS = new Set([
     19, // "Total Weighted IKU" — disembunyikan sesuai arahan pengguna
     27, // "Mapping Quality" — distribusi mapping_status (mapped_from_nomenklatur, review_queue, dll)
-    29, // "Validasi Rekap" — rekap validasi file sumber & data_quality_flag
   ]);
   const isVisible = (spec) => !HIDDEN_CHART_IDS.has(spec.id) && !spec.title?.toLowerCase().includes("weighted iku");
 
-  // Kolom yang ditampilkan untuk tabel line-item — hanya atribut bisnis,
-  // urut disusun ulang (tanpa kolom teknis mapping_status/source_*).
+  // Kolom line-item tetap memuat source_file agar lineage audit terlihat,
+  // sementara kolom teknis mapping/quality lain tetap tidak dibocorkan.
   const TABLE_COLUMN_OVERRIDES = {
-    28: ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah"],
+    28: ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "source_file"],
   };
 
   // Label header yang lebih ramah untuk kolom snake_case.
@@ -47,6 +47,7 @@
       qty: "Qty",
       harga_satuan: "Harga Satuan",
       jumlah: "Jumlah",
+      source_file: "Sumber data",
     },
   };
 
@@ -65,6 +66,8 @@
     "calendar": '<rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>',
     "calendar-check": '<rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/>',
     "cloud-off": '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m2 2 20 20"/>',
+    "banknote": '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
     "flag": '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
     "grid": '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
     "graduation-cap": '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
@@ -116,10 +119,13 @@
 
   function formatValueForColumn(value, columnName) {
     const cn = columnName.toLowerCase();
+    const n = Number(value);
+    if (isCountColumn(columnName)) {
+      return Number.isFinite(n) ? fmtNumber(n) : String(value ?? "");
+    }
     if (cn.includes("jumlah") || cn.includes("harga") || cn.includes("total") || cn === "qty") {
-      const n = Number(value);
       if (!Number.isFinite(n)) return String(value ?? "");
-      return cn === "qty" ? fmtNumber(n) : fmtCurrency(n);
+      return fmtCurrency(n);
     }
     if (typeof value === "number" && Number.isFinite(value)) return fmtInt.format(value);
     return String(value ?? "");
@@ -190,7 +196,7 @@
           ? "Peringkat akun belanja dengan penyerapan dana terbesar"
           : "Rincian alokasi dana per kategori jenis belanja & kode akun";
       case "big_number_total": return "";
-      case "table": return spec.id === 28 ? "Daftar item biaya transaksional lengkap dengan filter & pencarian" : "Ringkasan agregat data keuangan prodi";
+      case "table": return spec.id === 28 ? "Daftar item biaya transaksional dengan filter dan pencarian" : "Ringkasan agregat data keuangan prodi";
       default: return "";
     }
   }
@@ -358,20 +364,18 @@
 
   function renderSourceInline() {
     const el = $("sourceInline");
-    if (!state.meta) return;
-    el.innerHTML = [
-      `<span class="pill">Program Studi Sains Data</span>`,
-      `<span class="pill">${state.meta.charts.filter(isVisible).length} visualisasi</span>`,
-    ].join("");
+    if (!el) return;
+    el.innerHTML = "";
   }
 
   // -------------------------------------------------------------------------
-  // Dashboard selector
+  // Dashboard selector & Custom Select
   // -------------------------------------------------------------------------
   async function loadDashboards() {
     const res = await fetchJson("/api/dashboards");
     state.dashboards = res.dashboards || [];
     const sel = $("dashboardSelect");
+    if (!sel) return;
     sel.innerHTML = "";
     state.dashboards.forEach((d) => {
       const opt = document.createElement("option");
@@ -382,14 +386,97 @@
     if (state.dashboards.length) {
       sel.value = String(state.activeDashboardId);
     }
+    initCustomSelect(sel);
   }
+
+  function initCustomSelect(select) {
+    if (!select) return;
+    const parent = select.parentElement;
+    if (!parent) return;
+    let wrapper = parent.querySelector(`.custom-select[data-for="${select.id || select.className}"]`);
+    if (wrapper) wrapper.remove();
+
+    select.style.position = "absolute";
+    select.style.left = "0";
+    select.style.top = "0";
+    select.style.width = "100%";
+    select.style.height = "100%";
+    select.style.opacity = "0.001";
+    select.style.zIndex = "-1";
+    select.style.pointerEvents = "none";
+
+    wrapper = document.createElement("div");
+    wrapper.className = "custom-select";
+    if (select.id) wrapper.dataset.for = select.id;
+    else if (select.className) wrapper.dataset.for = select.className;
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "custom-select-trigger";
+    const selectedOpt = select.options[select.selectedIndex] || select.options[0];
+    trigger.innerHTML = `<span class="custom-select-label">${escapeHtml(selectedOpt ? selectedOpt.textContent : "")}</span>
+      <span class="custom-select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>`;
+
+    const menu = document.createElement("div");
+    menu.className = "custom-select-menu";
+
+    Array.from(select.options).forEach((opt) => {
+      const item = document.createElement("div");
+      item.className = "custom-select-option" + (opt.selected ? " selected" : "");
+      item.dataset.value = opt.value;
+      item.textContent = opt.textContent;
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();
+        select.value = opt.value;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        wrapper.classList.remove("open");
+      });
+      menu.appendChild(item);
+    });
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wasOpen = wrapper.classList.contains("open");
+      document.querySelectorAll(".custom-select.open").forEach((el) => el.classList.remove("open"));
+      if (!wasOpen) wrapper.classList.add("open");
+    });
+
+    select.addEventListener("change", () => {
+      const cur = select.options[select.selectedIndex];
+      const label = trigger.querySelector(".custom-select-label");
+      if (label && cur) label.textContent = cur.textContent;
+      menu.querySelectorAll(".custom-select-option").forEach((el) => {
+        el.classList.toggle("selected", el.dataset.value === select.value);
+      });
+    });
+
+    wrapper.appendChild(trigger);
+    wrapper.appendChild(menu);
+    select.parentNode.insertBefore(wrapper, select.nextSibling);
+  }
+
+  window.addEventListener("click", () => {
+    document.querySelectorAll(".custom-select.open").forEach((el) => el.classList.remove("open"));
+  });
 
   let selectSeq = 0;
   async function selectDashboard(id) {
     const seq = ++selectSeq;
     state.activeDashboardId = Number(id);
     state.activeYear = null;
-    $("dashboardSelect").value = String(id);
+    const dashSel = $("dashboardSelect");
+    if (dashSel) {
+      dashSel.value = String(id);
+      const customParent = dashSel.parentElement;
+      if (customParent) {
+        const customLabel = customParent.querySelector(".custom-select-label");
+        const curOpt = dashSel.options[dashSel.selectedIndex];
+        if (customLabel && curOpt) customLabel.textContent = curOpt.textContent;
+        customParent.querySelectorAll(".custom-select-option").forEach((el) => {
+          el.classList.toggle("selected", el.dataset.value === String(id));
+        });
+      }
+    }
     state.meta = await fetchJson(`/api/dashboard/${id}/meta`);
     if (seq !== selectSeq) return;
     renderSourceInline();
@@ -440,13 +527,26 @@
   const METRIC_ICONS = {
     18: "wallet",         // Total Anggaran
     19: "target",         // Total Weighted IKU
-    20: "layers",         // Jumlah Item
-    21: "flag",           // Jumlah IKU
+    20: "file-text",      // Jumlah Item
+    21: "target",         // Jumlah IKU
     22: "calendar-check", // Jumlah Kegiatan
   };
 
   function metricIcon(spec) {
-    return METRIC_ICONS[spec.id] || "bar-chart";
+    const raw = String(spec?.title || spec?.label || spec?.metric?.label || spec?.metric_name || "").toLowerCase();
+    if (raw.includes("total_anggaran") || raw.includes("anggaran") || raw.includes("budget") || raw.includes("biaya") || spec?.id === 18) {
+      return "wallet";
+    }
+    if (raw.includes("item") || spec?.id === 20) {
+      return "file-text";
+    }
+    if (raw.includes("iku") || raw.includes("target") || spec?.id === 19 || spec?.id === 21) {
+      return "target";
+    }
+    if (raw.includes("kegiatan") || raw.includes("activity") || spec?.id === 22) {
+      return "calendar-check";
+    }
+    return METRIC_ICONS[spec?.id] || "layers";
   }
 
   function chartIcon(spec) {
@@ -460,75 +560,137 @@
     }
   }
 
+  function isKpiSpec(spec) {
+    return spec.section === "kpi" || spec.viz_type === "big_number_total";
+  }
+
+  function presentationRank(spec) {
+    const title = displayTitle(spec).toLowerCase();
+    if (title.includes("status rekonsiliasi")) return 5;
+    if (title.includes("ringkasan per tahun")) return 10;
+    if (title.includes("anggaran per tahun")) return 20;
+    if (title.includes("anggaran per iku")) return 30;
+    if (title.includes("cluster kegiatan") || title.includes("klaster kegiatan")) return 40;
+    if (title.includes("komposisi akun")) return 50;
+    if (title.includes("anggaran per akun")) return 60;
+    if (title.includes("detail item")) return 90;
+    if (title.includes("validasi")) return 100;
+    return 80;
+  }
+
+  function orderedVisibleCharts() {
+    const charts = state.meta.charts.filter(isVisible);
+    const kpis = charts.filter(isKpiSpec);
+    const analytics = charts
+      .filter((spec) => !isKpiSpec(spec))
+      .sort((left, right) => presentationRank(left) - presentationRank(right)
+        || String(left.title || "").localeCompare(String(right.title || ""), "id", { numeric: true }));
+    return [...kpis, ...analytics];
+  }
+
   function buildDashboardGrid() {
     const kpiGrid = $("kpiGrid");
     const dashGrid = $("dashboardGrid");
+    disposeCharts();
     kpiGrid.innerHTML = "";
     dashGrid.innerHTML = "";
     state.tables = {};
     state.echarts = {};
+    state.resizeObservers = {};
 
-    const charts = state.meta.charts.filter(isVisible);
+    const charts = orderedVisibleCharts();
+    kpiGrid.dataset.kpiCount = String(charts.filter(isKpiSpec).length);
     charts.forEach((spec, idx) => {
-      if (spec.section === "kpi" || spec.viz_type === "big_number_total") {
+      if (isKpiSpec(spec)) {
         const card = document.createElement("div");
-        card.className = "metric-card";
+        card.className = `metric-card${isPrimaryMetric(spec) ? " metric-card--primary" : ""}`;
         card.dataset.chartId = String(spec.id);
         card.innerHTML = `
           <div class="metric-top">
             <span class="metric-icon-box">${svgIcon(metricIcon(spec), 20)}</span>
-            <span class="metric-label">${escapeHtml(spec.title)}</span>
+            <div class="metric-text-box">
+              <div class="metric-label">${escapeHtml(displayMetricLabel(spec))}</div>
+              <div class="metric-footer" id="kpiFoot${spec.id}">Menunggu data…</div>
+            </div>
           </div>
-          <div class="metric-value" id="kpiValue${spec.id}"><span class="chart-empty" style="min-height:0;padding:0">Memuat…</span></div>
-          <div class="metric-footer" id="kpiFoot${spec.id}">Menunggu data…</div>`;
+          <div class="metric-value" id="kpiValue${spec.id}"><span class="chart-empty chart-empty--inline">Memuat…</span></div>`;
         kpiGrid.appendChild(card);
         return;
       }
 
       if (spec.viz_type === "table") {
+        if (isReconciliationSpec(spec)) {
+          const card = document.createElement("article");
+          card.className = "reconciliation-strip glass-card span-2";
+          card.dataset.chartId = String(spec.id);
+          card.innerHTML = `
+            <div class="reconciliation-heading">
+              <span class="reconciliation-icon">${svgIcon("calendar-check", 18)}</span>
+              <div>
+                <h2>Status rekonsiliasi</h2>
+                <p id="reconciliationSub${spec.id}">Menunggu pemeriksaan data.</p>
+              </div>
+              <span class="status-badge status-badge--neutral" id="reconciliationBadge${spec.id}">Memuat</span>
+            </div>
+            <div class="reconciliation-detail" id="reconciliationDetail${spec.id}"></div>`;
+          dashGrid.appendChild(card);
+          state.tables[spec.id] = { page: 0, size: 10, search: "" };
+          return;
+        }
         const card = document.createElement("article");
         card.className = "glass-card table-card span-2";
         card.dataset.chartId = String(spec.id);
         const cols = tableColumns(spec);
-        card.innerHTML = `
-          <div class="table-header">
-            <div class="table-title-row">
-              <span class="table-title-icon">${svgIcon("table", 18)}</span>
-              <div>
-                <h2>${escapeHtml(spec.title)}</h2>
-                <p id="tblSub${spec.id}">${escapeHtml(chartSubtitle(spec))} · ${cols.length} kolom.</p>
-              </div>
-            </div>
-            <div class="table-actions">
-              ${sortButtonHTML(spec.id)}
+        const isSummary = String(spec.title || spec.slice_name || "").toLowerCase().includes("ringkasan");
+        const actionsHTML = isSummary
+          ? sortButtonHTML(spec.id)
+          : `${sortButtonHTML(spec.id)}
               <label class="search-box">
                 ${svgIcon("search", 16)}
                 <input id="tblSearch${spec.id}" type="search" placeholder="Cari data..." autocomplete="off">
               </label>
               <label class="page-size">
-                <span>Rows</span>
+                <span>Baris</span>
                 <select id="tblSize${spec.id}" aria-label="Jumlah baris tabel">
                   <option value="10" selected>10 data</option>
                   <option value="20">20 data</option>
                   <option value="50">50 data</option>
                 </select>
-              </label>
+              </label>`;
+        card.innerHTML = `
+          <div class="table-header">
+            <div class="table-title-row">
+              <span class="table-title-icon">${svgIcon("table", 18)}</span>
+              <div>
+                <h2>${escapeHtml(displayTitle(spec))}</h2>
+                <p id="tblSub${spec.id}">${escapeHtml(chartSubtitle(spec))} · ${cols.length} kolom.</p>
+              </div>
+            </div>
+            <div class="table-actions">
+              ${actionsHTML}
             </div>
           </div>
           <div class="table-wrapper" id="tblWrap${spec.id}"></div>
           <div class="pagination-row" id="tblPag${spec.id}"></div>`;
         dashGrid.appendChild(card);
-        state.tables[spec.id] = { page: 0, size: 10, search: "" };
-        $(`tblSearch${spec.id}`).addEventListener("input", (e) => {
-          state.tables[spec.id].page = 0;
-          state.tables[spec.id].search = e.target.value.trim().toLowerCase();
-          renderTable(spec.id);
-        });
-        $(`tblSize${spec.id}`).addEventListener("change", (e) => {
-          state.tables[spec.id].size = Number(e.target.value);
-          state.tables[spec.id].page = 0;
-          renderTable(spec.id);
-        });
+        state.tables[spec.id] = { page: 0, size: isSummary ? 100 : 10, search: "" };
+        const searchInput = $(`tblSearch${spec.id}`);
+        if (searchInput) {
+          searchInput.addEventListener("input", (e) => {
+            state.tables[spec.id].page = 0;
+            state.tables[spec.id].search = e.target.value.trim().toLowerCase();
+            renderTable(spec.id);
+          });
+        }
+        const sizeSelect = $(`tblSize${spec.id}`);
+        if (sizeSelect) {
+          sizeSelect.addEventListener("change", (e) => {
+            state.tables[spec.id].size = Number(e.target.value);
+            state.tables[spec.id].page = 0;
+            renderTable(spec.id);
+          });
+          initCustomSelect(sizeSelect);
+        }
         bindSortButton(card, spec.id, () => renderTable(spec.id));
         return;
       }
@@ -537,14 +699,17 @@
       const card = document.createElement("article");
       const isTreemap = spec.viz_type === "treemap_v2";
       const isPie = spec.viz_type === "pie";
-      card.className = "glass-card chart-card" + (isTreemap || isPie ? " span-2" : "");
+      const chartClasses = ["glass-card", "chart-card"];
+      if (isTreemap) chartClasses.push("span-2", "chart-card--feature");
+      if (isPie) chartClasses.push("span-2", "chart-card--support");
+      card.className = chartClasses.join(" ");
       card.dataset.chartId = String(spec.id);
       const subtitle = chartSubtitle(spec);
       const heading = `
         <div class="card-heading">
           <div class="card-heading-icon">${svgIcon(chartIcon(spec), 18)}</div>
           <div class="card-heading-text">
-            <h2>${escapeHtml(spec.title)}</h2>
+            <h2>${escapeHtml(displayTitle(spec))}</h2>
             ${subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ""}
           </div>
           ${sortButtonHTML(spec.id)}
@@ -560,7 +725,7 @@
         const heightClass = isTreemap ? "chart-treemap" : (spec.dimension === "tahun" ? "chart-large" : "chart-medium chart-scroll");
         card.innerHTML = `
           ${heading}
-          <div class="chart ${heightClass}" id="chart${spec.id}" data-chart-id="${spec.id}"></div>`;
+            <div class="chart ${heightClass}" id="chart${spec.id}" data-chart-id="${spec.id}" role="img" aria-label="${escapeHtml(displayTitle(spec))}"></div>`;
       }
       dashGrid.appendChild(card);
       bindSortButton(card, spec.id, () => renderChart(spec));
@@ -569,6 +734,65 @@
 
   function escapeHtml(s) {
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function displayTitle(spec) {
+    const formatter = window.SILARASPresentation?.displayTitle;
+    return formatter ? formatter(spec.title) : String(spec.title || "");
+  }
+
+  function displayColumnLabel(value) {
+    const formatter = window.SILARASPresentation?.displayColumnLabel;
+    if (formatter) return formatter(value);
+    return String(value ?? "").replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  function displayMetricLabel(spec) {
+    return displayColumnLabel(displayTitle(spec));
+  }
+
+  function isCountColumn(value) {
+    const formatter = window.SILARASPresentation?.isCountColumn;
+    if (formatter) return formatter(value);
+    const key = String(value ?? "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+    return key === "qty" || /^jumlah_(item|iku|kegiatan|baris|data)$/.test(key) || /(^|_)count($|_)/.test(key);
+  }
+
+  function isPrimaryMetric(spec) {
+    const formatter = window.SILARASPresentation?.isPrimaryMetric;
+    if (formatter) return formatter(spec);
+    const descriptor = [spec?.title, spec?.metric?.label, spec?.metric?.column?.column_name]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return /total\s+anggaran|anggaran\s+total/.test(descriptor);
+  }
+
+  function isReconciliationSpec(spec) {
+    return /status\s+rekonsiliasi/.test(displayTitle(spec).toLowerCase());
+  }
+
+  function formatReconciliationStatus(value) {
+    const formatter = window.SILARASPresentation?.formatReconciliationStatus;
+    return formatter ? formatter(value) : { label: displayColumnLabel(value) || "Belum ada status", tone: "neutral" };
+  }
+
+  function summarizeReconciliationStatus(values) {
+    const formatter = window.SILARASPresentation?.summarizeReconciliationStatus;
+    if (formatter) return formatter(values);
+    const severity = { neutral: 0, ok: 1, warn: 2, err: 3 };
+    return (Array.isArray(values) ? values : [values])
+      .map(formatReconciliationStatus)
+      .reduce((worst, current) => severity[current.tone] > severity[worst.tone] ? current : worst, {
+        label: "Belum ada status",
+        tone: "neutral",
+      });
+  }
+
+  function formatKpiValue(spec, value) {
+    const formatters = { currency: fmtCurrency, number: fmtNumber };
+    return window.SILARASPresentation?.formatKpiValue?.(spec, value, formatters)
+      || (spec.value_format === "currency" ? fmtCurrency(value) : fmtNumber(value));
   }
 
   // -------------------------------------------------------------------------
@@ -597,10 +821,10 @@
       const footEl = $(`kpiFoot${spec.id}`);
       if (!valEl || !footEl) return;
       if (ok && value !== null && value !== undefined) {
-        valEl.textContent = spec.value_format === "currency" ? fmtCurrency(value) : fmtNumber(value);
+        valEl.textContent = formatKpiValue(spec, value);
         footEl.textContent = state.activeYear ? `Anggaran tahun ${state.activeYear}` : "Akumulasi semua tahun";
       } else if (!ok) {
-        valEl.innerHTML = "<span style='color:var(--state-error)'>Gagal</span>";
+        valEl.innerHTML = '<span class="metric-error">Gagal</span>';
         footEl.textContent = payload?.error ? `Error: ${payload.error}` : "Menunggu data…";
       }
     });
@@ -631,6 +855,7 @@
           if (c) c.resize();
         });
         ro.observe(el);
+        state.resizeObservers[elId] = ro;
       }
     }
     return chart;
@@ -641,6 +866,21 @@
     if (!chart) return;
     chart.setOption(resolveTokens(option), true);
     return chart;
+  }
+
+  function disposeChart(elId) {
+    const observer = state.resizeObservers[elId];
+    if (observer) observer.disconnect();
+    delete state.resizeObservers[elId];
+
+    const chart = state.echarts[elId];
+    if (chart && !chart.isDisposed?.()) chart.dispose();
+    delete state.echarts[elId];
+  }
+
+  function disposeCharts() {
+    const ids = new Set([...Object.keys(state.echarts), ...Object.keys(state.resizeObservers)]);
+    ids.forEach(disposeChart);
   }
 
   // ECharts canvas tidak mendukung CSS custom properties — resolve "var(--x)"
@@ -683,7 +923,9 @@
 
   function emptyChart(elId) {
     const el = $(elId);
-    if (el) el.innerHTML = '<div class="chart-empty">Tidak ada data untuk filter ini.</div>';
+    if (!el) return;
+    disposeChart(elId);
+    el.innerHTML = '<div class="chart-empty">Tidak ada data untuk filter ini.</div>';
   }
 
   function renderBar(spec, horizontal) {
@@ -735,7 +977,20 @@
         type: "bar",
         data: rows,
         barMaxWidth: isH ? 20 : 42,
-        itemStyle: { borderRadius: isH ? [0, 8, 8, 0] : [8, 8, 0, 0], color: { type: "linear", x: 0, y: 0, x2: isH ? 1 : 0, y2: isH ? 0 : 1, colorStops: [{ offset: 0, color: "#0a84ff" }, { offset: 1, color: "#0071e3" }] } },
+        itemStyle: {
+          borderRadius: isH ? [0, 8, 8, 0] : [8, 8, 0, 0],
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: isH ? 1 : 0,
+            y2: isH ? 0 : 1,
+            colorStops: [
+              { offset: 0, color: "var(--chart-2)" },
+              { offset: 1, color: "var(--chart-1)" },
+            ],
+          },
+        },
         label: {
           show: true,
           position: isH ? "right" : "top",
@@ -762,49 +1017,28 @@
       return;
     }
 
-    // Batasi jumlah node agar treemap tetap bersih: maksimal 10 grup IKU
-    // dan 8 kegiatan per IKU; sisanya digabung ke "… lainnya".
-    const MAX_GROUPS = 10;
-    const MAX_CHILDREN = 8;
-
-    const groupMap = new Map();
-    records.forEach((r) => {
-      const top = String(r[topKey] ?? "—");
-      const child = String(r[childKey] ?? "—");
-      const val = cleanNumber(r[metKey]);
-      if (!groupMap.has(top)) groupMap.set(top, new Map());
-      const childMap = groupMap.get(top);
-      childMap.set(child, (childMap.get(child) || 0) + val);
-    });
-
-    let groups = Array.from(groupMap.entries()).map(([name, childMap]) => {
-      const children = Array.from(childMap.entries())
-        .map(([n, value]) => ({ name: n, value }))
-        .sort((a, b) => b.value - a.value);
-      const value = children.reduce((s, c) => s + c.value, 0);
-      if (children.length > MAX_CHILDREN) {
-        const keep = children.slice(0, MAX_CHILDREN);
-        const rest = children.slice(MAX_CHILDREN).reduce((s, c) => s + c.value, 0);
-        keep.push({ name: "Kegiatan lainnya", value: rest });
-        children.splice(0, children.length, ...keep);
-      }
-      return { name, value, children };
-    });
-
-    const order = state.sortOrder[spec.id];
-    if (order) {
-      groups.sort((a, b) => order === "desc" ? b.value - a.value : a.value - b.value);
+    const buildTreemapData = window.SILARASTreemap?.buildTreemapData;
+    if (!buildTreemapData) {
+      emptyChart(elId);
+      return;
     }
-    let data;
-    if (groups.length > MAX_GROUPS) {
-      const keep = groups.slice(0, MAX_GROUPS);
-      const rest = groups.slice(MAX_GROUPS).reduce((s, g) => s + g.value, 0);
-      keep.push({ name: "IKU lainnya", value: rest, children: [] });
-      data = keep;
-    } else {
-      data = groups;
-    }
-    data = data.map((t, i) => ({ ...t, itemStyle: { color: state.palette[i % state.palette.length] } }));
+
+    // Rank before truncating so the residual node cannot swallow the largest
+    // groups just because Superset returned them late in the response.
+    const data = buildTreemapData(records, {
+      topKey,
+      childKey,
+      metricKey: metKey,
+      maxGroups: 10,
+      maxChildren: 8,
+      sortOrder: state.sortOrder[spec.id] || "desc",
+    }).map((group, index) => ({
+      ...group,
+      itemStyle: {
+        color: group.isRemainder ? "var(--chart-6)" : state.palette[index % state.palette.length],
+        opacity: group.isRemainder ? 0.62 : 1,
+      },
+    }));
 
     makeChart(elId, {
       animationDuration: 400,
@@ -823,6 +1057,10 @@
       },
       series: [{
         type: "treemap",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
         roam: false,
         nodeClick: false,
         breadcrumb: { show: false },
@@ -914,12 +1152,49 @@
     return [];
   }
 
+  function renderReconciliationStatus(spec, records) {
+    const badge = $("reconciliationBadge" + spec.id);
+    const sub = $("reconciliationSub" + spec.id);
+    const detail = $("reconciliationDetail" + spec.id);
+    if (!badge || !sub || !detail) return;
+
+    const rows = Array.isArray(records) ? records : [];
+    const statusValues = rows.flatMap((row) => {
+      const statusKey = ["status_rekonsiliasi", "status", "data_quality_flag", "mapping_status"]
+        .find((key) => row[key] !== undefined && row[key] !== null && row[key] !== "");
+      return statusKey ? [row[statusKey]] : [];
+    });
+    const status = summarizeReconciliationStatus(statusValues);
+    badge.className = `status-badge status-badge--${status.tone}`;
+    badge.textContent = status.label;
+
+    if (rows.length === 0) {
+      sub.textContent = "Belum ada pemeriksaan untuk filter aktif.";
+      detail.textContent = "Pilih tahun lain atau muat ulang data.";
+      return;
+    }
+
+    sub.textContent = `${fmtInt.format(rows.length)} pemeriksaan rekonsiliasi`;
+    detail.textContent = status.tone === "ok"
+      ? "Total detail dan rekap anggaran sesuai."
+      : status.tone === "warn"
+        ? "Ada data yang perlu ditinjau sebelum digunakan."
+        : status.tone === "err"
+          ? "Rekonsiliasi gagal. Periksa kembali sumber data."
+          : "Status rekonsiliasi tersedia pada data sumber.";
+  }
+
   function renderTable(id) {
+    const spec = state.meta.charts.find((c) => c.id === id);
     const wrap = $(`tblWrap${id}`);
     const pag = $(`tblPag${id}`);
     const records = chartRecords(id);
     const st = state.tables[id];
     if (!st) return;
+    if (isReconciliationSpec(spec)) {
+      renderReconciliationStatus(spec, records);
+      return;
+    }
     if (!records || records.length === 0) {
       if (wrap) wrap.innerHTML = '<table class="apple-table"><tbody><tr class="tbl-empty"><td>Tidak ada data untuk filter ini.</td></tr></tbody></table>';
       if (pag) pag.innerHTML = "";
@@ -928,7 +1203,6 @@
       return;
     }
 
-    const spec = state.meta.charts.find((c) => c.id === id);
     const cols = tableColumns(spec);
     let rows = records;
     if (st.search) {
@@ -950,9 +1224,11 @@
 
     const header = cols.map((c) => {
       const lower = c.toLowerCase();
-      const numeric = lower.includes("jumlah") || lower.includes("harga") || lower.includes("total") || c === "qty";
-      const label = (TABLE_COLUMN_LABELS[spec.id] && TABLE_COLUMN_LABELS[spec.id][c]) || c;
-      return `<th class="${numeric ? "num" : ""}">${escapeHtml(String(label))}</th>`;
+      const numeric = isCountColumn(c) || lower.includes("harga") || lower.includes("total") || lower.includes("selisih");
+      const sourceClass = lower.includes("source_file") || lower.includes("source_system") ? " source-column" : "";
+      const configuredLabel = TABLE_COLUMN_LABELS[spec.id] && TABLE_COLUMN_LABELS[spec.id][c];
+      const label = displayColumnLabel(configuredLabel || c);
+      return `<th class="${numeric ? "num" : ""}${sourceClass}">${escapeHtml(label)}</th>`;
     }).join("");
 
     const body = pageRows.map((r) => {
@@ -975,8 +1251,9 @@
         if (c === "mapping_status") return `<td>${mapCell}</td>`;
         const v = r[c];
         const lower = c.toLowerCase();
-        const numeric = lower.includes("jumlah") || lower.includes("harga") || lower.includes("total") || c === "qty";
-        return `<td class="${numeric ? "num" : ""}">${escapeHtml(formatValueForColumn(v, c))}</td>`;
+        const numeric = isCountColumn(c) || lower.includes("harga") || lower.includes("total") || lower.includes("selisih");
+        const sourceClass = lower.includes("source_file") || lower.includes("source_system") ? " source-column" : "";
+        return `<td class="${numeric ? "num" : ""}${sourceClass}">${escapeHtml(formatValueForColumn(v, c))}</td>`;
       }).join("") + "</tr>";
     }).join("");
 
@@ -1022,7 +1299,7 @@
 
   function renderDashboard(errors) {
     renderKpis();
-    state.meta.charts.filter(isVisible).forEach(renderChart);
+    orderedVisibleCharts().forEach(renderChart);
     renderStatusPanel(errors);
     const anyFail = errors.length > 0;
     setSourceStatus(anyFail ? "warn" : "ok", anyFail ? `${errors.length} visualisasi gagal dimuat` : "Data terhubung");

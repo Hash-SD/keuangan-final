@@ -1,15 +1,16 @@
 <!doctype html>
-<html lang="id" data-theme="auto">
+<html lang="id" data-theme="auto" data-ui-version="2026-08-22-redesign">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0071e3">
+  <meta name="theme-color" content="#1f6f73">
+  <meta name="description" content="Dashboard anggaran dan indikator kinerja utama Program Studi Sains Data.">
   <title>SILARAS SD - Dashboard Anggaran IKU</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230071e3' /%3E%3Cpath fill='%23ffffff' d='M16 72h68v8H16v-8Zm8-10V34h10v28H24Zm21 0V22h10v40H45Zm21 0V42h10v20H66ZM16 24 50 8l34 16v8H16v-8Z'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231f6f73' /%3E%3Cpath fill='%23ffffff' d='M16 72h68v8H16v-8Zm8-10V34h10v28H24Zm21 0V22h10v40H45Zm21 0V42h10v20H66ZM16 24 50 8l34 16v8H16v-8Z'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=20260822_05">
 </head>
 <body>
   <header class="topbar">
@@ -50,11 +51,6 @@
         <p id="dashboardSubtitle">
           Pantau realisasi anggaran dan capaian indikator kinerja utama Program Studi Sains Data.
         </p>
-        <div class="source-inline" id="sourceInline"></div>
-      </div>
-      <div class="prodi-pill">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-        <span>Prodi: Sains Data</span>
       </div>
     </section>
 
@@ -94,6 +90,8 @@
   </div>
 
   <script src="./vendor/echarts.min.js"></script>
-  <script src="./app.js"></script>
+  <script src="./treemap-data.js?v=20260822_05"></script>
+  <script src="./dashboard-presentation.js?v=20260822_05"></script>
+  <script src="./app.js?v=20260822_05"></script>
 </body>
 </html>

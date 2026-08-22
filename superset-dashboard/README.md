@@ -10,6 +10,8 @@ database secara langsung.
 ```
 superset-dashboard/
 ├── public/            # Frontend (HTML/CSS/JS/ECharts) — disajikan juga oleh Vercel
+│   ├── treemap-data.js # Agregasi treemap deterministik, dapat diuji tanpa browser
+│   └── dashboard-presentation.js # Normalisasi judul, label kolom, dan format KPI
 ├── lib/_shared.py     # Logika Superset API: login, dashboard meta, chart data, cache
 ├── api/index.py       # Entrypoint WSGI/Flask (dipakai Vercel)
 ├── server.py          # Server lokal Flask (dev / Docker)
@@ -34,6 +36,14 @@ server, tidak pernah diekspos ke browser.
   (melewati cache 60 detik; `force: true` di sisi Superset).
 - **5 KPI** (Total Anggaran, Total Weighted IKU, Jumlah Item, IKU, Kegiatan),
   bar chart, treemap, donut, dan tabel (paginasi + pencarian).
+- **Layout responsif** — konten analitik terpusat dalam kontainer maksimum 1.480 px,
+  urutan chart mengikuti hierarki bisnis, judul memakai sentence case, dan treemap
+  merangking grup sebelum menggabungkan overflow ke node `Lainnya`.
+- **Presentasi ringkas** — kartu Total anggaran menjadi metrik utama, metrik jumlah
+  tidak diberi prefix Rupiah, label kolom teknis diterjemahkan tanpa underscore, dan
+  status rekonsiliasi tampil sebagai strip status yang mudah dipindai.
+- **Treemap rapat** — feature card dan canvas treemap menggunakan jarak internal
+  yang lebih pendek agar visual mengisi area kartu tanpa ruang kosong berlebihan.
 - Dark mode mengikuti preferensi sistem (tema portal v2).
 
 ## Menjalankan lokal (dev)
