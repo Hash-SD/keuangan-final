@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.common.detail_amounts import normalize_detail_amount_frame
+
 
 VALID_ACCOUNT_PREFIXES = ("51", "52", "53", "57")
 REVIEW_IKU_LABEL = "Perlu review IKU"
@@ -482,7 +484,7 @@ def _load_review_overrides() -> dict[str, dict[str, object]]:
 def clean_and_enrich_budget_items(items: pd.DataFrame, nomenklatur: pd.DataFrame, bridge: pd.DataFrame) -> pd.DataFrame:
     if items.empty:
         return items.copy()
-    result = items.copy()
+    result = normalize_detail_amount_frame(items)
     candidates = _build_nomen_candidates(nomenklatur, bridge)
     overrides = _load_review_overrides()
     enriched_rows: list[dict[str, object]] = []

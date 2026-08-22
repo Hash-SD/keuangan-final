@@ -88,6 +88,93 @@
       || /(^|_)count($|_)/.test(key);
   }
 
+  function numericOrNull(value) {
+    if (value === null || value === undefined || (typeof value === "string" && !value.trim())) return null;
+    if (typeof value === "number") return Number.isFinite(value) ? value : null;
+
+    let text = String(value).trim().replace(/[^0-9,.\-]/g, "");
+    if (!text || ["-", ".", ","].includes(text)) return null;
+
+    if (text.includes(",") && text.includes(".")) {
+      const separatorPositions = [...text].reduce((positions, character, index) => {
+        if (character === "," || character === ".") positions.push(index);
+        return positions;
+      }, []);
+      const lastPosition = separatorPositions[separatorPositions.length - 1];
+      const decimalSeparator = text.length - lastPosition - 1 !== 3 ? text[lastPosition] : null;
+      if (decimalSeparator) {
+        const thousandsSeparator = decimalSeparator === "," ? "." : ",";
+        text = text.split(thousandsSeparator).join("").replace(decimalSeparator, ".");
+      } else {
+        text = text.replace(/[,.]/g, "");
+      }
+    } else if (text.includes(",")) {
+      const parts = text.split(",");
+      text = parts.length > 1 && parts.slice(1).every((part) => part.length === 3)
+        ? parts.join("")
+        : text.replace(",", ".");
+    } else if (text.includes(".")) {
+      const parts = text.split(".");
+      if (parts.length > 1 && parts.slice(1).every((part) => part.length === 3)) text = parts.join("");
+    }
+
+    const number = Number(text);
+    return Number.isFinite(number) ? number : null;
+  }
+
+  function normalizeDetailRecord(record) {
+    const normalized = { ...(record || {}) };
+    let amount = numericOrNull(normalized.jumlah);
+    let quantity = numericOrNull(normalized.qty);
+    let unitPrice = numericOrNull(normalized.harga_satuan);
+    const quantityMissing = quantity === null || quantity === 0;
+    const unitPriceMissing = unitPrice === null || unitPrice === 0;
+
+    if (amount === null && !quantityMissing && !unitPriceMissing) {
+      amount = quantity * unitPrice;
+    }
+    if (amount !== null && (quantityMissing || unitPriceMissing)) {
+      quantity = 1;
+      unitPrice = amount;
+    } else {
+      if (quantityMissing) quantity = 1;
+      if (unitPriceMissing && amount !== null) unitPrice = amount / quantity;
+    }
+
+    normalized.qty = quantity;
+    normalized.harga_satuan = unitPrice;
+    if (amount !== null) normalized.jumlah = amount;
+    return normalized;
+  }
+
+  function filterValue(value) {
+    const normalized = String(value ?? "").trim();
+    return normalized || null;
+  }
+
+  function toggleCrossFilter(filters, column, value, multi = false) {
+    const col = String(column ?? "").trim();
+    const val = filterValue(value);
+    if (!col || val === null) return (filters || []).map((filter) => ({ ...filter, val: [...filter.val] }));
+
+    const current = Array.isArray(filters) ? filters : [];
+    const existing = current.find((filter) => filter.col === col);
+    if (!multi) {
+      if (existing && existing.val.length === 1 && existing.val[0] === val) {
+        return current.filter((filter) => filter.col !== col).map((filter) => ({ ...filter, val: [...filter.val] }));
+      }
+      return [{ col, op: "IN", val: [val] }];
+    }
+
+    if (!existing) return [...current.map((filter) => ({ ...filter, val: [...filter.val] })), { col, op: "IN", val: [val] }];
+    const values = existing.val.includes(val)
+      ? existing.val.filter((item) => item !== val)
+      : [...existing.val, val];
+    return current
+      .filter((filter) => filter.col !== col || values.length > 0)
+      .map((filter) => filter.col === col ? { ...filter, val: [...values] } : { ...filter, val: [...filter.val] });
+  }
+
   function isPrimaryMetric(spec) {
     const metric = spec?.metric || {};
     const descriptor = [spec?.title, metric.label, metric.column?.column_name]
@@ -146,6 +233,8 @@
     formatReconciliationStatus,
     isCountColumn,
     isPrimaryMetric,
+    normalizeDetailRecord,
     summarizeReconciliationStatus,
+    toggleCrossFilter,
   });
 });

@@ -9,7 +9,7 @@ from .activity import append_activity
 from .files import read_json
 from .metrics import metrics_payload
 from .excel_upload import ACTIVE_EXCEL_DATASET_PATH
-from .paths import ROOT_DIR
+from .paths import OUTPUTS_DIR, ROOT_DIR
 from src.common.runtime_paths import active_dataset_pointer
 
 
@@ -73,6 +73,14 @@ def run_command_group(name: str, timeout: int = 600, env_overrides: dict[str, st
     env = {**os.environ, "DATASET_MODE": "uploaded_excel", **(env_overrides or {})}
     if name == "superset-excel":
         active = read_json(ACTIVE_EXCEL_DATASET_PATH) or {}
+        active_gold = read_json(OUTPUTS_DIR / "reports" / "active_gold_run.json") or {}
+        if (
+            str(active_gold.get("status") or "").upper() == "PUBLISHED"
+            and active_gold.get("dataset_session_id")
+            and active_gold.get("pipeline_run_id")
+        ):
+            env.setdefault("DATASET_SESSION_ID", str(active_gold["dataset_session_id"]))
+            env.setdefault("PIPELINE_RUN_ID", str(active_gold["pipeline_run_id"]))
         if not env.get("SUPERSET_DASHBOARD_MODE"):
             env["SUPERSET_DASHBOARD_MODE"] = str(
                 active.get("dashboard_mode") or "update"

@@ -32,8 +32,14 @@ server, tidak pernah diekspos ke browser.
   `position_json` + params tiap chart.
 - **Filter tahun** — Semua / 2023 / 2024 / 2025, memakai filter `tahun IN (...)`
   pada query Superset.
+- **Filter lintas-visual** — klik bar, donut, treemap, atau baris tabel untuk
+  memfilter seluruh dashboard; Ctrl/Cmd-click dapat menambah beberapa nilai
+  pada kolom yang sama dan pilihan aktif dapat dihapus dari chip filter.
 - **Refresh paksa** — tombol Refresh mengambil data terbaru dari Superset
   (melewati cache 60 detik; `force: true` di sisi Superset).
+- **Penanda data aktif** — mirror membaca system truth portal. Jika dataset aktif
+  kosong atau identitasnya berbeda dari Gold yang terbit, dashboard lama tetap
+  dapat dibaca sebagai arsip tetapi diberi penanda sebagai dashboard historis.
 - **5 KPI** (Total Anggaran, Total Weighted IKU, Jumlah Item, IKU, Kegiatan),
   bar chart, treemap, donut, dan tabel (paginasi + pencarian).
 - **Layout responsif** — konten analitik terpusat dalam kontainer maksimum 1.480 px,
@@ -42,6 +48,11 @@ server, tidak pernah diekspos ke browser.
 - **Presentasi ringkas** — kartu Total anggaran menjadi metrik utama, metrik jumlah
   tidak diberi prefix Rupiah, label kolom teknis diterjemahkan tanpa underscore, dan
   status rekonsiliasi tampil sebagai strip status yang mudah dipindai.
+- **Kontrak nominal terpusat** — bila `qty` atau `harga_satuan` kosong/nol,
+  item diperlakukan sebagai satu item (`qty = 1`) dan `harga_satuan` mengikuti
+  `jumlah`; tabel detail memakai pemisah ribuan tanpa mengubah nilai numerik
+  sumber. Jika `jumlah` kosong tetapi kedua atribut detail tersedia, pipeline
+  menghitungnya sebagai `qty × harga_satuan`.
 - **Treemap rapat** — feature card dan canvas treemap menggunakan jarak internal
   yang lebih pendek agar visual mengisi area kartu tanpa ruang kosong berlebihan.
 - Dark mode mengikuti preferensi sistem (tema portal v2).
@@ -63,6 +74,7 @@ Set variabel bila diperlukan:
 SUPERSET_BASE_URL=http://localhost:8089
 SUPERSET_USERNAME=admin
 SUPERSET_PASSWORD=admin
+PORTAL_BACKEND_URL=http://localhost:8091
 ```
 
 ## Menjalankan dengan Docker

@@ -353,19 +353,105 @@ def _storage_status(base_dir: Path, services: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _active_gold_alignment(base_dir: Path) -> dict[str, Any]:
+    reports = base_dir / "outputs" / "reports"
+    active = _read_json(reports / "active_excel_lakehouse_dataset.json") or {}
+    gold = _read_json(reports / "active_gold_run.json") or {}
+    active_session_id = str(active.get("dataset_session_id") or active.get("dataset_id") or "").strip()
+    gold_session_id = str(gold.get("dataset_session_id") or "").strip()
+    gold_run_id = str(gold.get("pipeline_run_id") or gold.get("run_id") or "").strip()
+    active_status = str(active.get("status") or "").lower()
+    if active_status in {"", "empty", "deleted"} or not active_session_id or not active.get("files"):
+        return {
+            "status": "empty",
+            "active_dataset_session_id": active_session_id or None,
+            "pipeline_run_id": gold_run_id or None,
+        }
+    if active_status != "committed":
+        return {
+            "status": "not_committed",
+            "active_dataset_session_id": active_session_id,
+            "pipeline_run_id": gold_run_id or None,
+        }
+    if str(gold.get("status") or "").upper() != "PUBLISHED" or not gold_session_id or not gold_run_id:
+        return {
+            "status": "not_published",
+            "active_dataset_session_id": active_session_id,
+            "pipeline_run_id": gold_run_id or None,
+        }
+    if active_session_id != gold_session_id:
+        return {
+            "status": "mismatch",
+            "active_dataset_session_id": active_session_id,
+            "published_dataset_session_id": gold_session_id,
+            "pipeline_run_id": gold_run_id,
+        }
+    return {
+        "status": "aligned",
+        "active_dataset_session_id": active_session_id,
+        "pipeline_run_id": gold_run_id,
+    }
+
+
 def _superset_dashboard_status(base_dir: Path, services: dict[str, Any]) -> dict[str, Any]:
     dashboard_path = base_dir / "outputs" / "reports" / "superset_excel_dashboard.json"
     assets_path = base_dir / "outputs" / "reports" / "superset_excel_assets.json"
     dashboard = _read_json(dashboard_path)
     assets = _read_json(assets_path)
-    if dashboard and assets and services.get("superset", {}).get("status") == "ready":
+    if not dashboard or not assets:
+        return {"status": "not_started", "query_verified": False, "source": None, "message": "Dashboard Superset belum divalidasi."}
+    if services.get("superset", {}).get("status") != "ready":
+        return {"status": "not_ready", "query_verified": False, "source": None, "message": "Dashboard Superset belum divalidasi."}
+
+    alignment = _active_gold_alignment(base_dir)
+    if alignment["status"] != "aligned":
+        scope = "historical" if alignment["status"] == "empty" else "stale"
+        message = (
+            "Dashboard historis tersedia, tetapi belum ada dataset aktif yang dapat ditampilkan."
+            if scope == "historical"
+            else "Dashboard tersedia, tetapi identitasnya belum cocok dengan dataset aktif."
+        )
+        return {
+            "status": "not_available",
+            "query_verified": False,
+            "scope": scope,
+            "source": _rel(dashboard_path, base_dir),
+            "message": message,
+            "dashboard_url": None,
+            "dataset_session_id": alignment.get("active_dataset_session_id"),
+            "pipeline_run_id": alignment.get("pipeline_run_id"),
+        }
+
+    verification = dashboard.get("dashboard_verification") or {}
+    identity_matches = (
+        dashboard.get("dataset_session_id") == alignment.get("active_dataset_session_id")
+        and dashboard.get("pipeline_run_id") == alignment.get("pipeline_run_id")
+    )
+    if (
+        dashboard.get("status") == "validated"
+        and assets.get("status") == "validated"
+        and verification.get("status") == "validated"
+        and identity_matches
+    ):
         return {
             "status": "created",
+            "query_verified": True,
             "source": _rel(dashboard_path, base_dir),
             "message": "Artefak dashboard Excel Lakehouse tersedia.",
             "dashboard_url": dashboard.get("dashboard_url"),
+            "dataset_session_id": alignment.get("active_dataset_session_id"),
+            "pipeline_run_id": alignment.get("pipeline_run_id"),
         }
-    return {"status": "not_ready" if assets else "not_started", "query_verified": False, "source": None, "message": "Dashboard Superset belum divalidasi."}
+    return {
+        "status": "not_available",
+        "query_verified": False,
+        "scope": "stale",
+        "source": _rel(dashboard_path, base_dir),
+        "message": "Dashboard belum memverifikasi identitas dataset dan run aktif.",
+        "dashboard_url": None,
+        "dataset_session_id": alignment.get("active_dataset_session_id"),
+        "pipeline_run_id": alignment.get("pipeline_run_id"),
+    }
 
 
 def _bab4_evidence(truth: dict[str, Any]) -> dict[str, Any]:

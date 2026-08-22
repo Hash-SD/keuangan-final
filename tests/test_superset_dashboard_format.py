@@ -21,3 +21,21 @@ def test_count_metrics_are_not_currency_formatted():
 
 def test_budget_metrics_keep_currency_formatting():
     assert SHARED._guess_format(_metric("total_anggaran")) == "currency"
+
+
+def test_query_context_appends_valid_cross_filters_after_year_filter():
+    spec = {
+        "viz_type": "table",
+        "columns": ["tahun", "iku"],
+        "groupby": [],
+        "metrics": [],
+        "row_limit": 100,
+    }
+    filters = [{"col": "iku", "op": "IN", "val": ["IK 4.5"]}]
+
+    context = SHARED._query_context(spec, "2025", filters)
+
+    assert context["filters"] == [
+        {"col": "tahun", "op": "IN", "val": ["2025"]},
+        filters[0],
+    ]

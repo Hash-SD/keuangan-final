@@ -173,6 +173,14 @@ Aturan penting:
 - item tanpa IKU mendapat label `IKU belum terklasifikasi`;
 - item dengan N IKU menjadi N baris, masing-masing `allocation_weight = 1/N`;
 - `jumlah_weighted_iku = jumlah × allocation_weight`;
+- `src/common/money.py` adalah parser uang bersama untuk angka mentah maupun
+  teks berformat ribuan/desimal; boundary detail tidak boleh memakai konversi
+  numerik ad-hoc yang melewati parser ini;
+- jika `jumlah` kosong tetapi `qty` dan `harga_satuan` tersedia, normalizer
+  menghitung `jumlah = qty × harga_satuan`;
+- setelah seluruh baris tersaring atau tidak valid, builder Gold mengembalikan
+  dataframe kosong dengan schema `FACT_COLUMNS` agar quality gate dapat
+  melaporkan kondisi data tanpa exception schema;
 - quality gate memeriksa schema kanonik, tahun wajib, uniqueness grain, lineage, ID dataset/run, angka, dan rumus weighted;
 - `allocation_weight` harus berjumlah satu untuk setiap `(dataset_session_id, run_id, item_id)`;
 - sumber tahunan dan sumber parsial dalam tahun sama harus melewati seleksi cakupan; overlap yang belum terbukti berhenti sebagai `AMBIGUOUS_SOURCE_OVERLAP`.
@@ -191,6 +199,11 @@ Kolom faktual kanonik: `item_id`, `dataset_session_id`, `run_id`, `tahun`, `prod
 6. menulis CSV + Parquet pada path run-scoped, session-scoped, dan top-level active snapshot;
 7. mengevaluasi `evaluate_gold_quality()`;
 8. hanya jika lulus, menulis `active_gold_run.json` dengan status `PUBLISHED` dan report rekonsiliasi.
+
+Snapshot top-level (`data/generated/{layer}/{file}`) juga baru dipromosikan
+setelah quality gate lulus. Jika run baru gagal, artefak session/run tetap
+tersedia untuk audit tetapi snapshot aktif dan `active_gold_run.json` tetap
+menunjuk Gold lama yang terakhir `PUBLISHED`.
 
 Artefak layer yang diharapkan:
 
@@ -257,7 +270,14 @@ Backend Airflow adapter (`portal_backend/services/airflow.py`) mengelompokkan ta
 
 ### Superset
 
-`src/sql/setup_superset_excel_assets.py` login melalui REST API, mencari/membuat database Trino, memastikan dataset `gold.fact_anggaran`, menyegarkan metadata, menerapkan `verbose_name` bisnis pada label Superset, menyembunyikan kolom teknis dari UI, membuat saved query, dan upsert dashboard/charts. Tabel faktual tetap memiliki nama kolom fisik untuk query dan lineage/QA; label seperti `source_file` → `Sumber Data`, `uraian_detail` → `Detail`, dan `harga_satuan` → `Harga Satuan` hanya berlaku pada tampilan Superset. Target database/dashboard dapat diarahkan dengan ID; ID database eksplisit yang tidak ada bersifat fail-fast, sedangkan target dashboard dapat fallback sesuai kode setup.
+`src/sql/setup_superset_excel_assets.py` login melalui REST API, mencari/membuat database Trino, memastikan dataset `gold.fact_anggaran`, menyegarkan metadata, menerapkan `verbose_name` bisnis pada label Superset, menyembunyikan kolom teknis dari UI, membuat saved query, dan upsert dashboard/charts. Tabel faktual tetap memiliki nama kolom fisik untuk query dan lineage/QA; label seperti `source_file` → `Sumber Data`, `uraian_detail` → `Detail`, dan `harga_satuan` → `Harga Satuan` hanya berlaku pada tampilan Superset. Nama slice kanonik tidak memakai prefix `SILARAS |`; branding hanya berada pada judul dashboard. Target database/dashboard dapat diarahkan dengan ID; ID database eksplisit yang tidak ada bersifat fail-fast, sedangkan target dashboard dapat fallback sesuai kode setup.
+
+Setup Superset wajib menemukan dataset aktif `COMMITTED` dan pasangan identitas
+`dataset_session_id`/`pipeline_run_id` dari Gold `PUBLISHED` yang sama. Tanpa
+identitas atau jika sesinya berbeda, command gagal dan tidak menulis status
+`validated`. Mode `new` mengabaikan `SUPERSET_DASHBOARD_ID`, memakai suffix
+stabil untuk satu run, dan menggunakan namespace marker baru agar aset di
+dashboard lama tidak tertimpa.
 
 Registry chart kanonik berada pada `CHART_SPECS` dan menghasilkan tepat 13 chart:
 `kpi_total_anggaran`, `kpi_jumlah_item`, `kpi_jumlah_iku`,
@@ -327,9 +347,9 @@ Filter dashboard lokal sama dengan Superset: `tahun`, `prodi`, `iku`,
 `kegiatan`, dan `akun`. Total Anggaran memakai `jumlah_weighted_iku` dan
 payload ringkasan memuat lima KPI final.
 
-`superset-dashboard/` tidak membaca database secara langsung. Browser memanggil proxy Flask (`/api/dashboards`, `/api/dashboard/<id>/meta`, `/api/chart/<id>/data`), lalu server yang login ke Superset. `lib/_shared.py` memiliki cache meta dashboard dan cache chart sekitar 60 detik; credential hanya server-side.
+`superset-dashboard/` tidak membaca database secara langsung. Browser memanggil proxy Flask (`/api/dashboards`, `/api/dashboard/<id>/meta`, `/api/chart/<id>/data`), lalu server yang login ke Superset. Endpoint `/api/active-status` membaca system truth portal untuk membedakan dashboard aktif dari artefak historis; jika tidak ada dataset aktif yang cocok, mirror tetap dapat menampilkan arsip tetapi memberi penanda bahwa data tersebut bukan snapshot aktif. Endpoint chart menerima `filters` JSON berisi filter `IN` lintas-visual, menggabungkannya dengan filter tahun, memvalidasi nama kolom/nilai, dan hanya meneruskan kolom yang sesuai dataset chart. `lib/_shared.py` memiliki cache meta dashboard dan cache chart sekitar 60 detik; cache chart memasukkan filter aktif dan credential hanya server-side.
 
-Kontrak presentasi mirror berada di `public/app.js` dan `public/styles.css`: KPI dirender lebih dulu, metrik anggaran menjadi kartu utama, chart analitik mengikuti urutan bisnis yang stabil, dan judul memakai sentence case tanpa prefiks `SILARAS |`. Label kolom teknis diterjemahkan ke bahasa UI tanpa underscore; metrik jumlah dan `Selisih` tidak memakai format Rupiah, sedangkan `source_file` tetap ditampilkan sebagai `Sumber data` untuk audit. Status rekonsiliasi dirender sebagai strip status ringkas dengan status terburuk dari seluruh baris, bukan tabel satu baris. Treemap mengurutkan grup berdasarkan nilai sebelum membentuk node sisa `Lainnya`, mengisi area canvas tanpa inset default, dan memakai feature card yang lebih rapat. Grid memakai kontainer terpusat dengan lebar maksimum 1.480 px dan turun menjadi satu kolom pada viewport kecil. `public/treemap-data.js` menyimpan agregasi treemap yang dapat diuji tanpa browser, sedangkan `public/dashboard-presentation.js` menyimpan aturan label/format; perubahan visual tidak mengubah endpoint atau lineage data.
+Kontrak presentasi mirror berada di `public/app.js` dan `public/styles.css`: KPI dirender lebih dulu, metrik anggaran menjadi kartu utama, chart analitik mengikuti urutan bisnis yang stabil, dan judul memakai sentence case tanpa prefiks `SILARAS |`. Klik elemen bar, donut, treemap, atau baris tabel membentuk filter global; klik biasa mengganti pilihan, sedangkan Ctrl/Cmd-click menambah atau menghapus nilai pada kolom yang sama. Label kolom teknis diterjemahkan ke bahasa UI tanpa underscore; metrik jumlah dan `Selisih` tidak memakai format Rupiah, sedangkan `source_file` tetap ditampilkan sebagai `Sumber data` untuk audit. Status rekonsiliasi dirender sebagai strip status ringkas dengan status terburuk dari seluruh baris, bukan tabel satu baris. Treemap mengurutkan grup berdasarkan nilai sebelum membentuk node sisa `Lainnya`, mengisi area canvas tanpa inset default, dan memakai feature card yang lebih rapat. Grid memakai kontainer terpusat dengan lebar maksimum 1.480 px dan turun menjadi satu kolom pada viewport kecil. `public/treemap-data.js` menyimpan agregasi treemap yang dapat diuji tanpa browser, sedangkan `public/dashboard-presentation.js` menyimpan aturan label/format dan fallback tampilan detail; perubahan visual tidak mengubah endpoint atau lineage data.
 
 ## Artefak status dan source-of-truth
 
@@ -355,12 +375,12 @@ Artefak top-level `data/generated/*` adalah active snapshot; path session/run ad
 | Dataset/source guard | `test_dataset_contract.py`, `test_production_source_guard.py` | committed, checksum, canonical raw, RAB + Nomenklatur, tanpa sample fallback |
 | Excel/parser | `test_parse_2023.py`, `test_parse_2024.py`, `test_parse_2025.py`, `test_excel_rab_parser_2025.py`, `test_rab_parser_amount_columns.py`, `test_parse_nomenklatur.py` | period, amount column, warna, formula, orphan, detail support, lineage |
 | Gold/quality | `test_fact_anggaran.py`, `test_iku_allocation.py`, `test_production_pipeline_atomic.py`, `test_gold_publish_guards.py` | grain, equal split, weighted total, atomic publish, identifier guard |
-| Upload/storage/status | `test_excel_lakehouse_upload_api.py`, `test_production_upload_atomic.py`, `test_excel_storage_manifest.py`, `test_excel_lakehouse_status.py` | staging rollback, append, hash, manifest, active-only counts |
+| Upload/storage/status | `test_excel_lakehouse_upload_api.py`, `test_production_upload_atomic.py`, `test_excel_storage_manifest.py`, `test_excel_lakehouse_status.py`, `test_empty_state.py` | staging rollback, append target inheritance, hash, commit validation, manifest, active-only counts, historical dashboard guard |
 | Backend/Airflow | `test_airflow_trigger.py`, `test_portal_routes.py`, `test_portal_backend_interactions.py`, `test_readiness_endpoints.py` | trigger identity, dedupe, active-run priority, API status |
 | Security | `test_portal_security.py`, `test_security_config.py`, `test_production_readiness.py` | auth fail-closed, credential checks, readiness gate |
 | Frontend contract | `test_portal_v2_contract.py`, `test_portal_v2_runtime.py` | authoritative endpoints, safe HTML, live stepper, loading/error, no stale numbers |
-| Dashboard bridge | `test_local_dashboard.py`, `test_superset_api_dashboard_bridge.py`, `test_superset_dashboard_target.py`, `test_gold_view_filter_columns.py` | Superset-first/fallback behavior, target selection, hidden technical columns |
-| Dashboard presentation | `tests/treemap-data.test.js`, `tests/dashboard-presentation.test.js`, `tests/test_superset_dashboard_format.py`, `tests/playwright/superset-dashboard.spec.ts` | overflow treemap tetap merangking grup bernilai terbesar, KPI/tabel jumlah tanpa Rupiah, judul dan label kolom bersih, layout terpusat, feature card treemap, dan responsivitas dasar |
+| Dashboard bridge | `test_local_dashboard.py`, `test_superset_api_dashboard_bridge.py`, `test_superset_dashboard_target.py`, `test_gold_view_filter_columns.py` | Superset-first/fallback behavior, target selection, new-dashboard isolation, identity guard, hidden technical columns |
+| Dashboard presentation | `tests/treemap-data.test.js`, `tests/dashboard-presentation.test.js`, `tests/test_superset_dashboard_format.py`, `tests/playwright/superset-dashboard.spec.ts` | overflow treemap tetap merangking grup bernilai terbesar, KPI/tabel jumlah tanpa Rupiah, fallback detail numerik, judul dan label kolom bersih, filter lintas-visual, layout terpusat, feature card treemap, dan responsivitas dasar |
 | E2E | `tests/playwright/*.spec.ts` | local dashboard, mirror Superset, Medallion runtime |
 
 Test workbook yang tidak tersedia dapat menyebabkan test parser tertentu di-skip; itu bukan bukti bahwa semua path input sudah teruji.

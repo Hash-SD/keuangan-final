@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import json
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -116,23 +118,24 @@ CHART_SPECS = [
 ]
 
 CHART_DISPLAY_NAMES = {
-    "kpi_total_anggaran": "KPI Total Anggaran",
-    "kpi_jumlah_item": "KPI Jumlah Item",
-    "kpi_jumlah_iku": "KPI Jumlah IKU",
-    "kpi_jumlah_kegiatan": "KPI Jumlah Kegiatan",
-    "kpi_status_rekonsiliasi": "KPI Status Rekonsiliasi",
-    "ringkasan_per_tahun": "Ringkasan per Tahun",
-    "anggaran_per_tahun": "Anggaran per Tahun",
+    "kpi_total_anggaran": "KPI total anggaran",
+    "kpi_jumlah_item": "KPI jumlah item",
+    "kpi_jumlah_iku": "KPI jumlah IKU",
+    "kpi_jumlah_kegiatan": "KPI jumlah kegiatan",
+    "kpi_status_rekonsiliasi": "KPI status rekonsiliasi",
+    "ringkasan_per_tahun": "Ringkasan per tahun",
+    "anggaran_per_tahun": "Anggaran per tahun",
     "anggaran_per_iku": "Anggaran per IKU",
-    "cluster_kegiatan": "Cluster Kegiatan",
-    "komposisi_akun": "Komposisi Akun",
-    "anggaran_per_akun": "Anggaran per Akun",
-    "detail_item_biaya": "Detail Item Biaya",
-    "validasi_rekap": "Validasi Rekap",
+    "cluster_kegiatan": "Klaster kegiatan",
+    "komposisi_akun": "Komposisi akun",
+    "anggaran_per_akun": "Anggaran per akun",
+    "detail_item_biaya": "Detail item biaya",
+    "validasi_rekap": "Validasi rekap",
 }
 
 MANAGED_CHART_MARKER = "SILARAS_REGISTRY_KEY:"
 LEGACY_MANAGED_CHART_MARKER = "silaras-managed:"
+NEW_MANAGED_CHART_MARKER = "silaras-managed-new:"
 
 CHART_REGISTRY = {
     "kpi_total_anggaran": {"key": "kpi_total_anggaran", "name": CHART_DISPLAY_NAMES["kpi_total_anggaran"], "dataset": "fact", "viz_type": "big_number_total", "metric_key": "total_anggaran", "groupby": [], "layout": {"width": 12, "height": 48}},
@@ -155,22 +158,74 @@ def _dashboard_suffix() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
 
 
+def _stable_dashboard_suffix() -> str:
+    raw = os.getenv("DASHBOARD_INSTANCE_SUFFIX") or os.getenv("PIPELINE_RUN_ID") or _dashboard_suffix()
+    normalized = re.sub(r"[^A-Za-z0-9-]+", "-", str(raw)).strip("-")
+    return normalized[-32:] or _dashboard_suffix()
+
+
+DASHBOARD_INSTANCE_SUFFIX = _stable_dashboard_suffix()
+
+
 def _dashboard_title() -> str:
     if DASHBOARD_MODE == "new":
-        return f"{DASHBOARD_TITLE} {_dashboard_suffix()}"
+        return f"{DASHBOARD_TITLE} {DASHBOARD_INSTANCE_SUFFIX}"
     return DASHBOARD_TITLE
 
 
 def _dashboard_slug() -> str:
     if DASHBOARD_MODE == "new":
-        return f"{DASHBOARD_SLUG}-{_dashboard_suffix()}"
+        return f"{DASHBOARD_SLUG}-{DASHBOARD_INSTANCE_SUFFIX}"
     return DASHBOARD_SLUG
 
 
 def _chart_name(name: str) -> str:
     if DASHBOARD_MODE == "new":
-        return f"{name} {_dashboard_suffix()}"
+        return f"{name} {DASHBOARD_INSTANCE_SUFFIX}"
     return name
+
+
+def _chart_registry_marker(registry_key: str) -> str:
+    if DASHBOARD_MODE == "new":
+        return f"{NEW_MANAGED_CHART_MARKER}{DASHBOARD_INSTANCE_SUFFIX}:{registry_key}"
+    return f"{MANAGED_CHART_MARKER}{registry_key}"
+
+
+def _resolve_pipeline_identity() -> tuple[str, str]:
+    active_dataset_path = OUTPUTS_DIR / "reports" / "active_excel_lakehouse_dataset.json"
+    try:
+        active_dataset = json.loads(active_dataset_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError("Dataset aktif belum tersedia; Superset tidak dijalankan.") from exc
+    if str(active_dataset.get("status") or "").lower() != "committed" or not active_dataset.get("files"):
+        raise RuntimeError("Dataset aktif belum berstatus COMMITTED; Superset tidak dijalankan.")
+    active_session_id = str(active_dataset.get("dataset_session_id") or active_dataset.get("dataset_id") or "").strip()
+    if not active_session_id:
+        raise RuntimeError("Dataset aktif tidak memiliki dataset_session_id.")
+
+    env_dataset_session_id = str(os.getenv("DATASET_SESSION_ID") or "").strip()
+    env_pipeline_run_id = str(os.getenv("PIPELINE_RUN_ID") or "").strip()
+    if env_dataset_session_id and env_pipeline_run_id:
+        if env_dataset_session_id != active_session_id:
+            raise RuntimeError("Identitas Superset berbeda dari dataset aktif.")
+        return env_dataset_session_id, env_pipeline_run_id
+    if env_dataset_session_id or env_pipeline_run_id:
+        raise RuntimeError("DATASET_SESSION_ID dan PIPELINE_RUN_ID harus diisi berpasangan.")
+
+    manifest_path = OUTPUTS_DIR / "reports" / "active_gold_run.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError("Identitas Gold aktif belum tersedia; Superset tidak dijalankan.") from exc
+    if str(manifest.get("status") or "").upper() != "PUBLISHED":
+        raise RuntimeError("Gold aktif belum berstatus PUBLISHED; Superset tidak dijalankan.")
+    dataset_session_id = str(manifest.get("dataset_session_id") or "").strip()
+    pipeline_run_id = str(manifest.get("pipeline_run_id") or "").strip()
+    if not dataset_session_id or not pipeline_run_id:
+        raise RuntimeError("Gold aktif tidak memiliki dataset_session_id dan pipeline_run_id.")
+    if dataset_session_id != active_session_id:
+        raise RuntimeError("Gold aktif berbeda dari dataset aktif; Superset tidak dijalankan.")
+    return dataset_session_id, pipeline_run_id
 
 
 def _request_with_wait(session: requests.Session, method: str, url: str, attempts: int = 30, **kwargs) -> requests.Response:
@@ -487,13 +542,23 @@ def _chart_payload(dataset_id: int, name: str, viz_type: str, form_data: dict, q
         "query_context": __import__("json").dumps({"datasource": {"id": dataset_id, "type": "table"}, "force": False, "queries": [query], "form_data": form_data, "result_format": "json", "result_type": "full"}),
     }
     if registry_key:
-        payload["description"] = f"{MANAGED_CHART_MARKER}{registry_key}"
+        payload["description"] = _chart_registry_marker(registry_key)
     return payload
 
 
 def _upsert_chart(session: requests.Session, payload: dict) -> int:
     managed_description = payload.get("description")
     charts = _get_items(session, "chart")
+    if DASHBOARD_MODE == "new":
+        matches = [item for item in charts if item.get("description") == managed_description]
+        if matches:
+            chart_id = int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
+            response = session.put(f"{BASE_URL}/api/v1/chart/{chart_id}", json=payload, timeout=60)
+        else:
+            response = session.post(f"{BASE_URL}/api/v1/chart/", json=payload, timeout=60)
+            chart_id = None
+        response.raise_for_status()
+        return int(response.json().get("id") or response.json().get("result", {}).get("id") or chart_id)
     registry_key = (
         str(managed_description)[len(MANAGED_CHART_MARKER):]
         if str(managed_description).startswith(MANAGED_CHART_MARKER)
@@ -536,7 +601,7 @@ def _registry_metric(key: str) -> dict:
 
 
 def _registry_chart_payload(key: str, fact_dataset_id: int, reconciliation_dataset_id: int) -> dict:
-    name = _chart_name(f"SILARAS | {CHART_REGISTRY[key]['name']}")
+    name = _chart_name(CHART_REGISTRY[key]["name"])
     total = _registry_metric("total_anggaran")
     count_items = _registry_metric("jumlah_item")
     count_iku = _registry_metric("jumlah_iku")
@@ -646,6 +711,8 @@ def _native_filters(dataset_id: int, chart_ids: list[int], excluded_chart_ids: s
 
 
 def _target_dashboard_id(session: requests.Session) -> int | None:
+    if DASHBOARD_MODE == "new":
+        return None
     if not TARGET_DASHBOARD_ID.isdigit():
         return None
     target = int(TARGET_DASHBOARD_ID)
@@ -697,6 +764,9 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
 
 def _detach_stale_managed_charts(session: requests.Session, dashboard_id: int, active_keys: list[str]) -> int:
     """Detach obsolete registry charts from one managed dashboard only."""
+
+    if DASHBOARD_MODE == "new":
+        return 0
 
     import json
 
@@ -806,10 +876,28 @@ def _create_year_permalinks(session: requests.Session, dashboard_id: int) -> dic
     return links
 
 
-def main() -> None:
+def _write_superset_reports(result: dict) -> None:
+    write_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json", result)
+    write_json(OUTPUTS_DIR / "reports" / "superset_excel_assets.json", result)
+
+
+def main() -> dict:
     refresh_started_at = datetime.now(timezone.utc).isoformat()
-    dataset_session_id = os.getenv("DATASET_SESSION_ID") or None
-    pipeline_run_id = os.getenv("PIPELINE_RUN_ID") or None
+    try:
+        dataset_session_id, pipeline_run_id = _resolve_pipeline_identity()
+    except RuntimeError as exc:
+        result = {
+            "status": "invalid",
+            "superset_api_status": "not_run",
+            "table_name": TABLE_NAME,
+            "dashboard_title": _dashboard_title(),
+            "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/",
+            "message": str(exc),
+        }
+        _write_superset_reports(result)
+        print(result)
+        return result
+
     try:
         session = _login()
         database_id = _database_id(session)
@@ -860,7 +948,7 @@ def main() -> None:
             "dataset_display_name": DATASET_DISPLAY_NAME,
             "column_labels": COLUMN_LABELS,
             "dashboard_id": dashboard_id,
-            "dashboard_target": "explicit_id" if TARGET_DASHBOARD_ID.isdigit() and str(dashboard_id) == TARGET_DASHBOARD_ID else "slug_or_create",
+            "dashboard_target": "explicit_id" if DASHBOARD_MODE != "new" and TARGET_DASHBOARD_ID.isdigit() and str(dashboard_id) == TARGET_DASHBOARD_ID else "slug_or_create",
             "dashboard_title": _dashboard_title(),
             "dashboard_url": default_dashboard_url,
             "dashboard_canonical_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/",
@@ -886,27 +974,37 @@ def main() -> None:
             "status": "unreachable",
             "superset_api_status": "unreachable",
             "table_name": TABLE_NAME,
-            "dashboard_title": DASHBOARD_TITLE,
-            "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{DASHBOARD_SLUG}/",
+            "dashboard_title": _dashboard_title(),
+            "dashboard_url": f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/",
+            "dataset_session_id": dataset_session_id,
+            "pipeline_run_id": pipeline_run_id,
             "message": str(exc),
         }
-    write_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json", result)
-    write_json(OUTPUTS_DIR / "reports" / "superset_excel_assets.json", result)
-    if result.get("status") == "validated" and dataset_session_id and pipeline_run_id:
+
+    if result.get("status") == "validated":
         manifest_path = OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{pipeline_run_id}.json"
         try:
-            manifest = __import__("json").loads(manifest_path.read_text(encoding="utf-8"))
-            if manifest.get("dataset_session_id") != dataset_session_id:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if (
+                manifest.get("dataset_session_id") != dataset_session_id
+                or manifest.get("pipeline_run_id") != pipeline_run_id
+            ):
                 raise RuntimeError("Identitas manifest Superset tidak cocok.")
-            manifest.update({"superset_refresh_started_at": result["superset_refresh_started_at"], "superset_refresh_finished_at": result["superset_refresh_finished_at"]})
+            manifest.update(
+                {
+                    "superset_refresh_started_at": result["superset_refresh_started_at"],
+                    "superset_refresh_finished_at": result["superset_refresh_finished_at"],
+                }
+            )
             temporary = manifest_path.with_suffix(".tmp")
-            temporary.write_text(__import__("json").dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+            temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
             temporary.replace(manifest_path)
         except (OSError, ValueError, RuntimeError) as exc:
             result["status"] = "invalid"
             result["message"] = str(exc)
-            write_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json", result)
-        if result.get("status") == "validated":
+
+    if result.get("status") == "validated":
+        try:
             from portal_backend.services.superset_api import record_dashboard_verification
 
             verification = record_dashboard_verification(dataset_session_id, pipeline_run_id)
@@ -914,9 +1012,14 @@ def main() -> None:
             if verification.get("status") != "validated":
                 result["status"] = "invalid"
                 result["message"] = verification.get("message") or "Query Superset belum memverifikasi run aktif."
-            write_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json", result)
+        except Exception as exc:
+            result["status"] = "invalid"
+            result["message"] = str(exc)
+
+    _write_superset_reports(result)
     print(result)
+    return result
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(0 if main().get("status") == "validated" else 1)

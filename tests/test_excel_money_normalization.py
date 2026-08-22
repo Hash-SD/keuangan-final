@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from src.excel_ingestion.excel_cell_extractor import normalize_money
+from src.common.detail_amounts import normalize_detail_amounts
 from src.transformations.budget_cleaning import REVIEW_ACCOUNT_LABEL, clean_account_label, extract_valid_account
 
 
@@ -13,6 +14,46 @@ def test_normalize_money_handles_indonesian_thousand_commas():
 def test_normalize_money_keeps_decimal_values():
     assert normalize_money("12,5") == 12.5
     assert normalize_money("12.5") == 12.5
+
+
+def test_detail_amounts_normalizes_formatted_amount_before_fallback():
+    normalized = normalize_detail_amounts(
+        {"qty": None, "harga_satuan": None, "jumlah": "Rp 2.520.000"}
+    )
+
+    assert normalized["qty"] == 1
+    assert normalized["harga_satuan"] == 2_520_000
+    assert normalized["jumlah"] == 2_520_000
+
+
+def test_detail_amounts_handles_comma_grouped_amount():
+    normalized = normalize_detail_amounts(
+        {"qty": None, "harga_satuan": None, "jumlah": "2,520,000"}
+    )
+
+    assert normalized["harga_satuan"] == 2_520_000
+    assert normalized["jumlah"] == 2_520_000
+
+
+def test_detail_amounts_uses_total_when_either_detail_field_is_missing():
+    for record in (
+        {"qty": 0, "harga_satuan": 50, "jumlah": 100},
+        {"qty": 2, "harga_satuan": None, "jumlah": 100},
+    ):
+        normalized = normalize_detail_amounts(record)
+
+        assert normalized["qty"] == 1
+        assert normalized["harga_satuan"] == 100
+
+
+def test_detail_amounts_calculates_missing_total_from_quantity_and_price():
+    normalized = normalize_detail_amounts(
+        {"qty": 2, "harga_satuan": "Rp 1.250.000", "jumlah": None}
+    )
+
+    assert normalized["qty"] == 2
+    assert normalized["harga_satuan"] == 1_250_000
+    assert normalized["jumlah"] == 2_500_000
 
 
 def test_aggregate_or_price_like_account_codes_require_review():

@@ -11,6 +11,7 @@ from openpyxl import load_workbook
 from openpyxl.cell.cell import Cell
 from openpyxl.worksheet.worksheet import Worksheet
 
+from src.common.money import normalize_money
 from src.common.time_utils import utc_now_iso
 
 
@@ -37,41 +38,6 @@ def normalize_text(value: object) -> str | None:
     text = str(value).replace("\n", " ")
     text = re.sub(r"\s+", " ", text).strip()
     return text or None
-
-
-def normalize_money(value: object) -> float | None:
-    if value is None or value == "":
-        return None
-    if isinstance(value, (int, float)):
-        return float(value)
-    text = str(value).strip()
-    if not text:
-        return None
-    text = re.sub(r"[^0-9,.\-]", "", text)
-    if not text or text in {"-", ".", ","}:
-        return None
-    if "," in text and "." in text:
-        separators = [idx for idx, char in enumerate(text) if char in ",."]
-        decimal_separator = text[separators[-1]] if len(text) - separators[-1] - 1 != 3 else None
-        if decimal_separator:
-            thousands_separator = "." if decimal_separator == "," else ","
-            text = text.replace(thousands_separator, "").replace(decimal_separator, ".")
-        else:
-            text = text.replace(",", "").replace(".", "")
-    elif "," in text:
-        parts = text.split(",")
-        if len(parts) > 1 and all(len(part) == 3 for part in parts[1:]):
-            text = "".join(parts)
-        else:
-            text = text.replace(",", ".")
-    elif "." in text:
-        parts = text.split(".")
-        if len(parts) > 1 and all(len(part) == 3 for part in parts[1:]):
-            text = "".join(parts)
-    try:
-        return float(text)
-    except ValueError:
-        return None
 
 
 def cell_fill_color(cell: Cell) -> str | None:

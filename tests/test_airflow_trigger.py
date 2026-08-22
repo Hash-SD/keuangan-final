@@ -373,6 +373,21 @@ def test_portal_trigger_rejects_partial_active_dataset(monkeypatch, tmp_path):
     assert response.status_code == 400
 
 
+def test_portal_trigger_rejects_when_no_active_dataset_exists(monkeypatch, tmp_path):
+    from portal_backend.app import create_app
+    from portal_backend.services import excel_upload
+
+    active_path = tmp_path / "outputs/reports/active.json"
+    active_path.parent.mkdir(parents=True)
+    monkeypatch.setattr(excel_upload, "ACTIVE_EXCEL_DATASET_PATH", active_path)
+    monkeypatch.setattr("portal_backend.app.trigger_dag", lambda **_: pytest.fail("empty dataset must not trigger Airflow"))
+
+    response = create_app().test_client().post("/api/airflow/trigger", json={})
+
+    assert response.status_code == 400
+    assert "COMMITTED" in response.get_json()["message"]
+
+
 def test_pipeline_endpoint_returns_error_status_for_failed_local_run(monkeypatch):
     from portal_backend.app import create_app
 

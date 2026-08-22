@@ -169,6 +169,13 @@ def test_superset_runtime_exposes_single_registry_and_five_filters():
     assert status_payload["datasource_id"] == 20
     assert '"status"' in status_payload["params"]
 
+    detail_payload = assets._registry_chart_payload("detail_item_biaya", 10, 20)
+    validation_payload = assets._registry_chart_payload("validasi_rekap", 10, 20)
+    assert detail_payload["slice_name"] == "Detail item biaya"
+    assert validation_payload["slice_name"] == "Validasi rekap"
+    assert not detail_payload["slice_name"].startswith("SILARAS |")
+    assert not validation_payload["slice_name"].startswith("SILARAS |")
+
 
 def test_superset_runtime_removes_dataset_columns_outside_canonical_contract():
     source = (ROOT / "src" / "sql" / "setup_superset_excel_assets.py").read_text(encoding="utf-8")

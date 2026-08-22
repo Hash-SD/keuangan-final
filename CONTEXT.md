@@ -47,6 +47,17 @@ item anggaran x satu alokasi IKU. `tahun` adalah satu-satunya atribut waktu
 analitik; cakupan sumber disimpan pada Bronze/Silver/lineage. Total Anggaran
 memakai `SUM(jumlah_weighted_iku)` dan status rekonsiliasi bukan metrik aditif.
 
+Kontrak nominal item berlaku sejak parsing sampai Gold: jika `qty` atau
+`harga_satuan` kosong/nol, item dianggap satu kuantitas dan harga satuannya
+mengikuti `jumlah`. Nilai tetap numerik; aturan ini bukan sekadar pemformatan
+UI dan diterapkan ulang di batas Silver serta Gold untuk menjaga konsistensi
+data lintas parser, pipeline, dan dashboard.
+Parser uang bersama berada di `src/common/money.py` dan dipakai ulang oleh
+ingestion serta normalizer detail, sehingga teks seperti `Rp 2.520.000` tetap
+menjadi angka sebelum fallback diterapkan.
+Jika `jumlah` kosong tetapi `qty` dan `harga_satuan` tersedia, `jumlah`
+dihitung sebagai `qty × harga_satuan`.
+
 **Detail-support**:
 Sheet rincian akun yang dipertahankan untuk audit dan rekonsiliasi, tetapi tidak dijumlahkan ke Gold jika workbook memiliki sheet `RAB` utama.
 _Avoid_: sumber kedua untuk menambah total Gold.

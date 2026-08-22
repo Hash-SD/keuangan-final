@@ -9,6 +9,7 @@ from openpyxl import load_workbook
 from openpyxl.utils.cell import column_index_from_string, range_boundaries
 from openpyxl.worksheet.worksheet import Worksheet
 
+from src.common.detail_amounts import normalize_detail_amount_frame, normalize_detail_amounts
 from src.excel_ingestion.excel_cell_extractor import (
     ExcelSource,
     detect_year_from_workbook,
@@ -401,14 +402,14 @@ def _row_item_from_header(ws: Worksheet, row_number: int, header: dict[str, int]
         jumlah = qty * harga
     if jumlah is None:
         return None
-    return {
+    return normalize_detail_amounts({
         "uraian_detail": uraian,
         "supplier": normalize_text(ws.cell(row=row_number, column=header.get("supplier", -1)).value) if header.get("supplier") else None,
         "qty": qty,
         "satuan": normalize_text(ws.cell(row=row_number, column=header.get("satuan", -1)).value) if header.get("satuan") else None,
         "harga_satuan": harga,
         "jumlah": jumlah,
-    }
+    })
 
 
 def _row_item_from_2025_layout(ws: Worksheet, row_number: int) -> dict[str, object] | None:
@@ -425,7 +426,7 @@ def _row_item_from_2025_layout(ws: Worksheet, row_number: int) -> dict[str, obje
         jumlah = qty * harga
     if jumlah is None:
         return None
-    return {"uraian_detail": uraian, "qty": qty, "satuan": satuan, "harga_satuan": harga, "jumlah": jumlah, "supplier": None}
+    return normalize_detail_amounts({"uraian_detail": uraian, "qty": qty, "satuan": satuan, "harga_satuan": harga, "jumlah": jumlah, "supplier": None})
 
 
 def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -625,6 +626,7 @@ def parse_rab_workbook(source: ExcelSource) -> tuple[pd.DataFrame, pd.DataFrame,
     wb_formula.close()
     item_df = pd.DataFrame(items)
     if not item_df.empty:
+        item_df = normalize_detail_amount_frame(item_df)
         item_df["quality_flags"] = item_df["quality_flags"].map(lambda value: ";".join(value) if isinstance(value, list) else value)
         detail_total = item_df.groupby(["source_file"], dropna=False)["jumlah"].sum().reset_index(name="total_detail")
         validation_df = pd.DataFrame(validation)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import threading
 import time
 from typing import Any
@@ -281,8 +282,99 @@ def _year_filter(year: str) -> dict[str, Any]:
     return {"col": "tahun", "op": "IN", "val": [str(year)]}
 
 
-def _query_context(spec: dict[str, Any], year: str | None) -> dict[str, Any]:
+_FILTER_COLUMN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_MAX_CROSS_FILTERS = 12
+_MAX_VALUES_PER_FILTER = 25
+_FACT_FILTER_COLUMNS = frozenset(
+    {
+        "tahun",
+        "prodi",
+        "fakultas",
+        "iku",
+        "kode_iku",
+        "kegiatan",
+        "cluster_kegiatan",
+        "akun",
+        "kode_akun",
+        "nama_akun",
+        "uraian_detail",
+        "source_file",
+        "source_sheet",
+        "source_role",
+        "row_type",
+        "status",
+    }
+)
+_RECONCILIATION_FILTER_COLUMNS = frozenset({"tahun", "source_file", "status", "validation_type"})
+
+
+def normalize_query_filters(filters: object) -> list[dict[str, Any]]:
+    if filters is None:
+        return []
+    if not isinstance(filters, list):
+        raise ValueError("filters harus berupa array JSON.")
+    if len(filters) > _MAX_CROSS_FILTERS:
+        raise ValueError(f"filters maksimal {_MAX_CROSS_FILTERS} kolom.")
+
+    normalized: list[dict[str, Any]] = []
+    seen_columns: set[str] = set()
+    for item in filters:
+        if not isinstance(item, dict):
+            raise ValueError("Setiap filter harus berupa objek.")
+        column = str(item.get("col") or "").strip()
+        if not _FILTER_COLUMN_RE.fullmatch(column):
+            raise ValueError("Nama kolom filter tidak valid.")
+        if column in seen_columns:
+            raise ValueError(f"Filter kolom duplikat: {column}.")
+        operation = str(item.get("op") or "IN").upper().strip()
+        if operation != "IN":
+            raise ValueError("Operasi filter yang didukung hanya IN.")
+        values = item.get("val")
+        if not isinstance(values, list):
+            values = [values]
+        if not values or len(values) > _MAX_VALUES_PER_FILTER:
+            raise ValueError(f"Filter {column} harus memiliki 1-{_MAX_VALUES_PER_FILTER} nilai.")
+        clean_values: list[str | int | float | bool] = []
+        for value in values:
+            if value is None or isinstance(value, (dict, list, tuple)):
+                raise ValueError(f"Nilai filter {column} tidak valid.")
+            if isinstance(value, float) and not (value == value and abs(value) != float("inf")):
+                raise ValueError(f"Nilai filter {column} tidak valid.")
+            clean_value = str(value).strip() if isinstance(value, str) else value
+            if clean_value == "":
+                raise ValueError(f"Nilai filter {column} tidak boleh kosong.")
+            if clean_value not in clean_values:
+                clean_values.append(clean_value)
+        seen_columns.add(column)
+        normalized.append({"col": column, "op": "IN", "val": clean_values})
+    return normalized
+
+
+def parse_filter_query(raw_filters: str | None) -> list[dict[str, Any]]:
+    if not raw_filters:
+        return []
+    try:
+        payload = json.loads(raw_filters)
+    except json.JSONDecodeError as exc:
+        raise ValueError("filters bukan JSON yang valid.") from exc
+    return normalize_query_filters(payload)
+
+
+def _filter_columns_for_spec(spec: dict[str, Any]) -> frozenset[str]:
+    title = str(spec.get("title") or spec.get("slice_name") or "").lower()
+    if "rekonsiliasi" in title or "validasi" in title:
+        return _RECONCILIATION_FILTER_COLUMNS
+    return _FACT_FILTER_COLUMNS
+
+
+def _filters_supported_by_spec(spec: dict[str, Any], filters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    supported = _filter_columns_for_spec(spec)
+    return [item for item in filters if item["col"] in supported]
+
+
+def _query_context(spec: dict[str, Any], year: str | None, cross_filters: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     filters = [_year_filter(year)] if year else []
+    filters.extend(normalize_query_filters(cross_filters))
     viz = spec["viz_type"]
     metrics = list(spec.get("metrics") or ([] if viz == "table" else []))
     if not metrics and spec.get("metric"):
@@ -310,7 +402,7 @@ def _query_context(spec: dict[str, Any], year: str | None) -> dict[str, Any]:
     }
 
 
-def _form_data(spec: dict[str, Any], year: str | None) -> dict[str, Any]:
+def _form_data(spec: dict[str, Any], year: str | None, cross_filters: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     viz = spec["viz_type"]
     fd: dict[str, Any] = {
         "datasource": f"{spec['datasource']['id']}__{spec['datasource']['type']}",
@@ -322,6 +414,16 @@ def _form_data(spec: dict[str, Any], year: str | None) -> dict[str, Any]:
     if year:
         fd["adhoc_filters"].append(
             {"clause": "WHERE", "expressionType": "SIMPLE", "operator": "IN", "subject": "tahun", "comparator": [str(year)]}
+        )
+    for cross_filter in normalize_query_filters(cross_filters):
+        fd["adhoc_filters"].append(
+            {
+                "clause": "WHERE",
+                "expressionType": "SIMPLE",
+                "operator": "IN",
+                "subject": cross_filter["col"],
+                "comparator": cross_filter["val"],
+            }
         )
     if viz == "big_number_total":
         fd["metric"] = spec["metric"]
@@ -348,19 +450,20 @@ _cache: dict[str, dict[str, Any]] = {}
 _CACHE_TTL = 60.0
 
 
-def _cache_key(chart_id: int, year: str | None) -> str:
-    return f"{chart_id}:{year or 'all'}"
+def _cache_key(chart_id: int, year: str | None, cross_filters: list[dict[str, Any]] | None = None) -> str:
+    filter_key = json.dumps(normalize_query_filters(cross_filters), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return f"{chart_id}:{year or 'all'}:{filter_key}"
 
 
-def _read_cache(chart_id: int, year: str | None) -> dict[str, Any] | None:
-    item = _cache.get(_cache_key(chart_id, year))
+def _read_cache(chart_id: int, year: str | None, cross_filters: list[dict[str, Any]] | None = None) -> dict[str, Any] | None:
+    item = _cache.get(_cache_key(chart_id, year, cross_filters))
     if item and time.time() - item["at"] < _CACHE_TTL:
         return item["payload"]
     return None
 
 
-def _write_cache(chart_id: int, year: str | None, payload: dict[str, Any]) -> None:
-    _cache[_cache_key(chart_id, year)] = {"at": time.time(), "payload": payload}
+def _write_cache(chart_id: int, year: str | None, payload: dict[str, Any], cross_filters: list[dict[str, Any]] | None = None) -> None:
+    _cache[_cache_key(chart_id, year, cross_filters)] = {"at": time.time(), "payload": payload}
     if len(_cache) > 300:
         oldest = min(_cache, key=lambda k: _cache[k]["at"])
         _cache.pop(oldest, None)
@@ -381,12 +484,23 @@ def _extract(result: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def fetch_chart_data(chart_id: int, year: str | None = None, dashboard_id: int | None = None, refresh: bool = False) -> dict[str, Any]:
+def fetch_chart_data(
+    chart_id: int,
+    year: str | None = None,
+    dashboard_id: int | None = None,
+    refresh: bool = False,
+    cross_filters: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     spec = resolve_chart_spec(chart_id, dashboard_id)
     if spec is None:
         return {"status": "error", "error": f"chart_id {chart_id} tidak dikenal di Superset"}
+    try:
+        normalized_filters = normalize_query_filters(cross_filters)
+    except ValueError as exc:
+        return {"status": "error", "error": str(exc), "chart_id": int(chart_id), "year": year}
+    supported_filters = _filters_supported_by_spec(spec, normalized_filters)
     if not refresh:
-        cached = _read_cache(int(chart_id), year)
+        cached = _read_cache(int(chart_id), year, normalized_filters)
         if cached:
             return cached
     base = superset_base_url()
@@ -394,8 +508,8 @@ def fetch_chart_data(chart_id: int, year: str | None = None, dashboard_id: int |
         body = {
             "datasource": {"id": spec["datasource"]["id"], "type": spec["datasource"]["type"]},
             "force": True,
-            "queries": [_query_context(spec, year)],
-            "form_data": _form_data(spec, year),
+            "queries": [_query_context(spec, year, supported_filters)],
+            "form_data": _form_data(spec, year, supported_filters),
             "result_format": "json",
             "result_type": "full",
         }
@@ -404,12 +518,13 @@ def fetch_chart_data(chart_id: int, year: str | None = None, dashboard_id: int |
         payload = _extract(response.json())
         payload["chart_id"] = int(chart_id)
         payload["year"] = year
+        payload["filters"] = normalized_filters
         payload["source"] = "superset_api"
         if refresh:
             # refresh replaces cache entry so the UI shows the newest Superset data
-            _cache[_cache_key(int(chart_id), year)] = {"at": time.time(), "payload": payload}
+            _cache[_cache_key(int(chart_id), year, normalized_filters)] = {"at": time.time(), "payload": payload}
         else:
-            _write_cache(int(chart_id), year, payload)
+            _write_cache(int(chart_id), year, payload, normalized_filters)
         return payload
     except Exception as exc:  # noqa: BLE001 - surface any upstream error to the UI
         return {"status": "unreachable", "error": str(exc), "chart_id": int(chart_id), "year": year, "source": "superset_api"}

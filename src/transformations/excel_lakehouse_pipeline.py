@@ -480,8 +480,7 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     dashboard_detail = fact.copy()
     dashboard_reconciliation = _build_reconciliation_view(fact)
 
-    outputs = {}
-    for layer, filename, df in [
+    output_frames = [
         ("bronze", "bronze_excel_cells.csv", bronze),
         ("silver", "silver_rab_items_flexible.csv", silver_rab),
         ("silver", "silver_rab_rows_classified.csv", silver_rab_rows_classified),
@@ -499,9 +498,10 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         ("gold", "vw_dashboard_mapping_quality.csv", dashboard_mapping),
         ("gold", "vw_dashboard_reconciliation.csv", dashboard_reconciliation),
         ("gold", "vw_dashboard_detail_item.csv", dashboard_detail),
-    ]:
+    ]
+    outputs = {}
+    for layer, filename, df in output_frames:
         outputs[filename] = _write_run_output(df, layer, filename, session_id, run_id)
-        _write_session_and_combined(df, layer, filename, session_id)
 
     gold_finished_at = utc_now_iso()
     quality_gate = evaluate_gold_quality(fact, session_id, run_id)
@@ -530,6 +530,8 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
     write_json(OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{run_id}.json", metadata)
     if quality_gate["status"] != "PASSED":
         raise ValueError(f"Quality gate blocking: {', '.join(quality_gate['blocking_errors'])}")
+    for layer, filename, df in output_frames:
+        _write_session_and_combined(df, layer, filename, session_id)
     metadata["status"] = "PUBLISHED"
     write_json(GENERATED_DIR / "excel_lakehouse_metadata.json", metadata)
     write_json(OUTPUTS_DIR / "reports" / "pipeline_runs" / f"{run_id}.json", metadata)

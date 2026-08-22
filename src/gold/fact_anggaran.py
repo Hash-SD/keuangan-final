@@ -4,6 +4,7 @@ import re
 
 import pandas as pd
 
+from src.common.detail_amounts import normalize_detail_amount_frame, normalize_detail_amounts
 from .contract import FACT_COLUMNS
 
 UNCLASSIFIED_IKU_LABEL = "IKU belum terklasifikasi"
@@ -22,7 +23,7 @@ def _split_iku(value: object) -> list[str]:
 def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
     if silver_items.empty:
         return pd.DataFrame(columns=FACT_COLUMNS)
-    source = silver_items.copy()
+    source = normalize_detail_amount_frame(silver_items)
     if {"source_file", "source_role"}.issubset(source.columns):
         source_role = source["source_role"].fillna("").astype(str)
         files_with_main_rab = set(source.loc[source_role.eq("main_rab"), "source_file"].dropna().astype(str))
@@ -37,6 +38,7 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
         source = source[~source["row_type"].fillna("").astype(str).isin(["subtotal_row", "subtotal_or_header", "total_row", "orphan_leaf_item", "blank_or_note"])]
     rows: list[dict[str, object]] = []
     for _, item in source.iterrows():
+        item = pd.Series(normalize_detail_amounts(item.to_dict()))
         jumlah = pd.to_numeric(pd.Series([item.get("jumlah")]), errors="coerce").iloc[0]
         if pd.isna(jumlah):
             continue
@@ -82,5 +84,7 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
                     "created_at": item.get("created_at"),
                 }
             )
+    if not rows:
+        return pd.DataFrame(columns=FACT_COLUMNS)
     fact = pd.DataFrame(rows)
     return fact[FACT_COLUMNS]

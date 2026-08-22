@@ -7,7 +7,9 @@ const {
   formatKpiValue,
   formatReconciliationStatus,
   isPrimaryMetric,
+  normalizeDetailRecord,
   summarizeReconciliationStatus,
+  toggleCrossFilter,
 } = require("../superset-dashboard/public/dashboard-presentation.js");
 
 const formatters = {
@@ -63,6 +65,53 @@ test("converts technical table keys into readable Indonesian labels", () => {
   assert.equal(displayColumnLabel("total_detail"), "Total detail");
   assert.equal(displayColumnLabel("jumlah_item"), "Jumlah item");
   assert.equal(displayColumnLabel("uraian_detail"), "Uraian detail");
+  assert.equal(displayColumnLabel("qty"), "Kuantitas");
+});
+
+test("normalizes missing detail quantity and unit price from the total amount", () => {
+  const row = normalizeDetailRecord({ qty: null, harga_satuan: null, jumlah: 2520000 });
+
+  assert.equal(row.qty, 1);
+  assert.equal(row.harga_satuan, 2520000);
+  assert.equal(row.jumlah, 2520000);
+});
+
+test("normalizes formatted detail amounts before applying the fallback", () => {
+  const row = normalizeDetailRecord({ qty: null, harga_satuan: null, jumlah: "Rp 2.520.000" });
+
+  assert.equal(row.qty, 1);
+  assert.equal(row.harga_satuan, 2520000);
+  assert.equal(row.jumlah, 2520000);
+});
+
+test("uses the total when either detail field is missing", () => {
+  for (const input of [
+    { qty: 0, harga_satuan: 50, jumlah: 100 },
+    { qty: 2, harga_satuan: null, jumlah: 100 },
+  ]) {
+    const row = normalizeDetailRecord(input);
+
+    assert.equal(row.qty, 1);
+    assert.equal(row.harga_satuan, 100);
+  }
+});
+
+test("calculates a missing total from quantity and formatted unit price", () => {
+  const row = normalizeDetailRecord({ qty: 2, harga_satuan: "Rp 1.250.000", jumlah: null });
+
+  assert.equal(row.qty, 2);
+  assert.equal(row.harga_satuan, 1250000);
+  assert.equal(row.jumlah, 2500000);
+});
+
+test("toggles cross-filters immutably and supports multiple values per field", () => {
+  const first = toggleCrossFilter([], "iku", "IK 4.5", false);
+  const second = toggleCrossFilter(first, "iku", "IK 7.3", true);
+  const cleared = toggleCrossFilter(second, "iku", "IK 4.5", true);
+
+  assert.deepEqual(first, [{ col: "iku", op: "IN", val: ["IK 4.5"] }]);
+  assert.deepEqual(second, [{ col: "iku", op: "IN", val: ["IK 4.5", "IK 7.3"] }]);
+  assert.deepEqual(cleared, [{ col: "iku", op: "IN", val: ["IK 7.3"] }]);
 });
 
 test("humanizes unknown snake-case table keys without leaking underscores", () => {

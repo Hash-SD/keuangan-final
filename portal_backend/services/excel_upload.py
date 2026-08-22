@@ -248,17 +248,42 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
     )
     catatan = str(form.get("catatan") or "").strip() or None
     append_to_active = str(form.get("append_to_active") or "").strip().lower() == "true"
-    dashboard_mode = str(form.get("dashboard_mode") or "update").strip().lower()
+    active = (
+        normalize_dataset_file_kinds(read_json(ACTIVE_EXCEL_DATASET_PATH))
+        if append_to_active
+        else None
+    )
+    active_is_committed = isinstance(active, dict) and active.get("status") == "committed"
+    active_session_id = str((active or {}).get("dataset_session_id") or (active or {}).get("dataset_id") or "").strip()
+    raw_dashboard_mode = str(form.get("dashboard_mode") or "").strip().lower()
+    dashboard_mode = raw_dashboard_mode or str((active or {}).get("dashboard_mode") or "update").strip().lower()
     if dashboard_mode not in {"update", "new"}:
         dashboard_mode = "update"
-    dashboard_database_id = str(form.get("dashboard_database_id") or "").strip()
+    dashboard_database_id = str(
+        form.get("dashboard_database_id") or (active or {}).get("dashboard_database_id") or ""
+    ).strip()
     if dashboard_database_id and not dashboard_database_id.isdigit():
         raise ValueError("Database target Superset tidak valid.")
     dashboard_database_id = dashboard_database_id or None
-    dashboard_dashboard_id = str(form.get("dashboard_dashboard_id") or "").strip()
+    dashboard_dashboard_id = str(
+        form.get("dashboard_dashboard_id") or (active or {}).get("dashboard_dashboard_id") or ""
+    ).strip()
     if dashboard_dashboard_id and not dashboard_dashboard_id.isdigit():
         raise ValueError("Dashboard target Superset tidak valid.")
     dashboard_dashboard_id = dashboard_dashboard_id or None
+    if not raw_dashboard_mode and active_is_committed and dashboard_mode == "new":
+        dashboard_report = read_json(OUTPUTS_DIR / "reports" / "superset_excel_dashboard.json") or {}
+        report_session_id = str(dashboard_report.get("dataset_session_id") or "").strip()
+        report_dashboard_id = str(dashboard_report.get("dashboard_id") or "").strip()
+        if (
+            dashboard_report.get("status") == "validated"
+            and report_session_id == active_session_id
+            and report_dashboard_id.isdigit()
+        ):
+            dashboard_mode = "update"
+            dashboard_dashboard_id = report_dashboard_id
+    if dashboard_mode == "new":
+        dashboard_dashboard_id = None
     dataset_id = f"excel-{utc_now_iso().replace(':', '').replace('-', '').split('.')[0]}-{uuid4().hex[:6]}"
     if len(uploads) > 20:
         raise ValueError("Jumlah workbook melebihi batas 20 file per dataset.")
@@ -311,11 +336,6 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
                     "fakultas": metadata["fakultas"],
                 }
             )
-        active = (
-            normalize_dataset_file_kinds(read_json(ACTIVE_EXCEL_DATASET_PATH))
-            if append_to_active
-            else None
-        )
         active_files = active.get("files", []) if isinstance(active, dict) and active.get("status") == "committed" else []
         if active_files:
             first_path = Path(str(active_files[0].get("path") or ""))
@@ -348,7 +368,6 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
         "dataset_session_id": dataset_id,
         "status": "committed",
         "upload_state": "COMMITTED",
-        "validation_status": "VALIDATED",
         "excel_only": True,
         "upload_mode": upload_mode,
         "metadata_scope": "bundle" if upload_mode == "multi" else "per_file",
@@ -368,6 +387,9 @@ def commit_excel_lakehouse_dataset(form: Any, files: Any) -> dict[str, Any]:
         "upload_committed_at": upload_committed_at,
         "created_at": upload_committed_at,
     }
+    validation = validate_committed_dataset(dataset, ROOT_DIR)
+    dataset["validation_status"] = "VALIDATED" if validation["valid"] else "NEEDS_REVIEW"
+    dataset["validation_errors"] = validation["errors"]
     write_json(ACTIVE_EXCEL_DATASET_PATH, dataset)
     registry = {"active_dataset_id": dataset_id, "updated_at": utc_now_iso(), "datasets": [dataset]}
     if EXCEL_DATASET_REGISTRY_PATH.exists():

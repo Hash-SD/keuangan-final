@@ -74,6 +74,26 @@ def test_parser_uses_final_amount_column_not_tax_or_intermediate_total(tmp_path)
     assert validation.iloc[0]["total_rekap"] == 6_745_050
 
 
+def test_parser_defaults_missing_quantity_and_unit_price_to_final_amount(tmp_path):
+    path = tmp_path / "rab_missing_detail_values.xlsx"
+    _write_workbook(
+        path,
+        rekap_total=2_520_000,
+        rows=[
+            (1, "Sewa Bus Kegiatan", None, None, "Paket", None, None, None, None, None, None, None, 2_520_000),
+        ],
+    )
+
+    items, _, _ = parse_rab_workbook(
+        ExcelSource(path=path, tahun_input=2025, prodi="Sains Data", jenis_dataset="rab")
+    )
+
+    row = items.iloc[0]
+    assert row["qty"] == 1
+    assert row["harga_satuan"] == 2_520_000
+    assert row["jumlah"] == 2_520_000
+
+
 def test_parser_matches_2023_period_rekap_totals_without_header_rows(tmp_path):
     jan_path = tmp_path / "rab_2023_jan_jun.xlsx"
     jul_path = tmp_path / "rab_2023_jul_des.xlsx"

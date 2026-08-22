@@ -13,17 +13,20 @@
     activeDashboardId: null,
     dashboards: [],
     charts: {},                 // chart_id -> { spec, payload }
+    crossFilters: [],           // [{ col, op: "IN", val: ["..."] }]
     palette: ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)", "var(--chart-6)", "var(--chart-7)", "var(--chart-8)", "var(--chart-9)", "var(--chart-10)", "var(--chart-11)", "var(--chart-12)"],
     echarts: {},
+    chartHandlers: {},
     resizeObservers: {},
     tables: {},                 // chart_id -> { page, size, search }
     sortOrder: {},              // chart_id -> "desc" | "asc" | null (default)
+    activeStatus: null,
   };
 
-  // Chart yang tidak relevan untuk tampilan bisnis (teknis pipeline/QA/redundant KPI) —
-  // disaring dari grid, fetch, dan render. ID berlaku untuk dashboard #2 dan #3.
+  // Chart yang tidak relevan untuk tampilan bisnis (teknis pipeline/QA) —
+  // disaring dari grid, fetch, dan render. Weighted IKU juga disaring dinamis
+  // berdasarkan judul agar ID chart tidak menjadi kontrak lintas dashboard.
   const HIDDEN_CHART_IDS = new Set([
-    19, // "Total Weighted IKU" — disembunyikan sesuai arahan pengguna
     27, // "Mapping Quality" — distribusi mapping_status (mapped_from_nomenklatur, review_queue, dll)
   ]);
   const isVisible = (spec) => !HIDDEN_CHART_IDS.has(spec.id) && !spec.title?.toLowerCase().includes("weighted iku");
@@ -44,7 +47,7 @@
       kegiatan: "Kegiatan",
       akun: "Akun",
       uraian_detail: "Uraian Detail",
-      qty: "Qty",
+      qty: "Kuantitas",
       harga_satuan: "Harga Satuan",
       jumlah: "Jumlah",
       source_file: "Sumber data",
@@ -244,25 +247,33 @@
   // TTL menyamai cache server (60 detik): selama masih segar, tidak ada
   // re-fetch sama sekali — navigasi antar tahun/dashboard jadi instan.
   // -------------------------------------------------------------------------
-  const CHART_CACHE_VERSION = "1";
+  const CHART_CACHE_VERSION = "2";
   const CHART_CACHE_KEY = `silaras_dash_chart_cache_v${CHART_CACHE_VERSION}`;
   const CHART_CACHE_TTL_MS = 60 * 1000;
   const chartCache = new Map();
 
-  function cacheKeyFor(chartId, year) {
-    return `${state.activeDashboardId}:${chartId}:${year || "__all__"}`;
+  function cloneFilters(filters) {
+    return (Array.isArray(filters) ? filters : []).map((filter) => ({
+      col: filter.col,
+      op: filter.op || "IN",
+      val: Array.isArray(filter.val) ? [...filter.val] : [filter.val],
+    }));
   }
 
-  function chartCacheGet(chartId, year) {
-    const k = cacheKeyFor(chartId, year);
+  function cacheKeyFor(chartId, year, filters = state.crossFilters) {
+    return `${state.activeDashboardId}:${chartId}:${year || "__all__"}:${JSON.stringify(cloneFilters(filters))}`;
+  }
+
+  function chartCacheGet(chartId, year, filters = state.crossFilters) {
+    const k = cacheKeyFor(chartId, year, filters);
     const entry = chartCache.get(k);
     if (!entry) return null;
     return { payload: entry.payload, fresh: Date.now() - entry.ts < CHART_CACHE_TTL_MS };
   }
 
-  function chartCacheSet(chartId, year, payload) {
+  function chartCacheSet(chartId, year, payload, filters = state.crossFilters) {
     if (!payload || payload.status !== "success") return;
-    chartCache.set(cacheKeyFor(chartId, year), { ts: Date.now(), payload });
+    chartCache.set(cacheKeyFor(chartId, year, filters), { ts: Date.now(), payload });
     try {
       sessionStorage.setItem(CHART_CACHE_KEY, JSON.stringify(Array.from(chartCache.entries())));
     } catch {}
@@ -287,46 +298,48 @@
     try { sessionStorage.removeItem(CHART_CACHE_KEY); } catch {}
   }
 
-  async function loadChart(chartId, year, refresh) {
+  async function loadChart(chartId, year, refresh, filters = state.crossFilters) {
     const spec = state.meta.charts.find((c) => c.id === chartId);
     if (!refresh) {
-      const cached = chartCacheGet(chartId, year);
+      const cached = chartCacheGet(chartId, year, filters);
       if (cached) {
         state.charts[chartId] = { spec, payload: cached.payload };
         // Cache lama (lewat TTL): tampilkan instan dulu, lalu re-fetch
         // di background agar data segar tanpa loading.
-        if (!cached.fresh) refreshInBackground(chartId, year);
+        if (!cached.fresh) refreshInBackground(chartId, year, filters);
         return cached.payload;
       }
     }
-    const payload = await fetchChartRemote(chartId, year, refresh);
+    const payload = await fetchChartRemote(chartId, year, refresh, filters);
     state.charts[chartId] = { spec, payload };
-    chartCacheSet(chartId, year, payload);
+    chartCacheSet(chartId, year, payload, filters);
     return payload;
   }
 
-  async function fetchChartRemote(chartId, year, refresh) {
+  async function fetchChartRemote(chartId, year, refresh, filters = state.crossFilters) {
     const params = new URLSearchParams();
     if (year) params.set("tahun", year);
     params.set("dashboard", String(state.activeDashboardId));
     if (refresh) params.set("refresh", "1");
+    const normalizedFilters = cloneFilters(filters);
+    if (normalizedFilters.length) params.set("filters", JSON.stringify(normalizedFilters));
     return fetchJson(`/api/chart/${chartId}/data?${params.toString()}`);
   }
 
-  function refreshInBackground(chartId, year) {
-    fetchChartRemote(chartId, year, false)
+  function refreshInBackground(chartId, year, filters = state.crossFilters) {
+    fetchChartRemote(chartId, year, false, filters)
       .then((payload) => {
         state.charts[chartId] = { ...state.charts[chartId], payload };
-        chartCacheSet(chartId, year, payload);
+        chartCacheSet(chartId, year, payload, filters);
         const spec = state.meta.charts.find((c) => c.id === chartId);
         renderChart(spec);
       })
       .catch(() => {});
   }
 
-  async function loadAll(year, refresh) {
+  async function loadAll(year, refresh, filters = state.crossFilters) {
     const chartIds = state.meta.charts.filter(isVisible).map((c) => c.id);
-    const results = await Promise.allSettled(chartIds.map((id) => loadChart(id, year, refresh)));
+    const results = await Promise.allSettled(chartIds.map((id) => loadChart(id, year, refresh, filters)));
     const errors = [];
     results.forEach((r, i) => {
       const id = chartIds[i];
@@ -353,13 +366,21 @@
 
   function renderStatusPanel(errors) {
     const panel = $("statusPanel");
-    if (!errors || errors.length === 0) {
+    const activeStatus = state.activeStatus || {};
+    const hasHistoricalNotice = activeStatus.status === "not_available";
+    const notice = hasHistoricalNotice
+      ? `<div class="status-box status-box--warning">${svgIcon("info", 20)}<span>${escapeHtml(activeStatus.message || "Dashboard historis; dataset aktif belum tersedia.")}</span></div>`
+      : "";
+    if ((!errors || errors.length === 0) && !hasHistoricalNotice) {
       panel.className = "status-panel";
       panel.innerHTML = "";
       return;
     }
     panel.className = "status-panel visible";
-    panel.innerHTML = `<div class="status-box">${svgIcon("cloud-off", 20)}<span>${errors.length} visualisasi gagal dimuat.</span></div>`;
+    const errorNotice = errors && errors.length
+      ? `<div class="status-box">${svgIcon("cloud-off", 20)}<span>${errors.length} visualisasi gagal dimuat.</span></div>`
+      : "";
+    panel.innerHTML = `${notice}${errorNotice}`;
   }
 
   function renderSourceInline() {
@@ -387,6 +408,14 @@
       sel.value = String(state.activeDashboardId);
     }
     initCustomSelect(sel);
+  }
+
+  async function loadActiveStatus() {
+    try {
+      state.activeStatus = await fetchJson("/api/active-status");
+    } catch {
+      state.activeStatus = { status: "unknown" };
+    }
   }
 
   function initCustomSelect(select) {
@@ -464,6 +493,7 @@
     const seq = ++selectSeq;
     state.activeDashboardId = Number(id);
     state.activeYear = null;
+    state.crossFilters = [];
     const dashSel = $("dashboardSelect");
     if (dashSel) {
       dashSel.value = String(id);
@@ -483,7 +513,7 @@
     renderYearTabs();
     renderActiveFilters();
     buildDashboardGrid();
-    await refreshDashboard(false, seq);
+    await refreshDashboard(false, seq, []);
   }
 
   // -------------------------------------------------------------------------
@@ -508,7 +538,31 @@
   }
 
   function renderActiveFilters() {
-    $("activeFilters").textContent = state.activeYear ? `Menampilkan data tahun: ${state.activeYear}` : "Menampilkan data semua tahun";
+    const el = $("activeFilters");
+    if (!el) return;
+    const yearText = state.activeYear ? `Tahun ${state.activeYear}` : "Semua tahun";
+    const chips = state.crossFilters.map((filter) => {
+      const label = displayColumnLabel(filter.col);
+      const values = filter.val.map((value) => String(value)).join(", ");
+      return `<button type="button" class="cross-filter-chip" data-filter-col="${escapeHtml(filter.col)}" title="Hapus filter ${escapeHtml(label)}" aria-label="Hapus filter ${escapeHtml(label)}: ${escapeHtml(values)}">
+        <span>${escapeHtml(label)}: ${escapeHtml(values)}</span><span aria-hidden="true">×</span>
+      </button>`;
+    }).join("");
+    const clear = state.crossFilters.length
+      ? '<button type="button" class="cross-filter-clear" id="clearCrossFilters">Hapus pilihan</button>'
+      : "";
+    el.innerHTML = `<span class="active-filter-summary">${escapeHtml(yearText)}</span>${chips}${clear}`;
+    el.querySelectorAll(".cross-filter-chip").forEach((button) => {
+      button.addEventListener("click", () => {
+        const col = button.dataset.filterCol;
+        const next = state.crossFilters
+          .filter((filter) => filter.col !== col)
+          .map((filter) => ({ ...filter, val: [...filter.val] }));
+        applyCrossFilters(next);
+      });
+    });
+    const clearButton = $("clearCrossFilters");
+    if (clearButton) clearButton.addEventListener("click", () => applyCrossFilters([]));
   }
 
   async function selectYear(year) {
@@ -516,7 +570,48 @@
     state.activeYear = year;
     renderYearTabs();
     renderActiveFilters();
-    await refreshDashboard(false, seq);
+    await refreshDashboard(false, seq, cloneFilters(state.crossFilters));
+  }
+
+  function filtersEqual(left, right) {
+    return JSON.stringify(cloneFilters(left)) === JSON.stringify(cloneFilters(right));
+  }
+
+  async function applyCrossFilters(filters) {
+    const next = cloneFilters(filters);
+    if (filtersEqual(state.crossFilters, next)) return;
+    state.crossFilters = next;
+    const seq = ++selectSeq;
+    renderActiveFilters();
+    await refreshDashboard(false, seq, next);
+  }
+
+  function applyCrossSelection(selections, multi = false) {
+    const validSelections = (Array.isArray(selections) ? selections : [])
+      .map((selection) => ({ field: String(selection.field || "").trim(), value: selection.value }))
+      .filter((selection) => selection.field && selection.value !== null && selection.value !== undefined && String(selection.value).trim() !== "");
+    if (!validSelections.length) return;
+
+    const presentation = window.SILARASPresentation;
+    if (!presentation?.toggleCrossFilter) return;
+
+    let next;
+    if (multi) {
+      next = state.crossFilters;
+      validSelections.forEach((selection) => {
+        next = presentation.toggleCrossFilter(next, selection.field, selection.value, true);
+      });
+    } else if (validSelections.length === 1) {
+      const selection = validSelections[0];
+      next = presentation.toggleCrossFilter(state.crossFilters, selection.field, selection.value, false);
+    } else {
+      next = validSelections.reduce(
+        (filters, selection) => presentation.toggleCrossFilter(filters, selection.field, selection.value, true),
+        [],
+      );
+      if (filtersEqual(state.crossFilters, next)) next = [];
+    }
+    applyCrossFilters(next);
   }
 
   // -------------------------------------------------------------------------
@@ -861,10 +956,27 @@
     return chart;
   }
 
-  function makeChart(elId, option) {
+  function bindChartInteraction(elId, chart, spec) {
+    if (!chart || !spec || state.chartHandlers[elId]?.chart === chart) return;
+    const handler = (params) => {
+      const data = params?.data && typeof params.data === "object" ? params.data : {};
+      if (data.isRemainder) return;
+      const field = data.filterField || dimensionKey(spec) || spec.groupby?.[0];
+      const value = data.filterValue ?? data.name ?? params?.name;
+      if (!field || value === null || value === undefined || String(value).trim() === "") return;
+      const sourceEvent = params?.event?.event || params?.event;
+      const multi = Boolean(sourceEvent?.ctrlKey || sourceEvent?.metaKey);
+      applyCrossSelection([{ field, value }], multi);
+    };
+    chart.on("click", handler);
+    state.chartHandlers[elId] = { chart, handler };
+  }
+
+  function makeChart(elId, option, spec) {
     const chart = getChart(elId);
     if (!chart) return;
     chart.setOption(resolveTokens(option), true);
+    bindChartInteraction(elId, chart, spec);
     return chart;
   }
 
@@ -872,6 +984,10 @@
     const observer = state.resizeObservers[elId];
     if (observer) observer.disconnect();
     delete state.resizeObservers[elId];
+
+    const interaction = state.chartHandlers[elId];
+    if (interaction?.chart && interaction.handler) interaction.chart.off("click", interaction.handler);
+    delete state.chartHandlers[elId];
 
     const chart = state.echarts[elId];
     if (chart && !chart.isDisposed?.()) chart.dispose();
@@ -958,7 +1074,12 @@
       el.classList.add(full > 12 ? "chart-tall" : "chart-large");
     }
 
-    const rows = sorted.map((r, i) => ({ name: String(r[dimKey] ?? ""), value: vals[i] }));
+    const rows = sorted.map((r, i) => ({
+      name: String(r[dimKey] ?? ""),
+      value: vals[i],
+      filterField: dimKey,
+      filterValue: r[dimKey],
+    }));
 
     makeChart(elId, {
       animationDuration: 500,
@@ -1000,7 +1121,7 @@
           formatter: (p) => (currency ? fmtCompactCurrency(p.value) : fmtNumber(p.value)),
         },
       }],
-    });
+    }, spec);
   }
 
   function renderTreemap(spec) {
@@ -1034,6 +1155,11 @@
       sortOrder: state.sortOrder[spec.id] || "desc",
     }).map((group, index) => ({
       ...group,
+      ...(group.isRemainder ? {} : { filterField: topKey, filterValue: group.name }),
+      children: (group.children || []).map((child) => ({
+        ...child,
+        ...(child.isRemainder ? {} : { filterField: childKey, filterValue: child.name }),
+      })),
       itemStyle: {
         color: group.isRemainder ? "var(--chart-6)" : state.palette[index % state.palette.length],
         opacity: group.isRemainder ? 0.62 : 1,
@@ -1084,7 +1210,7 @@
         ],
         data,
       }],
-    });
+    }, spec);
   }
 
   function renderDonut(spec) {
@@ -1105,7 +1231,12 @@
     }
 
     const sorted = sortedRecords(spec.id, records, metKey);
-    const data = sorted.map((r) => ({ name: String(r[dimKey] ?? "—"), value: cleanNumber(r[metKey]) }));
+    const data = sorted.map((r) => ({
+      name: String(r[dimKey] ?? "—"),
+      value: cleanNumber(r[metKey]),
+      filterField: dimKey,
+      filterValue: r[dimKey],
+    }));
     const total = data.reduce((s, d) => s + d.value, 0) || 1;
 
     makeChart(elId, {
@@ -1128,15 +1259,27 @@
         labelLine: { length: 8, length2: 6, lineStyle: { color: "var(--surface-glass-border)" } },
         data,
       }],
-    });
+    }, spec);
 
     if (legend) {
       legend.innerHTML = data.map((d, i) => `
-        <div class="legend-item">
+        <div class="legend-item" data-legend-index="${i}" tabindex="0" role="button" aria-label="Filter ${escapeHtml(d.name)}">
           <span class="legend-swatch" style="background:${state.palette[i % state.palette.length]}"></span>
           <span class="li-name">${escapeHtml(d.name)}</span>
           <span class="li-val">${fmtNumber(d.value)}</span>
         </div>`).join("");
+      legend.querySelectorAll(".legend-item").forEach((item, index) => {
+        const selectLegend = (event) => applyCrossSelection(
+          [{ field: data[index].filterField, value: data[index].filterValue }],
+          Boolean(event.ctrlKey || event.metaKey),
+        );
+        item.addEventListener("click", selectLegend);
+        item.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          selectLegend(event);
+        });
+      });
     }
   }
 
@@ -1150,6 +1293,26 @@
       return [...spec.groupby, ...((spec.metrics || []).map((m) => m.label))];
     }
     return [];
+  }
+
+  const CROSS_FILTER_COLUMNS = new Set([
+    "tahun", "prodi", "fakultas", "iku", "kode_iku", "kegiatan", "cluster_kegiatan",
+    "akun", "kode_akun", "nama_akun", "uraian_detail", "source_file", "source_sheet", "source_role",
+    "row_type", "status", "status_rekonsiliasi", "validation_type",
+  ]);
+  const NON_FILTERABLE_TABLE_COLUMNS = new Set([
+    "qty", "harga_satuan", "jumlah", "jumlah_weighted_iku", "total_detail", "total_rekap", "selisih",
+    "allocation_weight", "source_row", "data_quality_flag", "mapping_status",
+  ]);
+
+  function isCrossFilterColumn(column) {
+    const key = String(column ?? "").trim().toLowerCase();
+    return CROSS_FILTER_COLUMNS.has(key) && !NON_FILTERABLE_TABLE_COLUMNS.has(key);
+  }
+
+  function normalizeTableRecord(record) {
+    const formatter = window.SILARASPresentation?.normalizeDetailRecord;
+    return formatter ? formatter(record) : { ...(record || {}) };
   }
 
   function renderReconciliationStatus(spec, records) {
@@ -1188,7 +1351,8 @@
     const spec = state.meta.charts.find((c) => c.id === id);
     const wrap = $(`tblWrap${id}`);
     const pag = $(`tblPag${id}`);
-    const records = chartRecords(id);
+    const rawRecords = chartRecords(id);
+    const records = Array.isArray(rawRecords) ? rawRecords.map(normalizeTableRecord) : rawRecords;
     const st = state.tables[id];
     if (!st) return;
     if (isReconciliationSpec(spec)) {
@@ -1257,7 +1421,29 @@
       }).join("") + "</tr>";
     }).join("");
 
-    if (wrap) wrap.innerHTML = `<table class="apple-table"><thead><tr>${header}</tr></thead><tbody>${body || '<tr class="tbl-empty"><td>Pencarian tidak menemukan hasil.</td></tr>'}</tbody></table>`;
+    if (wrap) {
+      wrap.innerHTML = `<table class="apple-table"><thead><tr>${header}</tr></thead><tbody>${body || '<tr class="tbl-empty"><td>Pencarian tidak menemukan hasil.</td></tr>'}</tbody></table>`;
+      wrap.querySelectorAll("tbody tr:not(.tbl-empty)").forEach((row, index) => {
+        const record = pageRows[index];
+        const selections = cols
+          .filter(isCrossFilterColumn)
+          .map((column) => ({ field: column, value: record?.[column] }))
+          .filter((selection) => selection.value !== null && selection.value !== undefined && String(selection.value).trim() !== "");
+        if (!selections.length) return;
+        row.classList.add("cross-filterable-row");
+        row.tabIndex = 0;
+        const selectRow = (event) => {
+          if (event.target.closest("button, input, select, a")) return;
+          applyCrossSelection(selections, Boolean(event.ctrlKey || event.metaKey));
+        };
+        row.addEventListener("click", selectRow);
+        row.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          applyCrossSelection(selections, Boolean(event.ctrlKey || event.metaKey));
+        });
+      });
+    }
 
     const sub = $(`tblSub${id}`);
     if (sub) sub.textContent = `${fmtInt.format(records.length)} baris${st.search ? ` — ${fmtInt.format(rows.length)} hasil pencarian` : ""}.`;
@@ -1306,14 +1492,15 @@
     $("footerStatus").textContent = anyFail ? `${errors.length} visualisasi bermasalah` : "Semua data berhasil dimuat";
   }
 
-  async function refreshDashboard(force, seq = selectSeq) {
+  async function refreshDashboard(force, seq = selectSeq, filters = state.crossFilters) {
     const btn = $("refreshDashboard");
     btn.classList.add("spinning");
     btn.disabled = true;
     try {
       if (force) chartCacheClear();
-      const errors = await loadAll(state.activeYear, force);
+      const errors = await loadAll(state.activeYear, force, cloneFilters(filters));
       if (seq !== selectSeq) return;
+      renderActiveFilters();
       renderDashboard(errors);
       if (force) showToast("Data berhasil dimuat ulang");
     } catch (err) {
@@ -1384,6 +1571,7 @@
     applyThemeUI(state.theme);
     bindEvents();
     try {
+      await loadActiveStatus();
       await loadDashboards();
       state.activeDashboardId = state.dashboards[0] ? state.dashboards[0].id : 2;
       await selectDashboard(state.activeDashboardId);

@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 const DASHBOARD_URL = process.env.SUPERSET_DASHBOARD_URL || "http://localhost:8092/";
 
 test.use({ viewport: { width: 1920, height: 1080 } });
+test.describe.configure({ mode: "serial" });
 
 test("superset mirror dashboard renders a centered analytics layout at 1920px", async ({ page }) => {
   const consoleErrors: string[] = [];
@@ -28,7 +29,7 @@ test("superset mirror dashboard renders a centered analytics layout at 1920px", 
 
   await expect
     .poll(() => kpis.count())
-    .toBeGreaterThanOrEqual(1);
+    .toBe(4);
 
   const kpiValues = page.locator("#kpiGrid .metric-value");
   await expect
@@ -124,6 +125,23 @@ test("superset mirror dashboard renders a centered analytics layout at 1920px", 
     .allTextContents();
   expect(detailHeaders).toContain("Sumber data");
 
+  const detailTable = page.locator("#dashboardGrid .table-card").filter({ hasText: "Detail item biaya" });
+  const detailRow = detailTable.locator("tbody tr").first();
+  await expect(detailRow).toBeVisible();
+  const detailValues = await detailRow.evaluate((row) => {
+    const headers = [...(row.parentElement?.parentElement?.querySelectorAll("thead th") || [])]
+      .map((header) => header.textContent?.trim() || "");
+    const values = [...row.children].map((cell) => cell.textContent?.trim() || "");
+    return {
+      quantity: values[headers.indexOf("Kuantitas")],
+      unitPrice: values[headers.indexOf("Harga satuan")],
+      amount: values[headers.indexOf("Jumlah")],
+    };
+  });
+  expect(detailValues.quantity).toBe("1");
+  expect(detailValues.unitPrice).toBe(detailValues.amount);
+  expect(detailValues.amount).toMatch(/Rp\s?\d{1,3}(\.\d{3})+/);
+
   const validationTable = page.locator("#dashboardGrid .table-card").filter({ hasText: "Validasi rekap" });
   await expect(validationTable).toHaveCount(1);
   const validationSelisih = await validationTable.locator("tbody tr").evaluateAll((rows) => {
@@ -162,6 +180,45 @@ test("superset mirror dashboard renders a centered analytics layout at 1920px", 
   }
 
   expect(consoleErrors).toEqual([]);
+});
+
+test("chart and table selections cross-filter the complete dashboard", async ({ page }) => {
+  const filterRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/api/chart/") && request.url().includes("filters=")) filterRequests.push(request.url());
+  });
+
+  await page.goto(DASHBOARD_URL);
+  await expect
+    .poll(() => page.locator("#footerStatus").textContent())
+    .toContain("Semua data berhasil dimuat");
+
+  const yearlyChart = page.locator("#dashboardGrid .chart-card").filter({ hasText: "Anggaran per tahun" }).locator(".chart");
+  await expect(yearlyChart).toBeVisible();
+  await expect(yearlyChart.locator("canvas")).toBeVisible();
+  await expect.poll(() => yearlyChart.evaluate((element) => Boolean((window as any).echarts.getInstanceByDom(element)))).toBe(true);
+  await yearlyChart.scrollIntoViewIfNeeded();
+  const point = await yearlyChart.evaluate((element) => {
+    const chart = (window as any).echarts.getInstanceByDom(element);
+    const option = chart.getOption();
+    const category = String(option.xAxis[0].data[0]);
+    const value = Number(option.series[0].data[0].value ?? option.series[0].data[0]);
+    const pixel = chart.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [category, value / 2]);
+    const rect = element.getBoundingClientRect();
+    return { x: rect.left + pixel[0], y: rect.top + pixel[1], category };
+  });
+  await page.mouse.click(point.x, point.y);
+
+  await expect(page.locator(".cross-filter-chip")).toContainText(point.category);
+  await expect
+    .poll(() => page.locator("#activeFilters").textContent())
+    .toContain("Tahun");
+  await expect.poll(() => filterRequests.length).toBeGreaterThan(0);
+
+  const clear = page.locator("#clearCrossFilters");
+  await expect(clear).toBeVisible();
+  await clear.click();
+  await expect(page.locator(".cross-filter-chip")).toHaveCount(0);
 });
 
 test("superset mirror dashboard stays compact and scroll-safe on mobile", async ({ page }) => {

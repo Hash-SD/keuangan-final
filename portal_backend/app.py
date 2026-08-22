@@ -348,8 +348,22 @@ def create_app() -> Flask:
         with _airflow_trigger_lock:
             try:
                 validation = validate_committed_dataset(active_dataset, PORTAL_DIR.parent)
-                if active_dataset and not validation.get("valid"):
-                    return jsonify({"status": "failed", "message": "Dataset aktif belum valid.", "errors": validation.get("errors", [])}), 400
+                if not active_dataset:
+                    return jsonify(
+                        {
+                            "status": "failed",
+                            "message": "Dataset aktif COMMITTED belum tersedia.",
+                            "errors": ["Upload dan commit dataset Excel terlebih dahulu."],
+                        }
+                    ), 400
+                if not validation.get("valid"):
+                    return jsonify(
+                        {
+                            "status": "failed",
+                            "message": "Dataset aktif belum valid.",
+                            "errors": validation.get("errors", []),
+                        }
+                    ), 400
                 # Remove abandoned queued runs created for an older dataset session
                 # so they cannot execute later against a newer active dataset and
                 # fail the pipeline guard. Keeps the Airflow queue single-purpose.

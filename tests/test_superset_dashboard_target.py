@@ -45,6 +45,102 @@ def test_no_explicit_target_returns_none(monkeypatch):
     assert assets._target_dashboard_id(Mock()) is None
 
 
+def test_new_dashboard_mode_ignores_explicit_target(monkeypatch):
+    monkeypatch.setattr(assets, "DASHBOARD_MODE", "new")
+    monkeypatch.setattr(assets, "TARGET_DASHBOARD_ID", "2")
+    session = Mock()
+
+    assert assets._target_dashboard_id(session) is None
+    session.get.assert_not_called()
+
+
+def test_new_dashboard_mode_creates_chart_instead_of_updating_old_registry_chart(monkeypatch):
+    monkeypatch.setattr(assets, "DASHBOARD_MODE", "new")
+    monkeypatch.setattr(assets, "DASHBOARD_INSTANCE_SUFFIX", "new-run")
+    old_chart = {
+        "id": 7,
+        "description": f"{assets.MANAGED_CHART_MARKER}kpi_total_anggaran",
+        "slice_name": assets.CHART_DISPLAY_NAMES["kpi_total_anggaran"],
+    }
+    monkeypatch.setattr(assets, "_get_items", lambda _session, resource: [old_chart] if resource == "chart" else [])
+    session = Mock()
+    session.post.return_value = _put_response(99)
+
+    payload = assets._chart_payload(
+        dataset_id=5,
+        name=assets._chart_name("KPI total anggaran"),
+        viz_type="big_number_total",
+        form_data={},
+        query={},
+        registry_key="kpi_total_anggaran",
+    )
+
+    chart_id = assets._upsert_chart(session, payload)
+
+    assert chart_id == 99
+    assert session.post.call_count == 1
+    assert session.put.call_count == 0
+    assert payload["description"] != f"{assets.MANAGED_CHART_MARKER}kpi_total_anggaran"
+
+
+def test_new_dashboard_uses_one_stable_suffix_for_title_slug_and_charts(monkeypatch):
+    monkeypatch.setattr(assets, "DASHBOARD_MODE", "new")
+    monkeypatch.setattr(assets, "DASHBOARD_INSTANCE_SUFFIX", "stable-run")
+
+    assert assets._dashboard_title().endswith(" stable-run")
+    assert assets._dashboard_slug().endswith("-stable-run")
+    assert assets._chart_name("Detail item biaya").endswith(" stable-run")
+
+
+def test_superset_identity_resolves_from_published_active_gold_run(tmp_path, monkeypatch):
+    reports = tmp_path / "outputs" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "active_gold_run.json").write_text(
+        json.dumps(
+            {
+                "status": "PUBLISHED",
+                "dataset_session_id": "dataset-1",
+                "pipeline_run_id": "run-1",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (reports / "active_excel_lakehouse_dataset.json").write_text(
+        json.dumps(
+            {
+                "status": "committed",
+                "dataset_session_id": "dataset-1",
+                "files": [{"filename": "RAB_2025.xlsx"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(assets, "OUTPUTS_DIR", tmp_path / "outputs")
+    monkeypatch.delenv("DATASET_SESSION_ID", raising=False)
+    monkeypatch.delenv("PIPELINE_RUN_ID", raising=False)
+
+    assert assets._resolve_pipeline_identity() == ("dataset-1", "run-1")
+
+
+def test_superset_identity_rejects_published_gold_for_different_active_dataset(tmp_path, monkeypatch):
+    reports = tmp_path / "outputs" / "reports"
+    reports.mkdir(parents=True)
+    (reports / "active_excel_lakehouse_dataset.json").write_text(
+        json.dumps({"status": "committed", "dataset_session_id": "new-dataset", "files": [{"filename": "RAB.xlsx"}]}),
+        encoding="utf-8",
+    )
+    (reports / "active_gold_run.json").write_text(
+        json.dumps({"status": "PUBLISHED", "dataset_session_id": "old-dataset", "pipeline_run_id": "old-run"}),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(assets, "OUTPUTS_DIR", tmp_path / "outputs")
+    monkeypatch.delenv("DATASET_SESSION_ID", raising=False)
+    monkeypatch.delenv("PIPELINE_RUN_ID", raising=False)
+
+    with pytest.raises(RuntimeError, match="berbeda dari dataset aktif"):
+        assets._resolve_pipeline_identity()
+
+
 def test_upsert_dashboard_targets_explicit_id_without_slug_match(monkeypatch):
     monkeypatch.setattr(assets, "TARGET_DASHBOARD_ID", "2")
     session = _session_with_dashboards([1, 2, 4])
