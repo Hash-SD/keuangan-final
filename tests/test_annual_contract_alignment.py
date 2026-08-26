@@ -171,8 +171,8 @@ def test_superset_runtime_exposes_single_registry_and_five_filters():
 
     detail_payload = assets._registry_chart_payload("detail_item_biaya", 10, 20)
     validation_payload = assets._registry_chart_payload("validasi_rekap", 10, 20)
-    assert detail_payload["slice_name"] == "Detail item biaya"
-    assert validation_payload["slice_name"] == "Validasi rekap"
+    assert detail_payload["slice_name"] == "Detail Item Biaya"
+    assert validation_payload["slice_name"] == "Validasi Rekap"
     assert not detail_payload["slice_name"].startswith("SILARAS |")
     assert not validation_payload["slice_name"].startswith("SILARAS |")
 
@@ -244,3 +244,11 @@ def test_current_docs_describe_annual_dashboard_contract():
     assert "13 chart" in dashboard_spec.lower()
     assert "laporan tahunan" in architecture.lower()
     assert "periode" not in guide.lower().split("### gold dan grain", 1)[1].split("### identitas output", 1)[0]
+
+
+def test_trino_validation_uses_weighted_annual_metric_only():
+    sql = (ROOT / "src" / "sql" / "trino_validation_queries.sql").read_text(encoding="utf-8")
+
+    assert "SUM(jumlah) AS total_anggaran" not in sql
+    assert "SUM(jumlah_weighted_iku) AS total_anggaran" in sql
+    assert "COUNT(DISTINCT item_id) AS jumlah_item" in sql

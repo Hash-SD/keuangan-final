@@ -87,6 +87,44 @@ def test_fact_anggaran_parses_formatted_money_before_applying_fallback():
     assert fact.iloc[0]["jumlah"] == 2_520_000
 
 
+def test_fact_anggaran_snaps_near_integer_weighted_amount_without_rounding_real_fraction():
+    near_integer = pd.DataFrame(
+        [
+            {
+                "item_id": "i-near-integer-weighted",
+                "tahun": "2025",
+                "prodi": "Sains Data",
+                "kegiatan": "Kegiatan A",
+                "akun": "521211 - Belanja Bahan",
+                "iku": "IK 1.1",
+                "jumlah": 666_000.0000000001,
+                "source_file": "rab.xlsx",
+            }
+        ]
+    )
+    real_fraction = pd.DataFrame(
+        [
+            {
+                "item_id": "i-real-fraction-weighted",
+                "tahun": "2025",
+                "prodi": "Sains Data",
+                "kegiatan": "Kegiatan B",
+                "akun": "521211 - Belanja Bahan",
+                "iku": "IK 1.1; IK 2.1; IK 3.1; IK 4.1; IK 5.1; IK 6.1",
+                "jumlah": 500_000,
+                "source_file": "rab.xlsx",
+            }
+        ]
+    )
+
+    near_integer_fact = build_fact_anggaran(near_integer)
+    real_fraction_fact = build_fact_anggaran(real_fraction)
+
+    assert near_integer_fact.iloc[0]["jumlah_weighted_iku"] == 666_000
+    assert real_fraction_fact.iloc[0]["jumlah_weighted_iku"] == 500_000 / 6
+    assert real_fraction_fact["jumlah_weighted_iku"].sum() == 500_000
+
+
 def test_fact_anggaran_returns_empty_contract_when_all_rows_are_invalid():
     silver = pd.DataFrame(
         [

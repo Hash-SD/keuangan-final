@@ -283,6 +283,16 @@ def test_v2_dashboard_summary_never_uses_stale_numeric_fallbacks() -> None:
     assert "summaryStatus.style.display" in html
 
 
+def test_v2_uses_canonical_annual_budget_kpis_without_legacy_receivable_fields() -> None:
+    html = _html()
+
+    for element_id in ["valTotalAnggaran", "valItemAnggaran", "valJumlahIku", "valJumlahKegiatan", "valStatusRekonsiliasi"]:
+        assert f'id="{element_id}"' in html
+    assert "total_jumlah" not in html
+    assert "total_weighted_iku" not in html
+    assert "nominal_piutang_rp" not in html
+
+
 def test_v2_task3_has_navigation_and_views_for_all_primary_workflows() -> None:
     html = _html()
 

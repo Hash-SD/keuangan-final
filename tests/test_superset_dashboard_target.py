@@ -56,7 +56,7 @@ def test_new_dashboard_mode_ignores_explicit_target(monkeypatch):
 
 def test_new_dashboard_mode_creates_chart_instead_of_updating_old_registry_chart(monkeypatch):
     monkeypatch.setattr(assets, "DASHBOARD_MODE", "new")
-    monkeypatch.setattr(assets, "DASHBOARD_INSTANCE_SUFFIX", "new-run")
+    monkeypatch.setattr(assets, "DASHBOARD_INSTANCE_NUMBER", 2)
     old_chart = {
         "id": 7,
         "description": f"{assets.MANAGED_CHART_MARKER}kpi_total_anggaran",
@@ -80,16 +80,66 @@ def test_new_dashboard_mode_creates_chart_instead_of_updating_old_registry_chart
     assert chart_id == 99
     assert session.post.call_count == 1
     assert session.put.call_count == 0
-    assert payload["description"] != f"{assets.MANAGED_CHART_MARKER}kpi_total_anggaran"
+    assert payload["description"] == f"{assets.NEW_MANAGED_CHART_MARKER}2:kpi_total_anggaran"
 
 
 def test_new_dashboard_uses_one_stable_suffix_for_title_slug_and_charts(monkeypatch):
     monkeypatch.setattr(assets, "DASHBOARD_MODE", "new")
-    monkeypatch.setattr(assets, "DASHBOARD_INSTANCE_SUFFIX", "stable-run")
+    monkeypatch.setattr(assets, "DASHBOARD_INSTANCE_NUMBER", 3)
 
-    assert assets._dashboard_title().endswith(" stable-run")
-    assert assets._dashboard_slug().endswith("-stable-run")
-    assert assets._chart_name("Detail item biaya").endswith(" stable-run")
+    assert assets._dashboard_title() == "SILARAS SD - Dashboard Anggaran IKU 3"
+    assert assets._dashboard_slug() == "dashboard-anggaran-iku-prodi-3"
+    assert assets._chart_name("Detail Item Biaya") == "Detail Item Biaya 3"
+
+
+def test_new_dashboard_uses_next_numeric_instance_without_pipeline_uuid(monkeypatch):
+    monkeypatch.setattr(assets, "DASHBOARD_MODE", "new")
+    monkeypatch.setattr(assets, "DASHBOARD_INSTANCE_NUMBER", None)
+    session = Mock()
+    monkeypatch.setattr(
+        assets,
+        "_get_items",
+        lambda _session, resource: (
+            [
+                {"id": 1, "dashboard_title": assets.DASHBOARD_TITLE},
+                {"id": 2, "dashboard_title": f"{assets.DASHBOARD_TITLE} 1"},
+                {"id": 3, "dashboard_title": f"{assets.DASHBOARD_TITLE} 3"},
+                {"id": 4, "dashboard_title": f"{assets.DASHBOARD_TITLE} old-run"},
+            ]
+            if resource == "dashboard"
+            else []
+        ),
+    )
+
+    assets._prepare_new_dashboard_instance(session)
+
+    assert assets.DASHBOARD_INSTANCE_NUMBER == 4
+    assert "old-run" not in assets._dashboard_title()
+    assert assets._dashboard_title().endswith(" 4")
+    assert assets._dashboard_slug().endswith("-4")
+    assert assets._chart_name("Validasi Rekap").endswith(" 4")
+
+
+def test_superset_table_payloads_use_business_labels_and_thousands_format(monkeypatch):
+    monkeypatch.setattr(assets, "DASHBOARD_MODE", "update")
+
+    detail = json.loads(assets._registry_chart_payload("detail_item_biaya", 10, 20)["params"])
+    validation = json.loads(assets._registry_chart_payload("validasi_rekap", 10, 20)["params"])
+
+    assert detail["column_config"]["harga_satuan"]["d3NumberFormat"] == ",.0f"
+    assert detail["column_config"]["jumlah"]["d3NumberFormat"] == ",.0f"
+    for column in ("total_detail", "total_rekap", "selisih"):
+        assert validation["column_config"][column]["d3NumberFormat"] == ",.0f"
+    assert assets.COLUMN_LABELS["total_detail"] == "Detail Total"
+    assert assets.COLUMN_LABELS["total_rekap"] == "Total Rekap"
+    assert assets.COLUMN_LABELS["selisih"] == "Selisih"
+    assert assets.COLUMN_LABELS["status"] == "Status"
+
+
+def test_year_summary_disables_show_cell_bars():
+    params = json.loads(assets._registry_chart_payload("ringkasan_per_tahun", 10, 20)["params"])
+
+    assert params["show_cell_bars"] is False
 
 
 def test_superset_identity_resolves_from_published_active_gold_run(tmp_path, monkeypatch):

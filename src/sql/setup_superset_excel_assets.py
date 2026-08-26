@@ -66,6 +66,10 @@ COLUMN_LABELS = {
     "row_type": "Jenis Baris",
     "quality_flags": "Catatan Kualitas",
     "created_at": "Waktu Dibuat",
+    "total_detail": "Detail Total",
+    "total_rekap": "Total Rekap",
+    "selisih": "Selisih",
+    "status": "Status",
 }
 
 DATASET_DISPLAY_NAME = "Data Anggaran RAB/IKU"
@@ -84,6 +88,9 @@ DETAIL_TABLE_COLUMNS = [
 ]
 
 VALIDASI_TABLE_COLUMNS = ["tahun", "source_file", "total_detail", "total_rekap", "selisih", "status"]
+DETAIL_MONEY_COLUMNS = ("harga_satuan", "jumlah")
+VALIDASI_MONEY_COLUMNS = ("total_detail", "total_rekap", "selisih")
+MONEY_D3_FORMAT = ",.0f"
 
 SAVED_QUERY_DETAIL_SQL = """
 SELECT tahun, prodi, fakultas, kegiatan, cluster_kegiatan, akun, kode_akun,
@@ -118,19 +125,19 @@ CHART_SPECS = [
 ]
 
 CHART_DISPLAY_NAMES = {
-    "kpi_total_anggaran": "KPI total anggaran",
-    "kpi_jumlah_item": "KPI jumlah item",
-    "kpi_jumlah_iku": "KPI jumlah IKU",
-    "kpi_jumlah_kegiatan": "KPI jumlah kegiatan",
-    "kpi_status_rekonsiliasi": "KPI status rekonsiliasi",
-    "ringkasan_per_tahun": "Ringkasan per tahun",
-    "anggaran_per_tahun": "Anggaran per tahun",
+    "kpi_total_anggaran": "KPI Total Anggaran",
+    "kpi_jumlah_item": "KPI Jumlah Item",
+    "kpi_jumlah_iku": "KPI Jumlah IKU",
+    "kpi_jumlah_kegiatan": "KPI Jumlah Kegiatan",
+    "kpi_status_rekonsiliasi": "KPI Status Rekonsiliasi",
+    "ringkasan_per_tahun": "Ringkasan per Tahun",
+    "anggaran_per_tahun": "Anggaran per Tahun",
     "anggaran_per_iku": "Anggaran per IKU",
-    "cluster_kegiatan": "Klaster kegiatan",
-    "komposisi_akun": "Komposisi akun",
-    "anggaran_per_akun": "Anggaran per akun",
-    "detail_item_biaya": "Detail item biaya",
-    "validasi_rekap": "Validasi rekap",
+    "cluster_kegiatan": "Cluster Kegiatan",
+    "komposisi_akun": "Komposisi Akun",
+    "anggaran_per_akun": "Anggaran per Akun",
+    "detail_item_biaya": "Detail Item Biaya",
+    "validasi_rekap": "Validasi Rekap",
 }
 
 MANAGED_CHART_MARKER = "SILARAS_REGISTRY_KEY:"
@@ -154,40 +161,52 @@ CHART_REGISTRY = {
 }
 
 
-def _dashboard_suffix() -> str:
-    return datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+DASHBOARD_INSTANCE_NUMBER: int | None = None
+_configured_dashboard_number = os.getenv("DASHBOARD_INSTANCE_NUMBER", "").strip()
+if _configured_dashboard_number.isdigit() and int(_configured_dashboard_number) > 0:
+    DASHBOARD_INSTANCE_NUMBER = int(_configured_dashboard_number)
 
 
-def _stable_dashboard_suffix() -> str:
-    raw = os.getenv("DASHBOARD_INSTANCE_SUFFIX") or os.getenv("PIPELINE_RUN_ID") or _dashboard_suffix()
-    normalized = re.sub(r"[^A-Za-z0-9-]+", "-", str(raw)).strip("-")
-    return normalized[-32:] or _dashboard_suffix()
+def _next_dashboard_instance_number(session: requests.Session) -> int:
+    pattern = re.compile(rf"^{re.escape(DASHBOARD_TITLE)}(?:\s+(\d+))?$")
+    numbers = []
+    for dashboard in _get_items(session, "dashboard"):
+        match = pattern.fullmatch(str(dashboard.get("dashboard_title") or "").strip())
+        if match and match.group(1):
+            numbers.append(int(match.group(1)))
+    return max(numbers, default=0) + 1
 
 
-DASHBOARD_INSTANCE_SUFFIX = _stable_dashboard_suffix()
+def _prepare_new_dashboard_instance(session: requests.Session) -> int | None:
+    global DASHBOARD_INSTANCE_NUMBER
+    if DASHBOARD_MODE != "new":
+        return None
+    if DASHBOARD_INSTANCE_NUMBER is None:
+        DASHBOARD_INSTANCE_NUMBER = _next_dashboard_instance_number(session)
+    return DASHBOARD_INSTANCE_NUMBER
 
 
 def _dashboard_title() -> str:
     if DASHBOARD_MODE == "new":
-        return f"{DASHBOARD_TITLE} {DASHBOARD_INSTANCE_SUFFIX}"
+        return f"{DASHBOARD_TITLE} {DASHBOARD_INSTANCE_NUMBER or 1}"
     return DASHBOARD_TITLE
 
 
 def _dashboard_slug() -> str:
     if DASHBOARD_MODE == "new":
-        return f"{DASHBOARD_SLUG}-{DASHBOARD_INSTANCE_SUFFIX}"
+        return f"{DASHBOARD_SLUG}-{DASHBOARD_INSTANCE_NUMBER or 1}"
     return DASHBOARD_SLUG
 
 
 def _chart_name(name: str) -> str:
     if DASHBOARD_MODE == "new":
-        return f"{name} {DASHBOARD_INSTANCE_SUFFIX}"
+        return f"{name} {DASHBOARD_INSTANCE_NUMBER or 1}"
     return name
 
 
 def _chart_registry_marker(registry_key: str) -> str:
     if DASHBOARD_MODE == "new":
-        return f"{NEW_MANAGED_CHART_MARKER}{DASHBOARD_INSTANCE_SUFFIX}:{registry_key}"
+        return f"{NEW_MANAGED_CHART_MARKER}{DASHBOARD_INSTANCE_NUMBER or 1}:{registry_key}"
     return f"{MANAGED_CHART_MARKER}{registry_key}"
 
 
@@ -546,6 +565,10 @@ def _chart_payload(dataset_id: int, name: str, viz_type: str, form_data: dict, q
     return payload
 
 
+def _money_column_config(columns: tuple[str, ...]) -> dict[str, dict[str, str]]:
+    return {column: {"d3NumberFormat": MONEY_D3_FORMAT} for column in columns}
+
+
 def _upsert_chart(session: requests.Session, payload: dict) -> int:
     managed_description = payload.get("description")
     charts = _get_items(session, "chart")
@@ -607,7 +630,7 @@ def _registry_chart_payload(key: str, fact_dataset_id: int, reconciliation_datas
     count_iku = _registry_metric("jumlah_iku")
     count_kegiatan = _registry_metric("jumlah_kegiatan")
     if key == "kpi_total_anggaran":
-        return _chart_payload(fact_dataset_id, name, "big_number_total", {"metric": total, "y_axis_format": ",d"}, {"metrics": [total], "columns": []}, key)
+        return _chart_payload(fact_dataset_id, name, "big_number_total", {"metric": total, "y_axis_format": MONEY_D3_FORMAT}, {"metrics": [total], "columns": []}, key)
     if key == "kpi_jumlah_item":
         return _chart_payload(fact_dataset_id, name, "big_number_total", {"metric": count_items, "y_axis_format": ",d"}, {"metrics": [count_items], "columns": []}, key)
     if key == "kpi_jumlah_iku":
@@ -617,21 +640,21 @@ def _registry_chart_payload(key: str, fact_dataset_id: int, reconciliation_datas
     if key == "kpi_status_rekonsiliasi":
         return _chart_payload(reconciliation_dataset_id, name, "table", {"all_columns": ["status"], "page_length": 5}, {"columns": ["status"], "metrics": []}, key)
     if key == "ringkasan_per_tahun":
-        return _chart_payload(fact_dataset_id, name, "table", {"groupby": ["tahun"], "metrics": [total, count_items], "page_length": 10}, {"metrics": [total, count_items], "columns": ["tahun"], "orderby": [["tahun", True]], "row_limit": 10}, key)
+        return _chart_payload(fact_dataset_id, name, "table", {"groupby": ["tahun"], "metrics": [total, count_items], "page_length": 10, "show_cell_bars": False}, {"metrics": [total, count_items], "columns": ["tahun"], "orderby": [["tahun", True]], "row_limit": 10}, key)
     if key == "anggaran_per_tahun":
-        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "tahun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total], "columns": ["tahun"], "orderby": [["tahun", True]]}, key)
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "tahun", "orientation": "vertical", "y_axis_format": MONEY_D3_FORMAT}, {"metrics": [total], "columns": ["tahun"], "orderby": [["tahun", True]]}, key)
     if key == "anggaran_per_iku":
-        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "iku", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total], "columns": ["iku"], "orderby": [[total, False]]}, key)
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "iku", "orientation": "vertical", "y_axis_format": MONEY_D3_FORMAT}, {"metrics": [total], "columns": ["iku"], "orderby": [[total, False]]}, key)
     if key == "cluster_kegiatan":
         return _chart_payload(fact_dataset_id, name, "treemap_v2", {"metric": total, "groupby": ["iku", "kegiatan"], "label_type": "key_value"}, {"metrics": [total], "columns": ["iku", "kegiatan"]}, key)
     if key == "komposisi_akun":
-        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": ",d", "row_limit": 25}, {"metrics": [total], "columns": ["akun"], "orderby": [[total, False]], "row_limit": 25}, key)
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "akun", "orientation": "horizontal", "y_axis_format": MONEY_D3_FORMAT, "row_limit": 25}, {"metrics": [total], "columns": ["akun"], "orderby": [[total, False]], "row_limit": 25}, key)
     if key == "anggaran_per_akun":
-        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "akun", "orientation": "vertical", "y_axis_format": ",d"}, {"metrics": [total], "columns": ["akun"], "orderby": [[total, False]]}, key)
+        return _chart_payload(fact_dataset_id, name, "echarts_timeseries_bar", {"metrics": [total], "x_axis": "akun", "orientation": "vertical", "y_axis_format": MONEY_D3_FORMAT}, {"metrics": [total], "columns": ["akun"], "orderby": [[total, False]]}, key)
     if key == "detail_item_biaya":
-        return _chart_payload(fact_dataset_id, name, "table", {"all_columns": DETAIL_TABLE_COLUMNS, "page_length": 25}, {"columns": DETAIL_TABLE_COLUMNS, "metrics": []}, key)
+        return _chart_payload(fact_dataset_id, name, "table", {"all_columns": DETAIL_TABLE_COLUMNS, "column_config": _money_column_config(DETAIL_MONEY_COLUMNS), "page_length": 25}, {"columns": DETAIL_TABLE_COLUMNS, "metrics": []}, key)
     if key == "validasi_rekap":
-        return _chart_payload(reconciliation_dataset_id, name, "table", {"all_columns": VALIDASI_TABLE_COLUMNS, "page_length": 25}, {"columns": VALIDASI_TABLE_COLUMNS, "metrics": []}, key)
+        return _chart_payload(reconciliation_dataset_id, name, "table", {"all_columns": VALIDASI_TABLE_COLUMNS, "column_config": _money_column_config(VALIDASI_MONEY_COLUMNS), "page_length": 25}, {"columns": VALIDASI_TABLE_COLUMNS, "metrics": []}, key)
     raise KeyError(key)
 
 
@@ -900,11 +923,13 @@ def main() -> dict:
 
     try:
         session = _login()
+        _prepare_new_dashboard_instance(session)
         database_id = _database_id(session)
         dataset_id = _dataset_id(session, database_id, TABLE_NAME, DATASET_DISPLAY_NAME)
         reconciliation_dataset_id = _dataset_id(session, database_id, RECONCILIATION_TABLE_NAME, "Status Rekonsiliasi Anggaran")
         stale_columns_removed = _remove_stale_dataset_columns(session, dataset_id)
         hidden_deactivated = _deactivate_hidden_columns(session, dataset_id)
+        reconciliation_labels_updated = _deactivate_hidden_columns(session, reconciliation_dataset_id)
         chart_ids = [
             _upsert_chart(session, _registry_chart_payload(key, dataset_id, reconciliation_dataset_id))
             for key in CHART_SPECS
@@ -962,6 +987,7 @@ def main() -> dict:
             "chart_registry": CHART_SPECS,
             "hidden_columns": sorted(HIDDEN_COLUMNS),
             "hidden_columns_deactivated": hidden_deactivated,
+            "reconciliation_labels_updated": reconciliation_labels_updated,
             "stale_columns_removed": stale_columns_removed,
             "saved_query_ids": saved_query_ids,
             "dataset_session_id": dataset_session_id,

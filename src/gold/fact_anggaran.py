@@ -5,6 +5,7 @@ import re
 import pandas as pd
 
 from src.common.detail_amounts import normalize_detail_amount_frame, normalize_detail_amounts
+from src.common.money import canonical_currency
 from .contract import FACT_COLUMNS
 
 UNCLASSIFIED_IKU_LABEL = "IKU belum terklasifikasi"
@@ -46,8 +47,14 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
         if not iku_values:
             iku_values = [None]
         weight = 1 / len(iku_values)
-        for iku in iku_values:
+        weighted_amounts: list[float | int] = []
+        for index, iku in enumerate(iku_values):
             iku_label = iku or UNCLASSIFIED_IKU_LABEL
+            if index == len(iku_values) - 1:
+                weighted_amount = canonical_currency(jumlah - sum(weighted_amounts))
+            else:
+                weighted_amount = canonical_currency(jumlah * weight)
+            weighted_amounts.append(weighted_amount or 0)
             rows.append(
                 {
                     "item_id": item.get("item_id"),
@@ -71,7 +78,7 @@ def build_fact_anggaran(silver_items: pd.DataFrame) -> pd.DataFrame:
                     "satuan": item.get("satuan"),
                     "harga_satuan": item.get("harga_satuan"),
                     "jumlah": jumlah,
-                    "jumlah_weighted_iku": jumlah * weight if pd.notna(jumlah) else None,
+                    "jumlah_weighted_iku": weighted_amount,
                     "allocation_weight": weight,
                     "mapping_status": item.get("mapping_status"),
                     "data_quality_flag": item.get("data_quality_flag"),

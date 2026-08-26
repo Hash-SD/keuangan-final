@@ -275,9 +275,17 @@ Backend Airflow adapter (`portal_backend/services/airflow.py`) mengelompokkan ta
 Setup Superset wajib menemukan dataset aktif `COMMITTED` dan pasangan identitas
 `dataset_session_id`/`pipeline_run_id` dari Gold `PUBLISHED` yang sama. Tanpa
 identitas atau jika sesinya berbeda, command gagal dan tidak menulis status
-`validated`. Mode `new` mengabaikan `SUPERSET_DASHBOARD_ID`, memakai suffix
-stabil untuk satu run, dan menggunakan namespace marker baru agar aset di
-dashboard lama tidak tertimpa.
+`validated`. Mode `new` mengabaikan `SUPERSET_DASHBOARD_ID`, memakai nomor urut
+dashboard numerik (`... 1`, `... 2`, dan seterusnya), dan menggunakan namespace
+marker baru agar aset di dashboard lama tidak tertimpa. UUID
+`pipeline_run_id` hanya untuk lineage/manifest, bukan nama dashboard atau
+visualisasi.
+
+Tabel `Validasi Rekap` membatasi kolom tampilan pada `tahun`, `source_file`,
+`total_detail`, `total_rekap`, `selisih`, dan `status`, dengan label `Tahun`,
+`Sumber Data`, `Detail Total`, `Total Rekap`, `Selisih`, dan `Status`. Kolom
+nominal pada tabel detail dan validasi memakai format tampilan `#,##0`.
+`Ringkasan per Tahun` secara eksplisit mematikan `Show Cell Bars`.
 
 Registry chart kanonik berada pada `CHART_SPECS` dan menghasilkan tepat 13 chart:
 `kpi_total_anggaran`, `kpi_jumlah_item`, `kpi_jumlah_iku`,

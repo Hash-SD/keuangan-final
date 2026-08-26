@@ -81,6 +81,10 @@
     "source_role": "Peran Sumber",
     "row_type": "Jenis Baris",
     "quality_flags": "Catatan Kualitas",
-    "created_at": "Waktu Dibuat"
+    "created_at": "Waktu Dibuat",
+    "total_detail": "Detail Total",
+    "total_rekap": "Total Rekap",
+    "selisih": "Selisih",
+    "status": "Status"
   }
 }

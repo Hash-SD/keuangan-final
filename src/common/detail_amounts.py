@@ -5,7 +5,7 @@ from typing import Any
 
 import pandas as pd
 
-from src.common.money import normalize_money
+from src.common.money import canonical_currency, normalize_money
 
 
 def numeric_or_none(value: object) -> float | None:
@@ -17,7 +17,7 @@ def numeric_or_none(value: object) -> float | None:
 def _display_number(value: float | None) -> float | int | None:
     if value is None:
         return None
-    return int(value) if value.is_integer() else value
+    return canonical_currency(value)
 
 
 def normalize_detail_amounts(record: Mapping[str, Any]) -> dict[str, Any]:
@@ -29,9 +29,9 @@ def normalize_detail_amounts(record: Mapping[str, Any]) -> dict[str, Any]:
     """
 
     normalized = dict(record)
-    amount = numeric_or_none(normalized.get("jumlah"))
+    amount = canonical_currency(normalized.get("jumlah"))
     quantity = numeric_or_none(normalized.get("qty"))
-    unit_price = numeric_or_none(normalized.get("harga_satuan"))
+    unit_price = canonical_currency(normalized.get("harga_satuan"))
     quantity_missing = quantity in (None, 0)
     unit_price_missing = unit_price in (None, 0)
 

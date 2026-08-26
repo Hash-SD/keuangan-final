@@ -23,14 +23,14 @@
     {"key": "kpi_jumlah_iku", "name": "KPI Jumlah IKU", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kode_iku)"},
     {"key": "kpi_jumlah_kegiatan", "name": "KPI Jumlah Kegiatan", "viz_type": "big_number_total", "metric": "COUNT(DISTINCT kegiatan)"},
     {"key": "kpi_status_rekonsiliasi", "name": "KPI Status Rekonsiliasi", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation", "columns": ["status"]},
-    {"key": "ringkasan_per_tahun", "name": "Ringkasan per Tahun", "viz_type": "table", "groupby": ["tahun"], "metrics": ["SUM(jumlah_weighted_iku)", "COUNT(DISTINCT item_id)"]},
+    {"key": "ringkasan_per_tahun", "name": "Ringkasan per Tahun", "viz_type": "table", "groupby": ["tahun"], "metrics": ["SUM(jumlah_weighted_iku)", "COUNT(DISTINCT item_id)"], "show_cell_bars": false},
     {"key": "anggaran_per_tahun", "name": "Anggaran per Tahun", "viz_type": "echarts_timeseries_bar", "groupby": ["tahun"], "metric": "SUM(jumlah_weighted_iku)"},
     {"key": "anggaran_per_iku", "name": "Anggaran per IKU", "viz_type": "echarts_timeseries_bar", "groupby": ["iku"], "metric": "SUM(jumlah_weighted_iku)"},
     {"key": "cluster_kegiatan", "name": "Cluster Kegiatan", "viz_type": "treemap_v2", "groupby": ["iku", "kegiatan"], "metric": "SUM(jumlah_weighted_iku)"},
     {"key": "komposisi_akun", "name": "Komposisi Akun", "viz_type": "echarts_timeseries_bar", "groupby": ["akun"], "metric": "SUM(jumlah_weighted_iku)"},
     {"key": "anggaran_per_akun", "name": "Anggaran per Akun", "viz_type": "echarts_timeseries_bar", "groupby": ["akun"], "metric": "SUM(jumlah_weighted_iku)"},
-    {"key": "detail_item_biaya", "name": "Detail Item Biaya", "viz_type": "table", "columns": ["tahun", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "allocation_weight", "jumlah_weighted_iku", "source_file"]},
-    {"key": "validasi_rekap", "name": "Validasi Rekap", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation", "columns": ["tahun", "source_file", "total_detail", "total_rekap", "selisih", "status"]}
+    {"key": "detail_item_biaya", "name": "Detail Item Biaya", "viz_type": "table", "columns": ["tahun", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "source_file"], "money_format": {"harga_satuan": ",.0f", "jumlah": ",.0f"}},
+    {"key": "validasi_rekap", "name": "Validasi Rekap", "viz_type": "table", "source": "gold.vw_dashboard_reconciliation", "columns": ["tahun", "source_file", "total_detail", "total_rekap", "selisih", "status"], "column_labels": {"tahun": "Tahun", "source_file": "Sumber Data", "total_detail": "Detail Total", "total_rekap": "Total Rekap", "selisih": "Selisih", "status": "Status"}, "money_format": {"total_detail": ",.0f", "total_rekap": ",.0f", "selisih": ",.0f"}}
   ],
   "hidden_columns": ["mapping_status", "data_quality_flag", "source_sheet", "source_row"],
   "column_labels": {
@@ -43,6 +43,10 @@
     "kegiatan": "Kegiatan",
     "akun": "Akun Belanja",
     "iku": "IKU",
-    "tahun": "Tahun"
+    "tahun": "Tahun",
+    "total_detail": "Detail Total",
+    "total_rekap": "Total Rekap",
+    "selisih": "Selisih",
+    "status": "Status"
   }
 }

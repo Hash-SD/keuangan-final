@@ -1857,7 +1857,7 @@
                     >
                   </div>
                 </div>
-                <div class="metric-value" id="valTotalAnggaran">Rp-</div>
+                <div class="metric-value" id="valTotalAnggaran">-</div>
                 <div class="metric-footer" id="noteTotalAnggaran">
                   Dari fact_anggaran terakhir
                 </div>
@@ -1865,7 +1865,7 @@
 
               <div class="metric-card">
                 <div class="metric-header">
-                  <span class="metric-label">Item Anggaran Gold</span>
+                  <span class="metric-label">Jumlah Item</span>
                   <div class="metric-icon-box">
                     <span class="material-symbols-outlined"
                       >format_list_numbered</span
@@ -1873,42 +1873,40 @@
                   </div>
                 </div>
                 <div class="metric-value" id="valItemAnggaran">-</div>
-                <div class="metric-footer">Baris Gold fact_anggaran</div>
+                <div class="metric-footer">Item anggaran unik dari fact_anggaran</div>
               </div>
 
               <div class="metric-card">
                 <div class="metric-header">
-                  <span class="metric-label">Total IKU (Weighted)</span>
-                  <div class="metric-icon-box">
-                    <span class="material-symbols-outlined">scoreboard</span>
-                  </div>
-                </div>
-                <div class="metric-value" id="valTotalWeightedIku">-</div>
-                <div class="metric-footer">Skor weighted IKU dari fact_anggaran</div>
-              </div>
-
-              <div class="metric-card">
-                <div class="metric-header">
-                  <span class="metric-label">Quality Score</span>
-                  <div class="metric-icon-box">
-                    <span class="material-symbols-outlined">verified</span>
-                  </div>
-                </div>
-                <div class="metric-value" id="valQualityScore">-%</div>
-                <div class="metric-footer">Status Quality Gate</div>
-              </div>
-
-              <div class="metric-card">
-                <div class="metric-header">
-                  <span class="metric-label">Status Pipeline</span>
+                  <span class="metric-label">Jumlah IKU</span>
                   <div class="metric-icon-box">
                     <span class="material-symbols-outlined">account_tree</span>
                   </div>
                 </div>
-                <div class="metric-value" id="valPipelineStatus">Menunggu</div>
-                <div class="metric-footer" id="valLastRun">
-                  Menunggu aktivitas
+                <div class="metric-value" id="valJumlahIku">-</div>
+                <div class="metric-footer">IKU unik yang teralokasi</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Jumlah Kegiatan</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined">event_note</span>
+                  </div>
                 </div>
+                <div class="metric-value" id="valJumlahKegiatan">-</div>
+                <div class="metric-footer">Kegiatan unik pada RAB</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Status Rekonsiliasi</span>
+                  <div class="metric-icon-box">
+                    <span class="material-symbols-outlined">verified</span>
+                  </div>
+                </div>
+                <div class="metric-value" id="valStatusRekonsiliasi">Menunggu</div>
+                <div class="metric-footer">Validasi jumlah dan alokasi anggaran</div>
               </div>
             </div>
             <!-- Guided Upload Card -->
@@ -2614,12 +2612,20 @@
                   Upload satuan menyimpan detail pilihan ini pada setiap file. Upload berikutnya akan menambah dataset aktif.
                 </p>
                 <div class="metric-card">
-                  <span class="metric-label">Total Baris Fact (Gold)</span>
+                  <span class="metric-label">Jumlah Item</span>
                   <div class="metric-value" id="dashFactRows">-</div>
                 </div>
                 <div class="metric-card">
-                  <span class="metric-label">Jumlah Akun Belanja</span>
+                  <span class="metric-label">Jumlah IKU</span>
                   <div class="metric-value" id="dashAkunCount">-</div>
+                </div>
+                <div class="metric-card">
+                  <span class="metric-label">Jumlah Kegiatan</span>
+                  <div class="metric-value" id="dashKegiatanCount">-</div>
+                </div>
+                <div class="metric-card">
+                  <span class="metric-label">Status Rekonsiliasi</span>
+                  <div class="metric-value" id="dashStatusRekonsiliasi">Menunggu</div>
                 </div>
               </div>
 
@@ -4418,12 +4424,22 @@
           systemTruth,
           excelLakehouse,
         );
-        const totalJumlah =
-          supersetSummary.total_jumlah ??
-          excelLakehouse.fact_anggaran.total_jumlah;
-        const totalWeightedIku =
-          supersetSummary.total_weighted_iku ??
-          excelLakehouse.fact_anggaran.total_weighted_iku;
+        const totalAnggaran =
+          supersetSummary.total_anggaran ??
+          excelLakehouse.fact_anggaran.total_anggaran;
+        const jumlahItem =
+          supersetSummary.jumlah_item ??
+          excelLakehouse.fact_anggaran.jumlah_item ??
+          excelLakehouse.counts?.fact_anggaran_rows;
+        const jumlahIku =
+          supersetSummary.jumlah_iku ??
+          excelLakehouse.fact_anggaran.jumlah_iku;
+        const jumlahKegiatan =
+          supersetSummary.jumlah_kegiatan ??
+          excelLakehouse.fact_anggaran.jumlah_kegiatan;
+        const statusRekonsiliasi =
+          supersetSummary.status_rekonsiliasi ??
+          excelLakehouse.fact_anggaran.status_rekonsiliasi;
         const factRows =
           supersetSummary.fact_rows ??
           excelLakehouse.counts?.fact_anggaran_rows;
@@ -4431,8 +4447,11 @@
           metrics.data_quality_score ??
           metrics.raw?.quality?.data_quality_score?.value;
         const viewModel = Object.freeze({
-          total_jumlah: totalJumlah,
-          total_weighted_iku: totalWeightedIku,
+          total_anggaran: totalAnggaran,
+          jumlah_item: jumlahItem,
+          jumlah_iku: jumlahIku,
+          jumlah_kegiatan: jumlahKegiatan,
+          status_rekonsiliasi: statusRekonsiliasi,
           fact_rows: factRows,
           data_quality_score: qualityScore,
           pipeline,
@@ -4725,8 +4744,9 @@
         setText("liveDataStatus", "Memuat data live dari backend SILARAS...");
         setSkeleton("valTotalAnggaran", "140px", "28px");
         setSkeleton("valItemAnggaran", "90px", "28px");
-        setSkeleton("valQualityScore", "80px", "28px");
-        setSkeleton("valPipelineStatus", "110px", "24px");
+        setSkeleton("valJumlahIku", "80px", "28px");
+        setSkeleton("valJumlahKegiatan", "100px", "28px");
+        setSkeleton("valStatusRekonsiliasi", "110px", "24px");
         setSkeleton("valUploadSession", "120px", "24px");
         setSkeleton("valAirflowActive", "100px", "24px");
         setText("valLastRun", "Menghubungi API backend...");
@@ -4743,7 +4763,7 @@
         state.portalLoadStatus = "unreachable";
         const message = `API backend belum dapat dijangkau: ${safe(error?.message || error || "periksa layanan portal backend")}`;
         setText("liveDataStatus", message);
-        setText("valPipelineStatus", STATUS_VIEW.unreachable.label);
+        setText("valStatusRekonsiliasi", "Tidak tersedia");
         setText("valLastRun", "Tidak ada data live yang berhasil dimuat");
         setText("footerStatusBadge", "SYSTEM UNREACHABLE");
         setText("footerSystemMsg", "API backend belum dapat dijangkau");
@@ -4756,43 +4776,44 @@
         const metricElements = {
           totalAnggaran: document.getElementById("valTotalAnggaran"),
           itemAnggaran: document.getElementById("valItemAnggaran"),
-          qualityScore: document.getElementById("valQualityScore"),
-          pipelineStatus: document.getElementById("valPipelineStatus"),
+          jumlahIku: document.getElementById("valJumlahIku"),
+          jumlahKegiatan: document.getElementById("valJumlahKegiatan"),
+          statusRekonsiliasi: document.getElementById("valStatusRekonsiliasi"),
         };
         setText(
           "valTotalAnggaran",
-          viewModel.total_jumlah === undefined ||
-            viewModel.total_jumlah === null
+          viewModel.total_anggaran === undefined ||
+            viewModel.total_anggaran === null
             ? "-"
-            : rupiah(viewModel.total_jumlah),
+            : rupiah(viewModel.total_anggaran),
         );
         setText(
           "valItemAnggaran",
-          viewModel.fact_rows === undefined || viewModel.fact_rows === null
+          viewModel.jumlah_item === undefined || viewModel.jumlah_item === null
             ? "-"
-            : n(viewModel.fact_rows),
+            : n(viewModel.jumlah_item),
         );
         setText(
-          "valQualityScore",
-          viewModel.data_quality_score === undefined ||
-            viewModel.data_quality_score === null
+          "valJumlahIku",
+          viewModel.jumlah_iku === undefined || viewModel.jumlah_iku === null
             ? "-"
-            : `${viewModel.data_quality_score}%`,
+            : n(viewModel.jumlah_iku),
         );
         setText(
-          "valTotalWeightedIku",
-          viewModel.total_weighted_iku === undefined ||
-            viewModel.total_weighted_iku === null
+          "valJumlahKegiatan",
+          viewModel.jumlah_kegiatan === undefined ||
+            viewModel.jumlah_kegiatan === null
             ? "-"
-            : `${viewModel.total_weighted_iku}`,
+            : n(viewModel.jumlah_kegiatan),
         );
-        setText("valPipelineStatus", statusView.label);
-        setText(
-          "valLastRun",
-          viewModel.pipeline.lastRun
-            ? `Last run: ${safe(viewModel.pipeline.lastRun)}`
-            : "Belum ada aktivitas pipeline",
+          setText(
+            "valStatusRekonsiliasi",
+          viewModel.status_rekonsiliasi === undefined ||
+            viewModel.status_rekonsiliasi === null
+            ? "-"
+            : safe(viewModel.status_rekonsiliasi),
         );
+        void metricElements;
         setText(
           "noteTotalAnggaran",
           viewModel.supersetSummary.status === "ready"
@@ -4848,8 +4869,6 @@
           "footerPipelineMsg",
           `LAST RUN: ${statusView.label.toUpperCase()}`,
         );
-        void metricElements;
-
         const tbody = document.getElementById("tblServicesStatus");
         if (tbody && viewModel.systemTruth.services) {
           tbody.innerHTML = Object.entries(viewModel.systemTruth.services)
@@ -5854,8 +5873,10 @@
           const summaryStatus = document.getElementById("dashSummaryStatus");
           const summaryAvailable = [
             summary.total_anggaran,
-            summary.total_rows,
-            summary.total_akun,
+            summary.jumlah_item,
+            summary.jumlah_iku,
+            summary.jumlah_kegiatan,
+            summary.status_rekonsiliasi,
           ].some((value) => value !== undefined && value !== null);
           if (summaryStatus) {
             summaryStatus.style.display = summaryAvailable ? "none" : "block";
@@ -5873,14 +5894,26 @@
           );
           setText(
             "dashFactRows",
-            summary.total_rows !== undefined && summary.total_rows !== null
-              ? n(summary.total_rows)
+            summary.jumlah_item !== undefined && summary.jumlah_item !== null
+              ? n(summary.jumlah_item)
               : "-",
           );
           setText(
             "dashAkunCount",
-            summary.total_akun !== undefined && summary.total_akun !== null
-              ? n(summary.total_akun)
+            summary.jumlah_iku !== undefined && summary.jumlah_iku !== null
+              ? n(summary.jumlah_iku)
+              : "-",
+          );
+          setText(
+            "dashKegiatanCount",
+            summary.jumlah_kegiatan !== undefined && summary.jumlah_kegiatan !== null
+              ? n(summary.jumlah_kegiatan)
+              : "-",
+          );
+          setText(
+            "dashStatusRekonsiliasi",
+            summary.status_rekonsiliasi !== undefined && summary.status_rekonsiliasi !== null
+              ? safe(summary.status_rekonsiliasi)
               : "-",
           );
 
@@ -5889,12 +5922,12 @@
           if (chartContainer) {
             if (barItems.length > 0) {
               const maxVal = Math.max(
-                ...barItems.map((i) => i.nominal_piutang_rp || 0),
+                ...barItems.map((i) => i.total_anggaran || 0),
                 1,
               );
               chartContainer.innerHTML = barItems
                 .map((item) => {
-                  const nominal = item.nominal_piutang_rp || 0;
+                  const nominal = item.total_anggaran || 0;
                   const pct = Math.min(
                     100,
                     Math.round((nominal / maxVal) * 100),

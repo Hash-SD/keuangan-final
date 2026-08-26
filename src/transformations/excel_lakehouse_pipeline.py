@@ -12,6 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from src.common.money import canonical_currency
 from src.common.logging_utils import write_json
 from src.common.paths import DATA_DIR, GENERATED_DIR, OUTPUTS_DIR, RAW_DIR, ensure_parent
 from src.common.runtime_paths import active_dataset_pointer, active_period_metadata, raw_rab_path
@@ -355,7 +356,10 @@ def _build_reconciliation_view(fact: pd.DataFrame) -> pd.DataFrame:
         )
         .reset_index()
     )
+    for column in ("total_detail", "total_rekap"):
+        grouped[column] = grouped[column].map(canonical_currency)
     grouped["selisih"] = grouped["total_detail"] - grouped["total_rekap"]
+    grouped["selisih"] = grouped["selisih"].map(canonical_currency)
     grouped["status"] = grouped["selisih"].abs().le(0.01).map({True: "OK", False: "CHECK"})
     return grouped[columns]
 

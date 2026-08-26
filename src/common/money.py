@@ -50,3 +50,21 @@ def normalize_money(value: object) -> float | None:
     except ValueError:
         return None
     return number if math.isfinite(number) else None
+
+
+def canonical_currency(value: object) -> float | int | None:
+    """Snap binary floating-point noise when a currency is effectively whole.
+
+    Excel formula caches can expose values such as ``666000.0000000001``
+    even when the source cell is formatted as a whole Rupiah amount.  Keep
+    genuine fractional values intact, but canonicalize values within a tiny
+    tolerance of the nearest Rupiah so they do not leak into Gold or BI.
+    """
+
+    number = normalize_money(value)
+    if number is None:
+        return None
+    nearest = round(number)
+    if math.isclose(number, nearest, rel_tol=0.0, abs_tol=1e-9):
+        return int(nearest)
+    return number

@@ -12,12 +12,51 @@
 
 ## Global Constraints
 
-- Do not change Superset endpoints, dataset lineage, Gold data, filters, or chart payload shapes.
-- Do not run pipeline, upload, Airflow trigger, publish, or Docker mutation commands.
+- Preserve Superset endpoints, dataset lineage, Gold semantics, and filter keys. Presentation-only chart payload fields may change when required by the canonical remediation order (labels, numeric formats, and `show_cell_bars`).
+- Do not run production upload, Airflow trigger, publish, or Docker mutation commands. Local fixture/runtime verification is allowed when explicitly requested and must be reported with its run identity.
 - Keep `source_file` and other lineage values exact; only display labels and status copy may be normalized.
 - Use TDD for every behavior change: write a failing test, observe the failure, implement the smallest fix, then rerun the focused and regression suites.
 - Use sentence case for visible labels and tabular numerals for numeric values; do not expose snake_case in visible headers.
 - Preserve loading, empty, error, partial, sorting, search, pagination, theme, keyboard focus, and reduced-motion behavior.
+
+## Integrated remediation order (canonical follow-up)
+
+Perubahan lanjutan digabung ke urutan berikut dan menjadi urutan eksekusi
+kanonik untuk isu nominal, Superset, dan identitas dashboard:
+
+1. **Baseline dan diagnosis nominal** — gunakan `diagnosing-bugs` untuk
+   mereproduksi nilai seperti `666000.0000000001`, telusuri
+   `source_file/source_sheet/source_row` sampai workbook, dan gunakan
+   `spreadsheets` untuk memeriksa nilai cached formula serta number format
+   sumber.
+2. **Kontrak nominal dan rekonsiliasi** — gunakan `tdd` pada seam
+   `normalize_detail_amounts` dan `build_fact_anggaran`; canonicalize noise
+   floating-point pada `harga_satuan`/`jumlah`, snap weighted value yang
+   efektif bilangan bulat, pertahankan weighted fraction yang sah, dan jaga
+   jumlah weighted per item tetap sama dengan nominal sumber.
+3. **Kontrak tampilan Superset** — gunakan `apache-superset` untuk label
+   Validasi Rekap (`Tahun`, `Sumber Data`, `Detail Total`, `Total Rekap`,
+   `Selisih`, `Status`), format nominal `#,##0`, kapitalisasi judul chart,
+   dan `show_cell_bars: false` pada `Ringkasan per Tahun`.
+4. **Kontrak identitas dashboard/chart** — nama dashboard baru memakai
+   `SILARAS SD - Dashboard Anggaran IKU <nomor urut>`; nama chart memakai
+   judul bisnis dan nomor urut yang sama saat mode `new`. UUID
+   `pipeline_run_id` hanya untuk lineage/manifest, bukan nama visual.
+5. **Sinkronisasi runtime** — update dataset dan chart yang dikelola registry,
+   pertahankan chart pengguna, validasi 13 chart aktif, dan verifikasi query
+   serta label melalui Superset API. Selaraskan juga portal v2 dengan lima KPI
+   final dan query Trino dengan metric weighted pada grain allocation.
+6. **Dokumentasi dan verifikasi** — selaraskan assets JSON, dashboard spec,
+   codebase guide, test, compile, pytest, smoke, cross-engine, dan Playwright setelah
+   perubahan runtime selesai.
+
+Skill routing untuk urutan ini mengikuti `ask-matt`: `diagnosing-bugs` +
+`spreadsheets` pada fase 1, `tdd` pada fase 2, `apache-superset` pada fase 3
+dan 5, lalu `code-review` dan verifikasi regresi pada fase 6. `find-skills`
+dipakai untuk memastikan tidak ada skill tambahan yang diperlukan; skill lokal
+yang ada sudah mencukupi sehingga tidak ada instalasi baru. Artefak Gold tetap
+memakai nama fisik kanonik; perubahan label dan format hanya berlaku pada
+presentasi Superset.
 
 ---
 

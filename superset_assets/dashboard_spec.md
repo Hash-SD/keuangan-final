@@ -3,6 +3,10 @@
 Dashboard: `SILARAS SD - Dashboard Anggaran IKU`  
 Slug: `dashboard-anggaran-iku-prodi`
 
+Dashboard baru memakai nama dasar tersebut dengan nomor urut numerik, misalnya
+`SILARAS SD - Dashboard Anggaran IKU 1`, `... 2`, dan seterusnya. UUID
+pipeline tidak boleh muncul pada nama dashboard, slug, atau nama chart.
+
 Dashboard memakai model data Gold terdenormalisasi berbasis laporan tahunan. Tabel utama tetap:
 
 ```text
@@ -53,6 +57,11 @@ Registry runtime adalah sumber kebenaran dan harus menghasilkan 13 chart aktif:
 
 Validasi deployment harus memenuhi `desired_chart_count == attached_chart_count == 13`. Chart lama yang dikelola registry boleh dilepaskan dari layout, tetapi chart milik pengguna tidak dihapus.
 
+`Ringkasan per Tahun` adalah tabel ringkasan tanpa `Show Cell Bars`. Nominal
+ditampilkan dengan format ribuan tanpa pecahan biner: `#,##0`. Nilai sumber
+yang secara matematis memang pecahan akibat alokasi IKU tetap disimpan untuk
+menjaga rekonsiliasi, tetapi tampilan Superset membulatkan visualnya ke Rupiah.
+
 ## Label presentasi
 
 Nama fisik dipertahankan untuk query dan lineage, sedangkan Superset menampilkan label bisnis:
@@ -64,6 +73,10 @@ Nama fisik dipertahankan untuk query dan lineage, sedangkan Superset menampilkan
 | `harga_satuan` | Harga Satuan |
 | `jumlah` | Jumlah Anggaran |
 | `jumlah_weighted_iku` | Alokasi Anggaran IKU |
+| `total_detail` | Detail Total |
+| `total_rekap` | Total Rekap |
+| `selisih` | Selisih |
+| `status` | Status |
 | `prodi` | Program Studi |
 | `akun` | Akun Belanja |
 | `kegiatan` | Kegiatan |

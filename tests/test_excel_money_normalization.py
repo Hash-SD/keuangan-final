@@ -56,6 +56,19 @@ def test_detail_amounts_calculates_missing_total_from_quantity_and_price():
     assert normalized["jumlah"] == 2_500_000
 
 
+def test_detail_amounts_removes_excel_binary_noise_from_currency_values():
+    normalized = normalize_detail_amounts(
+        {
+            "qty": 20,
+            "harga_satuan": 3_330_000.0000000005,
+            "jumlah": 666_000.0000000001,
+        }
+    )
+
+    assert normalized["harga_satuan"] == 3_330_000
+    assert normalized["jumlah"] == 666_000
+
+
 def test_aggregate_or_price_like_account_codes_require_review():
     assert extract_valid_account("530000 - Uang Harian Perjalanan Dinas - ORG") == (None, None)
 

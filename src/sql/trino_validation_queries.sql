@@ -3,8 +3,7 @@ FROM gold.fact_anggaran;
 
 SELECT
     tahun,
-    COUNT(*) AS item_count,
-    SUM(jumlah) AS total_anggaran,
+    COUNT(DISTINCT item_id) AS jumlah_item,
     SUM(jumlah_weighted_iku) AS total_anggaran
 FROM gold.fact_anggaran
 GROUP BY tahun

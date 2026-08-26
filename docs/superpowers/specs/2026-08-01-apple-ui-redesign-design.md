@@ -85,7 +85,7 @@ This specification outlines the UI/UX redesign of SILARAS SD, adhering strictly 
 
 ### Page 1: 🚀 Beranda & Upload (`#page-beranda`)
 1. **Header Metric Grid**:
-   - Total Anggaran (`fact_anggaran.total_jumlah` formatted in IDR).
+   - Total Anggaran (`SUM(fact_anggaran.jumlah_weighted_iku)` formatted in IDR).
    - Total Item Anggaran (`fact_anggaran.fact_rows` count).
    - Data Quality Score (`quality_gate` score %).
    - Pipeline Status badge (Success/Running/Failed).
