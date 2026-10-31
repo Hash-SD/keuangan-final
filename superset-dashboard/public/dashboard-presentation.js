@@ -5,7 +5,6 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, () => {
   const COLUMN_LABELS = Object.freeze({
     tahun: "Tahun",
-    periode: "Periode",
     prodi: "Prodi",
     iku: "IKU",
     kegiatan: "Kegiatan",

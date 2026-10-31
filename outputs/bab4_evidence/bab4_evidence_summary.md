@@ -1,13 +1,13 @@
 # Bab IV Evidence Summary
 
-Audit timestamp: `2026-07-30T10:15:16.410660+00:00`
+Audit timestamp: `2026-09-25T04:21:17.969682+00:00`
 
 ## 4.1.1 Analisis data sumber
 - Bukti inventaris workbook, hash, sheet, dimensi, formula, dan metadata tersedia pada `tables/tab_411_*`.
 
 ## 4.1.3 Model Gold dan lineage
-- fact_anggaran: 607 baris dan 33 kolom.
-- Duplikasi grain terdeteksi: 0 baris berdasarkan kolom grain yang tersedia.
+- fact_anggaran: 607 baris dan 25 kolom.
+- Duplikasi grain terdeteksi: 354 baris berdasarkan kolom grain yang tersedia.
 - Total `jumlah`: 1494181466.0; total `jumlah_weighted_iku`: 517361656.0.
 
 ## 4.2 Implementasi

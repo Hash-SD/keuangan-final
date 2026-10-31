@@ -20,12 +20,20 @@ from src.gold.contract import DASHBOARD_FILTERS, FACT_COLUMNS, GOLD_METRICS
 BASE_URL = os.getenv("SUPERSET_BASE_URL", "http://localhost:8089")
 PUBLIC_BASE_URL = os.getenv("SUPERSET_PUBLIC_URL", "http://localhost:8089")
 DATABASE_NAME = "Trino PostgreSQL Gold Keuangan"
-TABLE_NAME = "fact_anggaran"
+TABLE_NAME = "vw_fact_anggaran"
 RECONCILIATION_TABLE_NAME = "vw_dashboard_reconciliation"
 DASHBOARD_TITLE = "SILARAS SD - Dashboard Anggaran IKU"
 DASHBOARD_SLUG = "dashboard-anggaran-iku-prodi"
 DASHBOARD_MODE = os.getenv("SUPERSET_DASHBOARD_MODE", "update").strip().lower()
 TARGET_DASHBOARD_ID = os.getenv("SUPERSET_DASHBOARD_ID", "").strip()
+
+# Layout dashboard terkunci: susunan visual disimpan sebagai snapshot dan dipakai
+# ulang saat update atau pembuatan dashboard baru. Set flag SUPERSET_CAPTURE_LAYOUT=1
+# untuk merekam ulang susunan terbaru dari dashboard yang aktif.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+_layout_snapshot_override = os.getenv("SUPERSET_LAYOUT_SNAPSHOT", "").strip()
+LAYOUT_SNAPSHOT_PATH = Path(_layout_snapshot_override) if _layout_snapshot_override else REPO_ROOT / "superset_assets" / "dashboard_layout.json"
+CAPTURE_LAYOUT = os.getenv("SUPERSET_CAPTURE_LAYOUT", "").strip().lower() in {"1", "true", "yes"}
 
 # Atribut teknis pipeline/QA yang disembunyikan dari tampilan Superset.
 # Tabel faktual gold.fact_anggaran tetap utuh; kolom hanya dinonaktifkan di level dataset.
@@ -96,17 +104,159 @@ SAVED_QUERY_DETAIL_SQL = """
 SELECT tahun, prodi, fakultas, kegiatan, cluster_kegiatan, akun, kode_akun,
        nama_akun, nama_akun_asli, iku, kode_iku, nama_iku, uraian_detail, qty, satuan, harga_satuan,
        jumlah, allocation_weight, jumlah_weighted_iku, source_file
-FROM fact_anggaran
+FROM vw_fact_anggaran
 ORDER BY tahun, prodi
 """
 
 SAVED_QUERY_HIDDEN_COLUMNS_SQL = """
 SELECT column_name
 FROM information_schema.columns
-WHERE table_schema = 'gold' AND table_name = 'fact_anggaran'
+WHERE table_schema = 'gold' AND table_name = 'vw_fact_anggaran'
   AND column_name IN ('mapping_status', 'data_quality_flag', 'source_sheet', 'source_row')
 ORDER BY column_name
 """
+
+# Saved query analitik: angka exact mengikuti kontrak GOLD_METRICS
+# (Total Anggaran = SUM(jumlah_weighted_iku), tanpa pembulatan).
+SAVED_QUERY_KPI_SUMMARY_SQL = """
+SELECT
+    SUM(jumlah_weighted_iku) AS total_anggaran,
+    COUNT(DISTINCT item_id) AS jumlah_item,
+    COUNT(DISTINCT kode_iku) AS jumlah_iku,
+    COUNT(DISTINCT kegiatan) AS jumlah_kegiatan
+FROM vw_fact_anggaran
+"""
+
+SAVED_QUERY_KPI_YEARLY_SQL = """
+SELECT
+    tahun,
+    SUM(jumlah_weighted_iku) AS total_anggaran,
+    COUNT(DISTINCT item_id) AS jumlah_item,
+    COUNT(DISTINCT kode_iku) AS jumlah_iku,
+    COUNT(DISTINCT kegiatan) AS jumlah_kegiatan
+FROM vw_fact_anggaran
+GROUP BY tahun
+ORDER BY tahun
+"""
+
+SAVED_QUERY_IKU_SQL = """
+SELECT
+    tahun,
+    iku,
+    SUM(jumlah_weighted_iku) AS total_anggaran,
+    COUNT(DISTINCT item_id) AS jumlah_item
+FROM vw_fact_anggaran
+GROUP BY tahun, iku
+ORDER BY tahun, total_anggaran DESC
+"""
+
+SAVED_QUERY_KEGIATAN_SQL = """
+SELECT
+    tahun,
+    cluster_kegiatan,
+    kegiatan,
+    SUM(jumlah_weighted_iku) AS total_anggaran,
+    COUNT(DISTINCT item_id) AS jumlah_item
+FROM vw_fact_anggaran
+GROUP BY tahun, cluster_kegiatan, kegiatan
+ORDER BY tahun, total_anggaran DESC
+"""
+
+SAVED_QUERY_AKUN_SQL = """
+SELECT
+    tahun,
+    akun,
+    SUM(jumlah_weighted_iku) AS total_anggaran,
+    COUNT(DISTINCT item_id) AS jumlah_item
+FROM vw_fact_anggaran
+GROUP BY tahun, akun
+ORDER BY tahun, total_anggaran DESC
+"""
+
+SAVED_QUERY_PRODI_SQL = """
+SELECT
+    tahun,
+    prodi,
+    fakultas,
+    SUM(jumlah_weighted_iku) AS total_anggaran,
+    COUNT(DISTINCT item_id) AS jumlah_item,
+    COUNT(DISTINCT kode_iku) AS jumlah_iku,
+    COUNT(DISTINCT kegiatan) AS jumlah_kegiatan
+FROM vw_fact_anggaran
+GROUP BY tahun, prodi, fakultas
+ORDER BY tahun, prodi
+"""
+
+SAVED_QUERY_RECONCILIATION_SQL = """
+SELECT
+    tahun,
+    source_file,
+    total_detail,
+    total_rekap,
+    selisih,
+    status
+FROM vw_dashboard_reconciliation
+ORDER BY tahun, source_file
+"""
+
+SAVED_QUERY_FULL_GOLD_SQL = (
+    "SELECT\n    "
+    + ",\n    ".join(FACT_COLUMNS)
+    + "\nFROM vw_fact_anggaran\nORDER BY tahun, prodi, kegiatan, iku, item_id"
+)
+
+SAVED_QUERY_REGISTRY: list[dict[str, str]] = [
+    {
+        "label": "SILARAS - Detail Item Biaya (tanpa kolom teknis)",
+        "sql": SAVED_QUERY_DETAIL_SQL,
+        "description": "Query cek data faktual gold.fact_anggaran tanpa atribut teknis mapping_status, data_quality_flag, source_sheet, source_row.",
+    },
+    {
+        "label": "SILARAS - Cek Kolom Teknis (audit)",
+        "sql": SAVED_QUERY_HIDDEN_COLUMNS_SQL,
+        "description": "Audit: kolom teknis masih ada di tabel gold.fact_anggaran tetapi disembunyikan dari dataset Superset.",
+    },
+    {
+        "label": "SILARAS - KPI Ringkasan Anggaran",
+        "sql": SAVED_QUERY_KPI_SUMMARY_SQL,
+        "description": "KPI dashboard dalam satu baris exact: total_anggaran, jumlah_item, jumlah_iku, jumlah_kegiatan.",
+    },
+    {
+        "label": "SILARAS - KPI per Tahun",
+        "sql": SAVED_QUERY_KPI_YEARLY_SQL,
+        "description": "Mirror chart Ringkasan per Tahun: total anggaran dan jumlah item per tahun.",
+    },
+    {
+        "label": "SILARAS - Anggaran per IKU",
+        "sql": SAVED_QUERY_IKU_SQL,
+        "description": "Detail anggaran per IKU per tahun mengikuti kontrak SUM(jumlah_weighted_iku).",
+    },
+    {
+        "label": "SILARAS - Anggaran per Kegiatan",
+        "sql": SAVED_QUERY_KEGIATAN_SQL,
+        "description": "Detail anggaran per klaster dan kegiatan per tahun.",
+    },
+    {
+        "label": "SILARAS - Anggaran per Akun",
+        "sql": SAVED_QUERY_AKUN_SQL,
+        "description": "Detail anggaran per akun belanja per tahun.",
+    },
+    {
+        "label": "SILARAS - Anggaran per Prodi",
+        "sql": SAVED_QUERY_PRODI_SQL,
+        "description": "Breakdown anggaran dan KPI per program studi dan fakultas.",
+    },
+    {
+        "label": "SILARAS - Rekonsiliasi per Sumber",
+        "sql": SAVED_QUERY_RECONCILIATION_SQL,
+        "description": "Mirror chart Validasi Rekap: total_detail, total_rekap, selisih, dan status per sumber file.",
+    },
+    {
+        "label": "SILARAS - Detail Data Gold Lengkap",
+        "sql": SAVED_QUERY_FULL_GOLD_SQL,
+        "description": "Seluruh kolom kontrak gold.vw_fact_anggaran tanpa agregasi untuk audit penuh.",
+    },
+]
 
 CHART_SPECS = [
     "kpi_total_anggaran",
@@ -672,6 +822,120 @@ def _position_json(chart_ids: list[int]) -> dict:
     return layout
 
 
+def _chart_registry_key_map(session: requests.Session) -> dict[int, str]:
+    key_by_chart_id: dict[int, str] = {}
+    for chart in _get_items(session, "chart"):
+        description = str(chart.get("description") or "")
+        if description.startswith(MANAGED_CHART_MARKER):
+            key_by_chart_id[int(chart["id"])] = description[len(MANAGED_CHART_MARKER):]
+    return key_by_chart_id
+
+
+def _dashboard_position(session: requests.Session, dashboard_id: int) -> dict:
+    response = session.get(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", timeout=60)
+    response.raise_for_status()
+    position = (response.json().get("result") or {}).get("position_json") or {}
+    if isinstance(position, str):
+        position = json.loads(position)
+    return position
+
+
+def _normalize_locked_position(position: dict, key_by_chart_id: dict[int, str]) -> dict | None:
+    normalized = json.loads(json.dumps(position))
+    managed = False
+    for node in normalized.values():
+        if not isinstance(node, dict) or node.get("type") != "CHART":
+            continue
+        chart_id = (node.get("meta") or {}).get("chartId")
+        registry_key = key_by_chart_id.get(int(chart_id)) if chart_id is not None else None
+        if not registry_key:
+            return None
+        node["meta"]["registryKey"] = registry_key
+        node["meta"].pop("chartId", None)
+        managed = True
+    return normalized if managed else None
+
+
+def _save_layout_snapshot(session: requests.Session, dashboard_id: int) -> dict:
+    position = _dashboard_position(session, dashboard_id)
+    normalized = _normalize_locked_position(position, _chart_registry_key_map(session))
+    if normalized is None:
+        raise RuntimeError("Layout dashboard memuat chart di luar registry sehingga susunan tidak bisa dikunci.")
+    snapshot = {
+        "version": 1,
+        "source_dashboard_id": dashboard_id,
+        "captured_at": datetime.now(timezone.utc).isoformat(),
+        "position_json": normalized,
+    }
+    LAYOUT_SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    LAYOUT_SNAPSHOT_PATH.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2), encoding="utf-8")
+    return snapshot
+
+
+def _load_locked_layout(chart_ids: list[int]) -> dict | None:
+    try:
+        snapshot = json.loads(LAYOUT_SNAPSHOT_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    position = snapshot.get("position_json") if isinstance(snapshot, dict) else None
+    grid = position.get("GRID_ID") if isinstance(position, dict) else None
+    if not isinstance(grid, dict) or not isinstance(grid.get("children"), list):
+        return None
+    position = json.loads(json.dumps(position))
+    key_to_chart_id = dict(zip(CHART_SPECS, chart_ids))
+    grid_children = position["GRID_ID"]["children"]
+    for node_id, node in list(position.items()):
+        if not isinstance(node, dict) or node.get("type") != "CHART":
+            continue
+        meta = node.get("meta") or {}
+        registry_key = str(meta.get("registryKey") or "")
+        chart_id = key_to_chart_id.get(registry_key)
+        if chart_id is None:
+            parent = next(
+                (
+                    row_id
+                    for row_id, row in position.items()
+                    if isinstance(row, dict) and row.get("type") == "ROW" and node_id in (row.get("children") or [])
+                ),
+                None,
+            )
+            if parent:
+                position[parent]["children"] = [child for child in position[parent]["children"] if child != node_id]
+                if not position[parent]["children"]:
+                    position.pop(parent, None)
+                    if parent in grid_children:
+                        grid_children.remove(parent)
+            position.pop(node_id, None)
+            continue
+        meta["chartId"] = chart_id
+        meta.pop("registryKey", None)
+        node["meta"] = meta
+    covered = {
+        (node.get("meta") or {}).get("chartId")
+        for node in position.values()
+        if isinstance(node, dict) and node.get("type") == "CHART"
+    }
+    appended = 0
+    for registry_key, chart_id in zip(CHART_SPECS, chart_ids):
+        if chart_id in covered:
+            continue
+        row_id = f"ROW-LOCKED-APPEND-{appended}"
+        chart_node = f"CHART-LOCKED-APPEND-{appended}"
+        grid_children.append(row_id)
+        position[row_id] = {"type": "ROW", "id": row_id, "children": [chart_node], "meta": {"background": "BACKGROUND_TRANSPARENT"}}
+        position[chart_node] = {"type": "CHART", "id": chart_node, "children": [], "meta": {"chartId": chart_id, "height": 48, "width": 12}}
+        appended += 1
+    position["GRID_ID"]["children"] = grid_children
+    return position
+
+
+def _layout_position(session: requests.Session, chart_ids: list[int]) -> dict:
+    locked = _load_locked_layout(chart_ids)
+    if locked is not None:
+        return locked
+    return _position_json(chart_ids)
+
+
 def _filter_values(column: str) -> list:
     import pandas as pd
 
@@ -743,11 +1007,26 @@ def _target_dashboard_id(session: requests.Session) -> int | None:
     return target if target in existing else None
 
 
+def _existing_managed_dashboard(session: requests.Session) -> int | None:
+    target = _target_dashboard_id(session)
+    if target is not None:
+        return target
+    dashboard_title = _dashboard_title()
+    dashboard_slug = _dashboard_slug()
+    matches = [item for item in _get_items(session, "dashboard") if item.get("slug") == dashboard_slug or item.get("dashboard_title") == dashboard_title]
+    if matches:
+        return int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
+    return None
+
+
 def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: list[int], excluded_chart_ids: set[int] | None = None) -> int:
     import json
 
     dashboard_title = _dashboard_title()
     dashboard_slug = _dashboard_slug()
+    existing_id = _existing_managed_dashboard(session)
+    if CAPTURE_LAYOUT and existing_id is not None:
+        _save_layout_snapshot(session, existing_id)
     payload = {
         "dashboard_title": dashboard_title,
         "slug": dashboard_slug,
@@ -762,7 +1041,7 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
             "filter_scopes": {},
             "chart_configuration": {str(chart_id): {"id": chart_id, "crossFilters": {"scope": "global", "chartsInScope": chart_ids}} for chart_id in chart_ids},
         }),
-        "position_json": json.dumps(_position_json(chart_ids)),
+        "position_json": json.dumps(_layout_position(session, chart_ids)),
     }
     target = _target_dashboard_id(session)
     if target is not None:
@@ -770,9 +1049,8 @@ def _upsert_dashboard(session: requests.Session, dataset_id: int, chart_ids: lis
         response = session.put(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", json=payload, timeout=60)
         response.raise_for_status()
     else:
-        matches = [item for item in _get_items(session, "dashboard") if item.get("slug") == dashboard_slug or item.get("dashboard_title") == dashboard_title]
-        if matches:
-            dashboard_id = int(sorted(matches, key=lambda item: int(item["id"]))[0]["id"])
+        if existing_id is not None:
+            dashboard_id = existing_id
             response = session.put(f"{BASE_URL}/api/v1/dashboard/{dashboard_id}", json=payload, timeout=60)
         else:
             response = session.post(f"{BASE_URL}/api/v1/dashboard/", json=payload, timeout=60)
@@ -946,20 +1224,8 @@ def main() -> dict:
         detached_chart_count = _detach_stale_managed_charts(session, dashboard_id, CHART_SPECS)
         dashboard_urls_by_year = _create_year_permalinks(session, dashboard_id)
         saved_query_ids = [
-            _upsert_saved_query(
-                session,
-                database_id,
-                "SILARAS - Detail Item Biaya (tanpa kolom teknis)",
-                SAVED_QUERY_DETAIL_SQL,
-                "Query cek data faktual gold.fact_anggaran tanpa atribut teknis mapping_status, data_quality_flag, source_sheet, source_row.",
-            ),
-            _upsert_saved_query(
-                session,
-                database_id,
-                "SILARAS - Cek Kolom Teknis (audit)",
-                SAVED_QUERY_HIDDEN_COLUMNS_SQL,
-                "Audit: kolom teknis masih ada di tabel gold.fact_anggaran tetapi disembunyikan dari dataset Superset.",
-            ),
+            _upsert_saved_query(session, database_id, item["label"], item["sql"], item["description"])
+            for item in SAVED_QUERY_REGISTRY
         ]
         default_dashboard_url = dashboard_urls_by_year.get("Semua") or f"{PUBLIC_BASE_URL}/superset/dashboard/{_dashboard_slug()}/"
         result = {
@@ -985,6 +1251,8 @@ def main() -> dict:
             "attached_chart_count": attached_chart_count,
             "detached_chart_count": detached_chart_count,
             "chart_registry": CHART_SPECS,
+            "dashboard_layout_source": "locked_snapshot" if _load_locked_layout(chart_ids) is not None else "generated",
+            "dashboard_layout_snapshot": str(LAYOUT_SNAPSHOT_PATH),
             "hidden_columns": sorted(HIDDEN_COLUMNS),
             "hidden_columns_deactivated": hidden_deactivated,
             "reconciliation_labels_updated": reconciliation_labels_updated,

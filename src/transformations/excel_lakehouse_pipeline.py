@@ -21,6 +21,7 @@ from src.common.workbook_kind import infer_workbook_kind
 from src.excel_ingestion.excel_cell_extractor import ExcelSource, extract_excel_cells
 from src.gold.annual_sources import select_annual_sources
 from src.gold.fact_anggaran import build_fact_anggaran
+from src.gold.star_normalized import build_gold_star, rebuild_flat_from_star
 from src.mapping.flexible_mapping import build_mapping_table
 from src.parser_flexible.nomenklatur_parser import parse_nomenklatur_workbook
 from src.parser_flexible.rab_parser import parse_rab_workbook
@@ -461,6 +462,8 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
             silver_rab["created_at"] = created_at
         silver_rab = clean_and_enrich_budget_items(silver_rab, silver_nomenklatur, bridge_nomenklatur)
     fact = build_fact_anggaran(silver_rab)
+    gold_star = build_gold_star(fact)
+    fact_reconstructed = rebuild_flat_from_star(gold_star)
     silver_rab_rows_classified = silver_rab.copy()
     silver_rab_formula_coverage = (
         silver_validation[silver_validation["validation_type"].eq("FORMULA_COVERAGE")].copy()
@@ -478,11 +481,11 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         else pd.DataFrame()
     )
     rab_reconciliation_report = _build_rab_reconciliation_report(silver_rab, silver_validation, fact)
-    mapped_fact = fact[fact["kode_iku"].notna() & fact["kode_iku"].astype(str).str.strip().ne("")] if not fact.empty else fact
+    mapped_fact = fact_reconstructed[fact_reconstructed["kode_iku"].notna() & fact_reconstructed["kode_iku"].astype(str).str.strip().ne("")] if not fact_reconstructed.empty else fact_reconstructed
     dashboard_iku = mapped_fact.groupby(["dataset_session_id", "run_id", "tahun", "prodi", "fakultas", "iku", "kode_iku"], dropna=False)["jumlah_weighted_iku"].sum().reset_index() if not mapped_fact.empty else pd.DataFrame()
-    dashboard_mapping = fact.groupby(["dataset_session_id", "run_id", "mapping_status", "data_quality_flag"], dropna=False)["item_id"].nunique().reset_index(name="item_count") if not fact.empty else pd.DataFrame()
-    dashboard_detail = fact.copy()
-    dashboard_reconciliation = _build_reconciliation_view(fact)
+    dashboard_mapping = fact_reconstructed.groupby(["dataset_session_id", "run_id", "mapping_status", "data_quality_flag"], dropna=False)["item_id"].nunique().reset_index(name="item_count") if not fact_reconstructed.empty else pd.DataFrame()
+    dashboard_detail = fact_reconstructed.copy()
+    dashboard_reconciliation = _build_reconciliation_view(fact_reconstructed)
 
     output_frames = [
         ("bronze", "bronze_excel_cells.csv", bronze),
@@ -497,12 +500,16 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         ("silver", "silver_nomenklatur_detail.csv", silver_nomenklatur),
         ("silver", "silver_bridge_detail_iku.csv", bridge_nomenklatur),
         ("silver", "silver_nomenklatur_warnings.csv", warnings_nomenklatur),
-        ("gold", "fact_anggaran.csv", fact),
+        ("gold", "fact_anggaran.csv", fact_reconstructed),
+        ("gold", "fact_anggaran_star.csv", gold_star["fact_anggaran"]),
         ("gold", "vw_dashboard_iku_anggaran.csv", dashboard_iku),
         ("gold", "vw_dashboard_mapping_quality.csv", dashboard_mapping),
         ("gold", "vw_dashboard_reconciliation.csv", dashboard_reconciliation),
         ("gold", "vw_dashboard_detail_item.csv", dashboard_detail),
     ]
+    for table_name, df in gold_star.items():
+        if table_name != "fact_anggaran":
+            output_frames.append(("gold", f"{table_name}.csv", df))
     outputs = {}
     for layer, filename, df in output_frames:
         outputs[filename] = _write_run_output(df, layer, filename, session_id, run_id)
@@ -524,7 +531,7 @@ def run_excel_lakehouse_pipeline(sources: list[ExcelSource] | None = None) -> di
         "bronze_cells": int(len(bronze)),
         "silver_rab_items": int(len(silver_rab)),
         "silver_nomenklatur_detail": int(len(silver_nomenklatur)),
-        "fact_anggaran_rows": int(len(fact)),
+        "fact_anggaran_rows": int(len(gold_star["fact_anggaran"])),
         "rab_reconciliation_status": rab_reconciliation_report.get("status"),
         "rab_reconciliation_final_gold_total": rab_reconciliation_report.get("final_gold_total"),
         "outputs": outputs,

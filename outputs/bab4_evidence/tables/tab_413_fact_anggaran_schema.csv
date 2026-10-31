@@ -1,34 +1,26 @@
 ﻿column,dtype,null_count,null_percent,unique_count,example
-item_id,object,0,0.0,253,c25bb2e3641772cf5e0c68fc13a0abe8
-run_id,object,0,0.0,1,db8d2127-7090-48eb-baf7-1b563ce13243
-tahun,object,0,0.0,3,2025
-periode,object,515,84.8435,2,Jan-Jun
-prodi,object,0,0.0,1,Sains Data
-fakultas,object,0,0.0,1,Fakultas Sains
-kegiatan,object,0,0.0,31,471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains
-cluster_kegiatan,object,0,0.0,31,471.DBA.001.60.G - Pelaksanaan Kegiatan Kuliah Lapangan Fakultas Sains
-akun,object,0,0.0,11,522141 - Belanja Sewa
-kode_akun,object,15,2.4712,10,522141
-nama_akun,object,15,2.4712,10,Belanja Sewa
-nama_akun_asli,object,270,44.4811,15,Belanja Sewa
-iku,object,0,0.0,26,IK 4.5
-kode_iku,object,0,0.0,26,IK 4.5
-nama_iku,object,0,0.0,9,"Kegiatan praktikum, praktik studio, praktik bengkel, atau praktik lapangan"
-nomenklatur_path,object,0,0.0,9,"Penyediaan Dana Bantuan Operasional Perguruan Tinggi Negeri Akademik > Bantuan Lembaga (Lembaga) > PT Penerima Bantuan Pembelajaran (BOPTN) (Lembaga) > Dukungan Operasional Penyelenggaraan Pendidikan > Penunjang Layanan Laboratorium > Kegiatan praktikum, praktik studio, praktik bengkel, atau praktik lapangan"
-uraian_detail,object,0,0.0,217,Sewa bus kunjungan Industri Program Studi Sains Data
-qty,float64,70,11.5321,27,1.0
-satuan,object,70,11.5321,40,Buah
-harga_satuan,float64,65,10.7084,79,650000.0
-jumlah,float64,0,0.0,134,44550000.0
-jumlah_weighted_iku,float64,0,0.0,146,22275000.0
-allocation_weight,float64,0,0.0,5,0.5
+fact_key,int64,0,0.0,607,1
+item_id,object,0,0.0,253,e9fc716bbdc5b0e0261e52bdb2241a47
+dataset_session_id,object,0,0.0,1,excel-20260826T130441+0000-9f3a9b
+run_id,object,0,0.0,1,07fc979c-5e04-4ca2-b599-b72ad80445c7
+tahun,object,0,0.0,3,2024
+org_key,int64,0,0.0,1,1
+kegiatan_key,int64,0,0.0,38,28
+akun_key,int64,0,0.0,22,4
+iku_key,int64,0,0.0,37,36
+uraian_detail,object,0,0.0,217,Cetak Spanduk
+satuan,object,70,11.5321,40,Unit
+qty,int64,0,0.0,26,1
+harga_satuan,int64,0,0.0,90,165000
+jumlah,int64,0,0.0,132,165000
+allocation_weight,float64,0,0.0,5,1.0
+jumlah_weighted_iku,float64,0,0.0,153,165000.0
 mapping_status,object,0,0.0,3,mapped_from_nomenklatur
-data_quality_flag,object,0,0.0,3,OK
-source_file,object,0,0.0,4,RAB 2025 SD RAB IKU.xlsx
-source_sheet,object,0,0.0,22,RAB
-source_row,int64,0,0.0,91,9
-source_role,object,0,0.0,3,main_rab
+data_quality_flag,object,0,0.0,3,VALIDATED_WITH_RULE
+source_file,object,0,0.0,4,Rencana_Anggaran_Prodi_Sains_Data_Tahun_2024.xlsx
+source_sheet,object,0,0.0,22,PKS
+source_row,int64,0,0.0,91,14
+source_role,object,0,0.0,3,unknown
 row_type,object,0,0.0,1,leaf_item
 quality_flags,object,0,0.0,1,
-created_at,object,0,0.0,1,2026-07-23T03:15:15+00:00
-dataset_session_id,object,0,0.0,1,upload-2026-06-09-011818-37cc4d
+created_at,object,0,0.0,1,2026-09-19T11:31:52+00:00

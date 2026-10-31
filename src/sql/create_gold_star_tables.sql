@@ -1,0 +1,3 @@
+-- Fase 4: Tabel star schema kanonik — sekarang digabung di create_gold_tables.sql.
+-- File ini dipertahankan sebagai referensi. Jangan jalankan terpisah.
+-- Lihat create_gold_tables.sql untuk DDL lengkap.

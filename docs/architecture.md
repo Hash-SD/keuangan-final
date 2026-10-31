@@ -39,11 +39,19 @@ satu. Status rekonsiliasi adalah status validasi dari view, bukan metrik aditif.
 
 ## Active Gold Tables
 
-- `gold.fact_anggaran`
+- `gold.dim_organisasi`
+- `gold.dim_kegiatan`
+- `gold.dim_akun`
+- `gold.dim_iku`
+- `gold.fact_anggaran` (kanonik — fact dengan FK ke 4 dimensi, `tahun` langsung di fact)
 - `gold.vw_dashboard_iku_anggaran`
 - `gold.vw_dashboard_mapping_quality`
 - `gold.vw_dashboard_reconciliation`
 - `gold.vw_dashboard_detail_item`
+
+Implementasi star: `src/gold/star_normalized.py` (4 dimensi, `tahun` di fact).
+DDL kanonik: `src/sql/create_gold_tables.sql`.
+Loader PostgreSQL: `src/sql/load_gold_to_postgres.py` (5 tabel: 4 dim + 1 fact + 5 view).
 
 ## Dashboard contract
 

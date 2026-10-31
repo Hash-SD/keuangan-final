@@ -264,3 +264,195 @@ def test_deactivate_hidden_columns_marks_inactive():
 def test_detail_saved_query_sql_excludes_hidden_columns():
     for hidden in assets.HIDDEN_COLUMNS:
         assert hidden not in assets.SAVED_QUERY_DETAIL_SQL
+
+
+def _saved_query_by_label(label: str) -> str:
+    registry = {item["label"]: item["sql"] for item in assets.SAVED_QUERY_REGISTRY}
+    return registry[label]
+
+
+def test_saved_query_registry_labels_unique_and_prefixed():
+    labels = [item["label"] for item in assets.SAVED_QUERY_REGISTRY]
+    assert len(labels) == len(set(labels))
+    assert all(label.startswith("SILARAS - ") for label in labels)
+
+
+def test_kpi_summary_saved_query_uses_canonical_gold_metrics():
+    sql = _saved_query_by_label("SILARAS - KPI Ringkasan Anggaran")
+
+    assert "SUM(jumlah_weighted_iku)" in sql
+    assert "COUNT(DISTINCT item_id)" in sql
+    assert "COUNT(DISTINCT kode_iku)" in sql
+    assert "COUNT(DISTINCT kegiatan)" in sql
+    assert "SUM(jumlah)" not in sql
+    assert "ROUND" not in sql.upper()
+
+
+def test_yearly_kpi_saved_query_groups_by_year():
+    sql = _saved_query_by_label("SILARAS - KPI per Tahun")
+
+    assert "tahun" in sql
+    assert "SUM(jumlah_weighted_iku)" in sql
+    assert "COUNT(DISTINCT item_id)" in sql
+    assert "GROUP BY" in sql
+    assert "ORDER BY tahun" in sql
+
+
+def test_prodi_breakdown_saved_query_exists():
+    sql = _saved_query_by_label("SILARAS - Anggaran per Prodi")
+
+    assert "prodi" in sql
+    assert "fakultas" in sql
+    assert "SUM(jumlah_weighted_iku)" in sql
+    assert "COUNT(DISTINCT item_id)" in sql
+
+
+def test_reconciliation_saved_query_reads_reconciliation_view():
+    sql = _saved_query_by_label("SILARAS - Rekonsiliasi per Sumber")
+
+    assert "vw_dashboard_reconciliation" in sql
+    for column in ("total_detail", "total_rekap", "selisih", "status"):
+        assert column in sql
+
+
+def test_full_gold_saved_query_exposes_all_contract_columns():
+    sql = _saved_query_by_label("SILARAS - Detail Data Gold Lengkap")
+
+    for column in assets.FACT_COLUMNS:
+        assert column in sql
+    assert "SUM(" not in sql.upper()
+
+
+def test_analytics_breakdown_saved_queries_use_weighted_total_only():
+    for key in ("SILARAS - Anggaran per IKU", "SILARAS - Anggaran per Kegiatan", "SILARAS - Anggaran per Akun"):
+        sql = _saved_query_by_label(key)
+        assert "SUM(jumlah_weighted_iku)" in sql
+        assert "SUM(jumlah)" not in sql
+
+
+def _write_layout_snapshot(path, position: dict, dashboard_id: int = 8) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "source_dashboard_id": dashboard_id,
+                "captured_at": "2026-10-31T00:00:00+00:00",
+                "position_json": position,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def _curated_snapshot_position() -> dict:
+    return {
+        "ROOT_ID": {"type": "ROOT", "id": "ROOT_ID", "children": ["GRID_ID"], "meta": {"background": "BACKGROUND_TRANSPARENT"}},
+        "GRID_ID": {
+            "type": "GRID",
+            "id": "GRID_ID",
+            "children": ["ROW-hero", "ROW-chart"],
+            "meta": {"background": "BACKGROUND_TRANSPARENT"},
+        },
+        "ROW-hero": {"type": "ROW", "id": "ROW-hero", "children": ["CHART-kpi-a", "CHART-kpi-b"], "meta": {"background": "BACKGROUND_TRANSPARENT"}},
+        "CHART-kpi-a": {"type": "CHART", "id": "CHART-kpi-a", "children": [], "meta": {"registryKey": "kpi_total_anggaran", "height": 20, "width": 3}},
+        "CHART-kpi-b": {"type": "CHART", "id": "CHART-kpi-b", "children": [], "meta": {"registryKey": "kpi_jumlah_item", "height": 20, "width": 3}},
+        "ROW-chart": {"type": "ROW", "id": "ROW-chart", "children": ["CHART-bar"], "meta": {"background": "BACKGROUND_TRANSPARENT"}},
+        "CHART-bar": {"type": "CHART", "id": "CHART-bar", "children": [], "meta": {"registryKey": "anggaran_per_tahun", "height": 48, "width": 12}},
+    }
+
+
+def test_locked_layout_remaps_registry_keys_to_current_chart_ids(tmp_path, monkeypatch):
+    monkeypatch.setattr(assets, "LAYOUT_SNAPSHOT_PATH", tmp_path / "dashboard_layout.json")
+    _write_layout_snapshot(assets.LAYOUT_SNAPSHOT_PATH, _curated_snapshot_position())
+    chart_ids = [101 + assets.CHART_SPECS.index(key) for key in assets.CHART_SPECS]
+
+    layout = assets._load_locked_layout(chart_ids)
+
+    assert layout is not None
+    assert layout["CHART-kpi-a"]["meta"]["chartId"] == chart_ids[assets.CHART_SPECS.index("kpi_total_anggaran")]
+    assert layout["CHART-kpi-b"]["meta"]["chartId"] == chart_ids[assets.CHART_SPECS.index("kpi_jumlah_item")]
+    assert layout["CHART-bar"]["meta"]["chartId"] == chart_ids[assets.CHART_SPECS.index("anggaran_per_tahun")]
+    assert "registryKey" not in layout["CHART-kpi-a"]["meta"]
+    assert layout["GRID_ID"]["children"][:2] == ["ROW-hero", "ROW-chart"]
+    assert layout["CHART-kpi-a"]["meta"]["width"] == 3
+    assert layout["CHART-kpi-a"]["meta"]["height"] == 20
+
+
+def test_locked_layout_appends_active_charts_missing_from_snapshot(tmp_path, monkeypatch):
+    monkeypatch.setattr(assets, "LAYOUT_SNAPSHOT_PATH", tmp_path / "dashboard_layout.json")
+    _write_layout_snapshot(assets.LAYOUT_SNAPSHOT_PATH, _curated_snapshot_position())
+    chart_ids = [101 + assets.CHART_SPECS.index(key) for key in assets.CHART_SPECS]
+
+    layout = assets._load_locked_layout(chart_ids)
+
+    missing_keys = set(assets.CHART_SPECS) - {"kpi_total_anggaran", "kpi_jumlah_item", "anggaran_per_tahun"}
+    appended = [node for node in layout.values() if isinstance(node, dict) and node.get("type") == "CHART" and node["meta"]["chartId"] in {chart_ids[assets.CHART_SPECS.index(key)] for key in missing_keys}]
+    assert len(appended) == len(missing_keys)
+    appended_rows = set(layout["GRID_ID"]["children"]) - {"ROW-hero", "ROW-chart"}
+    assert len(appended_rows) == len(missing_keys)
+
+
+def test_locked_layout_drops_stale_registry_charts(tmp_path, monkeypatch):
+    monkeypatch.setattr(assets, "LAYOUT_SNAPSHOT_PATH", tmp_path / "dashboard_layout.json")
+    position = _curated_snapshot_position()
+    position["ROW-chart"]["children"].append("CHART-stale")
+    position["CHART-stale"] = {"type": "CHART", "id": "CHART-stale", "children": [], "meta": {"registryKey": "chart_lama_dihapus", "height": 48, "width": 12}}
+    _write_layout_snapshot(assets.LAYOUT_SNAPSHOT_PATH, position)
+    chart_ids = [101 + assets.CHART_SPECS.index(key) for key in assets.CHART_SPECS]
+
+    layout = assets._load_locked_layout(chart_ids)
+
+    assert "CHART-stale" not in layout
+    assert layout["ROW-chart"]["children"] == ["CHART-bar"]
+
+
+def test_locked_layout_falls_back_to_generated_layout_without_snapshot(tmp_path, monkeypatch):
+    monkeypatch.setattr(assets, "LAYOUT_SNAPSHOT_PATH", tmp_path / "dashboard_layout.json")
+    chart_ids = [101 + assets.CHART_SPECS.index(key) for key in assets.CHART_SPECS]
+
+    assert assets._load_locked_layout(chart_ids) is None
+    assert assets._layout_position(Mock(), chart_ids) == assets._position_json(chart_ids)
+
+
+def test_normalize_locked_position_rejects_unmanaged_chart(monkeypatch):
+    session = Mock()
+    monkeypatch.setattr(
+        assets,
+        "_get_items",
+        lambda _session, resource: (
+            [
+                {"id": 11, "description": f"{assets.MANAGED_CHART_MARKER}kpi_total_anggaran"},
+                {"id": 12, "description": None},
+            ]
+            if resource == "chart"
+            else []
+        ),
+    )
+
+    position = {
+        "GRID_ID": {"type": "GRID", "id": "GRID_ID", "children": ["ROW-0"], "meta": {}},
+        "ROW-0": {"type": "ROW", "id": "ROW-0", "children": ["CHART-0", "CHART-1"], "meta": {}},
+        "CHART-0": {"type": "CHART", "id": "CHART-0", "children": [], "meta": {"chartId": 11}},
+        "CHART-1": {"type": "CHART", "id": "CHART-1", "children": [], "meta": {"chartId": 12}},
+    }
+
+    assert assets._normalize_locked_position(position, assets._chart_registry_key_map(session)) is None
+
+
+def test_upsert_dashboard_writes_locked_layout_position(monkeypatch):
+    monkeypatch.setattr(assets, "TARGET_DASHBOARD_ID", "2")
+    session = _session_with_dashboards([1, 2, 4])
+    monkeypatch.setattr(
+        assets,
+        "_get_items",
+        lambda sess, resource: [{"id": 1}, {"id": 2}, {"id": 4}] if resource == "dashboard" else [],
+    )
+    locked = _curated_snapshot_position()
+    monkeypatch.setattr(assets, "_load_locked_layout", lambda chart_ids: locked)
+
+    assets._upsert_dashboard(session, dataset_id=2, chart_ids=[32, 33])
+
+    put_payload = session.put.call_args_list[0][1]["json"]
+    position = json.loads(put_payload["position_json"])
+    assert "CHART-kpi-a" in position
+    assert position["GRID_ID"]["children"] == ["ROW-hero", "ROW-chart"]

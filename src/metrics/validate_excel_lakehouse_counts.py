@@ -27,7 +27,7 @@ def validate_counts() -> dict:
     nomenklatur = _read(GENERATED_DIR / "silver" / "silver_nomenklatur_detail.parquet")
     fact = _read(GENERATED_DIR / "gold" / "fact_anggaran.parquet")
 
-    fact_key_cols = [col for col in ["item_id", "kode_iku", "source_file", "source_sheet", "source_row"] if col in fact.columns]
+    fact_key_cols = [col for col in ["item_id", "source_file", "source_sheet", "source_row"] if col in fact.columns]
     duplicate_fact_rows = int(fact.duplicated(subset=fact_key_cols).sum()) if fact_key_cols else 0
     total_like = 0
     if "uraian_detail" in fact.columns:

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERD Gold SILARAS SD - Star Schema Anggaran</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; margin: 0; background: #f4f6fb; color: #1a1c2b; }
+  header { background: #0f4c81; color: #fff; padding: 20px 32px; }
+  header h1 { margin: 0 0 4px; font-size: 20px; }
+  header p { margin: 0; opacity: .85; font-size: 13px; }
+  main { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+  .mermaid { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 10px rgba(15,76,129,.12); }
+  .note { background: #eef4ff; border-left: 4px solid #0f4c81; border-radius: 6px; padding: 12px 16px; font-size: 14px; margin: 16px 0; }
+  code { background: #e2e8f0; padding: 1px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ERD Star Schema Gold — SILARAS SD</h1>
+  <p>Postgres metastore · schema <b>gold</b> · 4 FK dari fact_anggaran ke dimensi</p>
+</header>
+<main>
+  <div class="note">
+    View <code>vw_fact_anggaran</code> = rekonstruksi flat hasil JOIN 4 dimensi (untuk Superset/portal), bukan tabel fisik.
+    View analitik: <code>vw_dashboard_iku_anggaran</code>, <code>vw_dashboard_mapping_quality</code>, <code>vw_dashboard_reconciliation</code>.
+  </div>
+  <div class="mermaid">
+erDiagram
+    dim_organisasi ||--o{ fact_anggaran : "org_key (FK)"
+    dim_kegiatan ||--o{ fact_anggaran : "kegiatan_key (FK)"
+    dim_akun ||--o{ fact_anggaran : "akun_key (FK)"
+    dim_iku ||--o{ fact_anggaran : "iku_key (FK)"
+
+    fact_anggaran {
+        SERIAL fact_key PK
+        TEXT item_id "identitas item"
+        TEXT dataset_session_id "identitas sesi"
+        TEXT run_id "identitas run"
+        TEXT tahun
+        INTEGER org_key FK
+        INTEGER kegiatan_key FK
+        INTEGER akun_key FK
+        INTEGER iku_key FK
+        TEXT uraian_detail
+        DOUBLE qty
+        DOUBLE harga_satuan
+        DOUBLE jumlah
+        DOUBLE allocation_weight
+        DOUBLE jumlah_weighted_iku "SUM = Total Anggaran"
+        TEXT mapping_status
+        TEXT data_quality_flag
+        TEXT source_file
+        TEXT source_sheet
+        INTEGER source_row
+        TEXT source_role
+        TEXT row_type
+        TEXT quality_flags
+        TIMESTAMPTZ created_at
+    }
+
+    dim_organisasi {
+        INTEGER org_key PK
+        TEXT prodi
+        TEXT fakultas
+    }
+
+    dim_kegiatan {
+        INTEGER kegiatan_key PK
+        TEXT kegiatan
+        TEXT cluster_kegiatan
+        TEXT nomenklatur_path
+    }
+
+    dim_akun {
+        INTEGER akun_key PK
+        TEXT kode_akun
+        TEXT nama_akun
+        TEXT akun
+        TEXT nama_akun_asli
+    }
+
+    dim_iku {
+        INTEGER iku_key PK
+        TEXT kode_iku UK
+        TEXT iku
+        TEXT nama_iku
+    }
+  </div>
+  <div class="note">
+    Sumber: FK live <code>fact_anggaran_{org,kegiatan,akun,iku}_key_fkey</code> + <code>src/sql/create_gold_tables.sql</code>.
+    Diagram juga tersedia format Markdown: <code>docs/erd-gold-star-schema.md</code>.
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: "default" });</script>
+</body>
+</html>

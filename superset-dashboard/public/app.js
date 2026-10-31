@@ -34,15 +34,14 @@
   // Kolom line-item tetap memuat source_file agar lineage audit terlihat,
   // sementara kolom teknis mapping/quality lain tetap tidak dibocorkan.
   const TABLE_COLUMN_OVERRIDES = {
-    28: ["tahun", "periode", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "source_file"],
+     28: ["tahun", "prodi", "iku", "kegiatan", "akun", "uraian_detail", "qty", "harga_satuan", "jumlah", "source_file"],
   };
 
   // Label header yang lebih ramah untuk kolom snake_case.
   const TABLE_COLUMN_LABELS = {
-    28: {
-      tahun: "Tahun",
-      periode: "Periode",
-      prodi: "Prodi",
+     28: {
+       tahun: "Tahun",
+       prodi: "Prodi",
       iku: "IKU",
       kegiatan: "Kegiatan",
       akun: "Akun",

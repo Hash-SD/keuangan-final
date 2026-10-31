@@ -1,18 +1,32 @@
 ﻿category,component,value,source
-repository,commit,13a41dfaf7101db37a3770d591d7a9cbee1a9249,git
-repository,branch,main,git
-repository,working_tree,"M src/metrics/generate_uat.py
- M tests/test_uat_matrix.py
-?? PROMPT_AUDIT_BAB4_REVISED.md
-?? outputs/bab4_evidence/
-?? outputs/bab4_report_data.zip
-?? outputs/synthetic_2027/
-?? scripts/bab4/",git
+repository,commit,70d295ffb4534859eebcea0801fbc6e557bbd6a7,git
+repository,branch,codex/keuangan-dashboard-redesign,git
+repository,working_tree,"M docs/AI-CODEBASE-GUIDE.md
+ M docs/architecture.md
+ M portal_backend/services/excel_lakehouse.py
+ M src/gold/contract.py
+ M src/metrics/validate_excel_lakehouse_counts.py
+ M src/sql/create_gold_tables.sql
+ M src/sql/load_gold_to_postgres.py
+ M src/sql/setup_superset_excel_assets.py
+ M src/status/system_truth_status.py
+ M src/transformations/excel_lakehouse_pipeline.py
+ M src/validation/runtime_cross_engine.py
+ M superset-dashboard/public/app.js
+ M superset-dashboard/public/dashboard-presentation.js
+ M tests/test_annual_contract_alignment.py
+ M tests/test_excel_lakehouse_status.py
+?? session-ses_f472.md
+?? src/gold/star_normalized.py
+?? src/sql/create_gold_star_tables.sql
+?? tests/test_gold_star_dual_write.py
+?? tests/test_gold_star_equivalence.py
+?? tests/test_gold_star_normalized.py",git
 runtime,python,3.11.9,python
 runtime,platform,Windows-10-10.0.26200-SP0,platform
 runtime,processor,"AMD64 Family 26 Model 96 Stepping 0, AuthenticAMD",platform
 runtime,cpu_count,16,os
-runtime,disk_free_bytes,342680403968,shutil.disk_usage
+runtime,disk_free_bytes,305089900544,shutil.disk_usage
 runtime,pandas,2.3.1,pandas
 runtime,openpyxl,3.1.5,openpyxl
 runtime,docker,"Docker version 28.4.0, build d8eb465",docker

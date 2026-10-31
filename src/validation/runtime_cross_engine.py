@@ -26,11 +26,11 @@ def _query_postgres(dataset_session_id: str, pipeline_run_id: str) -> dict[str, 
         with conn.cursor() as cur:
             cur.execute(
                 "SELECT COUNT(*), COUNT(DISTINCT item_id), COALESCE(SUM(jumlah_weighted_iku), 0) "
-                "FROM gold.fact_anggaran WHERE dataset_session_id=%s AND run_id=%s",
+                "FROM gold.vw_fact_anggaran WHERE dataset_session_id=%s AND run_id=%s",
                 (dataset_session_id, pipeline_run_id),
             )
             row_count, unique_items, weighted_total = cur.fetchone()
-            cur.execute("SELECT COUNT(*) FROM gold.fact_anggaran")
+            cur.execute("SELECT COUNT(*) FROM gold.vw_fact_anggaran")
             all_rows = cur.fetchone()[0]
         return {"status": "validated", "row_count": row_count, "unique_items": unique_items, "weighted_total": float(weighted_total), "all_rows": all_rows}
     finally:
@@ -41,7 +41,7 @@ def _query_trino(dataset_session_id: str, pipeline_run_id: str) -> dict[str, obj
     query = (
         "SELECT COUNT(*) AS row_count, COUNT(DISTINCT item_id) AS unique_items, "
         "COALESCE(SUM(jumlah_weighted_iku), 0) AS weighted_total "
-        "FROM postgres.gold.fact_anggaran "
+        "FROM postgres.gold.vw_fact_anggaran "
         f"WHERE dataset_session_id = '{dataset_session_id.replace(chr(39), chr(39) * 2)}' "
         f"AND run_id = '{pipeline_run_id.replace(chr(39), chr(39) * 2)}'"
     )

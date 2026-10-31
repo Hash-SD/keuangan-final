@@ -1,12 +1,11 @@
 {
   "status": "VERIFIED",
   "row_count": 607,
-  "column_count": 33,
+  "column_count": 25,
   "grain_columns": [
-    "item_id",
-    "kode_iku"
+    "item_id"
   ],
-  "duplicate_grain_rows": 0,
+  "duplicate_grain_rows": 354,
   "jumlah_sum": 1494181466.0,
   "jumlah_weighted_iku_sum": 517361656.0,
   "allocation_weight_sum_by_item_available": true,

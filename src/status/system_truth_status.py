@@ -147,7 +147,7 @@ def _quality_gate_status(base_dir: Path) -> dict[str, Any]:
             "quality_score": _value(None, "missing", None, "Validasi Excel belum tersedia."),
         }
     source = _rel(path if path.exists() else base_dir / "outputs" / "reports" / "pipeline_run_summary.json", base_dir)
-    rows = payload.get("fact_anggaran_rows") or payload.get("counts", {}).get("fact_anggaran_rows")
+    rows = payload.get("fact_anggaran_rows") or payload.get("counts", {}).get("fact_anggaran_rows") or payload.get("counts", {}).get("fact_anggaran_rows")
     rows = int(rows or 0)
     status = "validated" if rows else "not_available"
     message = "Validasi Excel Lakehouse dibaca dari artefak pipeline."

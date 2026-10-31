@@ -185,7 +185,7 @@ Aturan penting:
 - `allocation_weight` harus berjumlah satu untuk setiap `(dataset_session_id, run_id, item_id)`;
 - sumber tahunan dan sumber parsial dalam tahun sama harus melewati seleksi cakupan; overlap yang belum terbukti berhenti sebagai `AMBIGUOUS_SOURCE_OVERLAP`.
 
-Kolom faktual kanonik: `item_id`, `dataset_session_id`, `run_id`, `tahun`, `prodi`, `fakultas`, `kegiatan`, `cluster_kegiatan`, `akun`, `kode_akun`, `nama_akun`, `nama_akun_asli`, `iku`, `kode_iku`, `nama_iku`, `nomenklatur_path`, `uraian_detail`, `qty`, `satuan`, `harga_satuan`, `jumlah`, `allocation_weight`, `jumlah_weighted_iku`, status kualitas/mapping, lineage source, row type, dan `created_at`. Atribut cakupan sumber disimpan di Bronze/Silver/lineage, bukan pada schema Gold.
+Kolom faktual kanonik: `item_id`, `dataset_session_id`, `run_id`, `tahun`, `prodi`, `fakultas`, `kegiatan`, `cluster_kegiatan`, `akun`, `kode_akun`, `nama_akun`, `nama_akun_asli`, `iku`, `kode_iku`, `nama_iku`, `nomenklatur_path`, `uraian_detail`, `qty`, `satuan`, `harga_satuan`, `jumlah`, `allocation_weight`, `jumlah_weighted_iku`, status kualitas/mapping, lineage source, row type, dan `created_at`. Atribut cakupan sumber disimpan di Bronze/Silver/lineage, bukan pada schema Gold. Pipeline menulis 6 tabel star (`dim_waktu`, `dim_organisasi`, `dim_kegiatan`, `dim_akun`, `dim_iku`, `fact_anggaran_split`) sebagai kanonik + flat rekonstruksi (`fact_anggaran` dari `rebuild_flat_from_star`) untuk kompatibilitas konsumen lama. Di Postgres, `fact_anggaran` flat sudah dihapus — semua konsumen baca `vw_fact_anggaran` (join split + 5 dim) atau langsung `fact_anggaran_split`.
 
 ### Identitas output dan publish
 
@@ -211,7 +211,7 @@ Artefak layer yang diharapkan:
 |---|---|
 | Bronze | `bronze_excel_cells` |
 | Silver | `silver_rab_items_flexible`, `silver_rab_rows_classified`, `silver_rab_formula_coverage`, `silver_rab_orphan_items`, `silver_detail_support_items`, `silver_rab_hierarchy`, `silver_mapping`, `silver_validation`, `silver_nomenklatur_detail`, `silver_bridge_detail_iku`, `silver_nomenklatur_warnings` |
-| Gold | `fact_anggaran`, `vw_dashboard_iku_anggaran`, `vw_dashboard_mapping_quality`, `vw_dashboard_reconciliation`, `vw_dashboard_detail_item` |
+| Gold | `fact_anggaran` (flat rekonstruksi), `dim_waktu`, `dim_organisasi`, `dim_kegiatan`, `dim_akun`, `dim_iku`, `fact_anggaran_split`, `vw_dashboard_iku_anggaran`, `vw_dashboard_mapping_quality`, `vw_dashboard_reconciliation`, `vw_dashboard_detail_item` |
 
 Metadata pipeline: `data/generated/excel_lakehouse_metadata.json`. Report run: `outputs/reports/pipeline_runs/<pipeline_run_id>.json`.
 
@@ -270,7 +270,7 @@ Backend Airflow adapter (`portal_backend/services/airflow.py`) mengelompokkan ta
 
 ### Superset
 
-`src/sql/setup_superset_excel_assets.py` login melalui REST API, mencari/membuat database Trino, memastikan dataset `gold.fact_anggaran`, menyegarkan metadata, menerapkan `verbose_name` bisnis pada label Superset, menyembunyikan kolom teknis dari UI, membuat saved query, dan upsert dashboard/charts. Tabel faktual tetap memiliki nama kolom fisik untuk query dan lineage/QA; label seperti `source_file` → `Sumber Data`, `uraian_detail` → `Detail`, dan `harga_satuan` → `Harga Satuan` hanya berlaku pada tampilan Superset. Nama slice kanonik tidak memakai prefix `SILARAS |`; branding hanya berada pada judul dashboard. Target database/dashboard dapat diarahkan dengan ID; ID database eksplisit yang tidak ada bersifat fail-fast, sedangkan target dashboard dapat fallback sesuai kode setup.
+`src/sql/setup_superset_excel_assets.py` login melalui REST API, mencari/membuat database Trino, memastikan dataset `gold.fact_anggaran`, menyegarkan metadata, menerapkan `verbose_name` bisnis pada label Superset, menyembunyikan kolom teknis dari UI, membuat saved query dari `SAVED_QUERY_REGISTRY` (10 query `SILARAS - ...`: KPI ringkasan/per tahun, breakdown per IKU/kegiatan/akun/prodi, rekonsiliasi, dan detail Gold lengkap — semua exact tanpa pembulatan mengikuti `GOLD_METRICS`), dan upsert dashboard/charts. Tabel faktual tetap memiliki nama kolom fisik untuk query dan lineage/QA; label seperti `source_file` → `Sumber Data`, `uraian_detail` → `Detail`, dan `harga_satuan` → `Harga Satuan` hanya berlaku pada tampilan Superset. Nama slice kanonik tidak memakai prefix `SILARAS |`; branding hanya berada pada judul dashboard. Target database/dashboard dapat diarahkan dengan ID; ID database eksplisit yang tidak ada bersifat fail-fast, sedangkan target dashboard dapat fallback sesuai kode setup. Susunan visual dashboard terkunci di `superset_assets/dashboard_layout.json` (node CHART memakai `meta.registryKey`); update dan instance baru memakai snapshot ini dengan remap chart ID, chart registry yang hilang ditambahkan di bawah grid, dan `SUPERSET_CAPTURE_LAYOUT=1` merekam ulang susunan terbaru.
 
 Setup Superset wajib menemukan dataset aktif `COMMITTED` dan pasangan identitas
 `dataset_session_id`/`pipeline_run_id` dari Gold `PUBLISHED` yang sama. Tanpa

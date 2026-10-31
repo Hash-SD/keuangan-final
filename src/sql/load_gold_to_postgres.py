@@ -13,39 +13,28 @@ import psycopg2
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.common.paths import GENERATED_DIR, OUTPUTS_DIR
-from src.gold.contract import FACT_COLUMNS, GOLD_SQL_TYPES
+from src.gold.contract import STAR_DIM_SPEC, STAR_FACT_COLUMNS, STAR_SQL_TYPES
 
-
-TABLES = {
-    "fact_anggaran": [(column, GOLD_SQL_TYPES[column].lower()) for column in FACT_COLUMNS],
-    "vw_dashboard_iku_anggaran": [
-        ("dataset_session_id", "text"),
-        ("run_id", "text"),
-        ("tahun", "text"),
-        ("prodi", "text"),
-        ("fakultas", "text"),
-        ("iku", "text"),
-        ("jumlah_weighted_iku", "double precision"),
-    ],
-    "vw_dashboard_mapping_quality": [
-        ("dataset_session_id", "text"),
-        ("run_id", "text"),
-        ("mapping_status", "text"),
-        ("data_quality_flag", "text"),
-        ("item_count", "bigint"),
-    ],
-    "vw_dashboard_reconciliation": [
-        ("source_file", "text"),
-        ("total_detail", "double precision"),
-        ("total_rekap", "double precision"),
-        ("selisih", "double precision"),
-        ("status", "text"),
-        ("dataset_session_id", "text"),
-        ("run_id", "text"),
-        ("tahun", "text"),
-    ],
-    "vw_dashboard_detail_item": [(column, GOLD_SQL_TYPES[column].lower()) for column in FACT_COLUMNS],
+DIM_SQL_TYPES: dict[str, dict[str, str]] = {
+    "dim_organisasi": {"org_key": "SERIAL PRIMARY KEY", "prodi": "TEXT NOT NULL", "fakultas": "TEXT"},
+    "dim_kegiatan": {"kegiatan_key": "SERIAL PRIMARY KEY", "kegiatan": "TEXT NOT NULL", "cluster_kegiatan": "TEXT", "nomenklatur_path": "TEXT"},
+    "dim_akun": {"akun_key": "SERIAL PRIMARY KEY", "akun": "TEXT", "kode_akun": "TEXT", "nama_akun": "TEXT", "nama_akun_asli": "TEXT"},
+    "dim_iku": {"iku_key": "SERIAL PRIMARY KEY", "iku": "TEXT", "kode_iku": "TEXT UNIQUE NOT NULL", "nama_iku": "TEXT"},
 }
+
+
+def _star_tables() -> dict[str, list[tuple[str, str]]]:
+    tables: dict[str, list[tuple[str, str]]] = {}
+    for table, spec in STAR_DIM_SPEC.items():
+        tables[table] = [(col, DIM_SQL_TYPES[table].get(col, "TEXT").lower()) for col in [spec["key"]] + spec["natural"]]
+    tables["fact_anggaran"] = [(col, STAR_SQL_TYPES.get(col, "TEXT").lower()) for col in STAR_FACT_COLUMNS]
+    return tables
+
+
+TABLES: dict[str, list[tuple[str, str]]] = {
+}
+for table, columns in _star_tables().items():
+    TABLES[table] = columns
 
 
 def _active_run_outputs(pipeline_run_id: str, dataset_session_id: str) -> dict[str, dict[str, str]]:

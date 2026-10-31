@@ -1,0 +1,396 @@
+{
+  "version": 1,
+  "source_dashboard_id": 1,
+  "captured_at": "2026-10-31T07:46:23.051173+00:00",
+  "position_json": {
+    "CHART-0": {
+      "children": [],
+      "id": "CHART-0",
+      "meta": {
+        "height": 37,
+        "sliceName": "KPI Total Anggaran",
+        "uuid": "7c7874e6-04be-4ada-8a64-583a6fd64ce2",
+        "width": 5,
+        "registryKey": "kpi_total_anggaran"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-0"
+      ],
+      "type": "CHART"
+    },
+    "CHART-1": {
+      "children": [],
+      "id": "CHART-1",
+      "meta": {
+        "height": 37,
+        "sliceName": "KPI Jumlah Item",
+        "uuid": "ac4e3857-1f01-4f6e-9f5e-b63bd9e392c9",
+        "width": 3,
+        "registryKey": "kpi_jumlah_item"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-0"
+      ],
+      "type": "CHART"
+    },
+    "CHART-10": {
+      "children": [],
+      "id": "CHART-10",
+      "meta": {
+        "height": 48,
+        "sliceName": "Anggaran per Akun",
+        "uuid": "053cbdae-4fb3-4489-900b-0d500f44d59a",
+        "width": 6,
+        "registryKey": "anggaran_per_akun"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-9"
+      ],
+      "type": "CHART"
+    },
+    "CHART-11": {
+      "children": [],
+      "id": "CHART-11",
+      "meta": {
+        "height": 62,
+        "sliceName": "Detail Item Biaya",
+        "uuid": "66ab2a71-4746-4ec4-addd-75ff59f2c454",
+        "width": 12,
+        "registryKey": "detail_item_biaya"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-11"
+      ],
+      "type": "CHART"
+    },
+    "CHART-12": {
+      "children": [],
+      "id": "CHART-12",
+      "meta": {
+        "height": 32,
+        "sliceName": "Validasi Rekap",
+        "uuid": "09ac0973-689a-466d-9c35-564ba069151a",
+        "width": 12,
+        "registryKey": "validasi_rekap"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-12"
+      ],
+      "type": "CHART"
+    },
+    "CHART-2": {
+      "children": [],
+      "id": "CHART-2",
+      "meta": {
+        "height": 37,
+        "sliceName": "KPI Jumlah IKU",
+        "uuid": "29339957-dc00-4f91-aea0-d5649ed4a9d6",
+        "width": 2,
+        "registryKey": "kpi_jumlah_iku"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-0"
+      ],
+      "type": "CHART"
+    },
+    "CHART-3": {
+      "children": [],
+      "id": "CHART-3",
+      "meta": {
+        "height": 37,
+        "sliceName": "KPI Jumlah Kegiatan",
+        "uuid": "4d0788c6-6f7f-4075-9bab-732aba1c6b97",
+        "width": 2,
+        "registryKey": "kpi_jumlah_kegiatan"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-0"
+      ],
+      "type": "CHART"
+    },
+    "CHART-5": {
+      "children": [],
+      "id": "CHART-5",
+      "meta": {
+        "height": 31,
+        "sliceName": "Ringkasan per Tahun",
+        "uuid": "2a3bfc8a-c277-4cf8-83d2-cd2464780ceb",
+        "width": 12,
+        "registryKey": "ringkasan_per_tahun"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-5"
+      ],
+      "type": "CHART"
+    },
+    "CHART-6": {
+      "children": [],
+      "id": "CHART-6",
+      "meta": {
+        "height": 48,
+        "sliceName": "Anggaran per Tahun",
+        "uuid": "c8b3e592-7dae-4e49-8699-ab5ebd944642",
+        "width": 6,
+        "registryKey": "anggaran_per_tahun"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-6"
+      ],
+      "type": "CHART"
+    },
+    "CHART-7": {
+      "children": [],
+      "id": "CHART-7",
+      "meta": {
+        "height": 48,
+        "sliceName": "Anggaran per IKU",
+        "uuid": "39077119-01ab-4b1e-a0e2-bf01cb2c5283",
+        "width": 6,
+        "registryKey": "anggaran_per_iku"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-6"
+      ],
+      "type": "CHART"
+    },
+    "CHART-8": {
+      "children": [],
+      "id": "CHART-8",
+      "meta": {
+        "height": 48,
+        "sliceName": "Cluster Kegiatan",
+        "uuid": "e95fcf58-e73e-4bfb-866e-043ab801be2f",
+        "width": 12,
+        "registryKey": "cluster_kegiatan"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-8"
+      ],
+      "type": "CHART"
+    },
+    "CHART-9": {
+      "children": [],
+      "id": "CHART-9",
+      "meta": {
+        "height": 48,
+        "sliceName": "Komposisi Akun",
+        "uuid": "42dfb946-380e-49ac-a100-699b19aab218",
+        "width": 6,
+        "registryKey": "komposisi_akun"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-9"
+      ],
+      "type": "CHART"
+    },
+    "GRID_ID": {
+      "children": [
+        "ROW-NPhPk-kCzDtZVt7MgKnvW",
+        "ROW-0",
+        "ROW-5",
+        "ROW-6",
+        "ROW-8",
+        "ROW-9",
+        "ROW-11",
+        "ROW-12"
+      ],
+      "id": "GRID_ID",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID"
+      ],
+      "type": "GRID"
+    },
+    "HEADER_ID": {
+      "id": "HEADER_ID",
+      "meta": {
+        "text": "SILARAS SD - Dashboard Anggaran IKU"
+      },
+      "type": "HEADER"
+    },
+    "MARKDOWN-S7HxZKaYD-yXCj4z4LRr3": {
+      "children": [],
+      "id": "MARKDOWN-S7HxZKaYD-yXCj4z4LRr3",
+      "meta": {
+        "code": "<img src=\"/static/assets/images/dashbor.png?v=2\" width=\"200\" style=\"display:block; margin:0 auto;\" />",
+        "height": 11,
+        "width": 2
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-NPhPk-kCzDtZVt7MgKnvW"
+      ],
+      "type": "MARKDOWN"
+    },
+    "MARKDOWN-kBqio7o6XmZvgpxleXXgg": {
+      "children": [],
+      "id": "MARKDOWN-kBqio7o6XmZvgpxleXXgg",
+      "meta": {
+        "code": "\n\n\n\n\n\n# SILARAS SD - Dashboard Anggaran IKU",
+        "height": 12,
+        "width": 10
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID",
+        "ROW-NPhPk-kCzDtZVt7MgKnvW"
+      ],
+      "type": "MARKDOWN"
+    },
+    "ROOT_ID": {
+      "children": [
+        "GRID_ID"
+      ],
+      "id": "ROOT_ID",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "type": "ROOT"
+    },
+    "ROW-0": {
+      "children": [
+        "CHART-0",
+        "CHART-1",
+        "CHART-2",
+        "CHART-3"
+      ],
+      "id": "ROW-0",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-11": {
+      "children": [
+        "CHART-11"
+      ],
+      "id": "ROW-11",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-12": {
+      "children": [
+        "CHART-12"
+      ],
+      "id": "ROW-12",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-5": {
+      "children": [
+        "CHART-5"
+      ],
+      "id": "ROW-5",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-6": {
+      "children": [
+        "CHART-6",
+        "CHART-7"
+      ],
+      "id": "ROW-6",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-8": {
+      "children": [
+        "CHART-8"
+      ],
+      "id": "ROW-8",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-9": {
+      "children": [
+        "CHART-9",
+        "CHART-10"
+      ],
+      "id": "ROW-9",
+      "meta": {
+        "background": "BACKGROUND_TRANSPARENT"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    },
+    "ROW-NPhPk-kCzDtZVt7MgKnvW": {
+      "children": [
+        "MARKDOWN-S7HxZKaYD-yXCj4z4LRr3",
+        "MARKDOWN-kBqio7o6XmZvgpxleXXgg"
+      ],
+      "id": "ROW-NPhPk-kCzDtZVt7MgKnvW",
+      "meta": {
+        "background": "BACKGROUND_WHITE"
+      },
+      "parents": [
+        "ROOT_ID",
+        "GRID_ID"
+      ],
+      "type": "ROW"
+    }
+  }
+}

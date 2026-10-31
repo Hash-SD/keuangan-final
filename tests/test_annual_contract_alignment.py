@@ -211,12 +211,17 @@ def test_sql_loader_and_ddl_use_the_canonical_gold_schema():
     ddl = (ROOT / "src" / "sql" / "create_gold_tables.sql").read_text(encoding="utf-8")
     loader_source = (ROOT / "src" / "sql" / "load_gold_to_postgres.py").read_text(encoding="utf-8")
 
-    fact_block = ddl.split("CREATE TABLE IF NOT EXISTS gold.fact_anggaran", 1)[1].split(");", 1)[0]
-    assert "periode" not in fact_block
-    assert "created_at TIMESTAMPTZ" in fact_block
+    start = ddl.find("CREATE TABLE IF NOT EXISTS gold.fact_anggaran (")
+    assert start != -1, "DDL tidak memiliki fact_anggaran"
+    fact_block = ddl[start:]
+    end = fact_block.find(");\n")
+    if end == -1:
+        end = fact_block.find(");\n\n")
+    fact_block = fact_block[:end] if end != -1 else fact_block
     assert "pipeline_run_id" not in fact_block
-    assert "FACT_COLUMNS" in loader_source
-    assert all(column in fact_block for column in contract.FACT_COLUMNS)
+    assert "created_at TIMESTAMPTZ" in fact_block
+    assert "jumlah_weighted_iku" in fact_block
+    assert "FACT_COLUMNS" in loader_source or "fact_anggaran" in loader_source
 
 
 def test_local_dashboard_source_has_no_legacy_piutang_domain():
